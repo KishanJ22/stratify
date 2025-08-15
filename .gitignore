@@ -1,0 +1,15 @@
+node_modules
+dist
+out
+.env
+vscode/settings.json
+settings.json
+app.log
+apps/**/coverage
+.turbo
+.DS_Store
+tsconfig.tsbuildinfo
+.next
+*api.d.ts
+openapi.json
+builder

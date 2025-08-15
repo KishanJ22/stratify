@@ -1,1 +1,1 @@
-# stratify
+# Stratify monorepo
