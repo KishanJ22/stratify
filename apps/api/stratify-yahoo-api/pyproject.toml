@@ -1,0 +1,9 @@
+[project]
+name = "stratify-yahoo-api"
+version = "0.1.0"
+description = "A REST API for accessing Yahoo Finance data"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi[standard]>=0.116.1",
+]
