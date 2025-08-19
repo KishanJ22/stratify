@@ -37,8 +37,3 @@ class StockItem(BaseModel):
     market: Market
     priceDetails: PriceDetails
     
-class StocksList(BaseModel):
-    stocks: List[StockItem]
-
-class StocksResponse(BaseModel):
-    data: StocksList
