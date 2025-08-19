@@ -1,0 +1,30 @@
+from fastapi import APIRouter, HTTPException
+from src.routes.stocks.stocks_schema import StockItem
+from pydantic import BaseModel
+from src.routes.stocks.stocks_get import format_ticker_info
+from yfinance import Ticker
+
+class SymbolGetResponse(BaseModel):
+    data: StockItem
+
+symbol_get = APIRouter()
+
+@symbol_get.get("/stocks/{symbol}", tags=["stocks"])
+async def get_stock(symbol: str):
+    try:
+        symbol_data = Ticker(symbol).get_info()
+        
+        if not symbol_data or symbol_data.get("quoteType") == "NONE":
+            raise HTTPException(status_code=404, detail="Stock details not found")
+        
+        formatted_data = format_ticker_info(symbol_data)
+        return SymbolGetResponse(data=formatted_data)
+    except HTTPException:
+            # Required for properly returning error responses
+            raise
+    except Exception as err:
+        print(f"Error retrieving stock data: {err}")
+        raise HTTPException(
+            status_code=500,
+            detail="Internal server error"
+        )
