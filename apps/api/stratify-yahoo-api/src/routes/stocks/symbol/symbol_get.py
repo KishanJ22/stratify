@@ -1,8 +1,8 @@
 from fastapi import APIRouter, HTTPException
-from src.routes.stocks.stocks_schema import StockItem
 from pydantic import BaseModel
-from src.routes.stocks.stocks_get import format_ticker_info
 from yfinance import Ticker
+from src.routes.stocks.stocks_schema import StockItem
+from src.routes.stocks.stocks_get import format_ticker_info
 
 class SymbolGetResponse(BaseModel):
     data: StockItem
