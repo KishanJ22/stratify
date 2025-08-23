@@ -44,7 +44,7 @@ importers:
         specifier: ^3.2.4
         version: 3.2.4
 
-  apps/api/stratify-yahoo-api: {}
+  apps/api/stratify-data-api: {}
 
 packages:
 
