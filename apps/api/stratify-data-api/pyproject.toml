@@ -1,7 +1,7 @@
 [project]
-name = "stratify-yahoo-api"
+name = "stratify-data-api"
 version = "0.1.0"
-description = "A REST API for accessing Yahoo Finance data"
+description = "A REST API for accessing stock market data powered by Yahoo Finance and Stooq."
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [

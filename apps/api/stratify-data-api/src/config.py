@@ -17,7 +17,7 @@ def get_package_version():
         return "0.1.0"
 
 openapi_config = {
-    "title": "Stratify Yahoo API",
+    "title": "Stratify Data API",
     "version": get_package_version(),
-    "description": "A REST API for accessing Yahoo Finance data",
+    "description": "A REST API for accessing stock market data powered by Yahoo Finance and Stooq.",
 }

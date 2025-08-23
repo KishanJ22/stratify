@@ -15,7 +15,7 @@ app.include_router(routes)
 
 @app.get("/", status_code=200)
 def get_root():
-    return {"message": "Welcome to Stratify Yahoo API"}
+    return {"message": "Welcome to Stratify Data API"}
 
 @app.get("/health", status_code=200)
 def get_health():
