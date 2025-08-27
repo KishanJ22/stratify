@@ -1,6 +1,10 @@
 import json
 from pathlib import Path
 from fastapi import FastAPI
+import logging
+
+logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
+logger = logging.getLogger(__name__)
 
 def save_openapi_spec(app: FastAPI, docs_directory: str = "docs"):
     docs_path = Path(docs_directory)
@@ -13,5 +17,4 @@ def save_openapi_spec(app: FastAPI, docs_directory: str = "docs"):
     with open(json_path, "w") as f:
         json.dump(openapi_spec, f, indent=2)
         
-    print(f"✅ OpenAPI schema saved to:")
-    print(f"   📄 JSON: {json_path}")
+    logger.info(f"    OpenAPI schema saved to {json_path}")
