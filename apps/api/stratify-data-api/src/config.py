@@ -9,7 +9,7 @@ def get_package_version():
         if package_json_path.exists():
             with open(package_json_path, 'r') as file:
                 package_data = json.load(file)
-                return package_data.get("version")
+                return package_data.get("version") or "0.1.0"
         else:
             return "0.1.0"  # Default version if package.json is not found
     except Exception as e:
