@@ -11,10 +11,35 @@ columns = ["ticker", "per", "date", "time", "open", "high", "low", "close", "vol
 def data_validation(dataframe: pd.DataFrame, filepath: str):
     issues = []
 
-    for column in columns:
-        if column not in dataframe.columns:
-            issues.append(f"Missing required column: {column}")
+    missing_columns = [col for col in columns if col not in dataframe.columns]
+    if missing_columns:
+        issues.append(f"Missing required columns: {missing_columns}")
+        
+    if dataframe.empty:
+        issues.append("File contains no data rows")
+        return {
+            "filepath": filepath,
+            "issues": issues,
+            "is_valid": False,
+            "row_count": 0
+        }
+        
+    critical_columns = ["ticker", "date", "open", "high", "low", "close"]
+    for col in critical_columns:
+        null_count = dataframe[col].isnull().sum()
+        if null_count > 0:
+            issues.append(f"Column '{col}' has {null_count} null values")
             
+    numeric_columns = ["open", "high", "low", "close", "volume", "openint"]
+    for col in numeric_columns:
+        if not pd.api.types.is_numeric_dtype(dataframe[col]):
+            issues.append(f"Column '{col}' is not numeric")
+
+    pd.to_datetime(dataframe["date"], format="%Y%m%d", errors='raise')
+    
+    if dataframe['ticker'].str.strip().eq('').any():
+        issues.append("Column 'ticker' contains empty strings")
+
     return {
         "filepath": filepath,
         "issues": issues,
@@ -36,6 +61,7 @@ def ingest_data(filepath: str):
             return {
                 "filepath": filepath,
                 "issues": validate_data['issues'],
+                "data": [],
                 "success": False,
             }
             
@@ -45,7 +71,7 @@ def ingest_data(filepath: str):
         df["date"] = pd.to_datetime(df["date"], format="%Y%m%d", errors="raise").dt.strftime("%Y-%m-%d")
 
         return {
-            "data": df.to_json(orient='records'),
+            "data": df.to_dict(orient='records'),
             "success": True,
             }
     except Exception as err:
@@ -63,7 +89,7 @@ def pricing_ingestor():
         logger.error(f"Data folder not found: {data_folder}")
         return []
 
-    glob_pattern = os.path.join(data_folder, "**", "*.txt")
+    glob_pattern = os.path.join(data_folder, "**", "test", "*.txt")
     txt_files = glob.glob(glob_pattern, recursive=True)
     
     if not txt_files:
@@ -74,13 +100,15 @@ def pricing_ingestor():
     successful_files = 0
     
     for filepath in txt_files:
-        ingest_data = ingest_data(filepath)
-        json_data = ingest_data["data"]
-        
-        if json_data is not None and len(json_data) > 0:
-            result.append(json_data)
+        ingestion_result = ingest_data(filepath)
+        records = ingestion_result.get("data", [])
+
+        if records:
+            result.extend(records)
+            successful_files += 1
 
     logger.info(f"Successfully ingested {successful_files}/{len(txt_files)} files.")
+    logger.info(result[0])
     
     return result
 
