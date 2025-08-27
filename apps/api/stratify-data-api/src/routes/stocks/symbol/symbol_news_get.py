@@ -87,7 +87,7 @@ async def get_stock_news(symbol: str):
     try:
         news_data = Ticker(symbol).news
         
-        if not news_data:
+        if not news_data or not news_data.get("content"):
             raise HTTPException(status_code=404, detail="Stock news not found")
 
         formatted_news = []
