@@ -8,7 +8,6 @@
         "install": "uv sync",
         "pricing-ingestor": "uv run src/pricing_ingestor/pricing_ingestor.py",
         "test": "uv run pytest",
-        "test:coverage": "uv run pytest --cov=src",
-        "test:watch": "uv run pytest-watch"
+        "test:coverage": "uv run pytest --cov=src --cov-report=lcov:./coverage/lcov.info --cov-report=term"
     }
 }
