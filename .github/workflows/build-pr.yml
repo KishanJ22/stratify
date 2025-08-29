@@ -1,0 +1,50 @@
+name: Build PR
+
+on:
+    pull_request:
+        branches: main
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Install pnpm
+              uses: pnpm/action-setup@v4
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 23.6.0
+                  cache: "pnpm"
+
+            - name: Install uv
+              uses: astral-sh/setup-uv@v6
+              with:
+                  enable-cache: true
+
+            - name: Setup Python
+              run: uv python install
+
+            - name: Install Dependencies
+              run: pnpm install --frozen-lockfile
+              
+            - name: Check for Changeset
+              run: pnpm changeset status --since=origin/main
+
+            - name: Lint code
+              run: pnpm lint
+
+            - name: Build Project
+              run: pnpm build
+
+            - name: Run Tests
+              run: pnpm test:coverage

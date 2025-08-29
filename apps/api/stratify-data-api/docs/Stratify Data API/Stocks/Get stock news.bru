@@ -1,0 +1,19 @@
+meta {
+  name: Get stock news
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/stocks/:symbol/news
+  body: none
+  auth: inherit
+}
+
+params:path {
+  symbol: nvda
+}
+
+settings {
+  encodeUrl: true
+}

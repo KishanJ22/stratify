@@ -1,0 +1,15 @@
+meta {
+  name: Get Stock Details List
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/stocks?symbols=googl, aapl, msft, nvda, plntr, meta
+  body: none
+  auth: none
+}
+
+params:query {
+  symbols: googl, aapl, msft, nvda, plntr, meta
+}
