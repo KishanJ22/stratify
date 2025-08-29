@@ -1,7 +1,6 @@
 {
     "name": "stratify",
     "description": "",
-    "main": "index.js",
     "scripts": {
         "build": "turbo run build",
         "clean": "turbo run clean",
@@ -18,8 +17,9 @@
         "node": ">=21"
     },
     "keywords": [],
-    "author": "",
+    "author": "Kishan Jethwa",
     "license": "ISC",
+    "packageManager": "pnpm@10.6.3",
     "dependencies": {
         "@changesets/cli": "^2.29.5"
     },
