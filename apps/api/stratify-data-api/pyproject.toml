@@ -6,10 +6,31 @@ readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     "fastapi[standard]>=0.116.1",
+    "httpx>=0.28.1",
     "yfinance>=0.2.65",
 ]
 
 [dependency-groups]
 dev = [
     "pytest>=8.4.1",
+    "pytest-cov>=6.2.1",
+    "pytest-mock>=3.14.1",
 ]
+
+[tool.pytest.ini_options]
+addopts = "-ra -q --import-mode=importlib"
+python_files = "*test.py"
+
+[tool.coverage.report]
+omit = [
+    "**/*/__init__.py",
+    "src/config.py",
+    "src/generate_openapi_spec.py",
+    "src/tests/**/*",
+    "*_test.py",
+    "src/routes/routes.py",
+    "*schema.py"
+]
+skip_empty = true
+show_missing = true
+precision = 2
