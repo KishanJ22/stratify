@@ -1,0 +1,21 @@
+mock_yfinance_ticker_data = {
+    "symbol": "AAPL",
+    "displayName": "Apple Inc.",
+    "shortName": "Apple",
+    "longName": "Apple Inc.",
+    "address1": "One Apple Park Way",
+    "city": "Cupertino",
+    "state": "CA",
+    "zip": "95014",
+    "country": "United States",
+    "phone": "408-996-1010",
+    "longBusinessSummary": "Apple Inc. designs, manufactures, and markets smartphones, personal computers, tablets, wearables, and accessories worldwide.",
+    "market": "us_market",
+    "marketState": "REGULAR",
+    "industry": "Consumer Electronics",
+    "sector": "Technology",
+    "marketCap": 3000000000000,
+    "currentPrice": 150.25,
+    "previousClose": 148.50,
+    "quoteType": "EQUITY"
+}

@@ -63,7 +63,7 @@ symbols_get = APIRouter()
 async def get_stocks(
     symbols: str = Query(
         description="Comma-separated stock symbols",
-        example="AAPL,MSFT,GOOGL",
+        examples={"Symbols": "AAPL,MSFT,GOOGL"},
         )
     ) -> StocksGetResponse:
         try:

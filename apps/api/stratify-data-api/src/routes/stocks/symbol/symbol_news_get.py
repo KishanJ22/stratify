@@ -1,40 +1,15 @@
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
-from typing import List, Optional, Dict, Any
+from typing import Optional, Dict, Any
 from yfinance import Ticker
 from src.utils.safe_nested_get import safe_nested_get
-
-class OriginalThumbnailData(BaseModel):
-    url: Optional[str] = None
-    width: Optional[int] = None
-    height: Optional[int] = None
-    caption: Optional[str] = None
-    
-class ThumbnailData(BaseModel):
-    url: Optional[str] = None
-    width: Optional[int] = None
-    height: Optional[int] = None
-    tag: Optional[str] = None
-
-class Thumbnails(BaseModel):
-    original: OriginalThumbnailData
-    variants: List[ThumbnailData]
-
-class Provider(BaseModel):
-    name: Optional[str] = None
-    url: Optional[str] = None
-
-class NewsArticle(BaseModel):
-    title: Optional[str] = None
-    contentType: Optional[str] = None
-    summary: Optional[str] = None
-    publishedDate: Optional[str] = None
-    thumbnails: Optional[Thumbnails] = None
-    provider: Optional[Provider] = None
-    articleUrl: Optional[str] = None
-
-class NewsResponse(BaseModel):
-    data: List[NewsArticle]
+from src.routes.stocks.symbol.symbol_news_schema import (
+    NewsArticle, 
+    NewsResponse, 
+    Thumbnails, 
+    OriginalThumbnailData, 
+    ThumbnailData, 
+    Provider
+)
 
 def format_news_data(article: Dict[str, Any]) -> Optional[NewsArticle]:
     if not article:
@@ -87,7 +62,7 @@ async def get_stock_news(symbol: str):
     try:
         news_data = Ticker(symbol).news
         
-        if not news_data or not news_data.get("content"):
+        if not news_data or len(news_data) == 0:
             raise HTTPException(status_code=404, detail="Stock news not found")
 
         formatted_news = []
@@ -99,7 +74,6 @@ async def get_stock_news(symbol: str):
             formatted_news.append(format_news_data(article_content))
 
         return NewsResponse(data=formatted_news)
-        # return {"data": news_data}
     except HTTPException:
         # Required for properly returning error responses
         raise

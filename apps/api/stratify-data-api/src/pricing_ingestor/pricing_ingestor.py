@@ -8,12 +8,20 @@ logger = logging.getLogger(__name__)
 
 columns = ["ticker", "per", "date", "time", "open", "high", "low", "close", "volume", "openint"]
 
+csv_headers = ["<TICKER>", "<PER>", "<DATE>", "<TIME>", "<OPEN>", "<HIGH>", "<LOW>", "<CLOSE>", "<VOL>", "<OPENINT>"]
+header_mapping = dict(zip(csv_headers, columns))
+
 def data_validation(dataframe: pd.DataFrame, filepath: str):
     issues = []
 
     missing_columns = [col for col in columns if col not in dataframe.columns]
     if missing_columns:
         issues.append(f"Missing required columns: {missing_columns}")
+        return {
+            "filepath": filepath,
+            "issues": issues,
+            "is_valid": False
+        }
         
     if dataframe.empty:
         issues.append("File contains no data rows")
@@ -34,8 +42,11 @@ def data_validation(dataframe: pd.DataFrame, filepath: str):
     for col in numeric_columns:
         if not pd.api.types.is_numeric_dtype(dataframe[col]):
             issues.append(f"Column '{col}' is not numeric")
-
-    pd.to_datetime(dataframe["date"], format="%Y%m%d", errors='raise')
+            
+    try:
+        pd.to_datetime(dataframe["date"].astype(str), format="%Y%m%d", errors='raise')
+    except Exception as e:
+        issues.append(f"Invalid date format in column 'date': {str(e)}")
     
     if dataframe['ticker'].str.strip().eq('').any():
         issues.append("Column 'ticker' contains empty strings")
@@ -53,7 +64,8 @@ def ingest_data(filepath: str):
     
     try:
         df = pd.read_csv(filepath, header=0)
-        df.columns = columns
+        df = df.rename(columns=header_mapping)
+        
         validate_data = data_validation(df, filepath)
         
         if not validate_data["is_valid"]:
@@ -73,7 +85,7 @@ def ingest_data(filepath: str):
         return {
             "data": df.to_dict(orient='records'),
             "success": True,
-            }
+        }
     except Exception as err:
         logger.error(f"Error processing file {filepath}: {err}")
         return {

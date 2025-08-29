@@ -16,7 +16,7 @@ symbol_get = APIRouter()
 @symbol_get.get("/stocks/{symbol}", tags=["stocks"])
 async def get_stock(symbol: str):
     try:
-        symbol_data = Ticker(symbol).get_info()
+        symbol_data = Ticker(symbol).info
 
         if not symbol_data.get("symbol") or symbol_data.get("quoteType") == "NONE":
             raise HTTPException(status_code=404, detail="Stock details not found")
