@@ -38,8 +38,8 @@ jobs:
               run: pnpm install --frozen-lockfile
 
             # TODO: Uncomment after first PR is merged in
-            # - name: Check for Changeset
-            #   run: pnpm changeset status --since=origin/main
+            - name: Check for Changeset
+              run: pnpm changeset status --since=origin/main
 
             - name: Lint code
               run: pnpm lint
