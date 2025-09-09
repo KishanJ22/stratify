@@ -1,0 +1,117 @@
+@import url('https://fonts.googleapis.com/css2?family=Commissioner:wght@100..900&family=Kaisei+Decol:wght@400;500;700&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap');
+
+@import "tailwindcss";
+
+@config "../tailwind.config.mts";
+
+:root {
+  /* Light Mode Colors */
+  --background-light: #FAFDFC;
+  --foreground-light: #222F2C;
+  --card-light: #FFFFFF;
+  --card-foreground-light: #323D3A;
+  --border-light: #D1E8E7;
+  --input-light: #D1E8E7;
+  --sidebar-light: #F5FBFA;
+  --sidebar-foreground-light: #323D3A;
+  --sidebar-border-light: #D1E8E7;
+
+  /* Dark Mode Colors */
+  --background-dark: #343434;
+  --foreground-dark: #E2E2E2;
+  --card-dark: #202328;
+  --card-foreground-dark: #EBEBEB;
+  --border-dark: #5E5E5E;
+  --input-dark: #5E5E5E;
+  --sidebar-dark: #202328;
+  --sidebar-foreground-dark: #FFFFFF;
+  --sidebar-border-dark: #C4E8E8;
+
+  /* Color Scales (same for both modes) */
+  --primary-lightest: #E0F5F4;
+  --primary-lighter: #B3E8E6;
+  --primary-light: #80D8D6;
+  --primary-base: #2BB4B4;
+  --primary-dark: #1F8F8F;
+  --primary-darker: #156A6A;
+  --primary-darkest: #0D4545;
+  
+  --secondary-lightest: #F5FBFA;
+  --secondary-lighter: #E0F5F4;
+  --secondary-light: #CAEFED;
+  --secondary-base: #A0DFDD;
+  --secondary-dark: #7AB0AE;
+  --secondary-darker: #568180;
+  --secondary-darkest: #355252;
+  
+  --accent-lightest: #E8FAFA;
+  --accent-lighter: #C9F4F4;
+  --accent-light: #A5ECEC;
+  --accent-base: #4AC9C9;
+  --accent-dark: #3AA5A5;
+  --accent-darker: #2B8282;
+  --accent-darkest: #1D5F5F;
+  
+  --negative-lightest: #FDE8E8;
+  --negative-lighter: #F9C9C9;
+  --negative-light: #F4A5A5;
+  --negative-base: #D13C3C;
+  --negative-dark: #A72F2F;
+  --negative-darker: #7D2323;
+  --negative-darkest: #531717;
+  
+  --positive-lightest: #E8F7ED;
+  --positive-lighter: #CAEED6;
+  --positive-light: #A7E3BB;
+  --positive-base: #38A16A;
+  --positive-dark: #2C8155;
+  --positive-darker: #216140;
+  --positive-darkest: #16412B;
+  
+  --muted-lightest: #F0F9F8;
+  --muted-lighter: #D8EFED;
+  --muted-light: #BFE4E2;
+  --muted-base: #9DCFCD;
+  --muted-dark: #7AA6A4;
+  --muted-darker: #587D7C;
+  --muted-darkest: #365454;
+
+  /* Default light mode values */
+  --background: var(--background-light);
+  --foreground: var(--foreground-light);
+  --card: var(--card-light);
+  --card-foreground: var(--card-foreground-light);
+  --border: var(--border-light);
+  --input: var(--input-light);
+  --sidebar: var(--sidebar-light);
+  --sidebar-foreground: var(--sidebar-foreground-light);
+  --sidebar-border: var(--sidebar-border-light);
+
+  /* Font Families */
+  --font-sans: "Commissioner", sans-serif;
+  --font-serif: "Kaisei Decol", serif;
+  --font-mono: "Source Code Pro", monospace;
+}
+
+.dark {
+  /* Dark mode overrides */
+  --background: var(--background-dark);
+  --foreground: var(--foreground-dark);
+  --card: var(--card-dark);
+  --card-foreground: var(--card-foreground-dark);
+  --border: var(--border-dark);
+  --input: var(--input-dark);
+  --sidebar: var(--sidebar-dark);
+  --sidebar-foreground: var(--sidebar-foreground-dark);
+  --sidebar-border: var(--sidebar-border-dark);
+}
+
+/* Smooth transitions */
+* {
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+}
