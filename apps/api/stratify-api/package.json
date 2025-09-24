@@ -21,8 +21,19 @@
         "test:ui": "vitest --ui --coverage",
         "test:coverage": "vitest run --coverage",
         "test:watch": "vitest --watch",
-        "generate-types": "kanel -c ./src/database/kanel.js",
+        "generate-types": "pnpm kysely-codegen",
         "generate-spec": "cross-env NODE_ENV=build tsx src/generate-openapi-spec.ts"
+    },
+    "kysely-codegen": {
+        "dialect": "postgres",
+        "camelCase": true,
+        "envFile": ".env",
+        "defaultSchemas": [
+            "stratify"
+        ],
+        "outFile": "./src/database/types.ts",
+        "runtimeEnums": false,
+        "typeOnlyImports": true
     },
     "author": "Kishan Jethwa",
     "license": "ISC",
@@ -41,7 +52,6 @@
         "dotenv": "^16.6.1",
         "fastify": "^5.4.0",
         "fastify-plugin": "^5.0.1",
-        "kanel": "^3.14.1",
         "kysely": "^0.28.7",
         "pg": "^8.16.3",
         "pino": "^9.7.0",
@@ -61,7 +71,7 @@
         "eslint-plugin-prettier": "^5.5.3",
         "eslint-plugin-promise": "^6.6.0",
         "globals": "^15.15.0",
-        "kanel-kysely": "^0.6.1",
+        "kysely-codegen": "^0.19.0",
         "kysely-ctl": "^0.19.0",
         "pino-pretty": "^11.3.0",
         "prettier": "3.3.3",
