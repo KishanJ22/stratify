@@ -23,6 +23,7 @@ const createStocksTable = (db: Kysely<any>) =>
 
 // `any` is required here since migrations should be frozen in time. alternatively, keep a "snapshot" db interface.
 export async function up(db: Kysely<any>): Promise<void> {
+    await db.schema.createSchema("stratify").ifNotExists().execute();
     await createCountriesTable(db).execute();
     await createStocksTable(db).execute();
 }
@@ -40,4 +41,6 @@ export async function down(db: Kysely<any>): Promise<void> {
         .dropTable("countries")
         .ifExists()
         .execute();
+
+    await db.schema.dropSchema("stratify").ifExists().execute();
 }
