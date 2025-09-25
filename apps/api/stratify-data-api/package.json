@@ -1,6 +1,6 @@
 {
     "name": "@stratify/stratify-data-api",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "description": "A REST API for accessing stock market data powered by Yahoo Finance and Stooq.",
     "scripts": {
         "dev": "uv run uvicorn src.main:app --host 0.0.0.0 --port 2200 --reload",
