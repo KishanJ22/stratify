@@ -29,11 +29,19 @@ const configSchema = Type.Object({
             Type.Literal("production"),
         ]),
     }),
+    auth: Type.Object({
+        baseUrl: Type.String({ minLength: 1 }),
+        secret: Type.String({ minLength: 1 }),
+    }),
 });
 
 type ConfigSchema = Static<typeof configSchema>;
 
 export const config: ConfigSchema = {
+    auth: {
+        baseUrl: process.env.BETTER_AUTH_BASE_URL || "http://localhost:2000",
+        secret: process.env.BETTER_AUTH_SECRET!,
+    },
     database: {
         host: process.env.DATABASE_HOST!,
         port: Number(process.env.DATABASE_PORT!),
