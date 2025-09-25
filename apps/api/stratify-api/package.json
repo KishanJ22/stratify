@@ -1,0 +1,83 @@
+{
+    "name": "@stratify/stratify-api",
+    "version": "0.0.1",
+    "description": "",
+    "type": "module",
+    "main": "dist/app.js",
+    "private": true,
+    "files": [
+        "dist",
+        "docs"
+    ],
+    "scripts": {
+        "prebuild": "pnpm generate-spec",
+        "build": "tsc",
+        "predev": "pnpm generate-spec",
+        "dev": "tsx --watch src/app.ts",
+        "prod": "node dist/app.js",
+        "lint": "eslint ./src",
+        "lint:fix": "eslint ./src --fix",
+        "test": "vitest run",
+        "test:ui": "vitest --ui --coverage",
+        "test:coverage": "vitest run --coverage",
+        "test:watch": "vitest --watch",
+        "generate-types": "pnpm kysely-codegen",
+        "generate-spec": "cross-env NODE_ENV=build tsx src/generate-openapi-spec.ts"
+    },
+    "kysely-codegen": {
+        "dialect": "postgres",
+        "camelCase": true,
+        "envFile": ".env",
+        "defaultSchemas": [
+            "stratify"
+        ],
+        "outFile": "./src/database/types.ts",
+        "runtimeEnums": false,
+        "typeOnlyImports": true
+    },
+    "author": "Kishan Jethwa",
+    "license": "ISC",
+    "dependencies": {
+        "@fastify/autoload": "^6.3.1",
+        "@fastify/cors": "^10.1.0",
+        "@fastify/formbody": "^8.0.2",
+        "@fastify/helmet": "^13.0.1",
+        "@fastify/jwt": "^9.1.0",
+        "@fastify/request-context": "^6.2.1",
+        "@fastify/sensible": "^6.0.3",
+        "@fastify/swagger": "^9.5.1",
+        "@fastify/type-provider-typebox": "^5.2.0",
+        "@sinclair/typebox": "^0.33.22",
+        "dayjs": "^1.11.13",
+        "dotenv": "^16.6.1",
+        "fastify": "^5.4.0",
+        "fastify-plugin": "^5.0.1",
+        "kysely": "^0.28.7",
+        "pg": "^8.16.3",
+        "pino": "^9.7.0",
+        "pino-loki": "^2.6.0",
+        "tsx": "^4.20.3"
+    },
+    "devDependencies": {
+        "@eslint/js": "^9.32.0",
+        "@types/pg": "^8.15.4",
+        "@vitest/coverage-istanbul": "3.2.4",
+        "@vitest/ui": "3.2.4",
+        "cross-env": "^7.0.3",
+        "eslint": "^9.32.0",
+        "eslint-config-prettier": "^10.1.8",
+        "eslint-plugin-import": "^2.32.0",
+        "eslint-plugin-n": "^16.6.2",
+        "eslint-plugin-prettier": "^5.5.3",
+        "eslint-plugin-promise": "^6.6.0",
+        "globals": "^15.15.0",
+        "kysely-codegen": "^0.19.0",
+        "kysely-ctl": "^0.19.0",
+        "pino-pretty": "^11.3.0",
+        "prettier": "3.3.3",
+        "prettier-eslint": "^16.4.2",
+        "typescript": "^5.8.3",
+        "typescript-eslint": "^8.38.0",
+        "vitest": "3.2.4"
+    }
+}
