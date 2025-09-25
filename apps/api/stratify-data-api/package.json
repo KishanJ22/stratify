@@ -1,5 +1,5 @@
 {
-    "name": "stratify-data-api",
+    "name": "@stratify/stratify-data-api",
     "version": "0.2.0",
     "description": "A REST API for accessing stock market data powered by Yahoo Finance and Stooq.",
     "scripts": {

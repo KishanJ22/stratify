@@ -1,5 +1,5 @@
 ---
-"stratify-api": minor
+"@stratify/stratify-api": minor
 ---
 
 Initial setup for Fastify API
