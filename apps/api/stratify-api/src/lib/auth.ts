@@ -3,6 +3,7 @@ import { bearer, jwt, openAPI, twoFactor, username } from "better-auth/plugins";
 import { pool } from "../database/db.js";
 import config from "../config.js";
 import logger from "../logger.js";
+import { sendMail } from "./mail.js";
 
 export const auth = betterAuth({
     appName: "Stratify",
@@ -12,6 +13,17 @@ export const auth = betterAuth({
     secret: config.auth.secret,
     emailAndPassword: {
         enabled: true,
+        requireEmailVerification: true,
+    },
+    emailVerification: {
+        sendVerificationEmail: async ({ user, url }) => {
+            await sendMail({
+                to: user.email,
+                subject: "Verify your email for Stratify",
+                html: `<p>Please verify your email by clicking the following link:</p><p><a href="${url}">${url}</a></p>`,
+            });
+        },
+        sendOnSignUp: true,
     },
     plugins: [
         jwt({
