@@ -1,0 +1,21 @@
+meta {
+  name: Generate new backup codes for two-factor authentication
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}/two-factor/generate-backup-codes
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "password": ""
+  }
+}

@@ -1,0 +1,17 @@
+meta {
+  name: post /is-username-available
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/is-username-available
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "username": "testuser"
+  }
+}

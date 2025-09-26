@@ -1,0 +1,16 @@
+meta {
+  name: Callback to complete user deletion with verification token
+  type: http
+  seq: 22
+}
+
+get {
+  url: {{baseUrl}}/delete-user/callback
+  body: none
+  auth: inherit
+}
+
+params:query {
+  ~token: 
+  ~callbackURL: 
+}

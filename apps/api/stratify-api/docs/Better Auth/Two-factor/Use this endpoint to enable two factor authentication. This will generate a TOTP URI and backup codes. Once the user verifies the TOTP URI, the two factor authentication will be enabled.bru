@@ -1,0 +1,22 @@
+meta {
+  name: Use this endpoint to enable two factor authentication. This will generate a TOTP URI and backup codes. Once the user verifies the TOTP URI, the two factor authentication will be enabled.
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{baseUrl}}/two-factor/enable
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "password": "",
+    "issuer": ""
+  }
+}

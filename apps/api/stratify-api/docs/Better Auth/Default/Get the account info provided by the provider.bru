@@ -1,0 +1,17 @@
+meta {
+  name: Get the account info provided by the provider
+  type: http
+  seq: 26
+}
+
+post {
+  url: {{baseUrl}}/account-info
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "accountId": ""
+  }
+}
