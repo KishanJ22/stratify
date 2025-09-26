@@ -1,3 +1,4 @@
+import { getFromStore } from "./plugins/localStorage.js";
 import { pino } from "pino";
 import "dotenv/config";
 
@@ -29,7 +30,7 @@ export const loggerVariant = {
             options: {
                 host: process.env.LOKI_URL!,
                 labels: {
-                    application: "Pitlane API",
+                    application: "Stratify API",
                     environment: process.env.ENVIRONMENT!,
                 },
                 basicAuth: {
@@ -51,6 +52,15 @@ const environment = (process.env.ENVIRONMENT ??
 
 const logger = pino({
     ...loggerVariant[environment],
+    mixin: () => {
+        const requestId = getFromStore("requestId");
+        const user = getFromStore("user") || undefined;
+
+        return {
+            requestId,
+            user,
+        };
+    },
 });
 
 export default logger;
