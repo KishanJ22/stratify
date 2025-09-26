@@ -39,7 +39,7 @@ type ConfigSchema = Static<typeof configSchema>;
 
 export const config: ConfigSchema = {
     auth: {
-        baseUrl: process.env.BETTER_AUTH_BASE_URL || "http://localhost:2000",
+        baseUrl: process.env.BETTER_AUTH_BASE_URL!,
         secret: process.env.BETTER_AUTH_SECRET!,
     },
     database: {
