@@ -1,16 +1,28 @@
 import { requestContext, RequestContextData } from "@fastify/request-context";
 import { FastifyInstance } from "fastify";
 import fp from "fastify-plugin";
+import { decodeToken } from "../utils/decodeToken.js";
 
 async function localStorage(fastify: FastifyInstance) {
-    fastify.addHook("onRequest", (request, _reply, done) => {
+    fastify.addHook("onRequest", async (request, _reply) => {
         const store = request.requestContext;
+        const authorization = request.headers["authorization"];
 
         if (store) {
             store.set("requestId", request.id);
-        }
+            store.set("user", null);
 
-        done();
+            if (
+                authorization &&
+                !request.url.includes("/auth/") &&
+                authorization.startsWith("Bearer ")
+            ) {
+                const userDetails = await decodeToken(
+                    authorization.split(" ")[1],
+                );
+                store.set("user", userDetails);
+            }
+        }
     });
 }
 
