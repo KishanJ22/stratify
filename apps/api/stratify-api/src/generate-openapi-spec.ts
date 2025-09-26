@@ -6,6 +6,7 @@ import fastifySwagger from "@fastify/swagger";
 import { openapi } from "./config.js";
 import fastifyFormbody from "@fastify/formbody";
 import { fileURLToPath } from "url";
+import { auth } from "./lib/auth.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const docsDir = join(__dirname, "../docs");
@@ -28,9 +29,16 @@ await app.register(autoload, {
 await app.ready();
 
 const openapiSpec = app.swagger();
+const betterAuthSpec = await auth.api.generateOpenAPISchema();
+
 const apiSpec = JSON.stringify(openapiSpec, undefined, 2);
+const betterAuthApiSpec = JSON.stringify(betterAuthSpec, undefined, 2);
 
 await writeFile(join(docsDir, "openapi.json"), apiSpec, {
+    flag: "w+",
+});
+
+await writeFile(join(docsDir, "better-auth-openapi.json"), betterAuthApiSpec, {
     flag: "w+",
 });
 
