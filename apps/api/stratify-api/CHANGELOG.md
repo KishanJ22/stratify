@@ -1,5 +1,13 @@
 # @stratify/stratify-api
 
+## 0.2.0
+
+### Minor Changes
+
+- 9d4ddbe: - Add authentication with BetterAuth
+    - Add utility to send emails
+    - Update request context to include user details if an auth token is present
+
 ## 0.1.0
 
 ### Minor Changes
