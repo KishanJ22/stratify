@@ -1,0 +1,22 @@
+meta {
+  name: Verify two factor OTP
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/two-factor/verify-otp
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "code": "",
+    "trustDevice": false
+  }
+}

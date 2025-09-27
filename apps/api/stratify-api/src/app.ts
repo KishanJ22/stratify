@@ -11,10 +11,13 @@ import fastifySensible from "@fastify/sensible";
 import fastifyHelmet from "@fastify/helmet";
 import logger from "./logger.js";
 import fastifyRequestContext from "@fastify/request-context";
+import authRoutes from "./routes/auth.js";
+import { UserDetails } from "./utils/decodeToken.js";
 
 declare module "@fastify/request-context" {
     interface RequestContextData {
         requestId: string;
+        user: UserDetails | null;
     }
 }
 
@@ -40,6 +43,8 @@ await app.register(autoload, {
     ignoreFilter: /.*\.test\..*$/,
 });
 
+await app.register(authRoutes);
+
 await app.register(autoload, {
     dir: join(__dirname, "routes"),
     dirNameRoutePrefix: false,
@@ -49,17 +54,18 @@ await app.register(autoload, {
 });
 
 app.setNotFoundHandler((request, reply) => {
-    app.log.warn(
-        { requestId: request.id },
-        `Route not found: ${request.method} ${request.url}`,
-    );
+    logger.warn(`Route not found: ${request.method} ${request.url}`);
+
     return reply
         .status(404)
         .send({ message: `Route not found: ${request.method} ${request.url}` });
 });
 
 app.setErrorHandler((error, request, reply) => {
-    app.log.error(`Error handling request: ${request.method} ${request.url}`);
+    logger.error(
+        { err: error },
+        `Error in request: ${request.method} ${request.url}`,
+    );
 
     if (error.validation) {
         return reply

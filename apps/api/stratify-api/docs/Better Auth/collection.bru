@@ -1,0 +1,13 @@
+meta {
+  name: Better Auth
+}
+
+auth {
+  mode: apikey
+}
+
+auth:apikey {
+  key: apiKeyCookie
+  value: {{apiKey}}
+  placement: header
+}

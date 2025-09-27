@@ -3,12 +3,15 @@ import FastifyFormBody from "@fastify/formbody";
 import autoload from "@fastify/autoload";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
+import authRoutes from "../routes/auth.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const mockApp: FastifyInstance = fastify();
 
 mockApp.register(FastifyFormBody);
+
+await mockApp.register(authRoutes);
 
 await mockApp.register(autoload, {
     dir: join(__dirname, "../plugins"),

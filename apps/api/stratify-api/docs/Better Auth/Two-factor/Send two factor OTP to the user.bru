@@ -1,0 +1,11 @@
+meta {
+  name: Send two factor OTP to the user
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/two-factor/send-otp
+  body: none
+  auth: inherit
+}

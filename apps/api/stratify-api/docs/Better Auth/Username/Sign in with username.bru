@@ -1,0 +1,20 @@
+meta {
+  name: Sign in with username
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/sign-in/username
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "username": "testuser",
+    "password": "testuserabc123",
+    "rememberMe": false,
+    "callbackURL": ""
+  }
+}

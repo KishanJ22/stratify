@@ -1,0 +1,17 @@
+meta {
+  name: Use this endpoint to get the TOTP URI
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/two-factor/get-totp-uri
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "password": ""
+  }
+}

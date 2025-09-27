@@ -1,0 +1,23 @@
+meta {
+  name: Verify a backup code for two-factor authentication
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/two-factor/verify-backup-code
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "code": "",
+    "disableSession": false,
+    "trustDevice": false
+  }
+}

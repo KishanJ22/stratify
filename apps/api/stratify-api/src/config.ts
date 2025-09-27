@@ -29,11 +29,25 @@ const configSchema = Type.Object({
             Type.Literal("production"),
         ]),
     }),
+    auth: Type.Object({
+        baseUrl: Type.String({ minLength: 1 }),
+        secret: Type.String({ minLength: 1 }),
+    }),
+    mail: Type.Object({
+        host: Type.String({ minLength: 1 }),
+        port: Type.Number({ minimum: 1 }),
+        user: Type.String({ minLength: 1 }),
+        password: Type.String({ minLength: 1 }),
+    }),
 });
 
 type ConfigSchema = Static<typeof configSchema>;
 
 export const config: ConfigSchema = {
+    auth: {
+        baseUrl: process.env.BETTER_AUTH_BASE_URL!,
+        secret: process.env.BETTER_AUTH_SECRET!,
+    },
     database: {
         host: process.env.DATABASE_HOST!,
         port: Number(process.env.DATABASE_PORT!),
@@ -47,6 +61,12 @@ export const config: ConfigSchema = {
         port: Number(process.env.PORT) || 2000,
         environment: (process.env
             .ENVIRONMENT as ConfigSchema["server"]["environment"])!,
+    },
+    mail: {
+        host: process.env.MAIL_SERVER_HOST!,
+        port: Number(process.env.MAIL_SERVER_PORT!),
+        user: process.env.MAIL_SERVER_USER!,
+        password: process.env.MAIL_SERVER_PASSWORD!,
     },
 };
 

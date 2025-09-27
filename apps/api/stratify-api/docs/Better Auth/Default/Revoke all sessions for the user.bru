@@ -1,0 +1,15 @@
+meta {
+  name: Revoke all sessions for the user
+  type: http
+  seq: 18
+}
+
+post {
+  url: {{baseUrl}}/revoke-sessions
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {}
+}
