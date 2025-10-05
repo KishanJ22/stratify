@@ -21,8 +21,13 @@
         "test:ui": "vitest --ui --coverage",
         "test:coverage": "vitest run --coverage",
         "test:watch": "vitest --watch",
-        "generate-types": "pnpm kysely-codegen",
-        "generate-spec": "cross-env NODE_ENV=build tsx src/generate-openapi-spec.ts"
+        "generate-spec": "cross-env NODE_ENV=build tsx src/generate-openapi-spec.ts",
+        "db:typegen": "pnpm kysely-codegen",
+        "db:migrate-latest": "pnpm kysely migrate:latest",
+        "db:migrate-up": "pnpm kysely migrate:up",
+        "db:migrate-down": "pnpm kysely migrate:down",
+        "db:migrate-list": "pnpm kysely migrate:list",
+        "db:create-migration": "pnpm kysely migrate:make"
     },
     "kysely-codegen": {
         "dialect": "postgres",

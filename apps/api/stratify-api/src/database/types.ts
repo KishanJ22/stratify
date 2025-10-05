@@ -5,39 +5,107 @@
 
 import type { ColumnType } from "kysely";
 
-export type Generated<T> =
-    T extends ColumnType<infer S, infer I, infer U>
-        ? ColumnType<S, I | undefined, U>
-        : ColumnType<T, T | undefined, T>;
+export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>
+  ? ColumnType<S, I | undefined, U>
+  : ColumnType<T, T | undefined, T>;
 
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
 export interface Countries {
-    code: string;
-    createdAt: Generated<Timestamp>;
-    currency: string;
-    id: Generated<number>;
-    name: string;
-    threeLetterCode: string;
-    updatedAt: Generated<Timestamp>;
+  code: string;
+  createdAt: Generated<Timestamp>;
+  currency: string;
+  id: Generated<number>;
+  name: string;
+  threeLetterCode: string;
+  updatedAt: Generated<Timestamp>;
+}
+
+export interface PublicAccount {
+  accessToken: string | null;
+  accessTokenExpiresAt: Timestamp | null;
+  accountId: string;
+  createdAt: Generated<Timestamp>;
+  id: string;
+  idToken: string | null;
+  password: string | null;
+  providerId: string;
+  refreshToken: string | null;
+  refreshTokenExpiresAt: Timestamp | null;
+  scope: string | null;
+  updatedAt: Timestamp;
+  userId: string;
+}
+
+export interface PublicJwks {
+  createdAt: Timestamp;
+  id: string;
+  privateKey: string;
+  publicKey: string;
+}
+
+export interface PublicSession {
+  createdAt: Generated<Timestamp>;
+  expiresAt: Timestamp;
+  id: string;
+  ipAddress: string | null;
+  token: string;
+  updatedAt: Timestamp;
+  userAgent: string | null;
+  userId: string;
+}
+
+export interface PublicTwoFactor {
+  backupCodes: string;
+  id: string;
+  secret: string;
+  userId: string;
+}
+
+export interface PublicUser {
+  createdAt: Generated<Timestamp>;
+  displayUsername: string | null;
+  email: string;
+  emailVerified: boolean;
+  id: string;
+  image: string | null;
+  name: string;
+  twoFactorEnabled: boolean | null;
+  updatedAt: Generated<Timestamp>;
+  username: string | null;
+}
+
+export interface PublicVerification {
+  createdAt: Generated<Timestamp>;
+  expiresAt: Timestamp;
+  id: string;
+  identifier: string;
+  updatedAt: Generated<Timestamp>;
+  value: string;
 }
 
 export interface Stocks {
-    countryId: number;
-    createdAt: Generated<Timestamp>;
-    name: string;
-    symbol: string;
-    type: string;
-    updatedAt: Generated<Timestamp>;
+  countryId: number;
+  createdAt: Generated<Timestamp>;
+  name: string;
+  symbol: string;
+  type: string;
+  updatedAt: Generated<Timestamp>;
 }
 
 export interface StratifyMigrationsDbMigrations {
-    name: string;
-    timestamp: string;
+  name: string;
+  timestamp: string;
 }
 
 export interface DB {
-    countries: Countries;
-    stocks: Stocks;
-    "stratifyMigrations.dbMigrations": StratifyMigrationsDbMigrations;
+  countries: Countries;
+  "public.account": PublicAccount;
+  "public.jwks": PublicJwks;
+  "public.session": PublicSession;
+  "public.twoFactor": PublicTwoFactor;
+  "public.user": PublicUser;
+  "public.verification": PublicVerification;
+  stocks: Stocks;
+  "stratifyMigrations.dbMigrations": StratifyMigrationsDbMigrations;
 }
