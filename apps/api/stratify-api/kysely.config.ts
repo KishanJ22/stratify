@@ -24,7 +24,10 @@ export default defineConfig({
         migrationTableName: "db_migrations",
         getMigrationPrefix: () => {
             const date = new Date();
-            const formattedDate = date.toISOString().split(".")[0];
+            const formattedDate = date
+                .toISOString()
+                .replace(/[-:T]/g, "")
+                .slice(0, 13); // YYYYMMDDHHMM
 
             return `${formattedDate}_`;
         },
