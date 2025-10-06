@@ -1,5 +1,11 @@
 # @stratify/stratify-api
 
+## 0.2.1
+
+### Patch Changes
+
+- 8f979ac: Fix date formatting in db migration file generator
+
 ## 0.2.0
 
 ### Minor Changes
