@@ -4,11 +4,11 @@ import { createAuthClient } from "better-auth/react";
 
 export const useAuthClient = () => {
     const {
-        envVariables: { authBaseUrl },
+        envVariables: { authProxyUrl },
     } = useEnvironmentContext();
 
     return createAuthClient({
-        baseUrl: authBaseUrl,
+        baseUrl: authProxyUrl,
         basePath: "/api/auth",
         plugins: [username(), jwt()],
     });

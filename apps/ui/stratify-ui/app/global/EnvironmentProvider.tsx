@@ -3,8 +3,8 @@
 import { createContext, useContext, useMemo } from "react";
 
 export interface Environment {
-    apiBaseUrl?: string;
-    authBaseUrl?: string;
+    apiProxyUrl: string;
+    authProxyUrl: string;
 }
 
 export const EnvironmentContext = createContext<{
@@ -17,15 +17,15 @@ interface EnvironmentProviderProps extends Environment {
 
 export const EnvironmentProvider = ({
     children,
-    apiBaseUrl,
-    authBaseUrl,
+    apiProxyUrl,
+    authProxyUrl,
 }: EnvironmentProviderProps) => {
     const envVariables = useMemo(
         () => ({
-            apiBaseUrl,
-            authBaseUrl,
+            apiProxyUrl,
+            authProxyUrl,
         }),
-        [apiBaseUrl, authBaseUrl],
+        [apiProxyUrl, authProxyUrl],
     );
 
     const environmentProviderValues = {

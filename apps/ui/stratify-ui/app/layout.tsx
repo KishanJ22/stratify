@@ -12,16 +12,16 @@ interface RootLayoutProps {
 }
 
 export default function RootLayout({ children }: RootLayoutProps) {
-    const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
-    const authBaseUrl = process.env.NEXT_PUBLIC_AUTH_BASE_URL;
+    const apiProxyUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+    const authProxyUrl = process.env.NEXT_PUBLIC_AUTH_BASE_URL || "";
 
     return (
         <html lang="en">
             <head />
             <body className="antialiased font-sans" id="root">
                 <Providers
-                    apiBaseUrl={apiBaseUrl || ""}
-                    authBaseUrl={authBaseUrl || ""}
+                    apiProxyUrl={apiProxyUrl}
+                    authProxyUrl={authProxyUrl}
                 >
                     {children}
                 </Providers>

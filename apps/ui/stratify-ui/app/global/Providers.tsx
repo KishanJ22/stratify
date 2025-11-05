@@ -6,19 +6,22 @@ import { getQueryClient } from "./get-query-client";
 import { PropsWithChildren } from "react";
 
 interface Providers {
-    apiBaseUrl: string;
-    authBaseUrl: string;
+    apiProxyUrl: string;
+    authProxyUrl: string;
 }
 
 export default function Providers({
     children,
-    apiBaseUrl,
-    authBaseUrl,
+    apiProxyUrl,
+    authProxyUrl,
 }: PropsWithChildren<Providers>) {
     const queryClient = getQueryClient();
 
     return (
-        <EnvironmentProvider apiBaseUrl={apiBaseUrl} authBaseUrl={authBaseUrl}>
+        <EnvironmentProvider
+            apiProxyUrl={apiProxyUrl}
+            authProxyUrl={authProxyUrl}
+        >
             <QueryClientProvider client={queryClient}>
                 {children}
             </QueryClientProvider>
