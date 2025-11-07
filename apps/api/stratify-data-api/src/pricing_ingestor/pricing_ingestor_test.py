@@ -7,7 +7,7 @@ from src.pricing_ingestor.pricing_ingestor import (
     data_validation,
     ingest_data,
     pricing_ingestor,
-    columns
+    columns,
 )
 from src.pricing_ingestor.mock_pricing_ingestor_data import valid_csv_data, invalid_csv_missing_columns
 
@@ -83,12 +83,10 @@ def test_ingest_data_invalid_file():
         os.unlink(temp_filepath)
 
 # Pricing ingestor tests
-@patch('glob.glob')
-@patch('os.path.exists')
+@patch('src.pricing_ingestor.pricing_ingestor.get_files')
 @patch('src.pricing_ingestor.pricing_ingestor.ingest_data')
-def test_pricing_ingestor_success(mock_ingest_data, mock_exists, mock_glob):
-    mock_exists.return_value = True
-    mock_glob.return_value = ['file1.txt', 'file2.txt']
+def test_pricing_ingestor_success(mock_ingest_data, mock_get_files):
+    mock_get_files.return_value = ['file1.txt', 'file2.txt']
     
     mock_ingest_data.side_effect = [
         {"success": True, "data": [{"ticker": "AAPL", "close": 151.75}]},
@@ -99,6 +97,7 @@ def test_pricing_ingestor_success(mock_ingest_data, mock_exists, mock_glob):
     
     assert len(result) == 2
     assert result[0]["ticker"] == "AAPL"
+    assert result[1]["ticker"] == "MSFT"
 
 @patch('glob.glob')
 @patch('os.path.exists')

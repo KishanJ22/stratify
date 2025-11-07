@@ -2,10 +2,9 @@ import os
 import time
 import pandas as pd
 import glob
-import logging
+from src.custom_logger import get_logger
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 columns = ["ticker", "per", "date", "time", "open", "high", "low", "close", "volume", "openint"]
 
@@ -130,10 +129,9 @@ def ingest_data(filepath: str):
             "error": str(err),
             "success": False,
         }
-
-def pricing_ingestor():
+        
+def get_files():
     data_folder = os.path.join(os.path.dirname(__file__), "data")
-    start_time = time.time()
 
     if not os.path.exists(data_folder):
         logger.error(f"Data folder not found: {data_folder}")
@@ -145,7 +143,12 @@ def pricing_ingestor():
     if not txt_files:
         logger.error(f"No text files found in {data_folder}")
         return []
+    
+    return txt_files    
 
+def pricing_ingestor():
+    txt_files = get_files()
+    start_time = time.time()
     result = []
     successful_files = 0
     
