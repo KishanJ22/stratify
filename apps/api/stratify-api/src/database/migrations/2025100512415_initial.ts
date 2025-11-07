@@ -1,4 +1,5 @@
 import type { Kysely } from "kysely";
+import { dropTableIfExists } from "../migration-fns.js";
 
 const createCountriesTable = (db: Kysely<any>) =>
     db.schema
@@ -30,17 +31,7 @@ export async function up(db: Kysely<any>): Promise<void> {
 
 // `any` is required here since migrations should be frozen in time. alternatively, keep a "snapshot" db interface.
 export async function down(db: Kysely<any>): Promise<void> {
-    await db.schema
-        .withSchema("stratify")
-        .dropTable("stocks")
-        .ifExists()
-        .execute();
-
-    await db.schema
-        .withSchema("stratify")
-        .dropTable("countries")
-        .ifExists()
-        .execute();
-
+    await dropTableIfExists(db, "stratify", "stocks").execute();
+    await dropTableIfExists(db, "stratify", "countries").execute();
     await db.schema.dropSchema("stratify").ifExists().execute();
 }

@@ -65,8 +65,10 @@ def test_ingest_data_success():
         os.unlink(temp_filepath)
 
 def test_ingest_data_file_not_found():
-    with pytest.raises(FileNotFoundError):
-        ingest_data("nonexistent_file.csv")
+    result = ingest_data("nonexistent_file.csv")
+    
+    assert result["success"] is False
+    assert result["error"] == "File not found"
 
 def test_ingest_data_invalid_file():
     with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False) as f:

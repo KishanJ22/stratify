@@ -1,4 +1,5 @@
 import os
+import time
 import pandas as pd
 import glob
 import logging
@@ -38,18 +39,40 @@ def data_validation(dataframe: pd.DataFrame, filepath: str):
         if null_count > 0:
             issues.append(f"Column '{col}' has {null_count} null values")
             
-    numeric_columns = ["open", "high", "low", "close", "volume", "openint"]
+    numeric_columns = ["open", "high", "low", "close", "volume"]
+    ohlc_columns = ["open", "high", "low", "close"]
     for col in numeric_columns:
         if not pd.api.types.is_numeric_dtype(dataframe[col]):
-            issues.append(f"Column '{col}' is not numeric")
+            try:
+                pd.to_numeric(dataframe[col], errors='raise')
+            except (ValueError, TypeError):
+                issues.append(f"Column '{col}' contains non-numeric values")
+            
+        if col in ohlc_columns:
+            negative_count = (dataframe[col] < 0).sum()
+            if negative_count > 0:
+                issues.append(f"Column '{col}' has {negative_count} negative values")
+                
+        if col == "high":
+            invalid_high = (dataframe["high"] < dataframe["low"]).sum()
+            if invalid_high > 0:
+                issues.append(f"Column 'high' has {invalid_high} values less than 'low'")
             
     try:
-        pd.to_datetime(dataframe["date"].astype(str), format="%Y%m%d", errors='raise')
+        dates = pd.to_datetime(dataframe["date"].astype(str), format="%Y%m%d", errors='raise')
+        today = pd.to_datetime(time.strftime("%Y-%m-%d"))
+        future_dates_count = (dates > today).sum()
+        if future_dates_count > 0:
+            issues.append(f"Column 'date' has {future_dates_count} future dates")
     except Exception as e:
         issues.append(f"Invalid date format in column 'date': {str(e)}")
     
     if dataframe['ticker'].str.strip().eq('').any():
         issues.append("Column 'ticker' contains empty strings")
+        
+    duplicates = dataframe.duplicated(subset=["ticker", "date", "time"]).sum()
+    if duplicates > 0:
+        issues.append(f"Data contains {duplicates} duplicate rows based on ['ticker', 'date', 'time']")
 
     return {
         "filepath": filepath,
@@ -60,8 +83,21 @@ def data_validation(dataframe: pd.DataFrame, filepath: str):
 def ingest_data(filepath: str):
     if not os.path.exists(filepath):
         logger.error(f"File not found: {filepath}")
-        raise FileNotFoundError(f"File not found: {filepath}")
-    
+        return {
+            "filepath": filepath,
+            "error": "File not found",
+            "success": False,
+        }
+        
+    if os.path.getsize(filepath) == 0:
+        logger.warning(f"File is empty: {filepath}")
+        return {
+            "filepath": filepath,
+            "issues": ["File is empty"],
+            "data": [],
+            "success": False,
+        }
+        
     try:
         df = pd.read_csv(filepath, header=0)
         df = df.rename(columns=header_mapping)
@@ -81,9 +117,10 @@ def ingest_data(filepath: str):
 
         # Convert date to proper format
         df["date"] = pd.to_datetime(df["date"], format="%Y%m%d", errors="raise").dt.strftime("%Y-%m-%d")
+        records = df.to_dict(orient='records')
 
         return {
-            "data": df.to_dict(orient='records'),
+            "data": records,
             "success": True,
         }
     except Exception as err:
@@ -95,13 +132,14 @@ def ingest_data(filepath: str):
         }
 
 def pricing_ingestor():
-    data_folder = os.path.dirname(os.path.realpath(__file__))
+    data_folder = os.path.join(os.path.dirname(__file__), "data")
+    start_time = time.time()
 
     if not os.path.exists(data_folder):
         logger.error(f"Data folder not found: {data_folder}")
         return []
 
-    glob_pattern = os.path.join(data_folder, "**", "test", "*.txt")
+    glob_pattern = os.path.join(data_folder, "**", "*.txt")
     txt_files = glob.glob(glob_pattern, recursive=True)
     
     if not txt_files:
@@ -112,6 +150,7 @@ def pricing_ingestor():
     successful_files = 0
     
     for filepath in txt_files:
+        
         ingestion_result = ingest_data(filepath)
         records = ingestion_result.get("data", [])
 
@@ -120,7 +159,7 @@ def pricing_ingestor():
             successful_files += 1
 
     logger.info(f"Successfully ingested {successful_files}/{len(txt_files)} files.")
-    logger.info(result[0])
+    logger.info(f"Took {time.time() - start_time:.2f} seconds to ingest data.")
     
     return result
 
