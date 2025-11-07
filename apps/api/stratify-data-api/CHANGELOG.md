@@ -1,5 +1,11 @@
 # stratify-data-api
 
+## 0.2.2
+
+### Patch Changes
+
+- d68a71e: Enhance data validation process in pricing ingestor
+
 ## 0.2.1
 
 ### Patch Changes

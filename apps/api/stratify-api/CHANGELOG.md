@@ -1,5 +1,11 @@
 # @stratify/stratify-api
 
+## 0.2.2
+
+### Patch Changes
+
+- d68a71e: Create migrations for asset_prices and currencies tables
+
 ## 0.2.1
 
 ### Patch Changes
