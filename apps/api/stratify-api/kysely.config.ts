@@ -32,4 +32,15 @@ export default defineConfig({
             return `${formattedDate}_`;
         },
     },
+    seeds: {
+        seedFolder: "src/database/seeds",
+        getSeedPrefix: () => {
+            const date = new Date();
+            const formattedDate = date
+                .toISOString()
+                .replace(/[-:T]/g, "")
+                .slice(0, 13); // YYYYMMDDHHMM
+            return `${formattedDate}_`;
+        },
+    },
 });
