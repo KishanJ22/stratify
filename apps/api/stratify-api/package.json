@@ -27,15 +27,14 @@
         "db:migrate-up": "pnpm kysely migrate:up",
         "db:migrate-down": "pnpm kysely migrate:down",
         "db:migrate-list": "pnpm kysely migrate:list",
-        "db:create-migration": "pnpm kysely migrate:make"
+        "db:migration-create": "pnpm kysely migrate:make",
+        "db:seed-create": "pnpm kysely seed:make",
+        "db:seed-run": "pnpm kysely seed:run"
     },
     "kysely-codegen": {
         "dialect": "postgres",
         "camelCase": true,
         "envFile": ".env",
-        "defaultSchemas": [
-            "stratify"
-        ],
         "outFile": "./src/database/types.ts",
         "runtimeEnums": false,
         "typeOnlyImports": true
@@ -54,10 +53,13 @@
         "@fastify/type-provider-typebox": "^5.2.0",
         "@sinclair/typebox": "^0.33.22",
         "better-auth": "^1.3.17",
+        "country-to-currency": "^2.0.2",
+        "currency-codes": "^2.2.0",
         "dayjs": "^1.11.13",
         "dotenv": "^16.6.1",
         "fastify": "^5.4.0",
         "fastify-plugin": "^5.0.1",
+        "i18n-iso-countries": "^7.14.0",
         "jose": "^6.1.0",
         "kysely": "^0.28.7",
         "nodemailer": "^7.0.6",
