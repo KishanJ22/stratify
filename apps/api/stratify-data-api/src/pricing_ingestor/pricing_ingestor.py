@@ -3,8 +3,11 @@ import time
 import pandas as pd
 import glob
 from src.custom_logger import get_logger
+from src.pricing_ingestor.write_asset_prices import write_asset_prices_to_json
+from src.pricing_ingestor.pricing_ingestor_schema import AssetPrice, PricingIngestorSuccess, PricingIngestorFailure
 
-logger = get_logger(__name__)
+
+logger = get_logger("pricing_ingestor")
 
 columns = ["ticker", "per", "date", "time", "open", "high", "low", "close", "volume", "openint"]
 
@@ -13,8 +16,10 @@ header_mapping = dict(zip(csv_headers, columns))
 
 def data_validation(dataframe: pd.DataFrame, filepath: str):
     issues = []
+    fixes = []
 
     missing_columns = [col for col in columns if col not in dataframe.columns]
+    
     if missing_columns:
         issues.append(f"Missing required columns: {missing_columns}")
         return {
@@ -33,6 +38,7 @@ def data_validation(dataframe: pd.DataFrame, filepath: str):
         }
         
     critical_columns = ["ticker", "date", "open", "high", "low", "close"]
+    
     for col in critical_columns:
         null_count = dataframe[col].isnull().sum()
         if null_count > 0:
@@ -40,6 +46,7 @@ def data_validation(dataframe: pd.DataFrame, filepath: str):
             
     numeric_columns = ["open", "high", "low", "close", "volume"]
     ohlc_columns = ["open", "high", "low", "close"]
+    
     for col in numeric_columns:
         if not pd.api.types.is_numeric_dtype(dataframe[col]):
             try:
@@ -48,15 +55,23 @@ def data_validation(dataframe: pd.DataFrame, filepath: str):
                 issues.append(f"Column '{col}' contains non-numeric values")
             
         if col in ohlc_columns:
-            negative_count = (dataframe[col] < 0).sum()
+            # Get rows where there are negative numbers
+            negative_number_mask = dataframe[col] < 0
+            negative_count = negative_number_mask.sum()
+            # Remove rows with negative numbers from the dataframe
+            dataframe = dataframe[~negative_number_mask]
             if negative_count > 0:
-                issues.append(f"Column '{col}' has {negative_count} negative values")
+                fixes.append(f"Removed {negative_count} rows with negative values in column '{col}'")
                 
         if col == "high":
-            invalid_high = (dataframe["high"] < dataframe["low"]).sum()
-            if invalid_high > 0:
-                issues.append(f"Column 'high' has {invalid_high} values less than 'low'")
-            
+            # Get rows where 'high' is less than 'low'
+            invalid_high_mask = dataframe['high'] < dataframe['low']
+            invalid_high_count = invalid_high_mask.sum()
+            # Remove invalid rows from the dataframe
+            dataframe = dataframe[~invalid_high_mask]
+            if invalid_high_count > 0:
+                fixes.append(f"Removed {invalid_high_count} rows where 'high' is less than 'low'")
+
     try:
         dates = pd.to_datetime(dataframe["date"].astype(str), format="%Y%m%d", errors='raise')
         today = pd.to_datetime(time.strftime("%Y-%m-%d"))
@@ -69,33 +84,74 @@ def data_validation(dataframe: pd.DataFrame, filepath: str):
     if dataframe['ticker'].str.strip().eq('').any():
         issues.append("Column 'ticker' contains empty strings")
         
-    duplicates = dataframe.duplicated(subset=["ticker", "date", "time"]).sum()
+    # Look for duplicate rows based on the ticker, date and time values
+    duplicate_subset = ["ticker", "date", "time"]
+    duplicates = dataframe.duplicated(subset=duplicate_subset).sum()
+    # Remove duplicate rows
+    dataframe.drop_duplicates(subset=duplicate_subset, inplace=True)
     if duplicates > 0:
-        issues.append(f"Data contains {duplicates} duplicate rows based on ['ticker', 'date', 'time']")
+        fixes.append(f"Removed {duplicates} duplicate rows based on ['ticker', 'date', 'time']")
 
     return {
         "filepath": filepath,
+        "fixes": fixes,
         "issues": issues,
         "is_valid": len(issues) == 0
     }
+    
+def split_ticker(df: pd.DataFrame, filepath: str):
+        is_currency = filepath.lower().find("currencies") != -1
+        is_cryptocurrency = filepath.lower().find("cryptocurrencies") != -1
+        
+        # Return early for currency files as they do not have country codes in tickers
+        if is_currency and not is_cryptocurrency:
+            df["country"] = "US" # TODO - Set to country code based on currency mapping
+            return
+        
+        # Get the first ticker value (format: TICKER.COUNTRY_CODE)
+        ticker = df["ticker"].iloc[0]
+        # Split the ticker by the dot to separate ticker and country code
+        split_ticker = ticker.split(".")
+        
+        if len(split_ticker) != 2:
+            logger.error(f"Invalid ticker format '{ticker}' in file {filepath}")
+            raise ValueError(f"Invalid ticker format '{ticker}' in file {filepath}")
+            
+        actual_ticker, country_code = split_ticker
+        
+        if country_code == "UK":
+            country_code = "GB" # Normalize UK to GB country code for United Kingdom
+            
+        if country_code == "V":
+            country_code = "US" # For cryptocurrencies, set country to US
+            
+        df["ticker"] = actual_ticker
+        df["country"] = country_code
+
+def remove_unnecessary_columns(df: pd.DataFrame):
+    columns_to_remove = ["per", "time", "openint"]
+    df.drop(columns=columns_to_remove, inplace=True, errors='ignore')
 
 def ingest_data(filepath: str):
     if not os.path.exists(filepath):
-        logger.error(f"File not found: {filepath}")
-        return {
-            "filepath": filepath,
-            "error": "File not found",
-            "success": False,
-        }
+        logger.error(f"Failed to ingest data from {filepath}")
+        logger.error("Reason: File not found")
+        
+        return PricingIngestorFailure(
+            filepath=filepath,
+            error="File not found",
+            success=False,
+        )
         
     if os.path.getsize(filepath) == 0:
-        logger.warning(f"File is empty: {filepath}")
-        return {
-            "filepath": filepath,
-            "issues": ["File is empty"],
-            "data": [],
-            "success": False,
-        }
+        logger.error(f"Failed to ingest data from {filepath}")
+        logger.error("Reason: File is empty")
+                
+        return PricingIngestorFailure(
+            filepath=filepath,
+            error="File is empty",
+            success=False,
+        )
         
     try:
         df = pd.read_csv(filepath, header=0)
@@ -103,32 +159,41 @@ def ingest_data(filepath: str):
         
         validate_data = data_validation(df, filepath)
         
-        if not validate_data["is_valid"]:
-            logger.error(f"Data validation failed for {filepath}: {validate_data['issues']}")
-            return {
-                "filepath": filepath,
-                "issues": validate_data['issues'],
-                "data": [],
-                "success": False,
-            }
+        if validate_data.get("is_valid") is False:
+            logger.error(f"Failed to ingest data from {filepath}")
+            for issue in validate_data.get("issues", []):
+                logger.error(f"Issue: {issue}")
+            
+            return PricingIngestorFailure(
+                filepath=filepath,
+                error="Data validation failed",
+                success=False,
+            )
             
         df = df[columns]
+        
+        split_ticker(df, filepath)
+        remove_unnecessary_columns(df)
 
-        # Convert date to proper format
+        # Convert date to the correct format
         df["date"] = pd.to_datetime(df["date"], format="%Y%m%d", errors="raise").dt.strftime("%Y-%m-%d")
         records = df.to_dict(orient='records')
+        
+        if validate_data.get("fixes"):
+            logger.info(f"Data fixes applied for {filepath}:")
+            for fix in validate_data.get("fixes"):
+                logger.info(fix)
 
-        return {
-            "data": records,
-            "success": True,
-        }
+        return PricingIngestorSuccess(
+            data=[AssetPrice(**record) for record in records],
+            success=True,
+        )
     except Exception as err:
-        logger.error(f"Error processing file {filepath}: {err}")
-        return {
-            "filepath": filepath,
-            "error": str(err),
-            "success": False,
-        }
+        return PricingIngestorFailure(
+            filepath=filepath,
+            error=str(err),
+            success=False,
+        )
         
 def get_files():
     data_folder = os.path.join(os.path.dirname(__file__), "data")
@@ -149,22 +214,21 @@ def get_files():
 def pricing_ingestor():
     txt_files = get_files()
     start_time = time.time()
-    result = []
     successful_files = 0
     
     for filepath in txt_files:
-        
         ingestion_result = ingest_data(filepath)
-        records = ingestion_result.get("data", [])
-
-        if records:
-            result.extend(records)
+        if ingestion_result.success is True:
+            records = ingestion_result.data
+            ticker_name, country_code = records[0].ticker, records[0].country
+            write_asset_prices_to_json(records, f"asset_prices_{ticker_name.lower()}_{country_code.lower()}")
             successful_files += 1
-
+        else:
+            if ingestion_result.error:
+                logger.error(f"Error details: {ingestion_result.error}")
+    
     logger.info(f"Successfully ingested {successful_files}/{len(txt_files)} files.")
     logger.info(f"Took {time.time() - start_time:.2f} seconds to ingest data.")
-    
-    return result
 
 if __name__ == "__main__":
     pricing_ingestor()
