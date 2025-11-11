@@ -60,9 +60,9 @@ def test_ingest_data_success():
     try:
         result = ingest_data(temp_filepath)
         assert result.success is True
-        assert len(result.data) == 2
-        assert result.data[0].ticker == "AAPL"
-        assert result.data[0].country == "US"
+        assert len(result.data.assetPriceList) == 2
+        assert result.data.ticker == "AAPL"
+        assert result.data.country == "US"
     finally:
         os.unlink(temp_filepath)
 
@@ -93,54 +93,54 @@ def test_pricing_ingestor_success(mock_ingest_data, mock_get_files):
     
     mock_ingest_data.side_effect = [
      PricingIngestorSuccess(
-         success=True,
-         data=[
-            {
-                "ticker": "USB",
-                "country": "US",
-                "date": "2025-11-04",
-                "open": 46.43,
-                "high": 46.985,
-                "low": 46.155,
-                "close": 46.43,
-                "volume": 7204300.0
-            },
-            {
-                "ticker": "USB",
-                "country": "US",
-                "date": "2025-11-05",
-                "open": 46.475,
-                "high": 47.0061,
-                "low": 46.015,
-                "close": 46.74,
-                "volume": 5577193.0
-            }
-         ]
+        success=True,
+        data={
+            "ticker": "USB",
+            "country": "US",
+            "assetPriceList": [
+                {
+                    "date": "2025-11-04",
+                    "open": 46.43,
+                    "high": 46.985,
+                    "low": 46.155,
+                    "close": 46.43,
+                    "volume": 7204300.0
+                },
+                {
+                    "date": "2025-11-05",
+                    "open": 46.475,
+                    "high": 47.0061,
+                    "low": 46.015,
+                    "close": 46.74,
+                    "volume": 5577193.0
+                }
+            ]
+        }
      ),
     PricingIngestorSuccess(
         success=True,
-        data=[
-            {
-                "ticker": "MSFT",
-                "country": "US",
-                "date": "2025-11-04",
-                "open": 330.00,
-                "high": 335.00,
-                "low": 329.00,
-                "close": 334.00,
-                "volume": 2000000.0
-            },
-            {
-                "ticker": "MSFT",
-                "country": "US",
-                "date": "2025-11-05",
-                "open": 334.50,
-                "high": 338.00,
-                "low": 333.00,
-                "close": 337.00,
-                "volume": 1800000.0
-            }
-        ]
+        data={
+            "ticker": "MSFT",
+            "country": "US",
+            "assetPriceList": [
+                {
+                    "date": "2025-11-04",
+                    "open": 330.00,
+                    "high": 335.00,
+                    "low": 329.00,
+                    "close": 334.00,
+                    "volume": 2000000.0
+                },
+                {
+                    "date": "2025-11-05",
+                    "open": 334.50,
+                    "high": 338.00,
+                    "low": 333.00,
+                    "close": 337.00,
+                    "volume": 1800000.0
+                }
+            ]
+        }
     )
     ]
     
