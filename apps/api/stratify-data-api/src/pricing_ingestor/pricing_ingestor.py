@@ -4,14 +4,13 @@ import pandas as pd
 import glob
 from src.custom_logger import get_logger
 from src.pricing_ingestor.write_asset_prices import write_asset_prices_to_json
-from src.pricing_ingestor.pricing_ingestor_schema import AssetPrice, PricingIngestorSuccess, PricingIngestorFailure
-
+from src.pricing_ingestor.pricing_ingestor_schema import Asset, AssetPrice, PricingIngestorSuccess, PricingIngestorFailure
 
 logger = get_logger("pricing_ingestor")
 
 columns = ["ticker", "per", "date", "time", "open", "high", "low", "close", "volume", "openint"]
-
 csv_headers = ["<TICKER>", "<PER>", "<DATE>", "<TIME>", "<OPEN>", "<HIGH>", "<LOW>", "<CLOSE>", "<VOL>", "<OPENINT>"]
+
 header_mapping = dict(zip(csv_headers, columns))
 
 def data_validation(dataframe: pd.DataFrame, filepath: str):
@@ -99,44 +98,41 @@ def data_validation(dataframe: pd.DataFrame, filepath: str):
         "is_valid": len(issues) == 0
     }
     
-def split_ticker(df: pd.DataFrame, filepath: str):
+def split_ticker(df: pd.DataFrame, filepath: str) -> tuple[str, str]:
         is_currency = filepath.lower().find("currencies") != -1
         is_cryptocurrency = filepath.lower().find("cryptocurrencies") != -1
-        
-        # Return early for currency files as they do not have country codes in tickers
-        if is_currency and not is_cryptocurrency:
-            df["country"] = "US" # TODO - Set to country code based on currency mapping
-            return
-        
+       
         # Get the first ticker value (format: TICKER.COUNTRY_CODE)
         ticker = df["ticker"].iloc[0]
         # Split the ticker by the dot to separate ticker and country code
         split_ticker = ticker.split(".")
         
+        # Return early for currency files as they do not have country codes in tickers
+        if is_currency and not is_cryptocurrency:
+            country_code = "US" # TODO - Set to country code based on currency mapping
+            return ticker, country_code
+        
         if len(split_ticker) != 2:
-            logger.error(f"Invalid ticker format '{ticker}' in file {filepath}")
             raise ValueError(f"Invalid ticker format '{ticker}' in file {filepath}")
             
-        actual_ticker, country_code = split_ticker
+        ticker, country_code = split_ticker
         
         if country_code == "UK":
             country_code = "GB" # Normalize UK to GB country code for United Kingdom
             
         if country_code == "V":
             country_code = "US" # For cryptocurrencies, set country to US
-            
-        df["ticker"] = actual_ticker
-        df["country"] = country_code
+        
+        return ticker, country_code
 
+# Remove all columns except for the OHLCV columns
 def remove_unnecessary_columns(df: pd.DataFrame):
-    columns_to_remove = ["per", "time", "openint"]
+    columns_to_remove = ["ticker", "per", "time", "openint"]
     df.drop(columns=columns_to_remove, inplace=True, errors='ignore')
 
 def ingest_data(filepath: str):
     if not os.path.exists(filepath):
         logger.error(f"Failed to ingest data from {filepath}")
-        logger.error("Reason: File not found")
-        
         return PricingIngestorFailure(
             filepath=filepath,
             error="File not found",
@@ -145,8 +141,6 @@ def ingest_data(filepath: str):
         
     if os.path.getsize(filepath) == 0:
         logger.error(f"Failed to ingest data from {filepath}")
-        logger.error("Reason: File is empty")
-                
         return PricingIngestorFailure(
             filepath=filepath,
             error="File is empty",
@@ -171,8 +165,8 @@ def ingest_data(filepath: str):
             )
             
         df = df[columns]
-        
-        split_ticker(df, filepath)
+
+        ticker, country = split_ticker(df, filepath)
         remove_unnecessary_columns(df)
 
         # Convert date to the correct format
@@ -183,9 +177,15 @@ def ingest_data(filepath: str):
             logger.info(f"Data fixes applied for {filepath}:")
             for fix in validate_data.get("fixes"):
                 logger.info(fix)
+                
+        asset = Asset(
+            ticker=ticker,
+            country=country,
+            assetPriceList=[AssetPrice(**record) for record in records]
+        )
 
         return PricingIngestorSuccess(
-            data=[AssetPrice(**record) for record in records],
+            data=asset,
             success=True,
         )
     except Exception as err:
@@ -203,13 +203,13 @@ def get_files():
         return []
 
     glob_pattern = os.path.join(data_folder, "**", "*.txt")
-    txt_files = glob.glob(glob_pattern, recursive=True)
+    csv_files = glob.glob(glob_pattern, recursive=True)
     
-    if not txt_files:
-        logger.error(f"No text files found in {data_folder}")
+    if not csv_files:
+        logger.error(f"No CSV files found in {data_folder}")
         return []
     
-    return txt_files    
+    return csv_files    
 
 def pricing_ingestor():
     txt_files = get_files()
@@ -219,9 +219,9 @@ def pricing_ingestor():
     for filepath in txt_files:
         ingestion_result = ingest_data(filepath)
         if ingestion_result.success is True:
-            records = ingestion_result.data
-            ticker_name, country_code = records[0].ticker, records[0].country
-            write_asset_prices_to_json(records, f"asset_prices_{ticker_name.lower()}_{country_code.lower()}")
+            
+            asset_data = ingestion_result.data
+            write_asset_prices_to_json(asset_data, filepath)
             successful_files += 1
         else:
             if ingestion_result.error:
