@@ -1,9 +1,9 @@
 import logging
 from os import getenv
-from uvicorn import config, logging as uvicorn_logging
+from uvicorn import config
 
 datefmt = "%Y-%m-%d %H:%M:%S"
-fmt = "{asctime} - {levelname} - {message}"
+fmt = "{levelname} [{asctime}] - {name} - {message}"
 
 uvicorn_log_config = config.LOGGING_CONFIG
 uvicorn_log_config["formatters"]["access"]["fmt"] = fmt
