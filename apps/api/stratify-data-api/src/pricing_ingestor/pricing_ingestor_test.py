@@ -10,6 +10,7 @@ from src.pricing_ingestor.pricing_ingestor import (
     columns,
 )
 from src.pricing_ingestor.mock_pricing_ingestor_data import valid_csv_data, invalid_csv_missing_columns
+from src.pricing_ingestor.pricing_ingestor_schema import PricingIngestorSuccess
 
 # Data validation tests
 def test_data_validation_success():
@@ -58,17 +59,18 @@ def test_ingest_data_success():
     
     try:
         result = ingest_data(temp_filepath)
-        assert result["success"] is True
-        assert len(result["data"]) == 2
-        assert result["data"][0]["ticker"] == "AAPL"
+        assert result.success is True
+        assert len(result.data) == 2
+        assert result.data[0].ticker == "AAPL"
+        assert result.data[0].country == "US"
     finally:
         os.unlink(temp_filepath)
 
 def test_ingest_data_file_not_found():
     result = ingest_data("nonexistent_file.csv")
     
-    assert result["success"] is False
-    assert result["error"] == "File not found"
+    assert result.success is False
+    assert result.error == "File not found"
 
 def test_ingest_data_invalid_file():
     with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False) as f:
@@ -77,27 +79,72 @@ def test_ingest_data_invalid_file():
     
     try:
         result = ingest_data(temp_filepath)
-        assert result["success"] is False
-        assert "issues" in result
+        assert result.success is False
+        assert result.error == "Data validation failed"
     finally:
         os.unlink(temp_filepath)
 
 # Pricing ingestor tests
 @patch('src.pricing_ingestor.pricing_ingestor.get_files')
 @patch('src.pricing_ingestor.pricing_ingestor.ingest_data')
+# This test is for making sure that no errors are thrown during normal operation
 def test_pricing_ingestor_success(mock_ingest_data, mock_get_files):
     mock_get_files.return_value = ['file1.txt', 'file2.txt']
     
     mock_ingest_data.side_effect = [
-        {"success": True, "data": [{"ticker": "AAPL", "close": 151.75}]},
-        {"success": True, "data": [{"ticker": "MSFT", "close": 344.80}]}
+     PricingIngestorSuccess(
+         success=True,
+         data=[
+            {
+                "ticker": "USB",
+                "country": "US",
+                "date": "2025-11-04",
+                "open": 46.43,
+                "high": 46.985,
+                "low": 46.155,
+                "close": 46.43,
+                "volume": 7204300.0
+            },
+            {
+                "ticker": "USB",
+                "country": "US",
+                "date": "2025-11-05",
+                "open": 46.475,
+                "high": 47.0061,
+                "low": 46.015,
+                "close": 46.74,
+                "volume": 5577193.0
+            }
+         ]
+     ),
+    PricingIngestorSuccess(
+        success=True,
+        data=[
+            {
+                "ticker": "MSFT",
+                "country": "US",
+                "date": "2025-11-04",
+                "open": 330.00,
+                "high": 335.00,
+                "low": 329.00,
+                "close": 334.00,
+                "volume": 2000000.0
+            },
+            {
+                "ticker": "MSFT",
+                "country": "US",
+                "date": "2025-11-05",
+                "open": 334.50,
+                "high": 338.00,
+                "low": 333.00,
+                "close": 337.00,
+                "volume": 1800000.0
+            }
+        ]
+    )
     ]
     
-    result = pricing_ingestor()
-    
-    assert len(result) == 2
-    assert result[0]["ticker"] == "AAPL"
-    assert result[1]["ticker"] == "MSFT"
+    pricing_ingestor()
 
 @patch('glob.glob')
 @patch('os.path.exists')
@@ -105,8 +152,7 @@ def test_pricing_ingestor_no_files(mock_exists, mock_glob):
     mock_exists.return_value = True
     mock_glob.return_value = []
     
-    result = pricing_ingestor()
-    assert result == []
+    pricing_ingestor()
 
 # Fixtures
 @pytest.fixture
