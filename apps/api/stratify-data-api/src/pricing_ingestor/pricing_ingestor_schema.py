@@ -2,17 +2,20 @@ from pydantic import BaseModel
 from typing import List, Optional
 
 class AssetPrice(BaseModel):
-    ticker: str
-    country: str
     date: str # YYYY-MM-DD
     open: float
     high: float
     low: float
     close: float
     volume: float
+    
+class Asset(BaseModel):
+    ticker: str
+    country: str
+    assetPriceList: List[AssetPrice]
 
 class PricingIngestorSuccess(BaseModel):
-    data: List[AssetPrice]
+    data: Asset
     success: bool
     
 class PricingIngestorFailure(BaseModel):
