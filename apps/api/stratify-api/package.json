@@ -29,7 +29,8 @@
         "db:migrate-list": "pnpm kysely migrate:list",
         "db:migration-create": "pnpm kysely migrate:make",
         "db:seed-create": "pnpm kysely seed:make",
-        "db:seed-run": "pnpm kysely seed:run"
+        "db:seed-run": "pnpm kysely seed:run",
+        "db:insert-asset-prices": "tsx src/database/scripts/insert-asset-prices.ts"
     },
     "kysely-codegen": {
         "dialect": "postgres",
