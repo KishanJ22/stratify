@@ -27,10 +27,11 @@
         "db:migrate-up": "pnpm kysely migrate:up",
         "db:migrate-down": "pnpm kysely migrate:down",
         "db:migrate-list": "pnpm kysely migrate:list",
-        "db:migration-create": "pnpm kysely migrate:make",
+        "db:migrate-create": "pnpm kysely migrate:make",
         "db:seed-create": "pnpm kysely seed:make",
         "db:seed-run": "pnpm kysely seed:run",
-        "db:insert-asset-prices": "tsx src/database/scripts/insert-asset-prices.ts"
+        "db:insert-assets": "tsx src/database/scripts/insert-assets.ts",
+        "db:drop-asset-prices": "tsx src/database/scripts/drop-asset-prices.ts"
     },
     "kysely-codegen": {
         "dialect": "postgres",
@@ -71,10 +72,12 @@
     },
     "devDependencies": {
         "@eslint/js": "^9.32.0",
+        "@types/cli-progress": "^3.11.6",
         "@types/nodemailer": "^7.0.1",
         "@types/pg": "^8.15.4",
         "@vitest/coverage-istanbul": "3.2.4",
         "@vitest/ui": "3.2.4",
+        "cli-progress": "^3.12.0",
         "cross-env": "^7.0.3",
         "eslint": "^9.32.0",
         "eslint-config-prettier": "^10.1.8",
@@ -85,6 +88,7 @@
         "globals": "^15.15.0",
         "kysely-codegen": "^0.19.0",
         "kysely-ctl": "^0.19.0",
+        "p-limit": "^7.2.0",
         "pino-pretty": "^11.3.0",
         "prettier": "3.3.3",
         "prettier-eslint": "^16.4.2",
