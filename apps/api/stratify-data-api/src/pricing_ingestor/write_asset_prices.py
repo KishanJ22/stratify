@@ -19,7 +19,8 @@ def write_asset_prices_to_json(asset: Asset, filepath: str):
     data = {
         "ticker": asset.ticker,
         "country": asset.country,
-        "asset_prices": [asset_price.model_dump() for asset_price in asset_prices_list]
+        "type": asset.type,
+        "assetPricesList": [asset_price.model_dump() for asset_price in asset_prices_list]
     }
     
     with open(output_path, 'w') as json_file:

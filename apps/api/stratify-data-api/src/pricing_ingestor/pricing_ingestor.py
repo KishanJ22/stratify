@@ -97,7 +97,19 @@ def data_validation(dataframe: pd.DataFrame, filepath: str):
         "issues": issues,
         "is_valid": len(issues) == 0
     }
+
+def determine_asset_type(filepath: str) -> str:
+    is_currency = filepath.lower().find("currencies") != -1
+    is_cryptocurrency = filepath.lower().find("cryptocurrencies") != -1
     
+    if is_cryptocurrency:
+        return "cryptocurrency"
+    
+    if is_currency and not is_cryptocurrency:
+        return "currency"
+    
+    return "stock"    
+
 def split_ticker(df: pd.DataFrame, filepath: str) -> tuple[str, str]:
         is_currency = filepath.lower().find("currencies") != -1
         is_cryptocurrency = filepath.lower().find("cryptocurrencies") != -1
@@ -132,7 +144,6 @@ def remove_unnecessary_columns(df: pd.DataFrame):
 
 def ingest_data(filepath: str):
     if not os.path.exists(filepath):
-        logger.error(f"Failed to ingest data from {filepath}")
         return PricingIngestorFailure(
             filepath=filepath,
             error="File not found",
@@ -140,10 +151,9 @@ def ingest_data(filepath: str):
         )
         
     if os.path.getsize(filepath) == 0:
-        logger.error(f"Failed to ingest data from {filepath}")
         return PricingIngestorFailure(
             filepath=filepath,
-            error="File is empty",
+            error=f"File is empty : {filepath}",
             success=False,
         )
         
@@ -167,6 +177,7 @@ def ingest_data(filepath: str):
         df = df[columns]
 
         ticker, country = split_ticker(df, filepath)
+        type = determine_asset_type(filepath)
         remove_unnecessary_columns(df)
 
         # Convert date to the correct format
@@ -174,13 +185,14 @@ def ingest_data(filepath: str):
         records = df.to_dict(orient='records')
         
         if validate_data.get("fixes"):
-            logger.info(f"Data fixes applied for {filepath}:")
+            logger.info(f"Data fixes applied for {ticker}:")
             for fix in validate_data.get("fixes"):
                 logger.info(fix)
                 
         asset = Asset(
             ticker=ticker,
             country=country,
+            type=type,
             assetPriceList=[AssetPrice(**record) for record in records]
         )
 

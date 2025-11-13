@@ -12,6 +12,7 @@ class AssetPrice(BaseModel):
 class Asset(BaseModel):
     ticker: str
     country: str
+    type: str
     assetPriceList: List[AssetPrice]
 
 class PricingIngestorSuccess(BaseModel):
