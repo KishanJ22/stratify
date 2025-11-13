@@ -97,6 +97,7 @@ def test_pricing_ingestor_success(mock_ingest_data, mock_get_files):
         data={
             "ticker": "USB",
             "country": "US",
+            "type": "stock",
             "assetPriceList": [
                 {
                     "date": "2025-11-04",
@@ -122,6 +123,7 @@ def test_pricing_ingestor_success(mock_ingest_data, mock_get_files):
         data={
             "ticker": "MSFT",
             "country": "US",
+            "type": "stock",
             "assetPriceList": [
                 {
                     "date": "2025-11-04",
