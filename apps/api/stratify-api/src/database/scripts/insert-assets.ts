@@ -1,10 +1,13 @@
-import fs from "fs";
 import type { ControlledTransaction } from "kysely";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
-import { DB } from "../types.js";
+import type { DB } from "../types.js";
 import db from "../db.js";
 import logger from "../../logger.js";
+import { opendir, readFile } from "fs/promises";
+import { SingleBar } from "cli-progress";
+import { Dirent, readdirSync } from "fs";
+import pLimit from "p-limit";
 
 const assetPricesDir = join(
     dirname(fileURLToPath(import.meta.url)),
@@ -15,6 +18,7 @@ const assetPricesDir = join(
 interface Asset {
     ticker: string;
     country: string;
+    type: "stock" | "cryptocurrency" | "currency";
     assetPricesList: AssetPrice[];
 }
 
@@ -30,47 +34,45 @@ interface AssetPrice {
 const ensureAssetExists = async (
     trx: ControlledTransaction<DB>,
     asset: Asset,
+    countryId: number,
 ) => {
     // Check if the asset is already present in the db
     const isAssetPresent = await trx
         .selectFrom("stratify.assets as assets")
-        .innerJoin(
-            "stratify.countries as countries",
-            "countries.id",
-            "assets.countryId",
-        )
         .where("assets.symbol", "=", asset.ticker)
-        .where("countries.alpha2", "=", asset.country)
-        .select("assets.symbol as assetSymbol")
+        .where("assets.countryId", "=", countryId)
         .executeTakeFirst();
 
     // If the asset is not in the database, then add it
     if (!isAssetPresent) {
-        // Get the country id based on the two-letter country code in the asset data
-        const { countryId } = await trx
-            .selectFrom("stratify.countries as countries")
-            .where("countries.alpha2", "=", asset.country)
-            .select("countries.id as countryId")
-            .executeTakeFirstOrThrow();
-
         // Insert the asset into the database
         await trx
             .insertInto("stratify.assets")
             .values({
                 symbol: asset.ticker,
                 name: asset.ticker,
-                countryId: countryId,
-                type: "STOCK",
+                countryId,
+                type: asset.type.toUpperCase(),
             })
             .returning("symbol as assetId")
             .executeTakeFirstOrThrow();
     }
 };
 
+const getCountryId = (trx: ControlledTransaction<DB>, countryCode: string) =>
+    trx
+        .selectFrom("stratify.countries as countries")
+        .where("countries.alpha2", "=", countryCode)
+        .select("countries.id as countryId")
+        .executeTakeFirstOrThrow();
+
 const insertAssetPrices = async (
     trx: ControlledTransaction<DB>,
     asset: Asset,
+    countryId: number,
 ) => {
+    const chunkSize = 8000;
+
     const assetPrices = asset.assetPricesList.map((price) => ({
         assetId: asset.ticker,
         priceDate: new Date(price.date),
@@ -79,45 +81,82 @@ const insertAssetPrices = async (
         lowPrice: price.low,
         closePrice: price.close,
         volume: price.volume,
+        countryId,
     }));
 
-    await trx.insertInto("stratify.assetPrices").values(assetPrices).execute();
+    for (let i = 0; i < assetPrices.length; i += chunkSize) {
+        const chunk = assetPrices.slice(i, i + chunkSize);
+        await trx
+            .insertInto("stratify.assetPrices")
+            .values(chunk)
+            .onConflict((oc) =>
+                oc
+                    .columns(["assetId", "priceDate", "countryId"])
+                    .doUpdateSet((eb) => ({
+                        openPrice: eb.ref("excluded.openPrice"),
+                        highPrice: eb.ref("excluded.highPrice"),
+                        lowPrice: eb.ref("excluded.lowPrice"),
+                        closePrice: eb.ref("excluded.closePrice"),
+                        volume: eb.ref("excluded.volume"),
+                    })),
+            )
+            .execute();
+    }
+};
+
+const processAssetFile = async (
+    file: Dirent<string>,
+    progressBar: SingleBar,
+) => {
+    try {
+        const filePath = join(assetPricesDir, file.name);
+        const fileContent = await readFile(filePath, {
+            encoding: "utf-8",
+        });
+        const asset: Asset = JSON.parse(fileContent);
+
+        const transaction = await db.startTransaction().execute();
+        try {
+            const { countryId } = await getCountryId(
+                transaction,
+                asset.country,
+            );
+
+            await ensureAssetExists(transaction, asset, countryId);
+            await insertAssetPrices(transaction, asset, countryId);
+
+            await transaction.commit().execute();
+            progressBar.increment();
+        } catch (error) {
+            logger.error(
+                `Error processing asset ${asset.ticker} (${asset.country}): ${error}`,
+            );
+            await transaction.rollback().execute();
+        }
+    } catch (error) {
+        logger.error(`Error reading file ${file}: ${error}`);
+    }
 };
 
 const insertAssets = async () => {
-    const assetFiles = fs.readdirSync(assetPricesDir);
-    const startTime = Date.now();
+    const assetFiles = await opendir(assetPricesDir);
+    const limit = pLimit(12);
+    const insertPromises = [];
+    const progressBar = new SingleBar({
+        format: "Inserting Assets |{bar}| {percentage}% || {value}/{total} Files || Elapsed: {duration_formatted} || ETA: {eta_formatted}",
+        hideCursor: true,
+        stopOnComplete: true,
+        noTTYOutput: true,
+    });
 
-    for (const file of assetFiles) {
-        try {
-            const filePath = join(assetPricesDir, file);
-            const fileContent = fs.readFileSync(filePath, "utf-8");
-            const asset: Asset = JSON.parse(fileContent);
+    const fileCount = Array.from(readdirSync(assetPricesDir)).length;
+    progressBar.start(fileCount, 0);
 
-            const transaction = await db.startTransaction().execute();
-            try {
-                await ensureAssetExists(transaction, asset);
-                await insertAssetPrices(transaction, asset);
-
-                await transaction.commit().execute();
-                logger.info(
-                    `Successfully processed asset ${asset.ticker} (${asset.country})`,
-                );
-            } catch (error) {
-                logger.error(
-                    `Error processing asset ${asset.ticker} (${asset.country}): ${error}`,
-                );
-                await transaction.rollback().execute();
-            }
-        } catch (error) {
-            logger.error(`Error reading file ${file}: ${error}`);
-        }
+    for await (const file of assetFiles) {
+        insertPromises.push(limit(() => processAssetFile(file, progressBar)));
     }
 
-    const endTime = Date.now();
-    const duration = (endTime - startTime) / 1000;
-
-    logger.info(`Asset insertion completed in ${duration} seconds.`);
+    await Promise.all(insertPromises);
 };
 
 insertAssets();
