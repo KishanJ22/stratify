@@ -1,5 +1,11 @@
 # stratify-data-api
 
+## 0.2.3
+
+### Patch Changes
+
+- 6951567: Refactor pricing ingestor to process and validate the data before writing it to a json file
+
 ## 0.2.2
 
 ### Patch Changes
