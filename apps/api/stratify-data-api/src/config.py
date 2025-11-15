@@ -21,7 +21,7 @@ def load_config() -> ConfigModel:
     env_check()
     return ConfigModel(
     database={
-        "connectionString": getenv("DATABASE_URL"),
+        "connectionString": getenv("DATABASE_URL", ""),
         "maxConnections": int(getenv("DB_MAX_CONNECTIONS", 10)),
         "minConnections": int(getenv("DB_MIN_CONNECTIONS", 2)),
     },
