@@ -3,10 +3,10 @@
     "version": "0.2.2",
     "description": "A REST API for accessing stock market data powered by Yahoo Finance and Stooq.",
     "scripts": {
-        "dev": "uv run uvicorn src.main:app --host 0.0.0.0 --port 2200 --reload",
-        "start": "uv run uvicorn src.main:app --host 0.0.0.0 --port 2200",
+        "dev": "uv run python -m src.main --reload",
+        "start": "uv run python -m src.main",
         "install": "uv sync",
-        "pricing-ingestor": "uv run src/pricing_ingestor/pricing_ingestor.py",
+        "pricing-ingestor": "uv run python -m src.pricing_ingestor.pricing_ingestor",
         "test": "uv run pytest",
         "test:coverage": "uv run pytest --cov=src --cov-report=lcov:./coverage/lcov.info --cov-report=term"
     }

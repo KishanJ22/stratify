@@ -7,6 +7,9 @@ requires-python = ">=3.11"
 dependencies = [
     "fastapi[standard]>=0.116.1",
     "httpx>=0.28.1",
+    "psycopg-pool>=3.2.7",
+    "psycopg[binary]>=3.2.12",
+    "python-dotenv>=1.1.1",
     "yfinance>=0.2.65",
 ]
 
@@ -14,12 +17,16 @@ dependencies = [
 dev = [
     "pytest>=8.4.1",
     "pytest-cov>=6.2.1",
+    "pytest-env>=1.1.5",
     "pytest-mock>=3.14.1",
 ]
 
 [tool.pytest.ini_options]
 addopts = "-ra -q --import-mode=importlib"
 python_files = "*test.py"
+env = [
+    "SERVER_PORT=8000",
+]
 
 [tool.coverage.report]
 omit = [
