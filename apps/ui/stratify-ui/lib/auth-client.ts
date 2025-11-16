@@ -9,7 +9,6 @@ export const useAuthClient = () => {
 
     return createAuthClient({
         baseUrl: authProxyUrl,
-        basePath: "/api/auth",
         plugins: [username(), jwt()],
     });
 };
