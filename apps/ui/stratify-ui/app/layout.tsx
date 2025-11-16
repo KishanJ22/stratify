@@ -12,8 +12,8 @@ interface RootLayoutProps {
 }
 
 export default function RootLayout({ children }: RootLayoutProps) {
-    const apiProxyUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "";
-    const authProxyUrl = process.env.NEXT_PUBLIC_AUTH_BASE_URL || "";
+    const apiProxyUrl = process.env.NEXT_PUBLIC_API_PROXY_URL || "";
+    const authProxyUrl = process.env.NEXT_PUBLIC_AUTH_PROXY_URL || "";
 
     return (
         <html lang="en">
