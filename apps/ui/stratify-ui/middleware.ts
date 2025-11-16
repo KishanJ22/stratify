@@ -30,7 +30,8 @@ const proxyRequest = async (request: NextRequest) => {
 
         // Determine the target URL based on the request type
         const targetBaseUrl = isAuthRequest ? AUTH_API_URL : API_URL;
-        const targetUrl = `${targetBaseUrl}${pathname}${search}`;
+        const targetPath = pathname.replace(/^\/api/, "");
+        const targetUrl = `${targetBaseUrl}${targetPath}${search}`;
 
         headers.delete("host");
         headers.delete("connection");
