@@ -1,6 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Commissioner:wght@100..900&family=Kaisei+Decol:wght@400;500;700&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap');
-
 @import "tailwindcss";
+
+@plugin "tailwindcss-animate";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
 
 @config "../tailwind.config.mts";
 
@@ -35,7 +38,7 @@
   --primary-dark: #1F8F8F;
   --primary-darker: #156A6A;
   --primary-darkest: #0D4545;
-  
+
   --secondary-lightest: #F5FBFA;
   --secondary-lighter: #E0F5F4;
   --secondary-light: #CAEFED;
@@ -43,7 +46,7 @@
   --secondary-dark: #7AB0AE;
   --secondary-darker: #568180;
   --secondary-darkest: #355252;
-  
+
   --accent-lightest: #E8FAFA;
   --accent-lighter: #C9F4F4;
   --accent-light: #A5ECEC;
@@ -51,7 +54,7 @@
   --accent-dark: #3AA5A5;
   --accent-darker: #2B8282;
   --accent-darkest: #1D5F5F;
-  
+
   --negative-lightest: #FDE8E8;
   --negative-lighter: #F9C9C9;
   --negative-light: #F4A5A5;
@@ -59,7 +62,7 @@
   --negative-dark: #A72F2F;
   --negative-darker: #7D2323;
   --negative-darkest: #531717;
-  
+
   --positive-lightest: #E8F7ED;
   --positive-lighter: #CAEED6;
   --positive-light: #A7E3BB;
@@ -67,7 +70,7 @@
   --positive-dark: #2C8155;
   --positive-darker: #216140;
   --positive-darkest: #16412B;
-  
+
   --muted-lightest: #F0F9F8;
   --muted-lighter: #D8EFED;
   --muted-light: #BFE4E2;
@@ -86,11 +89,6 @@
   --sidebar: var(--sidebar-light);
   --sidebar-foreground: var(--sidebar-foreground-light);
   --sidebar-border: var(--sidebar-border-light);
-
-  /* Font Families */
-  --font-sans: "Commissioner", sans-serif;
-  --font-serif: "Kaisei Decol", serif;
-  --font-mono: "Source Code Pro", monospace;
 }
 
 .dark {

@@ -1,21 +1,48 @@
 import type { Config } from "tailwindcss";
 
-const config: Config = {
+const config = {
     darkMode: "class", // Enables .dark class for dark mode
     content: ["./app/**/*.{js,ts,jsx,tsx}"],
     theme: {
         extend: {
             colors: {
-                background: "var(--background)",
-                foreground: "var(--foreground)",
-                card: "var(--card)",
-                "card-foreground": "var(--card-foreground)",
-                border: "var(--border)",
-                input: "var(--input)",
-                sidebar: "var(--sidebar)",
-                "sidebar-foreground": "var(--sidebar-foreground)",
-                "sidebar-border": "var(--sidebar-border)",
-
+                background: {
+                    light: "var(--background-light)",
+                    dark: "var(--background-dark)",
+                },
+                foreground: {
+                    light: "var(--foreground-light)",
+                    dark: "var(--foreground-dark)",
+                },
+                card: {
+                    light: "var(--card-light)",
+                    dark: "var(--card-dark)",
+                    foreground: {
+                        light: "var(--card-foreground-light)",
+                        dark: "var(--card-foreground-dark)",
+                    },
+                },
+                border: {
+                    light: "var(--border-light)",
+                    dark: "var(--border-dark)",
+                },
+                input: {
+                    light: "var(--input-light)",
+                    dark: "var(--input-dark)",
+                },
+                // sidebar: "var(--sidebar)",
+                sidebar: {
+                    light: "var(--sidebar-light)",
+                    dark: "var(--sidebar-dark)",
+                    foreground: {
+                        light: "var(--sidebar-foreground-light)",
+                        dark: "var(--sidebar-foreground-dark)",
+                    },
+                    border: {
+                        light: "var(--sidebar-border-light)",
+                        dark: "var(--sidebar-border-dark)",
+                    },
+                },
                 primary: {
                     lightest: "var(--primary-lightest)",
                     lighter: "var(--primary-lighter)",
@@ -79,6 +106,6 @@ const config: Config = {
         },
     },
     plugins: [],
-};
+} satisfies Config;
 
 export default config;
