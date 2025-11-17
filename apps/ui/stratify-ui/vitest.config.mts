@@ -22,6 +22,7 @@ export default defineConfig({
                 ...coverageConfigDefaults.exclude,
                 "app/components/ui/**/*",
                 "app/api/**/*",
+                "app/tests/**/*",
             ],
         },
         server: {
