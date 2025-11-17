@@ -1,6 +1,9 @@
+import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
 
 const CallToAction = () => {
+    const { push } = useRouter();
+
     return (
         <section className="font-sans flex flex-col px-16 items-center text-center gap-6 py-16">
             <div className="flex flex-col gap-y-8 items-center">
@@ -15,10 +18,18 @@ const CallToAction = () => {
                 </div>
             </div>
             <div className="flex flex-row gap-x-4 pt-12">
-                <Button variant="default" size="lg">
+                <Button
+                    variant="default"
+                    size="lg"
+                    onClick={() => push("/sign-up")}
+                >
                     Get Started
                 </Button>
-                <Button variant="secondary" size="lg">
+                <Button
+                    variant="secondary"
+                    size="lg"
+                    onClick={() => push("/learn")}
+                >
                     Learn More
                 </Button>
             </div>
