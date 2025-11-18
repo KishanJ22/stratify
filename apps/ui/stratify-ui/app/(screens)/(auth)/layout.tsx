@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "../../globals.css";
 import Providers from "../../global/Providers";
 import { getFontClassNames } from "@/lib/fonts";
+import { Toaster } from "@/app/components/ui/sonner";
 
 export const metadata: Metadata = {
     title: "Stratify UI",
@@ -25,7 +26,8 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
                     apiProxyUrl={apiProxyUrl}
                     authProxyUrl={authProxyUrl}
                 >
-                    {children}
+                    <main>{children}</main>
+                    <Toaster richColors />
                 </Providers>
             </body>
         </html>
