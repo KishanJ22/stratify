@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
+import StratifyIcon from "../Common/StratifyIcon";
 
 type NavLink = {
     label: string;
@@ -23,12 +24,7 @@ const Navbar = () => {
     return (
         <nav className="flex flex-row justify-between px-16 py-6 items-center">
             <div className="flex-1 justify-start flex flex-row gap-x-2 py-2">
-                <Image
-                    src="/stratify.png"
-                    alt="Stratify Logo"
-                    width={40}
-                    height={40}
-                />
+                <StratifyIcon width={40} height={40} />
                 <div className="font-sans font-semibold text-primary-base text-4xl">
                     Stratify
                 </div>
