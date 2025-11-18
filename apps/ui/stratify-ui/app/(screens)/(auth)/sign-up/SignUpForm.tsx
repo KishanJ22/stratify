@@ -1,6 +1,8 @@
 import { useAppForm } from "@/app/components/Form/useForm";
+import { useAuthClient } from "@/lib/auth-client";
 import { formOptions } from "@tanstack/react-form";
 import { useState } from "react";
+import { toast } from "sonner";
 import * as zod from "zod";
 
 const signUpSchema = zod
@@ -11,7 +13,7 @@ const signUpSchema = zod
         email: zod.email({ error: "Email should be set" }),
         password: zod
             .string()
-            .min(6, "Password must be at least 6 characters long"),
+            .min(8, "Password must be at least 8 characters long"),
         confirmPassword: zod.string(),
     })
     .refine(({ password, confirmPassword }) => password === confirmPassword, {
@@ -32,7 +34,11 @@ const signUpFormOptions = formOptions({
 });
 
 const SignUpForm = () => {
-    const [isSubmitDisabled, setIsSubmitDisabled] = useState(false);
+    const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
+    const [isSubmitProcessing, setIsSubmitProcessing] = useState(false);
+    const [isUsernameNotAvailable, setIsUsernameNotAvailable] = useState(false);
+
+    const authClient = useAuthClient();
 
     const form = useAppForm({
         validators: {
@@ -48,12 +54,34 @@ const SignUpForm = () => {
                 setIsSubmitDisabled(false);
             },
         },
-        onSubmit: ({ value }) => {
-            console.log("Form submitted successfully with values:", value);
+        onSubmit: async ({ value }) => {
+            setIsSubmitProcessing(true);
+            setIsUsernameNotAvailable(false);
+            const username = await authClient.isUsernameAvailable({
+                username: value.username,
+            });
+
+            if (username.data?.available) {
+                await authClient.signUp.email({
+                    email: value.email,
+                    name: `${value.firstName} ${value.lastName}`,
+                    password: value.password,
+                    username: value.username,
+                });
+
+                toast.success("Account created successfully!", {
+                    className: "text-positive-base",
+                });
+
+                setIsSubmitProcessing(false);
+            } else {
+                setIsUsernameNotAvailable(true);
+                setIsSubmitProcessing(false);
+            }
         },
-        onSubmitInvalid: ({ value, formApi }) => {
-            console.log("Form submission failed. Invalid values:", value);
-            console.log("Errors:", formApi.getAllErrors());
+        onSubmitInvalid: () => {
+            toast.error("Sign up failed. Please check the form for errors.");
+            setIsSubmitProcessing(false);
         },
         ...signUpFormOptions,
     });
@@ -99,16 +127,26 @@ const SignUpForm = () => {
             <div className="flex flex-col gap-y-6 w-full">
                 <form.AppField name="username">
                     {({ state: { meta }, TextInput }) => (
-                        <TextInput
-                            id="username"
-                            label="Username"
-                            placeholder="johndoe"
-                            error={
-                                meta.isTouched
-                                    ? meta.errors?.[0]?.message
-                                    : undefined
-                            }
-                        />
+                        <div
+                            className={`flex flex-col ${isUsernameNotAvailable ? "gap-y-1" : ""}`}
+                        >
+                            <TextInput
+                                id="username"
+                                label="Username"
+                                placeholder="johndoe"
+                                error={
+                                    meta.isTouched
+                                        ? meta.errors?.[0]?.message
+                                        : undefined
+                                }
+                            />
+                            {isUsernameNotAvailable && (
+                                <p className="text-negative-base text-sm font-normal font-sans">
+                                    Username is not available. Please choose
+                                    another one.
+                                </p>
+                            )}
+                        </div>
                     )}
                 </form.AppField>
                 <form.AppField name="email">
@@ -158,6 +196,7 @@ const SignUpForm = () => {
                     <form.SubmitButton
                         label="Sign Up"
                         isDisabled={isSubmitDisabled}
+                        isLoading={isSubmitProcessing}
                     />
                 </form.AppForm>
             </div>
