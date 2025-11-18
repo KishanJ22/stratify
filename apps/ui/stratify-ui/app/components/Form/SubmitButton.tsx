@@ -5,9 +5,10 @@ import { useFormContext } from "./useForm";
 interface SubmitButtonProps {
     label: string;
     isDisabled?: boolean;
+    isLoading?: boolean;
 }
 
-const SubmitButton = ({ label, isDisabled }: SubmitButtonProps) => {
+const SubmitButton = ({ label, isDisabled, isLoading }: SubmitButtonProps) => {
     const form = useFormContext();
 
     return (
@@ -18,10 +19,9 @@ const SubmitButton = ({ label, isDisabled }: SubmitButtonProps) => {
                 type="submit"
                 variant="default"
                 disabled={isDisabled || !form.state.canSubmit}
-                aria-disabled={isDisabled || !form.state.canSubmit}
             >
                 <div className="flex flex-row gap-x-2 items-center">
-                    {form.state.isSubmitting && <Spinner />}
+                    {(form.state.isSubmitting || isLoading) && <Spinner />}
                     {label}
                 </div>
             </Button>
