@@ -1,5 +1,5 @@
 import { useAppForm } from "@/app/components/Form/useForm";
-import { useAuthClient } from "@/lib/auth-client";
+import { storeAuthToken, useAuthClient } from "@/lib/auth";
 import { formOptions } from "@tanstack/react-form";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -75,16 +75,34 @@ const SignUpForm = () => {
             });
 
             if (username.data?.available) {
-                await authClient.signUp.email({
-                    email: value.email,
-                    name: `${value.firstName} ${value.lastName}`,
-                    password: value.password,
-                    username: value.username,
-                });
+                await authClient.signUp.email(
+                    {
+                        email: value.email,
+                        name: `${value.firstName} ${value.lastName}`,
+                        password: value.password,
+                        username: value.username,
+                        callbackURL: window.location.origin,
+                    },
+                    {
+                        onSuccess: async (ctx) => {
+                            const authToken =
+                                ctx.response.headers.get("set-auth-token");
 
-                toast.success("Account created successfully!");
+                            if (authToken) {
+                                await storeAuthToken(authToken);
+                            }
+
+                            toast.success("Account created successfully!");
+                        },
+                        onError: () => {
+                            toast.error("Sign up failed. Please try again.");
+                            form.reset(); // Reset the form on unexpected error
+                        },
+                    },
+                );
 
                 setIsSubmitProcessing(false);
+                setIsSubmitDisabled(false);
             } else {
                 setIsUsernameNotAvailable(true);
                 setIsSubmitProcessing(false);
@@ -93,6 +111,7 @@ const SignUpForm = () => {
         onSubmitInvalid: () => {
             toast.error("Sign up failed. Please check the form for errors.");
             setIsSubmitProcessing(false);
+            setIsSubmitDisabled(false);
         },
         ...signUpFormOptions,
     });
