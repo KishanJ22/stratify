@@ -1,6 +1,8 @@
 import { useAppForm } from "@/app/components/Form/useForm";
-import { storeAuthToken, useAuthClient } from "@/lib/auth";
+import { useAuthClient } from "@/lib/auth";
+import { storeAuthToken } from "@/lib/store-auth-token";
 import { formOptions } from "@tanstack/react-form";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import * as zod from "zod";
@@ -52,6 +54,7 @@ const SignUpForm = () => {
     const [isUsernameNotAvailable, setIsUsernameNotAvailable] = useState(false);
 
     const authClient = useAuthClient();
+    const { push } = useRouter();
 
     const form = useAppForm({
         validators: {
@@ -81,7 +84,6 @@ const SignUpForm = () => {
                         name: `${value.firstName} ${value.lastName}`,
                         password: value.password,
                         username: value.username,
-                        callbackURL: window.location.origin,
                     },
                     {
                         onSuccess: async (ctx) => {
@@ -93,6 +95,7 @@ const SignUpForm = () => {
                             }
 
                             toast.success("Account created successfully!");
+                            push("/");
                         },
                         onError: () => {
                             toast.error("Sign up failed. Please try again.");
