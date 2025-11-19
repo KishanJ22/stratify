@@ -30,6 +30,11 @@ const TextInput = ({
                 value={field.state.value}
                 onChange={(e) => field.handleChange(e.target.value)}
                 onBlur={field.handleBlur}
+                className={
+                    error
+                        ? "border-negative-base focus-visible:border-negative-base focus-visible:ring-negative-base"
+                        : ""
+                }
             />
             {error && <FieldError>{error}</FieldError>}
         </Field>
