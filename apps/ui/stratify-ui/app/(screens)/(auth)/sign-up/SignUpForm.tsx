@@ -1,6 +1,7 @@
 import { useAppForm } from "@/app/components/Form/useForm";
-import { useAuthClient } from "@/lib/auth";
-import { storeAuthToken } from "@/lib/store-auth-token";
+import { useAuthClient } from "@/lib/auth/auth";
+import { getAuthErrorMessage } from "@/lib/auth/authErrorCodes";
+import { storeAuthToken } from "@/lib/auth/store-auth-token";
 import { formOptions } from "@tanstack/react-form";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -51,7 +52,18 @@ const signUpFormOptions = formOptions({
 const SignUpForm = () => {
     const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
     const [isSubmitProcessing, setIsSubmitProcessing] = useState(false);
-    const [isUsernameNotAvailable, setIsUsernameNotAvailable] = useState(false);
+    const [isUsernameAlreadyTaken, setIsUsernameAlreadyTaken] = useState(false);
+    const [isEmailAlreadyTaken, setIsEmailAlreadyTaken] = useState(false);
+
+    const resetSubmitState = () => {
+        setIsSubmitDisabled(true);
+        setIsSubmitProcessing(false);
+    };
+
+    const resetAlreadyTakenStates = () => {
+        setIsUsernameAlreadyTaken(false);
+        setIsEmailAlreadyTaken(false);
+    };
 
     const authClient = useAuthClient();
     const { push } = useRouter();
@@ -72,13 +84,24 @@ const SignUpForm = () => {
         },
         onSubmit: async ({ value }) => {
             setIsSubmitProcessing(true);
-            setIsUsernameNotAvailable(false);
-            const username = await authClient.isUsernameAvailable({
-                username: value.username,
-            });
+            resetAlreadyTakenStates();
+
+            const username = await authClient.isUsernameAvailable(
+                {
+                    username: value.username,
+                },
+                {
+                    onError: async () => {
+                        toast.error(
+                            "Failed to check username availability. Please try again.",
+                        );
+                        resetSubmitState();
+                    },
+                },
+            );
 
             if (username.data?.available) {
-                await authClient.signUp.email(
+                const { error } = await authClient.signUp.email(
                     {
                         email: value.email,
                         name: `${value.firstName} ${value.lastName}`,
@@ -97,24 +120,38 @@ const SignUpForm = () => {
                             toast.success("Account created successfully!");
                             push("/");
                         },
-                        onError: () => {
-                            toast.error("Sign up failed. Please try again.");
-                            form.reset(); // Reset the form on unexpected error
-                        },
                     },
                 );
 
-                setIsSubmitProcessing(false);
-                setIsSubmitDisabled(false);
+                resetSubmitState();
+
+                if (error?.code) {
+                    // TODO: use ErrorCode type once all error codes are mapped
+                    const errorCode = error.code as string;
+
+                    const errorMessage = getAuthErrorMessage(errorCode);
+
+                    // Show specific error message in toast if available
+                    if (errorMessage) {
+                        return toast.error(errorMessage);
+                    }
+
+                    //? Workaround as error code is not in the error types returned by the auth client
+                    if (errorCode == "USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL") {
+                        return setIsEmailAlreadyTaken(true);
+                    } else {
+                        form.reset(); // Reset the form on unexpected error
+                        return toast.error("Sign up failed. Please try again.");
+                    }
+                }
             } else {
-                setIsUsernameNotAvailable(true);
+                setIsUsernameAlreadyTaken(true);
                 setIsSubmitProcessing(false);
             }
         },
         onSubmitInvalid: () => {
             toast.error("Sign up failed. Please check the form for errors.");
-            setIsSubmitProcessing(false);
-            setIsSubmitDisabled(false);
+            resetSubmitState();
         },
         ...signUpFormOptions,
     });
@@ -158,44 +195,66 @@ const SignUpForm = () => {
                 </form.AppField>
             </div>
             <div className="flex flex-col gap-y-6 w-full">
-                <form.AppField name="username">
-                    {({ state: { meta }, TextInput }) => (
-                        <div
-                            className={`flex flex-col ${isUsernameNotAvailable ? "gap-y-1" : ""}`}
-                        >
-                            <TextInput
-                                id="username"
-                                label="Username"
-                                placeholder="johndoe"
-                                error={
-                                    meta.isTouched
-                                        ? meta.errors?.[0]?.message
-                                        : undefined
-                                }
-                            />
-                            {isUsernameNotAvailable && (
-                                <p className="text-negative-base text-sm font-normal font-sans">
-                                    Username is not available. Please choose
-                                    another one.
-                                </p>
-                            )}
-                        </div>
-                    )}
+                <form.AppField
+                    name="username"
+                    validators={{
+                        onChange: () => {
+                            // Hide the error when the input changes
+                            setIsUsernameAlreadyTaken(false);
+                        },
+                    }}
+                >
+                    {({ state: { meta }, TextInput }) => {
+                        const validationError = meta.isTouched
+                            ? meta.errors?.[0]?.message
+                            : undefined;
+
+                        const usernameError = isUsernameAlreadyTaken
+                            ? "Username is not available. Please choose another one."
+                            : validationError;
+
+                        return (
+                            <div
+                                className={`flex flex-col ${isUsernameAlreadyTaken ? "gap-y-1" : ""}`}
+                            >
+                                <TextInput
+                                    id="username"
+                                    label="Username"
+                                    placeholder="johndoe"
+                                    error={usernameError}
+                                />
+                            </div>
+                        );
+                    }}
                 </form.AppField>
-                <form.AppField name="email">
-                    {({ state: { meta }, TextInput }) => (
-                        <TextInput
-                            id="email"
-                            label="Email address"
-                            type="email"
-                            placeholder="john.doe@example.com"
-                            error={
-                                meta.isTouched
-                                    ? meta.errors?.[0]?.message
-                                    : undefined
-                            }
-                        />
-                    )}
+                <form.AppField
+                    name="email"
+                    validators={{
+                        onChange: () => {
+                            // Hide the error when the input changes
+                            setIsEmailAlreadyTaken(false);
+                        },
+                    }}
+                >
+                    {({ state: { meta }, TextInput }) => {
+                        const validationError = meta.isTouched
+                            ? meta.errors?.[0]?.message
+                            : undefined;
+
+                        const emailError = isEmailAlreadyTaken
+                            ? "An account with this email already exists. Please use another email."
+                            : validationError;
+
+                        return (
+                            <TextInput
+                                id="email"
+                                label="Email address"
+                                type="email"
+                                placeholder="john.doe@example.com"
+                                error={emailError}
+                            />
+                        );
+                    }}
                 </form.AppField>
                 <form.AppField name="password">
                     {({ state: { meta }, TextInput }) => (
@@ -211,7 +270,13 @@ const SignUpForm = () => {
                         />
                     )}
                 </form.AppField>
-                <form.AppField name="confirmPassword">
+                <form.AppField
+                    name="confirmPassword"
+                    validators={{
+                        // Listen to changes in the password field to re-validate confirmPassword
+                        onChangeListenTo: ["password"],
+                    }}
+                >
                     {({ state: { meta }, TextInput }) => (
                         <TextInput
                             id="confirmPassword"
