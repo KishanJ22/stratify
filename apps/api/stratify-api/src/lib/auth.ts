@@ -13,7 +13,7 @@ export const auth = betterAuth({
     secret: config.auth.secret,
     emailAndPassword: {
         enabled: true,
-        requireEmailVerification: true,
+        requireEmailVerification: false, // TODO: Use resend for sending emails
     },
     emailVerification: {
         sendVerificationEmail: async ({ user, url }) => {
@@ -23,7 +23,7 @@ export const auth = betterAuth({
                 html: `<p>Please verify your email by clicking the following link:</p><p><a href="${url}">${url}</a></p>`,
             });
         },
-        sendOnSignUp: true,
+        sendOnSignUp: false,
     },
     plugins: [
         jwt({
@@ -40,10 +40,12 @@ export const auth = betterAuth({
     ],
     session: {
         cookieCache: {
-            enabled: false,
+            enabled: true,
+            maxAge: 60 * 5, // 5 minutes
         },
-        expiresIn: 60 * 60 * 8, // 8 hours absolute
+        expiresIn: 60 * 60 * 8, // 8 hours
         updateAge: 60 * 30, // 30 minutes - extend on activity
+        freshAge: 60 * 5, // 5 minutes - time until session is considered stale
     },
     telemetry: {
         enabled: false,
@@ -64,4 +66,5 @@ export const auth = betterAuth({
             }
         },
     },
+    trustedOrigins: ["http://localhost:3000"],
 });

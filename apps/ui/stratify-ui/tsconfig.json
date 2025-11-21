@@ -1,8 +1,8 @@
 {
     "compilerOptions": {
-        "target": "ESNext",
-        "module": "nodenext",
-        "moduleResolution": "nodenext",
+        "target": "esnext",
+        "module": "esnext",
+        "moduleResolution": "bundler",
         "lib": ["dom", "dom.iterable", "esnext"],
         "allowJs": true,
         "skipLibCheck": true,

@@ -1,9 +1,9 @@
-import CallToAction from "./components/LandingPage/CallToAction";
-import KeyFeature from "./components/LandingPage/KeyFeature";
+import CallToAction from "../../components/LandingPage/CallToAction";
+import KeyFeature from "../../components/LandingPage/KeyFeature";
 
 export default function LandingPage() {
     return (
-        <div className="bg-background text-foreground font-sans items-center justify-items-center min-h-screen">
+        <div className="font-sans items-center justify-items-center min-h-screen">
             <CallToAction />
             <div className="flex flex-row py-8 px-16 gap-x-12">
                 <KeyFeature

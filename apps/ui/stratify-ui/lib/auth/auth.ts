@@ -1,5 +1,5 @@
 import { useEnvironmentContext } from "@/app/global/EnvironmentProvider";
-import { jwt, username } from "better-auth/plugins";
+import { usernameClient, jwtClient } from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
 
 export const useAuthClient = () => {
@@ -9,6 +9,6 @@ export const useAuthClient = () => {
 
     return createAuthClient({
         baseUrl: authProxyUrl,
-        plugins: [username(), jwt()],
+        plugins: [usernameClient(), jwtClient()],
     });
 };

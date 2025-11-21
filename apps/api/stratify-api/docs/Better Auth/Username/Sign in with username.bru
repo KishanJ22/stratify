@@ -18,3 +18,8 @@ body:json {
     "callbackURL": ""
   }
 }
+
+script:post-response {
+  const token = res.body.token;
+  bru.setEnvVar("bearerToken", token); 
+}
