@@ -1,5 +1,13 @@
 # @stratify/stratify-api
 
+## 0.2.4
+
+### Patch Changes
+
+- 8cb02cf: Better auth configuration changes
+    - Temporarily remove email verification on sign-up (to be re-enabled when Resend is setup for sending emails)
+    - Enable cookie cache and add a time until a session can be considered stale
+
 ## 0.2.3
 
 ### Patch Changes
