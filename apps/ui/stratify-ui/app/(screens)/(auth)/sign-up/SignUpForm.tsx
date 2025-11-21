@@ -118,6 +118,7 @@ const SignUpForm = () => {
                             }
 
                             toast.success("Account created successfully!");
+                            // TODO: redirect to /app/dashboard once built
                             push("/");
                         },
                     },
