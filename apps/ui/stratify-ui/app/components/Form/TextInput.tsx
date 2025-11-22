@@ -9,6 +9,7 @@ interface FormInputProps {
     placeholder?: string;
     type?: HTMLInputTypeAttribute;
     error?: string;
+    className?: string;
 }
 
 const TextInput = ({
@@ -17,11 +18,12 @@ const TextInput = ({
     placeholder,
     type = "text",
     error,
+    className,
 }: FormInputProps) => {
     const field = useFieldContext<string>();
 
     return (
-        <Field className="flex flex-col gap-y-1.5">
+        <Field className={`flex flex-col gap-y-1.5 ${className}`}>
             <FieldLabel htmlFor={id}>{label}</FieldLabel>
             <Input
                 type={type}

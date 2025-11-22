@@ -6,7 +6,7 @@ import { formOptions } from "@tanstack/react-form";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
-import { signUpSchema } from "./signUpSchema";
+import { signUpSchema } from "./sign-up-schema";
 
 const signUpFormOptions = formOptions({
     formId: "sign-up-form",
@@ -22,14 +22,8 @@ const signUpFormOptions = formOptions({
 
 const SignUpForm = () => {
     const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
-    const [isSubmitProcessing, setIsSubmitProcessing] = useState(false);
     const [isUsernameAlreadyTaken, setIsUsernameAlreadyTaken] = useState(false);
     const [isEmailAlreadyTaken, setIsEmailAlreadyTaken] = useState(false);
-
-    const resetSubmitState = () => {
-        setIsSubmitDisabled(true);
-        setIsSubmitProcessing(false);
-    };
 
     const resetAlreadyTakenStates = () => {
         setIsUsernameAlreadyTaken(false);
@@ -49,12 +43,10 @@ const SignUpForm = () => {
                     setIsSubmitDisabled(true);
                     return errors;
                 }
-
                 setIsSubmitDisabled(false);
             },
         },
         onSubmit: async ({ value }) => {
-            setIsSubmitProcessing(true);
             resetAlreadyTakenStates();
 
             const username = await authClient.isUsernameAvailable(
@@ -66,7 +58,7 @@ const SignUpForm = () => {
                         toast.error(
                             "Failed to check username availability. Please try again.",
                         );
-                        resetSubmitState();
+                        setIsSubmitDisabled(true);
                     },
                 },
             );
@@ -88,14 +80,11 @@ const SignUpForm = () => {
                                 await storeAuthToken(authToken);
                             }
 
-                            toast.success("Account created successfully!");
                             // TODO: redirect to /app/dashboard once built
                             push("/");
                         },
                     },
                 );
-
-                resetSubmitState();
 
                 if (error?.code) {
                     // TODO: use ErrorCode type once all error codes are mapped
@@ -118,12 +107,11 @@ const SignUpForm = () => {
                 }
             } else {
                 setIsUsernameAlreadyTaken(true);
-                setIsSubmitProcessing(false);
             }
         },
         onSubmitInvalid: () => {
             toast.error("Sign up failed. Please check the form for errors.");
-            resetSubmitState();
+            setIsSubmitDisabled(true);
         },
         ...signUpFormOptions,
     });
@@ -263,11 +251,20 @@ const SignUpForm = () => {
                     )}
                 </form.AppField>
                 <form.AppForm>
-                    <form.SubmitButton
-                        label="Sign Up"
-                        isDisabled={isSubmitDisabled}
-                        isLoading={isSubmitProcessing}
-                    />
+                    <form.Subscribe
+                        selector={(state) => [
+                            state.canSubmit,
+                            state.isSubmitting,
+                        ]}
+                    >
+                        <form.SubmitButton
+                            label="Sign Up"
+                            isDisabled={
+                                !form.state.canSubmit || isSubmitDisabled
+                            }
+                            isLoading={form.state.isSubmitting}
+                        />
+                    </form.Subscribe>
                 </form.AppForm>
             </div>
         </form>

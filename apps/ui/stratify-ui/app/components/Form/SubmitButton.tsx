@@ -1,31 +1,31 @@
 import { Button } from "../ui/button";
 import { Spinner } from "../ui/spinner";
-import { useFormContext } from "./useForm";
 
 interface SubmitButtonProps {
     label: string;
     isDisabled?: boolean;
     isLoading?: boolean;
+    className?: string;
 }
 
-const SubmitButton = ({ label, isDisabled, isLoading }: SubmitButtonProps) => {
-    const form = useFormContext();
-
+const SubmitButton = ({
+    label,
+    isDisabled,
+    isLoading,
+    className,
+}: SubmitButtonProps) => {
     return (
-        <form.Subscribe
-            selector={(state) => [state.canSubmit, state.isSubmitting]}
+        <Button
+            type="submit"
+            variant="default"
+            disabled={isDisabled}
+            className={className}
         >
-            <Button
-                type="submit"
-                variant="default"
-                disabled={isDisabled || !form.state.canSubmit}
-            >
-                <div className="flex flex-row gap-x-2 items-center">
-                    {(form.state.isSubmitting || isLoading) && <Spinner />}
-                    {label}
-                </div>
-            </Button>
-        </form.Subscribe>
+            <div className="flex flex-row gap-x-2 items-center">
+                {isLoading && <Spinner />}
+                {label}
+            </div>
+        </Button>
     );
 };
 
