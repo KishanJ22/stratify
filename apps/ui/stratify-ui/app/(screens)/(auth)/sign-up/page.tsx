@@ -17,27 +17,30 @@ export default function SignUpPage() {
                     height={650}
                     className="blur-sm z-0 absolute"
                 />
-                <div className="relative bg-primary-lightest/65 rounded-3xl mx-8 pt-14 pb-8">
+                <div className="relative bg-primary-lightest/65 rounded-3xl mx-8 pt-14">
                     <h1 className="text-4xl text-secondary-darker text-center font-bold pb-8">
                         Create Your Account
                     </h1>
                     <SignUpForm />
-                </div>
-                <div className="relative flex flex-row items-center text-center pt-8 pb-3">
-                    <div className="text-sm text-primary-base">
-                        Already have an account?
-                    </div>
-                    <div
-                        className="mx-1 flex flex-row items-center hover:underline hover:underline-offset-1 hover:cursor-pointer"
-                        onClick={() => push("/login")}
-                    >
-                        <Button
-                            variant="link"
-                            className="text-primary-base -my-2"
+                    <div className="flex flex-row justify-center py-6">
+                        <div className="text-sm text-primary-base">
+                            Already have an account?
+                        </div>
+                        <div
+                            className="mx-1 flex flex-row items-center hover:underline hover:underline-offset-1 hover:cursor-pointer"
+                            onClick={() => push("/login")}
                         >
-                            Log In
-                        </Button>
-                        <ChevronRight size={14} className="text-primary-base" />
+                            <Button
+                                variant="link"
+                                className="text-primary-base -my-2"
+                            >
+                                Log In
+                            </Button>
+                            <ChevronRight
+                                size={14}
+                                className="text-primary-base"
+                            />
+                        </div>
                     </div>
                 </div>
             </div>
