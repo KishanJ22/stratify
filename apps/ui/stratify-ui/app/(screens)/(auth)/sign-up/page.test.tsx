@@ -21,8 +21,6 @@ vi.mock("./SignUpForm", () => ({
     default: () => <div>Sign-up form</div>,
 }));
 
-const user = userEvent.setup();
-
 describe("Sign up page", () => {
     const renderPage = () => render(<SignUpPage />);
 
@@ -43,6 +41,8 @@ describe("Sign up page", () => {
     });
 
     it("AB#143 - should render a link to navigate to the login page", async () => {
+        const user = userEvent.setup();
+
         renderPage();
 
         const loginLink = screen.getByText("Log In");
