@@ -1,9 +1,9 @@
+import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { LoginFormValues } from "./login-schema";
 import { storeAuthToken } from "@/lib/auth/store-auth-token";
 import { getAuthErrorMessage } from "@/lib/auth/authErrorCodes";
+import type { LoginFormValues } from "./login-schema";
 import type { AuthClient } from "@/lib/auth/auth";
-import { toast } from "sonner";
 
 export const handleLogin = async (
     value: LoginFormValues,
@@ -28,7 +28,7 @@ export const handleLogin = async (
         if (data?.token) {
             await storeAuthToken(data.token);
             // TODO: redirect to /app/dashboard once built
-            push("/");
+            return push("/");
         }
 
         if (error?.code) {
@@ -41,6 +41,6 @@ export const handleLogin = async (
             return toast.error("Login failed. Please try again.");
         }
     } catch (error) {
-        return toast.error("An unexpected error occurred. Please try again.");
+        return toast.error("Login failed. Please try again.");
     }
 };
