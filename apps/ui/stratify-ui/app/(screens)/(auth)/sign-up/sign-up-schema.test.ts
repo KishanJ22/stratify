@@ -1,6 +1,5 @@
-import { describe, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import { signUpSchema } from "./sign-up-schema";
-import { expect } from "vitest";
 
 const mockSuccessValues = {
     firstName: "John",

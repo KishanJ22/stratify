@@ -31,7 +31,7 @@ describe("Login page", () => {
     it("should render the heading", () => {
         renderPage();
 
-        expect(screen.getByText("Sign in")).toBeInTheDocument();
+        expect(screen.getByText("Log In")).toBeInTheDocument();
     });
 
     it("should render the logo displayed in the background", () => {
@@ -45,7 +45,7 @@ describe("Login page", () => {
 
         renderPage();
 
-        const signUpLink = screen.getByText("Create an account");
+        const signUpLink = screen.getByText("Sign Up");
         await user.click(signUpLink);
 
         expect(mockRouterPush).toHaveBeenCalledWith("/sign-up");
