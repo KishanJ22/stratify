@@ -86,6 +86,13 @@ const LoginForm = () => {
                     );
                 }}
             </form.AppField>
+            <form.AppField name="rememberMe">
+                {({ CheckboxInput }) => {
+                    return (
+                        <CheckboxInput id="rememberMe" label="Remember Me" />
+                    );
+                }}
+            </form.AppField>
             <form.AppForm>
                 <form.Subscribe
                     selector={(state) => [state.canSubmit, state.isSubmitting]}
