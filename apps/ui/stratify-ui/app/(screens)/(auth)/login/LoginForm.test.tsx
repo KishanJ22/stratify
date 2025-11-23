@@ -1,7 +1,7 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
 import { screen } from "@testing-library/react";
 import { renderWithContext } from "@/app/tests/utils";
-import SignUpForm from "./SignUpForm";
+import LoginForm from "./LoginForm";
 
 vi.mock("next/navigation", () => ({
     useRouter: () => ({
@@ -9,7 +9,7 @@ vi.mock("next/navigation", () => ({
     }),
 }));
 
-describe("Sign up form", () => {
+describe("Login form", () => {
     beforeEach(() => {
         const root = document.createElement("div");
         root.setAttribute("id", "root");
@@ -18,20 +18,12 @@ describe("Sign up form", () => {
         vi.clearAllMocks();
     });
 
-    const renderForm = () => renderWithContext({ children: <SignUpForm /> });
+    const renderForm = () => renderWithContext({ children: <LoginForm /> });
 
-    it("AB#131 - should render the form fields", () => {
+    it("AB#149 - should render the form fields", () => {
         renderForm();
 
-        const fieldLabels = [
-            "First name",
-            "Last name",
-            "Username",
-            "Email address",
-            "Password",
-            "Confirm Password",
-            "Sign Up",
-        ];
+        const fieldLabels = ["Email or Username", "Password", "Log In"];
 
         fieldLabels.forEach((label) => {
             expect(screen.getByText(label)).toBeInTheDocument();
