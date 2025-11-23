@@ -4,6 +4,7 @@ import Providers from "../../global/Providers";
 import { getFontClassNames } from "@/lib/fonts";
 import { Toaster } from "@/app/components/ui/sonner";
 import { SessionProvider } from "./SessionProvider";
+import AppNavbar from "@/app/components/(app)/AppNavbar/AppNavbar";
 
 export const metadata: Metadata = {
     title: "Stratify UI",
@@ -27,7 +28,10 @@ export default function AppLayout({ children }: AuthLayoutProps) {
                     apiProxyUrl={apiProxyUrl}
                     authProxyUrl={authProxyUrl}
                 >
-                    <SessionProvider>{children}</SessionProvider>
+                    <SessionProvider>
+                        <AppNavbar />
+                        {children}
+                    </SessionProvider>
                     <Toaster richColors />
                 </Providers>
             </body>
