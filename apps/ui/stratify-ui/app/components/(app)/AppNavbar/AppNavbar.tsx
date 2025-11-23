@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { Button } from "../../ui/button";
-import { useRouter } from "next/navigation";
 import StratifyIcon from "../../Common/StratifyIcon";
+import { useSessionContext } from "@/app/(screens)/app/SessionProvider";
+import { Avatar, AvatarFallback } from "../../ui/avatar";
 
 type NavLink = {
     label: string;
@@ -11,14 +11,20 @@ type NavLink = {
 };
 
 const navLinks = [
-    { label: "Home", href: "/" },
-    { label: "Portfolio", href: "/portfolio" },
-    { label: "Markets", href: "/markets" },
-    { label: "Learn", href: "/learn" },
+    { label: "Dashboard", href: "/app/dashboard" },
+    { label: "Portfolio", href: "/app/portfolio" },
+    { label: "Markets", href: "/app/markets" },
+    { label: "Learn", href: "/app/learn" },
 ] satisfies NavLink[];
 
-const PublicNavbar = () => {
-    const { push } = useRouter();
+const AppNavbar = () => {
+    const { session } = useSessionContext();
+
+    const initials = session?.userDetails?.name
+        ?.split(" ")
+        .map((n) => n[0])
+        .join("")
+        .toUpperCase();
 
     return (
         <nav className="sticky top-0 bg-background-light flex flex-row justify-between px-16 py-6 items-center">
@@ -39,20 +45,13 @@ const PublicNavbar = () => {
                     </Link>
                 ))}
             </div>
-            <div className="flex-1 justify-end flex flex-row gap-x-2">
-                <Button variant="link" size="lg" onClick={() => push("/login")}>
-                    Login
-                </Button>
-                <Button
-                    variant="default"
-                    size="lg"
-                    onClick={() => push("/sign-up")}
-                >
-                    Sign Up
-                </Button>
+            <div className="flex-1 flex justify-end">
+                <Avatar className="bg-primary-lightest text-primary-darkest font-sans">
+                    <AvatarFallback>{initials}</AvatarFallback>
+                </Avatar>
             </div>
         </nav>
     );
 };
 
-export default PublicNavbar;
+export default AppNavbar;
