@@ -77,7 +77,7 @@ export const SessionProvider = ({ children }: SessionProviderProps) => {
         };
 
         loadSession();
-    });
+    }, []);
 
     return (
         <SessionContext.Provider value={{ session, setSession, logout }}>
