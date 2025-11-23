@@ -58,8 +58,7 @@ export const handleSignUp = async (
                 await storeAuthToken(authToken);
             }
 
-            // TODO: redirect to /app/dashboard once built
-            return push("/");
+            return push("/app/dashboard");
         }
 
         //! Handle error here instead of in an onError callback to access the error code properly

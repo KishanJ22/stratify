@@ -1,7 +1,7 @@
 import { expect, describe, beforeEach, vi, it } from "vitest";
 import type { SignUpSchema } from "./sign-up-schema";
 import { handleSignUp } from "./handle-sign-up";
-import { useAuthClient, type AuthClient } from "@/lib/auth/auth";
+import type { AuthClient } from "@/lib/auth/auth";
 
 const mockToastError = vi.fn();
 
@@ -101,7 +101,7 @@ describe("handleSignUp", () => {
         });
 
         expect(mockStoreToken).toHaveBeenCalledWith("valid-token");
-        expect(mockRouterPush).toHaveBeenCalledWith("/");
+        expect(mockRouterPush).toHaveBeenCalledWith("/app/dashboard");
     });
 
     it("AB#140 - should handle a username already being taken", async () => {
