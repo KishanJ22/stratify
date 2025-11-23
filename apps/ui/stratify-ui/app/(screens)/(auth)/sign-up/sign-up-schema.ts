@@ -28,3 +28,5 @@ export const signUpSchema = zod
         error: "Passwords do not match",
         path: ["confirmPassword"],
     });
+
+export type SignUpSchema = zod.infer<typeof signUpSchema>;

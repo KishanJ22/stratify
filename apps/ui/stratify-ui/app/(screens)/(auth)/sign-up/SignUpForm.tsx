@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { signUpSchema } from "./sign-up-schema";
+import { handleSignUp } from "./handle-sign-up";
 
 const signUpFormOptions = formOptions({
     formId: "sign-up-form",
@@ -25,11 +26,6 @@ const SignUpForm = () => {
     const [isUsernameAlreadyTaken, setIsUsernameAlreadyTaken] = useState(false);
     const [isEmailAlreadyTaken, setIsEmailAlreadyTaken] = useState(false);
 
-    const resetAlreadyTakenStates = () => {
-        setIsUsernameAlreadyTaken(false);
-        setIsEmailAlreadyTaken(false);
-    };
-
     const authClient = useAuthClient();
     const { push } = useRouter();
 
@@ -46,69 +42,16 @@ const SignUpForm = () => {
                 setIsSubmitDisabled(false);
             },
         },
-        onSubmit: async ({ value }) => {
-            resetAlreadyTakenStates();
-
-            const username = await authClient.isUsernameAvailable(
-                {
-                    username: value.username,
-                },
-                {
-                    onError: async () => {
-                        toast.error(
-                            "Failed to check username availability. Please try again.",
-                        );
-                        setIsSubmitDisabled(true);
-                    },
-                },
-            );
-
-            if (username.data?.available) {
-                const { error } = await authClient.signUp.email(
-                    {
-                        email: value.email,
-                        name: `${value.firstName} ${value.lastName}`,
-                        password: value.password,
-                        username: value.username,
-                    },
-                    {
-                        onSuccess: async (ctx) => {
-                            const authToken =
-                                ctx.response.headers.get("set-auth-token");
-
-                            if (authToken) {
-                                await storeAuthToken(authToken);
-                            }
-
-                            // TODO: redirect to /app/dashboard once built
-                            push("/");
-                        },
-                    },
-                );
-
-                if (error?.code) {
-                    // TODO: use ErrorCode type once all error codes are mapped
-                    const errorCode = error.code as string;
-
-                    const errorMessage = getAuthErrorMessage(errorCode);
-
-                    // Show specific error message in toast if available
-                    if (errorMessage) {
-                        return toast.error(errorMessage);
-                    }
-
-                    //? Workaround as error code is not in the error types returned by the auth client
-                    if (errorCode == "USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL") {
-                        return setIsEmailAlreadyTaken(true);
-                    } else {
-                        form.reset(); // Reset the form on unexpected error
-                        return toast.error("Sign up failed. Please try again.");
-                    }
-                }
-            } else {
-                setIsUsernameAlreadyTaken(true);
-            }
-        },
+        onSubmit: async ({ value }) =>
+            await handleSignUp(
+                value,
+                authClient,
+                push,
+                setIsUsernameAlreadyTaken,
+                setIsEmailAlreadyTaken,
+                setIsSubmitDisabled,
+                () => form.reset(),
+            ),
         onSubmitInvalid: () => {
             toast.error("Sign up failed. Please check the form for errors.");
             setIsSubmitDisabled(true);
