@@ -12,3 +12,5 @@ export const useAuthClient = () => {
         plugins: [usernameClient(), jwtClient()],
     });
 };
+
+export type AuthClient = ReturnType<typeof useAuthClient>;

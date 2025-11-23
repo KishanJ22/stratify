@@ -1,6 +1,6 @@
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
-import SignUpPage from "./page";
+import LoginPage from "./page";
 import { beforeEach } from "node:test";
 import { render, screen } from "@testing-library/react";
 
@@ -17,12 +17,12 @@ vi.mock("next/image", () => ({
     default: (props: { alt?: string }) => <img alt={props.alt} />,
 }));
 
-vi.mock("./SignUpForm", () => ({
-    default: () => <div>Sign-up form</div>,
+vi.mock("./LoginForm", () => ({
+    default: () => <div>Login form</div>,
 }));
 
-describe("Sign up page", () => {
-    const renderPage = () => render(<SignUpPage />);
+describe("Login page", () => {
+    const renderPage = () => render(<LoginPage />);
 
     beforeEach(() => {
         vi.clearAllMocks();
@@ -31,7 +31,7 @@ describe("Sign up page", () => {
     it("should render the heading", () => {
         renderPage();
 
-        expect(screen.getByText("Create Your Account")).toBeInTheDocument();
+        expect(screen.getByText("Log In")).toBeInTheDocument();
     });
 
     it("should render the logo displayed in the background", () => {
@@ -40,14 +40,14 @@ describe("Sign up page", () => {
         expect(screen.getByAltText("Stratify Logo")).toBeInTheDocument();
     });
 
-    it("AB#143 - should render a link to navigate to the login page", async () => {
+    it("AB#150 - should render a link to navigate to the sign-up page", async () => {
         const user = userEvent.setup();
 
         renderPage();
 
-        const loginLink = screen.getByText("Log In");
-        await user.click(loginLink);
+        const signUpLink = screen.getByText("Sign Up");
+        await user.click(signUpLink);
 
-        expect(mockRouterPush).toHaveBeenCalledWith("/login");
+        expect(mockRouterPush).toHaveBeenCalledWith("/sign-up");
     });
 });

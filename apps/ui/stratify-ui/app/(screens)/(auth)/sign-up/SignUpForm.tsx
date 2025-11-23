@@ -6,36 +6,8 @@ import { formOptions } from "@tanstack/react-form";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
-import * as zod from "zod";
-
-const signUpSchema = zod
-    .object({
-        firstName: zod.string().min(1, "First name should be set"),
-        lastName: zod.string().min(1, "Last name should be set"),
-        username: zod.string().min(1, "Username should be set"),
-        email: zod.email({ error: "Email should be set" }),
-        password: zod
-            .string()
-            .min(8, "Password must be at least 8 characters long")
-            .regex(
-                /[A-Z]/,
-                "Password must contain at least one uppercase letter",
-            )
-            .regex(
-                /[a-z]/,
-                "Password must contain at least one lowercase letter",
-            )
-            .regex(/[0-9]/, "Password must contain at least one number")
-            .regex(
-                /[!@#$%^&*(),.?":{}|<>]/,
-                "Password must contain at least one special character",
-            ),
-        confirmPassword: zod.string(),
-    })
-    .refine(({ password, confirmPassword }) => password === confirmPassword, {
-        error: "Passwords do not match",
-        path: ["confirmPassword"],
-    });
+import { signUpSchema } from "./sign-up-schema";
+import { handleSignUp } from "./handle-sign-up";
 
 const signUpFormOptions = formOptions({
     formId: "sign-up-form",
@@ -51,19 +23,8 @@ const signUpFormOptions = formOptions({
 
 const SignUpForm = () => {
     const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
-    const [isSubmitProcessing, setIsSubmitProcessing] = useState(false);
     const [isUsernameAlreadyTaken, setIsUsernameAlreadyTaken] = useState(false);
     const [isEmailAlreadyTaken, setIsEmailAlreadyTaken] = useState(false);
-
-    const resetSubmitState = () => {
-        setIsSubmitDisabled(true);
-        setIsSubmitProcessing(false);
-    };
-
-    const resetAlreadyTakenStates = () => {
-        setIsUsernameAlreadyTaken(false);
-        setIsEmailAlreadyTaken(false);
-    };
 
     const authClient = useAuthClient();
     const { push } = useRouter();
@@ -78,81 +39,22 @@ const SignUpForm = () => {
                     setIsSubmitDisabled(true);
                     return errors;
                 }
-
                 setIsSubmitDisabled(false);
             },
         },
-        onSubmit: async ({ value }) => {
-            setIsSubmitProcessing(true);
-            resetAlreadyTakenStates();
-
-            const username = await authClient.isUsernameAvailable(
-                {
-                    username: value.username,
-                },
-                {
-                    onError: async () => {
-                        toast.error(
-                            "Failed to check username availability. Please try again.",
-                        );
-                        resetSubmitState();
-                    },
-                },
-            );
-
-            if (username.data?.available) {
-                const { error } = await authClient.signUp.email(
-                    {
-                        email: value.email,
-                        name: `${value.firstName} ${value.lastName}`,
-                        password: value.password,
-                        username: value.username,
-                    },
-                    {
-                        onSuccess: async (ctx) => {
-                            const authToken =
-                                ctx.response.headers.get("set-auth-token");
-
-                            if (authToken) {
-                                await storeAuthToken(authToken);
-                            }
-
-                            toast.success("Account created successfully!");
-                            // TODO: redirect to /app/dashboard once built
-                            push("/");
-                        },
-                    },
-                );
-
-                resetSubmitState();
-
-                if (error?.code) {
-                    // TODO: use ErrorCode type once all error codes are mapped
-                    const errorCode = error.code as string;
-
-                    const errorMessage = getAuthErrorMessage(errorCode);
-
-                    // Show specific error message in toast if available
-                    if (errorMessage) {
-                        return toast.error(errorMessage);
-                    }
-
-                    //? Workaround as error code is not in the error types returned by the auth client
-                    if (errorCode == "USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL") {
-                        return setIsEmailAlreadyTaken(true);
-                    } else {
-                        form.reset(); // Reset the form on unexpected error
-                        return toast.error("Sign up failed. Please try again.");
-                    }
-                }
-            } else {
-                setIsUsernameAlreadyTaken(true);
-                setIsSubmitProcessing(false);
-            }
-        },
+        onSubmit: async ({ value }) =>
+            await handleSignUp(
+                value,
+                authClient,
+                push,
+                setIsUsernameAlreadyTaken,
+                setIsEmailAlreadyTaken,
+                setIsSubmitDisabled,
+                () => form.reset(),
+            ),
         onSubmitInvalid: () => {
             toast.error("Sign up failed. Please check the form for errors.");
-            resetSubmitState();
+            setIsSubmitDisabled(true);
         },
         ...signUpFormOptions,
     });
@@ -292,11 +194,20 @@ const SignUpForm = () => {
                     )}
                 </form.AppField>
                 <form.AppForm>
-                    <form.SubmitButton
-                        label="Sign Up"
-                        isDisabled={isSubmitDisabled}
-                        isLoading={isSubmitProcessing}
-                    />
+                    <form.Subscribe
+                        selector={(state) => [
+                            state.canSubmit,
+                            state.isSubmitting,
+                        ]}
+                    >
+                        <form.SubmitButton
+                            label="Sign Up"
+                            isDisabled={
+                                !form.state.canSubmit || isSubmitDisabled
+                            }
+                            isLoading={form.state.isSubmitting}
+                        />
+                    </form.Subscribe>
                 </form.AppForm>
             </div>
         </form>
