@@ -1,5 +1,15 @@
 # @stratify/stratify-ui
 
+## 0.1.5
+
+### Patch Changes
+
+- cc6b2af: - Build login page
+    - Move submit handler for the sign up form to a separate file to allow for unit tests to be written for it
+    - Add unit tests for login page, login form and submit handler
+    - Add unit tests for the submit handler used in the sign up form
+    - Rename unauthenticated route group (for public-facing pages) to "public"
+
 ## 0.1.4
 
 ### Patch Changes
