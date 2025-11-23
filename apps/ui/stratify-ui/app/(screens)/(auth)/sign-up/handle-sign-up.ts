@@ -27,9 +27,9 @@ export const handleSignUp = async (
             username: value.username,
         });
 
-        if (isUsernameAvailableError?.code) {
+        if (isUsernameAvailableError) {
             const errorMessage = getAuthErrorMessage(
-                isUsernameAvailableError.code,
+                isUsernameAvailableError.code as string,
             );
 
             setIsSubmitDisabled(true);
@@ -63,9 +63,9 @@ export const handleSignUp = async (
         }
 
         //! Handle error here instead of in an onError callback to access the error code properly
-        if (signUpError?.code) {
+        if (signUpError) {
             // TODO: use ErrorCode type once all error codes are mapped
-            const errorCode = signUpError.code as string;
+            const errorCode = signUpError?.code as string;
             const errorMessage = getAuthErrorMessage(errorCode);
 
             // Show specific error message in toast if available
