@@ -1,10 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
-import { Button } from "../ui/button";
+import { Button } from "../../ui/button";
 import { useRouter } from "next/navigation";
-import StratifyIcon from "../Common/StratifyIcon";
+import StratifyIcon from "../../Common/StratifyIcon";
 
 type NavLink = {
     label: string;
@@ -18,7 +17,7 @@ const navLinks = [
     { label: "Learn", href: "/learn" },
 ] satisfies NavLink[];
 
-const Navbar = () => {
+const PublicNavbar = () => {
     const { push } = useRouter();
 
     return (
@@ -56,4 +55,4 @@ const Navbar = () => {
     );
 };
 
-export default Navbar;
+export default PublicNavbar;
