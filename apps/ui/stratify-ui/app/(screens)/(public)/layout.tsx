@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "../../globals.css";
 import Providers from "../../global/Providers";
-import Navbar from "../../components/Navbar/Navbar";
+import PublicNavbar from "../../components/(public)/PublicNavbar/PublicNavbar";
 import { getFontClassNames } from "@/lib/fonts";
 
 export const metadata: Metadata = {
@@ -21,15 +21,12 @@ export default function RootLayout({ children }: RootLayoutProps) {
     return (
         <html lang="en">
             <head />
-            <body
-                className={`${fontClassNames} antialiased`}
-                id="root"
-            >
+            <body className={`${fontClassNames} antialiased`} id="root">
                 <Providers
                     apiProxyUrl={apiProxyUrl}
                     authProxyUrl={authProxyUrl}
                 >
-                    <Navbar />
+                    <PublicNavbar />
                     {children}
                 </Providers>
             </body>

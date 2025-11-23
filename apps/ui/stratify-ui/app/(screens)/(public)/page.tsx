@@ -1,5 +1,5 @@
-import CallToAction from "../../components/LandingPage/CallToAction";
-import KeyFeature from "../../components/LandingPage/KeyFeature";
+import CallToAction from "../../components/(public)/LandingPage/CallToAction";
+import KeyFeature from "../../components/(public)/LandingPage/KeyFeature";
 
 export default function LandingPage() {
     return (
