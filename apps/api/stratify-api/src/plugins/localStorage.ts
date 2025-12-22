@@ -7,19 +7,26 @@ async function localStorage(fastify: FastifyInstance) {
     fastify.addHook("onRequest", async (request, _reply) => {
         const store = request.requestContext;
         const authorization = request.headers["authorization"];
+        const isAuthRoute = request.url.includes("/auth/");
 
         if (store) {
             store.set("requestId", request.id);
             store.set("user", null);
 
+            // Sets user details in context store if JWT is present and auth route isn't being accessed
             if (
                 authorization &&
-                !request.url.includes("/auth/") &&
+                !isAuthRoute &&
                 authorization.startsWith("Bearer ")
             ) {
                 const userDetails = await decodeToken(
                     authorization.split(" ")[1],
                 );
+
+                if (!userDetails) {
+                    return;
+                }
+
                 store.set("user", userDetails);
             }
         }
@@ -28,7 +35,10 @@ async function localStorage(fastify: FastifyInstance) {
 
 // Allows for getting values from the request context store outside of route handlers
 export const getFromStore = (key: keyof RequestContextData) => {
-    return requestContext.get(key);
+    return requestContext.get(key) ? requestContext.get(key) : null;
 };
 
-export default fp(localStorage, { name: "local-storage" });
+export default fp(localStorage, {
+    name: "local-storage",
+    dependencies: ["auth-check"],
+});
