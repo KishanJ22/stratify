@@ -1,0 +1,24 @@
+meta {
+  name: Get stock ticker
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/stocks/:ticker
+  body: none
+  auth: bearer
+}
+
+params:path {
+  ticker: AAPL
+}
+
+auth:bearer {
+  token: eyJhbGciOiJFZERTQSIsImtpZCI6IlRBbTlKVzBibjMxMTJLck53d3JYanRCRkxQREdtUTFxIn0.eyJpYXQiOjE3NjQwOTcyNDEsIm5hbWUiOiJ0ZXN0dXNlciIsImVtYWlsIjoidGVzdC11c2VyQHRlc3QuY29tIiwiZW1haWxWZXJpZmllZCI6ZmFsc2UsImltYWdlIjoiIiwiY3JlYXRlZEF0IjoiMjAyNS0wOS0yNVQyMzozNTowMS40MjJaIiwidXBkYXRlZEF0IjoiMjAyNS0wOS0yNVQyMzozNTowMS40MjJaIiwidXNlcm5hbWUiOiJ0ZXN0dXNlciIsImRpc3BsYXlVc2VybmFtZSI6InRlc3R1c2VyIiwidHdvRmFjdG9yRW5hYmxlZCI6ZmFsc2UsImlkIjoib0tPU1gxTVgzT20zdHhURjE3N1lYMG5iN3Q3MFBJa04iLCJzdWIiOiJvS09TWDFNWDNPbTN0eFRGMTc3WVgwbmI3dDcwUElrTiIsImV4cCI6MTc2NDEwMDg0MSwiaXNzIjoiaHR0cDovLzEyNy4wLjAuMToyMDAwIiwiYXVkIjoiaHR0cDovLzEyNy4wLjAuMToyMDAwIn0.Zkh6upX5B48JxTqfXn2LkIGZNs3VC9tfZZ3H-GJSNu6WpCJjdD59iX6hMBYCJ_K3rTj9aAAp4Qp6RUzk8pwSCg
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
