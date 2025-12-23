@@ -40,6 +40,7 @@ export const handleLogin = async (
             return toast.error("Login failed. Please try again.");
         }
     } catch (error) {
+        console.error("Login error:", error);
         return toast.error("Login failed. Please try again.");
     }
 };

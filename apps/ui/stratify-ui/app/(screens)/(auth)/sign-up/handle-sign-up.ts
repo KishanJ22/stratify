@@ -81,6 +81,7 @@ export const handleSignUp = async (
             }
         }
     } catch (error) {
+        console.error("Sign up error:", error);
         toast.error("Sign up failed. Please try again.");
         return setIsSubmitDisabled(false);
     }
