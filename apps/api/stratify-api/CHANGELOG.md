@@ -1,5 +1,14 @@
 # @stratify/stratify-api
 
+## 0.2.5
+
+### Patch Changes
+
+- 1a285f2: - Add plugin to do an auth check when a request is made to a protected route (any route other than the auth routes, /health and root)
+    - Store user details in context for each request that requires authentication
+    - Log user details if available in context
+    - Build placeholder route for getting stock ticker data to test auth
+
 ## 0.2.4
 
 ### Patch Changes
