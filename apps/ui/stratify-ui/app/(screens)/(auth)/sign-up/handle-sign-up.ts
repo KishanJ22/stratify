@@ -58,8 +58,7 @@ export const handleSignUp = async (
                 await storeAuthToken(authToken);
             }
 
-            // TODO: redirect to /app/dashboard once built
-            return push("/");
+            return push("/app/dashboard");
         }
 
         //! Handle error here instead of in an onError callback to access the error code properly
@@ -82,6 +81,7 @@ export const handleSignUp = async (
             }
         }
     } catch (error) {
+        console.error("Sign up error:", error);
         toast.error("Sign up failed. Please try again.");
         return setIsSubmitDisabled(false);
     }

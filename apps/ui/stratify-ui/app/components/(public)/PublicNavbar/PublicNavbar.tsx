@@ -1,10 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
-import { Button } from "../ui/button";
+import { Button } from "../../ui/button";
 import { useRouter } from "next/navigation";
-import StratifyIcon from "../Common/StratifyIcon";
+import StratifyIcon from "../../Common/StratifyIcon";
 
 type NavLink = {
     label: string;
@@ -18,11 +17,11 @@ const navLinks = [
     { label: "Learn", href: "/learn" },
 ] satisfies NavLink[];
 
-const Navbar = () => {
+const PublicNavbar = () => {
     const { push } = useRouter();
 
     return (
-        <nav className="flex flex-row justify-between px-16 py-6 items-center">
+        <nav className="sticky top-0 bg-background-light flex flex-row justify-between px-16 py-6 items-center">
             <div className="flex-1 justify-start flex flex-row gap-x-2 py-2">
                 <StratifyIcon width={40} height={40} />
                 <div className="font-sans font-semibold text-primary-base text-4xl">
@@ -56,4 +55,4 @@ const Navbar = () => {
     );
 };
 
-export default Navbar;
+export default PublicNavbar;

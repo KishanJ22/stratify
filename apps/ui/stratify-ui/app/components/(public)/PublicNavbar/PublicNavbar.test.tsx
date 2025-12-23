@@ -1,7 +1,7 @@
 import { userEvent } from "@testing-library/user-event";
 import { render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import Navbar from "./Navbar";
+import Navbar from "./PublicNavbar";
 import { mockNextLink } from "@/app/tests/_mocks/mockNextLink";
 
 // Mock Image component from next/image

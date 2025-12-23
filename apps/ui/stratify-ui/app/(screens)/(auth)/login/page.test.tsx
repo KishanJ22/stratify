@@ -5,10 +5,14 @@ import { beforeEach } from "node:test";
 import { render, screen } from "@testing-library/react";
 
 const mockRouterPush = vi.fn();
+const mockGetSearchParam = vi.fn();
 
 vi.mock("next/navigation", () => ({
     useRouter: () => ({
         push: mockRouterPush,
+    }),
+    useSearchParams: () => ({
+        get: mockGetSearchParam,
     }),
 }));
 

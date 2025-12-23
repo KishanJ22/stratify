@@ -1,6 +1,7 @@
 import { getFromStore } from "./plugins/localStorage.js";
 import { pino } from "pino";
 import "dotenv/config";
+import { UserDetails } from "./utils/decodeToken.js";
 
 export const loggerVariant = {
     local: {
@@ -54,11 +55,11 @@ const logger = pino({
     ...loggerVariant[environment],
     mixin: () => {
         const requestId = getFromStore("requestId");
-        const user = getFromStore("user") || undefined;
+        const user = getFromStore("user") as UserDetails | null;
 
         return {
-            requestId,
-            user,
+            requestId: requestId ?? undefined,
+            user: user ?? undefined,
         };
     },
 });

@@ -1,12 +1,11 @@
 import { createAuthClient } from "better-auth/react";
 import { usernameClient, jwtClient } from "better-auth/client/plugins";
 
-const authErrorCodes = createAuthClient({
+const authClient = createAuthClient({
     plugins: [usernameClient(), jwtClient()],
 }).$ERROR_CODES;
 
-export type ErrorCode = keyof typeof authErrorCodes;
-
+type ErrorCode = keyof typeof authClient;
 // TODO: replace string with an object with locales (e.g. { en: string, es: string })
 type ErrorCodeMapping = Partial<Record<ErrorCode, string>>;
 

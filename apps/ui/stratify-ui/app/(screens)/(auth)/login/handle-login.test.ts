@@ -76,7 +76,7 @@ describe("handleLogin", () => {
         });
 
         expect(mockStoreToken).toHaveBeenCalledWith("valid-token");
-        expect(mockRouterPush).toHaveBeenCalledWith("/");
+        expect(mockRouterPush).toHaveBeenCalledWith("/app/dashboard");
     });
 
     it("AB#152 - should handle login with email successfully", async () => {
@@ -101,7 +101,7 @@ describe("handleLogin", () => {
         });
 
         expect(mockStoreToken).toHaveBeenCalledWith("valid-token");
-        expect(mockRouterPush).toHaveBeenCalledWith("/");
+        expect(mockRouterPush).toHaveBeenCalledWith("/app/dashboard");
     });
 
     it("should handle login failure correctly (error code specified)", async () => {
