@@ -1,5 +1,5 @@
 import { config, openapi } from "./config.js";
-import Fastify from "fastify";
+import Fastify, { type FastifyError } from "fastify";
 import cors from "@fastify/cors";
 import FastifyFormBody from "@fastify/formbody";
 import autoload from "@fastify/autoload";
@@ -61,7 +61,7 @@ app.setNotFoundHandler((request, reply) => {
         .send({ message: `Route not found: ${request.method} ${request.url}` });
 });
 
-app.setErrorHandler((error, request, reply) => {
+app.setErrorHandler<FastifyError>((error, request, reply) => {
     logger.error(
         { err: error },
         `Error in request: ${request.method} ${request.url}`,

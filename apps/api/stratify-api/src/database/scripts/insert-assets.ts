@@ -6,7 +6,7 @@ import db from "../db.js";
 import logger from "../../logger.js";
 import { opendir, readFile } from "fs/promises";
 import { SingleBar } from "cli-progress";
-import { Dirent, readdirSync } from "fs";
+import { readdirSync } from "fs";
 import pLimit from "p-limit";
 
 const assetPricesDir = join(
@@ -104,12 +104,9 @@ const insertAssetPrices = async (
     }
 };
 
-const processAssetFile = async (
-    file: Dirent<string>,
-    progressBar: SingleBar,
-) => {
+const processAssetFile = async (filename: string, progressBar: SingleBar) => {
     try {
-        const filePath = join(assetPricesDir, file.name);
+        const filePath = join(assetPricesDir, filename);
         const fileContent = await readFile(filePath, {
             encoding: "utf-8",
         });
@@ -134,7 +131,7 @@ const processAssetFile = async (
             await transaction.rollback().execute();
         }
     } catch (error) {
-        logger.error(`Error reading file ${file}: ${error}`);
+        logger.error(`Error reading file ${filename}: ${error}`);
     }
 };
 
@@ -153,7 +150,10 @@ const insertAssets = async () => {
     progressBar.start(fileCount, 0);
 
     for await (const file of assetFiles) {
-        insertPromises.push(limit(() => processAssetFile(file, progressBar)));
+        const filename = file.name;
+        insertPromises.push(
+            limit(() => processAssetFile(filename, progressBar)),
+        );
     }
 
     await Promise.all(insertPromises);
