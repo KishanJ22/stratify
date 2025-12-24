@@ -1,4 +1,7 @@
 import baseConfig from "../../../eslint.config.mjs";
-import tseslint from "typescript-eslint";
+import { defineConfig, globalIgnores } from "eslint/config";
 
-export default tseslint.config(...baseConfig);
+export default defineConfig([
+    ...baseConfig,
+    globalIgnores(["src/database/types.ts"]),
+]);
