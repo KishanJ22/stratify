@@ -30,7 +30,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
                 });
 
                 // Process authentication request
-                const response = await auth.handler(req);
+                const response = await auth.handler(req as Request);
 
                 reply.status(response.status);
                 response.headers.forEach((value, key) => {
