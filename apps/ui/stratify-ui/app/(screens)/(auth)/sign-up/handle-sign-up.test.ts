@@ -101,7 +101,7 @@ describe("handleSignUp", () => {
         });
 
         expect(mockStoreToken).toHaveBeenCalledWith("valid-token");
-        expect(mockRouterPush).toHaveBeenCalledWith("/");
+        expect(mockRouterPush).toHaveBeenCalledWith("/app/dashboard");
     });
 
     it("AB#140 - should handle a username already being taken", async () => {

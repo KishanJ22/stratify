@@ -28,7 +28,7 @@ export const auth = betterAuth({
     plugins: [
         jwt({
             jwt: {
-                expirationTime: "15m", // 15 minutes for access tokens
+                expirationTime: "1h",
             },
         }),
         bearer(),
@@ -66,5 +66,10 @@ export const auth = betterAuth({
             }
         },
     },
-    trustedOrigins: ["http://localhost:3000"],
+    trustedOrigins: [
+        "http://localhost:3000",
+        "https://stratify.kjet.dev",
+        "https://stratify-dev.kjet.dev",
+        "https://stratify-staging.kjet.dev",
+    ],
 });

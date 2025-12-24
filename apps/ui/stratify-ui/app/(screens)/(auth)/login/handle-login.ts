@@ -27,8 +27,7 @@ export const handleLogin = async (
 
         if (data?.token) {
             await storeAuthToken(data.token);
-            // TODO: redirect to /app/dashboard once built
-            return push("/");
+            return push("/app/dashboard");
         }
 
         if (error?.code) {
@@ -41,6 +40,7 @@ export const handleLogin = async (
             return toast.error("Login failed. Please try again.");
         }
     } catch (error) {
+        console.error("Login error:", error);
         return toast.error("Login failed. Please try again.");
     }
 };

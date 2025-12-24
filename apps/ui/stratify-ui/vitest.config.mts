@@ -23,6 +23,8 @@ export default defineConfig({
                 "app/components/ui/**/*",
                 "app/api/**/*",
                 "app/tests/**/*",
+                "app/global/get-query-client.ts",
+                "*/**/layout.tsx",
             ],
         },
         server: {

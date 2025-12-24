@@ -3,11 +3,29 @@
 import StratifyIcon from "@/app/components/Common/StratifyIcon";
 import { Button } from "@/app/components/ui/button";
 import { ChevronRight } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import LoginForm from "./LoginForm";
+import { toast } from "sonner";
+import { useEffect } from "react";
 
 export default function LoginPage() {
     const { push } = useRouter();
+    const searchParams = useSearchParams();
+
+    const loggedOut = searchParams.get("loggedOut");
+    const sessionInvalid = searchParams.get("sessionInvalid");
+
+    useEffect(() => {
+        setTimeout(() => {
+            if (loggedOut) {
+                toast.success("You have been logged out successfully.");
+            }
+
+            if (sessionInvalid) {
+                toast.error("Session is invalid. Please log in again.");
+            }
+        });
+    }, [loggedOut, sessionInvalid]);
 
     return (
         <div className="font-sans items-center justify-items-center min-h-screen">
