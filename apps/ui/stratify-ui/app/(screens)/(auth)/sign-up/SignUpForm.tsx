@@ -1,7 +1,5 @@
 import { useAppForm } from "@/app/components/Form/useForm";
 import { useAuthClient } from "@/lib/auth/auth";
-import { getAuthErrorMessage } from "@/lib/auth/authErrorCodes";
-import { storeAuthToken } from "@/lib/auth/store-auth-token";
 import { formOptions } from "@tanstack/react-form";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
