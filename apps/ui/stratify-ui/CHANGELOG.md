@@ -1,5 +1,11 @@
 # @stratify/stratify-ui
 
+## 0.1.7
+
+### Patch Changes
+
+- e9437aa: Update dependencies and eslint config
+
 ## 0.1.6
 
 ### Patch Changes
