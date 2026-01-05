@@ -26,6 +26,7 @@ const createPortfoliosTable = (db: Kysely<any>) =>
             ["user_id"],
             "public.user",
             ["id"],
+            (cb) => cb.onDelete("cascade"),
         );
 
 export async function up(db: Kysely<any>): Promise<void> {
