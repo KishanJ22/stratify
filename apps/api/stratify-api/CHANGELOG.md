@@ -1,5 +1,11 @@
 # @stratify/stratify-api
 
+## 0.2.7
+
+### Patch Changes
+
+- 9bc9a27: Add migrations to create tables for storing portfolios and trades
+
 ## 0.2.6
 
 ### Patch Changes
