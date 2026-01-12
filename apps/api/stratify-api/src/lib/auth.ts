@@ -1,6 +1,6 @@
 import { betterAuth } from "better-auth";
 import { bearer, jwt, openAPI, twoFactor, username } from "better-auth/plugins";
-import { pool } from "../database/db.js";
+import { createPool } from "../database/db.js";
 import config from "../config.js";
 import logger from "../logger.js";
 import { sendMail } from "./mail.js";
@@ -9,8 +9,11 @@ export const auth = betterAuth({
     appName: "Stratify",
     baseURL: config.auth.baseUrl,
     basePath: "/auth",
-    database: pool,
+    database: createPool("-c search_path=auth"),
     secret: config.auth.secret,
+    experimental: {
+        joins: true,
+    },
     emailAndPassword: {
         enabled: true,
         requireEmailVerification: false, // TODO: Use resend for sending emails
