@@ -13,7 +13,7 @@ export type Numeric = ColumnType<string, number | string, number | string>;
 
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
-export interface Account {
+export interface AuthAccount {
   accessToken: string | null;
   accessTokenExpiresAt: Timestamp | null;
   accountId: string;
@@ -29,14 +29,15 @@ export interface Account {
   userId: string;
 }
 
-export interface Jwks {
+export interface AuthJwks {
   createdAt: Timestamp;
+  expiresAt: Timestamp | null;
   id: string;
   privateKey: string;
   publicKey: string;
 }
 
-export interface Session {
+export interface AuthSession {
   createdAt: Generated<Timestamp>;
   expiresAt: Timestamp;
   id: string;
@@ -45,6 +46,35 @@ export interface Session {
   updatedAt: Timestamp;
   userAgent: string | null;
   userId: string;
+}
+
+export interface AuthTwoFactor {
+  backupCodes: string;
+  id: string;
+  secret: string;
+  userId: string;
+}
+
+export interface AuthUser {
+  createdAt: Generated<Timestamp>;
+  displayUsername: string | null;
+  email: string;
+  emailVerified: boolean;
+  id: string;
+  image: string | null;
+  name: string;
+  twoFactorEnabled: boolean | null;
+  updatedAt: Generated<Timestamp>;
+  username: string | null;
+}
+
+export interface AuthVerification {
+  createdAt: Generated<Timestamp>;
+  expiresAt: Timestamp;
+  id: string;
+  identifier: string;
+  updatedAt: Generated<Timestamp>;
+  value: string;
 }
 
 export interface StratifyAssetPrices {
@@ -88,45 +118,41 @@ export interface StratifyMigrationsDbMigrations {
   timestamp: string;
 }
 
-export interface TwoFactor {
-  backupCodes: string;
+export interface StratifyPortfolios {
+  createdAt: Generated<Timestamp>;
+  description: string | null;
   id: string;
-  secret: string;
+  name: string;
+  updatedAt: Generated<Timestamp>;
   userId: string;
 }
 
-export interface User {
+export interface StratifyTrades {
+  assetCountryId: number;
+  assetId: string;
   createdAt: Generated<Timestamp>;
-  displayUsername: string | null;
-  email: string;
-  emailVerified: boolean;
-  id: string;
-  image: string | null;
-  name: string;
-  twoFactorEnabled: boolean | null;
+  fee: Numeric | null;
+  portfolioId: string;
+  pricePerShare: Numeric;
+  quantity: Numeric;
+  totalAmount: Numeric;
+  tradeAction: string;
+  tradeDate: Timestamp;
   updatedAt: Generated<Timestamp>;
-  username: string | null;
-}
-
-export interface Verification {
-  createdAt: Generated<Timestamp>;
-  expiresAt: Timestamp;
-  id: string;
-  identifier: string;
-  updatedAt: Generated<Timestamp>;
-  value: string;
 }
 
 export interface DB {
-  account: Account;
-  jwks: Jwks;
-  session: Session;
+  "auth.account": AuthAccount;
+  "auth.jwks": AuthJwks;
+  "auth.session": AuthSession;
+  "auth.twoFactor": AuthTwoFactor;
+  "auth.user": AuthUser;
+  "auth.verification": AuthVerification;
   "stratify.assetPrices": StratifyAssetPrices;
   "stratify.assets": StratifyAssets;
   "stratify.countries": StratifyCountries;
   "stratify.currencies": StratifyCurrencies;
+  "stratify.portfolios": StratifyPortfolios;
+  "stratify.trades": StratifyTrades;
   "stratifyMigrations.dbMigrations": StratifyMigrationsDbMigrations;
-  twoFactor: TwoFactor;
-  user: User;
-  verification: Verification;
 }

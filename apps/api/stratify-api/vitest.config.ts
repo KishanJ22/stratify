@@ -2,6 +2,7 @@ import { defineConfig } from "vitest/config";
 
 export default defineConfig({
     test: {
+        setupFiles: "./src/tests/setup.ts",
         coverage: {
             provider: "istanbul",
             reporter: ["html", "lcov", "text"],
@@ -13,7 +14,6 @@ export default defineConfig({
                 "**/types",
                 "**/types/**",
                 "**/services/**",
-                "src/openai/**",
                 "src/generate-openapi-spec.ts",
                 "src/database/**",
                 "src/app.ts",

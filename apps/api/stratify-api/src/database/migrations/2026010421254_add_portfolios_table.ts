@@ -20,14 +20,7 @@ const createPortfoliosTable = (db: Kysely<any>) =>
                 .defaultTo(sql`now()`)
                 .notNull(),
         )
-        .addColumn("user_id", "varchar", (col) => col.notNull())
-        .addForeignKeyConstraint(
-            "portfolios_user_fkey",
-            ["user_id"],
-            "public.user",
-            ["id"],
-            (cb) => cb.onDelete("cascade"),
-        );
+        .addColumn("user_id", "varchar", (col) => col.notNull());
 
 export async function up(db: Kysely<any>): Promise<void> {
     await createPortfoliosTable(db).execute();
