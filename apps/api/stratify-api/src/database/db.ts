@@ -30,4 +30,5 @@ const db = new Kysely<DB>({
     plugins,
 });
 
+export type KyselyDB = typeof db;
 export default db;
