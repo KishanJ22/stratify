@@ -7,7 +7,7 @@ const createTradesTable = (db: Kysely<any>) =>
         .createTable("trades")
         .addColumn("asset_id", "varchar", (col) => col.notNull())
         .addColumn("asset_country_id", "integer", (col) => col.notNull())
-        .addColumn("portfolio_id", "varchar", (col) => col.notNull())
+        .addColumn("portfolio_id", "serial", (col) => col.notNull())
         .addColumn("trade_date", "timestamp", (col) => col.notNull())
         .addColumn("trade_action", "text", (col) => col.notNull())
         .addColumn("quantity", "numeric", (col) => col.notNull())

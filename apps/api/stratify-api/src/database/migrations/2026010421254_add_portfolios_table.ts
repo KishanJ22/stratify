@@ -5,7 +5,7 @@ const createPortfoliosTable = (db: Kysely<any>) =>
     db.schema
         .withSchema("stratify")
         .createTable("portfolios")
-        .addColumn("id", "varchar", (col) => col.primaryKey().notNull())
+        .addColumn("id", "serial", (col) => col.primaryKey().notNull())
         .addColumn("name", "text", (col) => col.notNull())
         .addColumn("description", "text")
         .addColumn("created_at", "timestamp", (col) =>
