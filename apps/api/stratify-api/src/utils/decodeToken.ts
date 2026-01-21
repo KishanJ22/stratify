@@ -22,7 +22,7 @@ export const decodeToken = async (token: string) => {
         });
 
         return {
-            userId: payload.userId as string,
+            userId: payload.id as string,
             email: payload.email as string,
             name: payload.name as string,
             username: payload.username as string | undefined,
