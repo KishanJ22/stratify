@@ -1,6 +1,6 @@
 import config from "../config.js";
 import logger from "../logger.js";
-import { createRemoteJWKSet, jwtVerify } from "jose";
+import { createRemoteJWKSet, decodeJwt, jwtVerify } from "jose";
 
 export interface UserDetails {
     userId: string;
@@ -15,6 +15,25 @@ export const decodeToken = async (token: string) => {
         const jwks = createRemoteJWKSet(
             new URL(`${config.auth.baseUrl}/auth/jwks`),
         );
+
+        // Dev tokens are prefixed with "Dev-"
+        const isDevToken = token.startsWith("Dev-");
+
+        // Dev tokens should not be passed through in production
+        const isDevEnvironment = config.server.environment != "production";
+
+        // Handle dev tokens separately
+        if (isDevToken && isDevEnvironment) {
+            const payload = decodeJwt(token.split("Dev-")[1]);
+
+            return {
+                userId: payload.id as string,
+                email: payload.email as string,
+                name: payload.name as string,
+                username: payload.username as string | undefined,
+                displayUsername: payload.displayUsername as string | undefined,
+            } satisfies UserDetails;
+        }
 
         const { payload } = await jwtVerify(token, jwks, {
             issuer: config.auth.baseUrl,
