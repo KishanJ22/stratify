@@ -12,21 +12,21 @@ import {
 import { X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import * as zod from "zod";
 import {
     PortfolioNameAlreadyExistsResponse,
     useCreatePortfolio,
-} from "./handleCreatePortfolio";
+} from "./useCreatePortfolio";
 import { HTTPError } from "ky";
-
-interface CreatePortfolioModalProps {
-    isOpen: boolean;
-    handleClose: () => void;
-}
+import * as zod from "zod";
 
 const createPortfolioSchema = zod.object({
     name: zod.string().min(1, "Portfolio name is required"),
 });
+
+export interface CreatePortfolioModalProps {
+    isOpen: boolean;
+    handleClose: () => void;
+}
 
 const CreatePortfolioModal = ({
     isOpen,
@@ -72,8 +72,6 @@ const CreatePortfolioModal = ({
 
                         const errorMessage = errorJson?.data.error;
 
-                        console.log("Error from API", errorMessage);
-
                         if (errorMessage === "portfolioNameAlreadyExists") {
                             setIsPortfolioNameAlreadyExists(true);
                             setIsSubmitDisabled(true);
@@ -113,6 +111,7 @@ const CreatePortfolioModal = ({
                                 handleClose();
                                 form.reset();
                             }}
+                            data-testid="close-modal-icon"
                         />
                     </div>
                     <DialogDescription className="text-muted-dark leading-5">

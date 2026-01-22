@@ -15,7 +15,7 @@ const CreatePortfolioButton = () => {
                 onClick={() => setIsCreatePortfolioModalOpen(true)}
             >
                 <div className="flex flex-row gap-x-1 items-center">
-                    <Plus size={16} />
+                    <Plus size={16} data-testid="plus" />
                     <span className="text-sm leading-6">Create Portfolio</span>
                 </div>
             </Button>
