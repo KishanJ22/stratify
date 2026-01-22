@@ -12,6 +12,7 @@
         "test": "vitest run",
         "test:watch": "vitest --watch",
         "test:coverage": "vitest run --coverage",
+        "test:ui": "vitest --ui --coverage",
         "gen-spec": "openapi-typescript ../../api/stratify-api/docs/openapi.json -o ./openapi/types/stratify-api.d.ts"
     },
     "dependencies": {

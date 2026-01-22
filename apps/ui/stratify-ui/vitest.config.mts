@@ -11,6 +11,7 @@ export default defineConfig({
         globals: true,
         setupFiles: "app/tests/setup.tsx",
         coverage: {
+            enabled: true,
             provider: "istanbul",
             reporter: [
                 ["html"],
