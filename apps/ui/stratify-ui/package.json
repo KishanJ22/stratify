@@ -47,14 +47,14 @@
         "@types/react-dom": "^19.2.3",
         "@vanilla-extract/vite-plugin": "^5.1.4",
         "@vitejs/plugin-react": "^5.1.2",
-        "@vitest/coverage-istanbul": "4.0.16",
-        "@vitest/ui": "4.0.16",
+        "@vitest/coverage-istanbul": "4.0.17",
+        "@vitest/ui": "4.0.17",
         "eslint": "^9.39.2",
         "eslint-config-next": "15.5.9",
         "jsdom": "^27.3.0",
         "tailwindcss": "^4.1.18",
         "typescript": "^5.9.3",
         "vite-tsconfig-paths": "^5.1.4",
-        "vitest": "4.0.16"
+        "vitest": "4.0.17"
     }
 }
