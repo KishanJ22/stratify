@@ -1,7 +1,12 @@
 meta {
   name: Stratify API
+  seq: 1
 }
 
 auth {
-  mode: none
+  mode: bearer
+}
+
+auth:bearer {
+  token: {{jwt}}
 }

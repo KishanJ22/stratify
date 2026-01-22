@@ -44,7 +44,16 @@ export const loggerVariant = {
         },
     },
     test: {
-        level: "silent",
+        level: process.env.LOG_LEVEL ?? "debug",
+        transport: {
+            target: "pino-pretty",
+            options: {
+                colorize: true,
+                translateTime: "HH:MM:ss Z",
+                ignore: "pid,hostname",
+                levelFirst: true,
+            },
+        },
     },
 };
 
@@ -53,6 +62,14 @@ const environment = (process.env.ENVIRONMENT ??
 
 const logger = pino({
     ...loggerVariant[environment],
+    hooks: {
+        streamWrite: (s) => {
+            if (environment === "test") {
+                console.log(s);
+            }
+            return s;
+        },
+    },
     mixin: () => {
         const requestId = getFromStore("requestId");
         const user = getFromStore("user") as UserDetails | null;

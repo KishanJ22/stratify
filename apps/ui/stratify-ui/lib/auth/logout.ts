@@ -1,20 +1,17 @@
 "use client";
 
 import { AuthClient } from "./auth";
-import { removeAuthTokenFromCookies } from "./remove-auth-token";
+import { removeTokensFromCookies } from "./remove-tokens";
 
-export const logoutUser = async (
-    bearer: string,
-    authClient: AuthClient,
-) => {
+export const logoutUser = async (bearer: string, authClient: AuthClient) => {
     await authClient.signOut({
         fetchOptions: {
             headers: {
                 authorization: `Bearer ${bearer}`,
             },
             onSuccess: async () => {
-                //? Remove bearer token from cookies
-                await removeAuthTokenFromCookies();
+                //? Remove auth and access token from cookies
+                await removeTokensFromCookies();
             },
         },
     });

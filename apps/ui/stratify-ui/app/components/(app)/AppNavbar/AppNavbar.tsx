@@ -12,7 +12,7 @@ type NavLink = {
 
 const navLinks = [
     { label: "Dashboard", href: "/app/dashboard" },
-    { label: "Portfolio", href: "/app/portfolio" },
+    { label: "Portfolios", href: "/app/portfolios" },
     { label: "Markets", href: "/app/markets" },
     { label: "Learn", href: "/app/learn" },
 ] satisfies NavLink[];

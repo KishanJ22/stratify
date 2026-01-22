@@ -1,0 +1,17 @@
+meta {
+  name: Create Portfolio
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/portfolios
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "name": "main portfolio"
+  }
+}

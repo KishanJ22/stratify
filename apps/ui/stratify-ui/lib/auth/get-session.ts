@@ -1,23 +1,23 @@
 "use client";
 
 import { AuthClient } from "./auth";
+import { storeAccessToken } from "./store-access-token";
 
+//? Get user session using bearer token and store new access token in cookies if provided
 export const getUserSession = async (
     bearer: string,
     authClient: AuthClient,
 ) => {
-    let jwtToken = "";
-
     const { data, error } = await authClient.getSession({
         fetchOptions: {
             headers: {
                 authorization: `Bearer ${bearer}`,
             },
-            onSuccess: (ctx) => {
+            onSuccess: async (ctx) => {
                 const jwt = ctx.response.headers.get("set-auth-jwt");
 
                 if (jwt) {
-                    jwtToken = jwt;
+                    await storeAccessToken(jwt);
                 }
             },
         },
@@ -37,7 +37,6 @@ export const getUserSession = async (
                     displayUsername: data.user.displayUsername as string,
                     email: data.user.email,
                 },
-                token: jwtToken,
             },
         };
     }

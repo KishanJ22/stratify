@@ -121,7 +121,7 @@ export interface StratifyMigrationsDbMigrations {
 export interface StratifyPortfolios {
   createdAt: Generated<Timestamp>;
   description: string | null;
-  id: string;
+  id: Generated<number>;
   name: string;
   updatedAt: Generated<Timestamp>;
   userId: string;
@@ -132,7 +132,7 @@ export interface StratifyTrades {
   assetId: string;
   createdAt: Generated<Timestamp>;
   fee: Numeric | null;
-  portfolioId: string;
+  portfolioId: Generated<number>;
   pricePerShare: Numeric;
   quantity: Numeric;
   totalAmount: Numeric;
