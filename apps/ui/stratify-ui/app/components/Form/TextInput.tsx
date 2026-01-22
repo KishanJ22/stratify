@@ -10,6 +10,7 @@ interface FormInputProps {
     type?: HTMLInputTypeAttribute;
     error?: string;
     className?: string;
+    inputClassName?: string;
 }
 
 const TextInput = ({
@@ -19,6 +20,7 @@ const TextInput = ({
     type = "text",
     error,
     className,
+    inputClassName = "",
 }: FormInputProps) => {
     const field = useFieldContext<string>();
 
@@ -35,7 +37,7 @@ const TextInput = ({
                 className={
                     error
                         ? "border-negative-base focus-visible:border-negative-base focus-visible:ring-negative-base"
-                        : ""
+                        : inputClassName
                 }
             />
             {error && <FieldError>{error}</FieldError>}
