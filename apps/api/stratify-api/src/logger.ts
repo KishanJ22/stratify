@@ -62,6 +62,14 @@ const environment = (process.env.ENVIRONMENT ??
 
 const logger = pino({
     ...loggerVariant[environment],
+    hooks: {
+        streamWrite: (s) => {
+            if (environment === "test") {
+                console.log(s);
+            }
+            return s;
+        },
+    },
     mixin: () => {
         const requestId = getFromStore("requestId");
         const user = getFromStore("user") as UserDetails | null;
