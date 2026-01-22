@@ -10,10 +10,10 @@ export type PortfolioNameAlreadyExistsResponse =
 export const useCreatePortfolio = () => {
     const client = useKyClient();
 
-    const { isPending, mutate } = useMutation({
+    const { isPending, mutate, isSuccess } = useMutation({
         mutationFn: async (value: { name: string }) =>
             client.POST("/portfolios", { body: value }),
     });
 
-    return { isPending, mutate };
+    return { isPending, mutate, isSuccess };
 };
