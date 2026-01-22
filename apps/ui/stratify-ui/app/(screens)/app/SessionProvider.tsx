@@ -15,7 +15,6 @@ import {
 } from "react";
 
 export interface UserSession {
-    token: string;
     userDetails: {
         id: string;
         name: string;
