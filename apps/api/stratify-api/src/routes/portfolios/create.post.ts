@@ -13,9 +13,7 @@ type RequestBody = Static<typeof requestBodySchema>;
 
 //? Error value is camelCase to allow for translations to be easily mapped
 const portfolioNameAlreadyExistsResponseSchema = Type.Object({
-    data: Type.Object({
-        error: Type.Literal("portfolioNameAlreadyExists"),
-    }),
+    message: Type.Literal("portfolioNameAlreadyExists"),
 });
 
 type PortfolioNameAlreadyExistsResponse = Static<
@@ -75,9 +73,7 @@ export default async function portfolioCreatePost(fastify: FastifyInstance) {
 
                 if (isPortfolioNameAlreadyExists) {
                     return reply.status(400).send({
-                        data: {
-                            error: "portfolioNameAlreadyExists",
-                        },
+                        message: "portfolioNameAlreadyExists",
                     });
                 }
 
