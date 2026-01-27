@@ -21,8 +21,10 @@ export default defineConfig({
                 "src/lib/**",
                 "src/utils/**",
                 "src/routes/auth.ts",
+                "src/tests/**",
             ],
         },
+        fileParallelism: false,
         reporters: ["default"],
         server: {
             deps: {
