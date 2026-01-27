@@ -25,6 +25,7 @@ const eslintConfig = [
             "build/**",
             "next-env.d.ts",
             "coverage/**",
+            "**/tests/_mocks/**",
         ],
     },
 ];
