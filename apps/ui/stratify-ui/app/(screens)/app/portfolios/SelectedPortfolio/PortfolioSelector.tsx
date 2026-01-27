@@ -6,10 +6,10 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/app/components/ui/select";
-import type { PortfolioList } from "./usePortfoliosList";
+import type { PortfolioList } from "./usePortfolioList";
 import { Skeleton } from "@/app/components/ui/skeleton";
 
-interface PortfolioSelectorProps {
+export interface PortfolioSelectorProps {
     portfolioList: PortfolioList;
     isLoading: boolean;
 }
@@ -26,7 +26,10 @@ const PortfolioSelector = ({
                 Selected Portfolio
             </div>
             {isLoading ? (
-                <Skeleton className="h-11 w-64 rounded-xl" />
+                <Skeleton
+                    className="h-11 w-64 rounded-xl"
+                    data-testid="loading-skeleton"
+                />
             ) : (
                 <Select>
                     <SelectTrigger
@@ -34,6 +37,7 @@ const PortfolioSelector = ({
                         disabled={isSelectDisabled}
                     >
                         <SelectValue
+                            data-testid="portfolio-select-value"
                             placeholder={
                                 isSelectDisabled
                                     ? "Create a portfolio"
