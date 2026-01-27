@@ -28,10 +28,12 @@ describe("usePortfolioList", () => {
 
     it("should call GET /portfolios successfully", async () => {
         mockGetPortfolioList.mockResolvedValue({
-            data: [
-                { id: "1", name: "Portfolio 1" },
-                { id: "2", name: "Portfolio 2" },
-            ],
+            data: {
+                data: [
+                    { id: 1, name: "Portfolio 1" },
+                    { id: 2, name: "Portfolio 2" },
+                ],
+            },
         });
 
         const { result } = renderGetPortfolioListHook();
@@ -40,9 +42,10 @@ describe("usePortfolioList", () => {
             expect(mockKyClient.GET).toHaveBeenCalledWith("/portfolios");
 
             expect(result.current.data).toEqual([
-                { id: "1", name: "Portfolio 1" },
-                { id: "2", name: "Portfolio 2" },
+                { id: 1, name: "Portfolio 1" },
+                { id: 2, name: "Portfolio 2" },
             ]);
+
             expect(result.current.isLoading).toBe(false);
         });
     });
