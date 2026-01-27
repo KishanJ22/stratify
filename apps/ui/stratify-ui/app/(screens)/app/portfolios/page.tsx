@@ -2,10 +2,10 @@
 
 import CreatePortfolioButton from "./CreatePortfolio/CreatePortfolioButton";
 import PortfolioSelector from "./SelectedPortfolio/PortfolioSelector";
-import { usePortfoliosList } from "./SelectedPortfolio/usePortfoliosList";
+import { usePortfolioList } from "./SelectedPortfolio/usePortfolioList";
 
 export default function PortfoliosPage() {
-    const { data, isLoading } = usePortfoliosList();
+    const { data, isLoading } = usePortfolioList();
 
     return (
         <div className="items-center justify-items-center min-h-screen px-10">

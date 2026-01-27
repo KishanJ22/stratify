@@ -7,7 +7,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 export type PortfolioList =
     paths["/portfolios"]["get"]["responses"]["200"]["content"]["application/json"]["data"];
 
-export const usePortfoliosList = () => {
+export const usePortfolioList = () => {
     const client = useKyClient();
     const queryClient = useQueryClient();
 
