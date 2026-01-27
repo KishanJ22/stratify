@@ -1,5 +1,15 @@
 # @stratify/stratify-ui
 
+## 0.1.9
+
+### Patch Changes
+
+- 4a876f8: - Build PortfolioSelector select dropdown that allows for viewing and selecting a portfolio
+    - Add usePortfolioList hook to fetch list of portfolios for the user
+    - Add tests for PortfolioSelector component and usePortfolioList hook
+- Updated dependencies [4a876f8]
+    - @stratify/stratify-api@0.2.10
+
 ## 0.1.8
 
 ### Patch Changes

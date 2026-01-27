@@ -1,5 +1,13 @@
 # @stratify/stratify-api
 
+## 0.2.10
+
+### Patch Changes
+
+- 4a876f8: - Add endpoint to get a list of portfolios that a user has
+    - Add tests for this new endpoint
+    - Fix vitest testing configuration to not run tests parallel as they interfere with each other
+
 ## 0.2.9
 
 ### Patch Changes
