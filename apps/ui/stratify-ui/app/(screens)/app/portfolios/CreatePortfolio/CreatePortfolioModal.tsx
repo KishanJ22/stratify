@@ -18,6 +18,7 @@ import {
 } from "./useCreatePortfolio";
 import { HTTPError } from "ky";
 import * as zod from "zod";
+import { useQueryClient } from "@tanstack/react-query";
 
 const createPortfolioSchema = zod.object({
     name: zod.string().min(1, "Portfolio name is required"),
@@ -37,6 +38,7 @@ const CreatePortfolioModal = ({
         useState(false);
 
     const { isPending, mutate: createPortfolio } = useCreatePortfolio();
+    const queryClient = useQueryClient();
 
     const form = useAppForm({
         formId: "create-portfolio-form",
@@ -61,6 +63,12 @@ const CreatePortfolioModal = ({
                 onSuccess: () => {
                     toast.success("Portfolio created successfully!");
                     setIsPortfolioNameAlreadyExists(false);
+
+                    //? Invalidate portfolio list query to fetch updated list
+                    queryClient.invalidateQueries({
+                        queryKey: ["portfolio-list"],
+                    });
+
                     handleClose();
                     form.reset();
                 },
@@ -70,7 +78,7 @@ const CreatePortfolioModal = ({
                         const errorJson: PortfolioNameAlreadyExistsResponse =
                             await httpError.response.json();
 
-                        const errorMessage = errorJson?.data.error;
+                        const errorMessage = errorJson?.message;
 
                         if (errorMessage === "portfolioNameAlreadyExists") {
                             setIsPortfolioNameAlreadyExists(true);
