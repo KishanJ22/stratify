@@ -14,6 +14,7 @@ def format_cryptocurrency_data(crypto_data) -> CryptocurrencyItem:
         "fromCurrency": crypto_data.get("fromCurrency"),
         "toCurrency": crypto_data.get("currency"),
         "marketCap": crypto_data.get("marketCap"),
+        "marketState": crypto_data.get("marketState"),
         "allTimeHigh": crypto_data.get("allTimeHigh"),
         "allTimeLow": crypto_data.get("allTimeLow"),
         "priceDetails": {

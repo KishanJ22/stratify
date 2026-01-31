@@ -1,4 +1,4 @@
-from src.utils.common_schemas import PriceDetails, ExchangeDetails
+from src.utils.common_schemas import PriceDetails
 from pydantic import BaseModel
 
 class CryptocurrencyItem(BaseModel):
@@ -8,6 +8,7 @@ class CryptocurrencyItem(BaseModel):
     fromCurrency: str
     toCurrency: str
     marketCap: float
+    marketState: str
     allTimeHigh: float
     allTimeLow: float
     priceDetails: PriceDetails
