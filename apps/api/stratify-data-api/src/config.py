@@ -9,7 +9,7 @@ load_dotenv()
 logger = get_logger(__name__)
 
 def env_check():
-    required_vars = ["DATABASE_URL", "SERVER_PORT", "ENVIRONMENT"]
+    required_vars = ["SERVER_PORT", "ENVIRONMENT"]
     missing_vars = [var for var in required_vars if not getenv(var)]
     if missing_vars:
         for var in missing_vars:
@@ -20,11 +20,6 @@ def env_check():
 def load_config() -> ConfigModel:
     env_check()
     return ConfigModel(
-    database={
-        "connectionString": getenv("DATABASE_URL", ""),
-        "maxConnections": int(getenv("DB_MAX_CONNECTIONS", 10)),
-        "minConnections": int(getenv("DB_MIN_CONNECTIONS", 2)),
-    },
     server={
         "port": int(getenv("SERVER_PORT")),
     },
