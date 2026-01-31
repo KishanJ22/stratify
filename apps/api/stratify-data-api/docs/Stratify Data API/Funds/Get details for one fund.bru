@@ -1,17 +1,17 @@
 meta {
-  name: Get details for a single stock
+  name: Get details for one fund
   type: http
   seq: 2
 }
 
 get {
-  url: {{baseUrl}}/stocks/:symbol
+  url: {{baseUrl}}/funds/:symbol
   body: none
   auth: inherit
 }
 
 params:path {
-  symbol: PLTR
+  symbol: VUAG.L
 }
 
 settings {
