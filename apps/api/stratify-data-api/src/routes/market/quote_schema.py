@@ -7,7 +7,7 @@ class QuoteItem(BaseModel):
     shortName: Optional[str] = None
     longName: Optional[str] = None
     marketState: Optional[str] = None
-    marketCap: Optional[float] = None
+    marketCap: Optional[int] = None
     exchange: ExchangeDetails
     priceDetails: PriceDetails
     

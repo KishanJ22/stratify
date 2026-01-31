@@ -1,0 +1,27 @@
+from src.routes.market.quote_schema import QuoteItem
+from src.routes.market.quote_schema import QuoteItem
+
+def format_quote_info(quote_info) -> QuoteItem:
+        return {
+        "displayName": quote_info.get("displayName"),
+        "shortName": quote_info.get("shortName"),
+        "longName": quote_info.get("longName"),
+        "marketState": quote_info.get("marketState"),
+        "marketCap": quote_info.get("marketCap"),
+        "exchange": {
+            "exchangeName": quote_info.get("fullExchangeName"),
+            "exchangeTimezoneName": quote_info.get("exchangeTimezoneShortName"),
+        },
+        "priceDetails": {
+            "currentPrice": quote_info.get("regularMarketPrice"),
+            "dayTradingActivity": {
+                "open": quote_info.get("regularMarketOpen"),
+                "high": quote_info.get("regularMarketDayHigh"),
+                "low": quote_info.get("regularMarketDayLow"),
+                "close": quote_info.get("regularMarketPreviousClose"),
+                "volume": quote_info.get("regularMarketVolume"),
+                "change": quote_info.get("regularMarketChange"),
+                "changePercent": quote_info.get("regularMarketChangePercent"),
+            },
+        }
+    }
