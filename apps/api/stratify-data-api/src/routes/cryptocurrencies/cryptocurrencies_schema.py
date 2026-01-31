@@ -11,4 +11,3 @@ class CryptocurrencyItem(BaseModel):
     allTimeHigh: float
     allTimeLow: float
     priceDetails: PriceDetails
-    exchange: ExchangeDetails
