@@ -16,9 +16,8 @@ def test_get_stocks_success(mock_app, mocker):
     data = response.json()
     
     assert "data" in data
-    assert "stocks" in data["data"]
-    assert len(data["data"]["stocks"]) == 1
-    response_stock_data = data["data"]["stocks"][0]
+    assert len(data["data"]) == 1
+    response_stock_data = data["data"][0]
     assert response_stock_data == mock_stock_data
     
 def test_get_stocks_no_data_found(mock_app, mocker):
@@ -40,7 +39,7 @@ def test_get_stocks_multiple_symbols(mock_app, mocker):
     mock_ticker1.info = mock_yfinance_ticker_data
 
     mock_ticker2 = MagicMock()
-    mock_ticker2.info = {**mock_yfinance_ticker_data, "displayName": "Microsoft Corporation"}
+    mock_ticker2.info = {**mock_yfinance_ticker_data, "displayName": "Microsoft"}
 
     mock_tickers = MagicMock()
     mock_tickers.tickers = {"AAPL": mock_ticker1, "MSFT": mock_ticker2}
@@ -50,4 +49,4 @@ def test_get_stocks_multiple_symbols(mock_app, mocker):
     response = mock_app.get("/stocks?symbols=AAPL,MSFT")
     assert response.status_code == 200
     data = response.json()
-    assert len(data["data"]["stocks"]) == 2
+    assert len(data["data"]) == 2
