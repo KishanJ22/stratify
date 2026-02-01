@@ -21,7 +21,7 @@ async def get_cryptocurrency(symbol: str) -> CryptoSymbolGetResponse:
         crypto_data = Ticker(cleaned_symbol).info
         
         if not crypto_data or crypto_data.get("quoteType") == "NONE":
-            raise HTTPException(status_code=404, detail=f"No data found for symbol: {symbol}")
+            raise HTTPException(status_code=404, detail=f"Cryptocurrency with symbol {symbol} not found")
         
         formatted_data = format_cryptocurrency_data(crypto_data)
         

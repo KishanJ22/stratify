@@ -3,13 +3,13 @@ from src.tests.mock_app import mock_app
 import pandas as pd
 
 def test_get_industries_success(mock_app, mocker):
-    mock_sector = MagicMock()
-    mock_sector.industries = pd.DataFrame({
-        'name': {
-            'software-applications': {},
-            'information-technology': {},
-        }
-    })
+    mock_sector = MagicMock(
+        industries=pd.DataFrame({
+            'name': {
+                'software-applications': {},
+                'information-technology': {},
+            }
+    }))
     
     mock_sector_names = MagicMock()
     mock_sector_names.return_value = ['technology']

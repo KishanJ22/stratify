@@ -72,11 +72,11 @@ async def get_cryptocurrencies(symbols: str = Query(
             if crypto_info:
                 formatted_cryptocurrencies.append(crypto_info)
                 
-            if not formatted_cryptocurrencies:
-                raise HTTPException(
-                    status_code=404,
-                    detail="No cryptocurrency data found for the provided symbols"
-                )
+        if not formatted_cryptocurrencies:
+            raise HTTPException(
+                status_code=404,
+                detail="No cryptocurrency data found for the provided symbols"
+        )
             
         return CryptoCurrenciesGetResponse(data=formatted_cryptocurrencies)
     except HTTPException:

@@ -4,11 +4,8 @@ from src.routes.stocks._mocks.mock_yfinance_ticker_data import mock_yfinance_tic
 from src.routes.stocks._mocks.mock_stock_data import mock_stock_data
 
 def test_get_stocks_success(mock_app, mocker):
-    mock_ticker = MagicMock()
-    mock_ticker.info = mock_yfinance_ticker_data
-
-    mock_tickers = MagicMock()
-    mock_tickers.tickers = {"AAPL": mock_ticker}
+    mock_tickers = MagicMock(tickers={"AAPL": MagicMock(info=mock_yfinance_ticker_data)})
+    
     mocker.patch("src.routes.stocks.stocks_get.Tickers", return_value=mock_tickers)
 
     response = mock_app.get("/stocks?symbols=AAPL")
@@ -21,12 +18,7 @@ def test_get_stocks_success(mock_app, mocker):
     assert response_stock_data == mock_stock_data
     
 def test_get_stocks_no_data_found(mock_app, mocker):
-    # Mock empty response
-    mock_ticker = MagicMock()
-    mock_ticker.info = {"quoteType": "NONE"}
-    
-    mock_tickers = MagicMock()
-    mock_tickers.tickers = {"INVALID": mock_ticker}
+    mock_tickers = MagicMock(tickers={ "INVALID": MagicMock(info=None) })
     
     mocker.patch('src.routes.stocks.stocks_get.Tickers', return_value=mock_tickers)
 
@@ -34,15 +26,10 @@ def test_get_stocks_no_data_found(mock_app, mocker):
     assert response.status_code == 404
     
 def test_get_stocks_multiple_symbols(mock_app, mocker):
-    # Mock multiple tickers
-    mock_ticker1 = MagicMock()
-    mock_ticker1.info = mock_yfinance_ticker_data
-
-    mock_ticker2 = MagicMock()
-    mock_ticker2.info = {**mock_yfinance_ticker_data, "displayName": "Microsoft"}
-
-    mock_tickers = MagicMock()
-    mock_tickers.tickers = {"AAPL": mock_ticker1, "MSFT": mock_ticker2}
+    mock_tickers = MagicMock(tickers={
+        "AAPL": MagicMock(info=mock_yfinance_ticker_data),
+        "MSFT": MagicMock(info=mock_yfinance_ticker_data)
+    })
     
     mocker.patch('src.routes.stocks.stocks_get.Tickers', return_value=mock_tickers)
     
