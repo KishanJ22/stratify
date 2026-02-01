@@ -22,4 +22,7 @@ def test_get_stock_not_found(mock_app, mocker):
 
     response = mock_app.get("/stocks/INVALID")
     assert response.status_code == 404
+    
+    errorMessage = response.json()['detail']
+    assert errorMessage == "Stock details not found"
 

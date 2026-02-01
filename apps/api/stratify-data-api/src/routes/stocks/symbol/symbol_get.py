@@ -20,7 +20,7 @@ async def get_stock(symbol: str):
         cleaned_symbol = clean_symbol(symbol)
         symbol_data = Ticker(cleaned_symbol).info
 
-        if not symbol_data.get("symbol") or symbol_data.get("quoteType") == "NONE":
+        if not symbol_data or symbol_data.get("quoteType") == "NONE":
             raise HTTPException(status_code=404, detail="Stock details not found")
         
         formatted_data = format_stock_info(symbol_data)

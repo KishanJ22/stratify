@@ -67,6 +67,9 @@ async def get_funds(
                     continue
                 
                 formatted_funds.append(format_fund_info(ticker_data))
+                
+            if not formatted_funds or len(formatted_funds) == 0:
+                raise HTTPException(status_code=404, detail="No fund data found for provided symbols")
             
             return FundsGetResponse(data=formatted_funds)
         except HTTPException:

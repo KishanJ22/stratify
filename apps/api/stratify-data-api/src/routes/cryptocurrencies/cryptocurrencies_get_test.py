@@ -27,9 +27,9 @@ def test_get_cryptocurrencies_not_found(mock_app, mocker):
     
     response = mock_app.get("/cryptocurrencies?symbols=INVALID-CRYPTO,BTC-USD")
     assert response.status_code == 404
-    data = response.json()
+    errorMessage = response.json()['detail']
     
-    assert data["detail"] == "No cryptocurrency data found for the provided symbols"
+    assert errorMessage == "No cryptocurrency data found for the provided symbols"
 
 def test_get_cryptocurrencies_no_symbols(mock_app):
     response = mock_app.get("/cryptocurrencies?symbols=")
