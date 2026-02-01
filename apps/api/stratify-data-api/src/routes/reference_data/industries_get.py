@@ -1,15 +1,14 @@
-from fastapi import APIRouter, HTTPException
-from yfinance import Sector
-from pydantic import BaseModel
-from typing import List
 from src.utils.kebab_to_camel_case import kebab_to_camel_case
+from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel
+from yfinance import Sector
+from typing import List
 
-class IndustriesGetResponse(BaseModel):
-    data: List[str]
-
+# Required for mocking the list of sectors in tests
 # List of sector names available in yfinance 
 # See https://ranaroussi.github.io/yfinance/reference/api/yfinance.Sector.html#yfinance.Sector
-sector_names = [
+def get_sector_names():
+    return [
     'basic-materials', 
     'communication-services', 
     'consumer-cyclical', 
@@ -23,20 +22,24 @@ sector_names = [
     'utilities'
 ]
 
+class IndustriesGetResponse(BaseModel):
+    data: List[str]
+
 industries_get = APIRouter()
 
 @industries_get.get("/reference-data/industries", tags=["reference-data"])
-async def get_industries() -> IndustriesGetResponse:
+async def get_industries():
     try:
-        industries_list = []
+        industry_list = []
+        sector_names = get_sector_names()
         
         for sector in sector_names:
             sector_industries = Sector(sector).industries
-            industries_list.extend(sector_industries['name'].keys().tolist())
+            industry_list.extend(sector_industries['name'].keys().tolist())
             
-        industries_list = [kebab_to_camel_case(industry) for industry in industries_list]
+        industry_list = [kebab_to_camel_case(industry) for industry in industry_list]
         
-        return IndustriesGetResponse(data=industries_list)
+        return IndustriesGetResponse(data=industry_list)
     except HTTPException:
         raise
     except Exception as e:
