@@ -18,7 +18,7 @@ async def get_most_active(
         )
         
         if not most_active_assets or len(most_active_assets) == 0:
-            raise HTTPException(status_code=404, detail="No most active assets found with the specified criteria.")
+            raise HTTPException(status_code=404, detail="No assets found with the specified criteria.")
         
         return QuoteListGetResponse(data=most_active_assets)
     except HTTPException:

@@ -31,10 +31,11 @@ omit = [
     "**/*/__init__.py",
     "src/config.py",
     "src/generate_openapi_spec.py",
-    "src/tests/**/*",
+    "src/tests",
     "*_test.py",
     "src/routes/routes.py",
-    "*schema.py"
+    "*schema.py",
+    "**/*/_mocks/*"
 ]
 skip_empty = true
 show_missing = true

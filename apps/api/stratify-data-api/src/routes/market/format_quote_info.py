@@ -1,17 +1,13 @@
 from src.routes.market.quote_schema import QuoteItem
-from src.routes.market.quote_schema import QuoteItem
 
 def format_quote_info(quote_info) -> QuoteItem:
         return {
+        "symbol": quote_info.get("symbol"),
         "displayName": quote_info.get("displayName"),
         "shortName": quote_info.get("shortName"),
         "longName": quote_info.get("longName"),
         "marketState": quote_info.get("marketState"),
         "marketCap": quote_info.get("marketCap"),
-        "exchange": {
-            "exchangeName": quote_info.get("fullExchangeName"),
-            "exchangeTimezoneName": quote_info.get("exchangeTimezoneShortName"),
-        },
         "priceDetails": {
             "currentPrice": quote_info.get("regularMarketPrice"),
             "dayTradingActivity": {
@@ -23,5 +19,5 @@ def format_quote_info(quote_info) -> QuoteItem:
                 "change": quote_info.get("regularMarketChange"),
                 "changePercent": quote_info.get("regularMarketChangePercent"),
             },
-        }
+        },
     }

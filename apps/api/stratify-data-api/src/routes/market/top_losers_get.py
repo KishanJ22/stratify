@@ -18,7 +18,7 @@ async def get_top_losers(
         )
         
         if not top_losers or len(top_losers) == 0:
-            raise HTTPException(status_code=404, detail="No top losers found with the specified criteria.")
+            raise HTTPException(status_code=404, detail="No assets found with the specified criteria.")
         
         return QuoteListGetResponse(data=top_losers)
     except HTTPException:
