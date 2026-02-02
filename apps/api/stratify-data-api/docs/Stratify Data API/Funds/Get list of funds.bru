@@ -1,0 +1,20 @@
+meta {
+  name: Get list of funds
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/funds?symbols=VUAG.L, IITU.L, SPY
+  body: none
+  auth: inherit
+}
+
+params:query {
+  symbols: VUAG.L, IITU.L, SPY
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

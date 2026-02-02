@@ -1,0 +1,20 @@
+meta {
+  name: Get list of cryptocurrencies
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/cryptocurrencies?symbols=BTC-USD
+  body: none
+  auth: inherit
+}
+
+params:query {
+  symbols: BTC-USD
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

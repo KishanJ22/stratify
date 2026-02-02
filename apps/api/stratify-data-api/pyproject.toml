@@ -5,27 +5,25 @@ description = "A REST API for accessing stock market data powered by Yahoo Finan
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-    "fastapi[standard]>=0.116.1",
+    "fastapi[standard]>=0.128.0",
     "httpx>=0.28.1",
-    "psycopg-pool>=3.2.7",
-    "psycopg[binary]>=3.2.12",
-    "python-dotenv>=1.1.1",
-    "yfinance>=0.2.65",
+    "python-dotenv>=1.2.1",
+    "yfinance>=1.1.0",
 ]
 
 [dependency-groups]
 dev = [
-    "pytest>=8.4.1",
-    "pytest-cov>=6.2.1",
-    "pytest-env>=1.1.5",
-    "pytest-mock>=3.14.1",
+    "pytest>=9.0.2",
+    "pytest-cov>=7.0.0",
+    "pytest-env>=1.2.0",
+    "pytest-mock>=3.15.1",
 ]
 
 [tool.pytest.ini_options]
 addopts = "-ra -q --import-mode=importlib"
 python_files = "*test.py"
 env = [
-    "SERVER_PORT=8000",
+    "SERVER_PORT=2200",
 ]
 
 [tool.coverage.report]
@@ -33,10 +31,11 @@ omit = [
     "**/*/__init__.py",
     "src/config.py",
     "src/generate_openapi_spec.py",
-    "src/tests/**/*",
+    "src/tests",
     "*_test.py",
     "src/routes/routes.py",
-    "*schema.py"
+    "*schema.py",
+    "**/*/_mocks/*"
 ]
 skip_empty = true
 show_missing = true

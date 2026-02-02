@@ -1,8 +1,9 @@
+from src.routes.stocks.stocks_schema import StockItem
+from src.routes.stocks.stocks_get import format_stock_info
+from src.utils.clean_symbol import clean_symbol
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from yfinance import Ticker
-from src.routes.stocks.stocks_schema import StockItem
-from src.routes.stocks.stocks_get import format_ticker_info
 import logging
 
 logging.basicConfig(level=logging.INFO)
@@ -16,12 +17,13 @@ symbol_get = APIRouter()
 @symbol_get.get("/stocks/{symbol}", tags=["stocks"])
 async def get_stock(symbol: str):
     try:
-        symbol_data = Ticker(symbol).info
+        cleaned_symbol = clean_symbol(symbol)
+        symbol_data = Ticker(cleaned_symbol).info
 
-        if not symbol_data.get("symbol") or symbol_data.get("quoteType") == "NONE":
+        if not symbol_data or symbol_data.get("quoteType") == "NONE":
             raise HTTPException(status_code=404, detail="Stock details not found")
         
-        formatted_data = format_ticker_info(symbol_data)
+        formatted_data = format_stock_info(symbol_data)
         return SymbolGetResponse(data=formatted_data)
     except HTTPException:
             # Required for properly returning error responses

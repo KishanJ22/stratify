@@ -1,19 +1,20 @@
 meta {
-  name: Get stock news
+  name: Get details for one fund
   type: http
-  seq: 3
+  seq: 2
 }
 
 get {
-  url: {{baseUrl}}/stocks/:symbol/news
+  url: {{baseUrl}}/funds/:symbol
   body: none
   auth: inherit
 }
 
 params:path {
-  symbol: nvda
+  symbol: VUAG.L
 }
 
 settings {
   encodeUrl: true
+  timeout: 0
 }
