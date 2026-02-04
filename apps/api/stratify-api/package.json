@@ -34,7 +34,8 @@
         "db:drop-asset-prices": "tsx src/database/scripts/drop-asset-prices.ts",
         "test-db:start": "docker compose -f ./docker-compose.yml up -d && pnpm dotenv -e .env.test tsx src/utils/test-db-healthcheck.ts && pnpm test-db:prepare",
         "test-db:prepare": "pnpm dotenv -e .env.test pnpm kysely migrate:latest && pnpm dotenv -e .env.test pnpm db:seed-run",
-        "test-db:stop": "docker compose -f ./docker-compose.yml down --volumes"
+        "test-db:stop": "docker compose -f ./docker-compose.yml down --volumes",
+        "process-asset-names": "tsx src/process-asset-names/update-asset-details.ts"
     },
     "kysely-codegen": {
         "dialect": "postgres",
@@ -98,6 +99,7 @@
         "prettier-eslint": "^16.4.2",
         "typescript": "^5.9.3",
         "typescript-eslint": "^8.50.1",
-        "vitest": "4.0.17"
+        "vitest": "4.0.17",
+        "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
     }
 }
