@@ -3,12 +3,8 @@ from pydantic import BaseModel
 from typing import List, Optional
 
 class QuoteItem(BaseModel):
-    symbol: Optional[str] = None
-    displayName: Optional[str] = None
-    shortName: Optional[str] = None
-    longName: Optional[str] = None
-    marketState: Optional[str] = None
-    marketCap: Optional[int] = None
+    symbol: str
+    marketState: str
     priceDetails: PriceDetails
     
 class QuoteListGetResponse(BaseModel):

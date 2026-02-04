@@ -1,10 +1,6 @@
 mock_quote_data = {
     "symbol": "AAPL",
-    "displayName": "Apple Inc.",
-    "shortName": "Apple",
-    "longName": "Apple Inc.",
     "marketState": "REGULAR",
-    "marketCap": 3000000000000,
     "priceDetails": {
         "currentPrice": 150.25,
         "dayTradingActivity": {
