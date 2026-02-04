@@ -11,6 +11,7 @@ export const openapi = {
 };
 
 const configSchema = Type.Object({
+    dataApiBaseUrl: Type.String({ minLength: 1 }),
     database: Type.Object({
         host: Type.String({ minLength: 1 }),
         port: Type.Number({ minimum: 1 }),
@@ -44,6 +45,7 @@ const configSchema = Type.Object({
 type ConfigSchema = Static<typeof configSchema>;
 
 export const config: ConfigSchema = {
+    dataApiBaseUrl: process.env.DATA_API_BASE_URL!,
     auth: {
         baseUrl: process.env.BETTER_AUTH_BASE_URL!,
         secret: process.env.BETTER_AUTH_SECRET!,
