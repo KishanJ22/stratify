@@ -1,5 +1,11 @@
 # @stratify/stratify-api
 
+## 0.2.11
+
+### Patch Changes
+
+- 83cb818: Add script to process asset details from CSV text files and an Excel spreadsheet to update Asset records in the database with the correct name and asset type (Stock, ETF, Cryptocurrency).
+
 ## 0.2.10
 
 ### Patch Changes
