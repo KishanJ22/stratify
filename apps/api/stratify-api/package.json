@@ -1,6 +1,6 @@
 {
     "name": "@stratify/stratify-api",
-    "version": "0.2.10",
+    "version": "0.2.11",
     "description": "",
     "type": "module",
     "main": "dist/app.js",
@@ -35,7 +35,8 @@
         "test-db:start": "docker compose -f ./docker-compose.yml up -d && pnpm dotenv -e .env.test tsx src/utils/test-db-healthcheck.ts && pnpm test-db:prepare",
         "test-db:prepare": "pnpm dotenv -e .env.test pnpm kysely migrate:latest && pnpm dotenv -e .env.test pnpm db:seed-run",
         "test-db:stop": "docker compose -f ./docker-compose.yml down --volumes",
-        "data-api-typegen": "openapi-typescript ../stratify-data-api/docs/openapi.json -o ./src/lib/api/stratify-data-api.d.ts"
+        "data-api-typegen": "openapi-typescript ../stratify-data-api/docs/openapi.json -o ./src/lib/api/stratify-data-api.d.ts",
+        "process-asset-names": "tsx src/process-asset-names/update-asset-details.ts"
     },
     "kysely-codegen": {
         "dialect": "postgres",
@@ -102,6 +103,7 @@
         "prettier-eslint": "^16.4.2",
         "typescript": "^5.9.3",
         "typescript-eslint": "^8.50.1",
-        "vitest": "4.0.17"
+        "vitest": "4.0.17",
+        "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
     }
 }
