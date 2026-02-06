@@ -92,6 +92,7 @@ export interface StratifyAssetPrices {
 export interface StratifyAssets {
   countryId: number;
   createdAt: Generated<Timestamp>;
+  currency: string | null;
   name: string;
   symbol: string;
   type: string;
