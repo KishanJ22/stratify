@@ -1,4 +1,4 @@
-import { Type } from "@sinclair/typebox";
+import { Static, Type } from "@sinclair/typebox";
 
 const marketStates = [
     "PRE",
@@ -18,3 +18,6 @@ const assetTypes = ["STOCK", "ETF", "CRYPTOCURRENCY"] as const;
 export const assetTypeSchema = Type.Union(
     assetTypes.map((type) => Type.Literal(type)),
 );
+
+export type MarketState = Static<typeof marketStateSchema>;
+export type AssetType = Static<typeof assetTypeSchema>;

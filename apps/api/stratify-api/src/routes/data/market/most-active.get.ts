@@ -10,12 +10,12 @@ import {
 } from "./top-assets-schema.js";
 import { formatTopAssetDetails } from "./format-top-assets.js";
 
-export default function topGainersGet(fastify: FastifyInstance) {
+export default function mostActiveGet(fastify: FastifyInstance) {
     fastify.route<{
         Reply: TopAssetsSuccessResponse;
     }>({
         method: "GET",
-        url: "/data/market/top-gainers",
+        url: "/data/market/most-active",
         schema: {
             response: {
                 200: topAssetsResponseSchema,
@@ -27,13 +27,13 @@ export default function topGainersGet(fastify: FastifyInstance) {
             try {
                 logger.info(
                     { requestId },
-                    "Fetching top gainers from data API",
+                    "Fetching most active from data API",
                 );
-                const topGainersData = await dataApiClient
-                    .GET("/market/top-gainers")
+                const mostActiveData = await dataApiClient
+                    .GET("/market/most-active")
                     .then((res) => res.data?.data);
 
-                const assetDetails = topGainersData?.map(async (asset) => {
+                const assetDetails = mostActiveData?.map(async (asset) => {
                     const assetDetails = await fetchAssetDetailsQuery(
                         asset.symbol,
                     ).executeTakeFirst();
@@ -44,15 +44,15 @@ export default function topGainersGet(fastify: FastifyInstance) {
                         : null;
                 });
 
-                const topGainerAssets = (
+                const topLoserAssets = (
                     await Promise.all(assetDetails || [])
                 ).filter((asset) => asset !== null);
 
                 return reply.status(200).send({
-                    data: topGainerAssets,
+                    data: topLoserAssets,
                 });
             } catch (error) {
-                logger.error({ error }, "Error fetching top gainers");
+                logger.error({ error }, "Error fetching top losers");
                 throw error;
             }
         },

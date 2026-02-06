@@ -10,12 +10,12 @@ import {
 } from "./top-assets-schema.js";
 import { formatTopAssetDetails } from "./format-top-assets.js";
 
-export default function topGainersGet(fastify: FastifyInstance) {
+export default function topLosersGet(fastify: FastifyInstance) {
     fastify.route<{
         Reply: TopAssetsSuccessResponse;
     }>({
         method: "GET",
-        url: "/data/market/top-gainers",
+        url: "/data/market/top-losers",
         schema: {
             response: {
                 200: topAssetsResponseSchema,
@@ -25,15 +25,12 @@ export default function topGainersGet(fastify: FastifyInstance) {
             const requestId = getFromStore("requestId") as string;
 
             try {
-                logger.info(
-                    { requestId },
-                    "Fetching top gainers from data API",
-                );
-                const topGainersData = await dataApiClient
-                    .GET("/market/top-gainers")
+                logger.info({ requestId }, "Fetching top losers from data API");
+                const topLosersData = await dataApiClient
+                    .GET("/market/top-losers")
                     .then((res) => res.data?.data);
 
-                const assetDetails = topGainersData?.map(async (asset) => {
+                const assetDetails = topLosersData?.map(async (asset) => {
                     const assetDetails = await fetchAssetDetailsQuery(
                         asset.symbol,
                     ).executeTakeFirst();
@@ -44,15 +41,15 @@ export default function topGainersGet(fastify: FastifyInstance) {
                         : null;
                 });
 
-                const topGainerAssets = (
+                const topLoserAssets = (
                     await Promise.all(assetDetails || [])
                 ).filter((asset) => asset !== null);
 
                 return reply.status(200).send({
-                    data: topGainerAssets,
+                    data: topLoserAssets,
                 });
             } catch (error) {
-                logger.error({ error }, "Error fetching top gainers");
+                logger.error({ error }, "Error fetching top losers");
                 throw error;
             }
         },
