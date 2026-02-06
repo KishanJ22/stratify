@@ -1,0 +1,16 @@
+meta {
+  name: Get top losers
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/data/market/top-losers
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
