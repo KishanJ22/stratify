@@ -15,13 +15,6 @@ const assetPricesDir = join(
     "stratify-data-api/src/pricing_ingestor/data/output",
 );
 
-interface Asset {
-    ticker: string;
-    country: string;
-    type: "stock" | "cryptocurrency" | "currency";
-    assetPricesList: AssetPrice[];
-}
-
 interface AssetPrice {
     date: string;
     open: number;
@@ -31,16 +24,23 @@ interface AssetPrice {
     volume: number;
 }
 
-const ensureAssetExists = async (
+interface Asset {
+    ticker: string;
+    country: string;
+    type: "stock" | "cryptocurrency" | "currency";
+    assetPricesList: AssetPrice[];
+}
+
+const insertAssetDetails = async (
     trx: ControlledTransaction<DB>,
     asset: Asset,
-    countryId: number,
+    countryDetails: Country,
 ) => {
     // Check if the asset is already present in the db
     const isAssetPresent = await trx
         .selectFrom("stratify.assets as assets")
         .where("assets.symbol", "=", asset.ticker)
-        .where("assets.countryId", "=", countryId)
+        .where("assets.countryId", "=", countryDetails.countryId)
         .executeTakeFirst();
 
     // If the asset is not in the database, then add it
@@ -51,20 +51,14 @@ const ensureAssetExists = async (
             .values({
                 symbol: asset.ticker,
                 name: asset.ticker,
-                countryId,
+                countryId: countryDetails.countryId,
+                currency: countryDetails.currencyCode,
                 type: asset.type.toUpperCase(),
             })
             .returning("symbol as assetId")
             .executeTakeFirstOrThrow();
     }
 };
-
-const getCountryId = (trx: ControlledTransaction<DB>, countryCode: string) =>
-    trx
-        .selectFrom("stratify.countries as countries")
-        .where("countries.alpha2", "=", countryCode)
-        .select("countries.id as countryId")
-        .executeTakeFirstOrThrow();
 
 const insertAssetPrices = async (
     trx: ControlledTransaction<DB>,
@@ -104,7 +98,34 @@ const insertAssetPrices = async (
     }
 };
 
-const processAssetFile = async (filename: string, progressBar: SingleBar) => {
+const getCountries = () => {
+    try {
+        return db
+            .selectFrom("stratify.countries as countries")
+            .innerJoin(
+                "stratify.currencies as currencies",
+                "currencies.code",
+                "countries.currency",
+            )
+            .select([
+                "countries.id as countryId",
+                "countries.alpha2 as alpha2",
+                "currencies.code as currencyCode",
+            ])
+            .execute();
+    } catch (error) {
+        logger.error(`Error fetching country IDs: ${error}`);
+        throw error;
+    }
+};
+
+type Country = Awaited<ReturnType<typeof getCountries>>[number];
+
+const processAssetFile = async (
+    filename: string,
+    progressBar: SingleBar,
+    countries: Country[],
+) => {
     try {
         const filePath = join(assetPricesDir, filename);
         const fileContent = await readFile(filePath, {
@@ -114,15 +135,20 @@ const processAssetFile = async (filename: string, progressBar: SingleBar) => {
 
         const transaction = await db.startTransaction().execute();
         try {
-            const { countryId } = await getCountryId(
-                transaction,
-                asset.country,
+            const countryDetails = countries.find(
+                (country) => country.alpha2 === asset.country,
             );
 
-            await ensureAssetExists(transaction, asset, countryId);
-            await insertAssetPrices(transaction, asset, countryId);
+            if (countryDetails) {
+                await insertAssetDetails(transaction, asset, countryDetails);
+                await insertAssetPrices(
+                    transaction,
+                    asset,
+                    countryDetails.countryId,
+                );
 
-            await transaction.commit().execute();
+                await transaction.commit().execute();
+            }
             progressBar.increment();
         } catch (error) {
             logger.error(
@@ -146,13 +172,16 @@ const insertAssets = async () => {
         noTTYOutput: true,
     });
 
+    //? Fetch a list of country IDs and codes once
+    const countries = await getCountries();
+
     const fileCount = Array.from(readdirSync(assetPricesDir)).length;
     progressBar.start(fileCount, 0);
 
     for await (const file of assetFiles) {
         const filename = file.name;
         insertPromises.push(
-            limit(() => processAssetFile(filename, progressBar)),
+            limit(() => processAssetFile(filename, progressBar, countries)),
         );
     }
 
