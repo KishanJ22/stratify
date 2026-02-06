@@ -22,6 +22,7 @@ export interface Asset {
     name: string;
     assetType: "Stock" | "ETF" | "Cryptocurrency";
     countryId: number;
+    currency?: string;
 }
 
 const updateAssetDetailsDb = async (asset: Asset) => {
@@ -30,6 +31,7 @@ const updateAssetDetailsDb = async (asset: Asset) => {
         .selectFrom("stratify.assets as assets")
         .where("assets.symbol", "=", asset.symbol)
         .where("assets.countryId", "=", asset.countryId)
+        .selectAll()
         .executeTakeFirst();
 
     //? If the asset exists, update the name and type in the database
@@ -39,6 +41,7 @@ const updateAssetDetailsDb = async (asset: Asset) => {
             .set({
                 name: asset.name,
                 type: asset.assetType.toUpperCase(),
+                currency: asset.currency || isAssetPresent.currency,
                 updatedAt: new Date(),
             })
             .where("assets.symbol", "=", asset.symbol)

@@ -22,6 +22,7 @@
         "test:coverage": "pnpm test-db:start && pnpm dotenv -e .env.test vitest run --coverage && pnpm test-db:stop",
         "test:watch": "pnpm test-db:start && pnpm dotenv -e .env.test vitest --watch && pnpm test-db:stop",
         "generate-spec": "cross-env NODE_ENV=build tsx src/generate-openapi-spec.ts",
+        "data-api-typegen": "openapi-typescript ../stratify-data-api/docs/openapi.json -o ./src/lib/api/stratify-data-api.d.ts",
         "db:typegen": "pnpm kysely-codegen",
         "db:migrate-latest": "pnpm kysely migrate:latest",
         "db:migrate-up": "pnpm kysely migrate:up",
@@ -30,13 +31,11 @@
         "db:migrate-create": "pnpm kysely migrate:make",
         "db:seed-create": "pnpm kysely seed:make",
         "db:seed-run": "pnpm kysely seed:run",
-        "db:insert-assets": "tsx src/database/scripts/insert-assets.ts",
+        "db:insert-assets": "tsx src/database/scripts/insert-assets.ts && tsx src/process-asset-names/update-asset-details.ts",
         "db:drop-asset-prices": "tsx src/database/scripts/drop-asset-prices.ts",
         "test-db:start": "docker compose -f ./docker-compose.yml up -d && pnpm dotenv -e .env.test tsx src/utils/test-db-healthcheck.ts && pnpm test-db:prepare",
         "test-db:prepare": "pnpm dotenv -e .env.test pnpm kysely migrate:latest && pnpm dotenv -e .env.test pnpm db:seed-run",
-        "test-db:stop": "docker compose -f ./docker-compose.yml down --volumes",
-        "data-api-typegen": "openapi-typescript ../stratify-data-api/docs/openapi.json -o ./src/lib/api/stratify-data-api.d.ts",
-        "process-asset-names": "tsx src/process-asset-names/update-asset-details.ts"
+        "test-db:stop": "docker compose -f ./docker-compose.yml down --volumes"
     },
     "kysely-codegen": {
         "dialect": "postgres",
