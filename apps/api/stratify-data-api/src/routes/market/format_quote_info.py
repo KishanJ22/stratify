@@ -1,7 +1,7 @@
 from src.routes.market.quote_schema import QuoteItem
 
 def format_quote_info(quote_info) -> QuoteItem:
-        return {
+    return {
         "symbol": quote_info.get("symbol"),
         "marketState": quote_info.get("marketState"),
         "priceDetails": {
