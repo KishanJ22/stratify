@@ -1,5 +1,4 @@
 import { FastifyInstance } from "fastify";
-import dataApiClient from "../../../lib/api/data-api-client.js";
 import logger from "../../../logger.js";
 import { getFromStore } from "../../../plugins/localStorage.js";
 
@@ -9,16 +8,24 @@ import {
     TopAssetsSuccessResponse,
 } from "./top-assets-schema.js";
 import { formatTopAssetDetails } from "./format-top-assets.js";
+import { dataApiClient } from "../../../lib/api/data-api-client.js";
+import { createNotFound } from "../../../utils/createNotFoundSchema.js";
+import type { Static } from "@sinclair/typebox";
+
+const mostActiveNotFound = createNotFound("noMostActiveAssets");
+
+type MostActiveNotFound = Static<typeof mostActiveNotFound>;
 
 export default function mostActiveGet(fastify: FastifyInstance) {
     fastify.route<{
-        Reply: TopAssetsSuccessResponse;
+        Reply: TopAssetsSuccessResponse | MostActiveNotFound;
     }>({
         method: "GET",
         url: "/data/market/most-active",
         schema: {
             response: {
                 200: topAssetsResponseSchema,
+                404: mostActiveNotFound,
             },
         },
         handler: async (_request, reply) => {
@@ -29,7 +36,7 @@ export default function mostActiveGet(fastify: FastifyInstance) {
                     { requestId },
                     "Fetching most active from data API",
                 );
-                const mostActiveData = await dataApiClient
+                const mostActiveData = await dataApiClient()
                     .GET("/market/most-active")
                     .then((res) => res.data?.data);
 
@@ -47,6 +54,12 @@ export default function mostActiveGet(fastify: FastifyInstance) {
                 const topLoserAssets = (
                     await Promise.all(assetDetails || [])
                 ).filter((asset) => asset !== null);
+
+                if (topLoserAssets.length === 0) {
+                    return reply
+                        .status(404)
+                        .send({ message: "noMostActiveAssets" });
+                }
 
                 return reply.status(200).send({
                     data: topLoserAssets,

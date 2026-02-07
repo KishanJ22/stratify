@@ -1,5 +1,4 @@
 import { FastifyInstance } from "fastify";
-import dataApiClient from "../../../lib/api/data-api-client.js";
 import logger from "../../../logger.js";
 import { getFromStore } from "../../../plugins/localStorage.js";
 
@@ -9,16 +8,24 @@ import {
     TopAssetsSuccessResponse,
 } from "./top-assets-schema.js";
 import { formatTopAssetDetails } from "./format-top-assets.js";
+import { dataApiClient } from "../../../lib/api/data-api-client.js";
+import { createNotFound } from "../../../utils/createNotFoundSchema.js";
+import type { Static } from "@sinclair/typebox";
+
+const topGainersNotFound = createNotFound("noTopGainersData");
+
+type TopGainersNotFound = Static<typeof topGainersNotFound>;
 
 export default function topGainersGet(fastify: FastifyInstance) {
     fastify.route<{
-        Reply: TopAssetsSuccessResponse;
+        Reply: TopAssetsSuccessResponse | TopGainersNotFound;
     }>({
         method: "GET",
         url: "/data/market/top-gainers",
         schema: {
             response: {
                 200: topAssetsResponseSchema,
+                404: topGainersNotFound,
             },
         },
         handler: async (_request, reply) => {
@@ -29,7 +36,7 @@ export default function topGainersGet(fastify: FastifyInstance) {
                     { requestId },
                     "Fetching top gainers from data API",
                 );
-                const topGainersData = await dataApiClient
+                const topGainersData = await dataApiClient()
                     .GET("/market/top-gainers")
                     .then((res) => res.data?.data);
 
@@ -47,6 +54,12 @@ export default function topGainersGet(fastify: FastifyInstance) {
                 const topGainerAssets = (
                     await Promise.all(assetDetails || [])
                 ).filter((asset) => asset !== null);
+
+                if (topGainerAssets.length === 0) {
+                    return reply
+                        .status(404)
+                        .send({ message: "noTopGainersData" });
+                }
 
                 return reply.status(200).send({
                     data: topGainerAssets,
