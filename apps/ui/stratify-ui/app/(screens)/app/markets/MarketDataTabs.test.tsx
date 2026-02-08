@@ -1,7 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
 import MarketDataTabs, { MarketDataTabsProps } from "./MarketDataTabs";
-import { render, screen, waitFor } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { renderWithContext } from "@/app/tests/utils";
 
 const user = userEvent.setup();
 
@@ -10,12 +11,14 @@ describe("MarketDataTabs", () => {
         selectedTab,
         setSelectedTab,
     }: MarketDataTabsProps) => {
-        render(
-            <MarketDataTabs
-                selectedTab={selectedTab}
-                setSelectedTab={setSelectedTab}
-            />,
-        );
+        renderWithContext({
+            children: (
+                <MarketDataTabs
+                    selectedTab={selectedTab}
+                    setSelectedTab={setSelectedTab}
+                />
+            ),
+        });
     };
 
     it("renders the tabs correctly", () => {
