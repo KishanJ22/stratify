@@ -4,6 +4,7 @@
         "module": "esnext",
         "moduleResolution": "bundler",
         "lib": ["dom", "dom.iterable", "esnext"],
+        "typeRoots": ["node_modules/@types", "app/components/ui/types"],
         "allowJs": true,
         "skipLibCheck": true,
         "strict": true,
