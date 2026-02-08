@@ -11,5 +11,4 @@ apps/**/coverage
 tsconfig.tsbuildinfo
 .next
 *api.d.ts
-*openapi.json
 builder

@@ -22,23 +22,35 @@ export interface Asset {
     name: string;
     assetType: "Stock" | "ETF" | "Cryptocurrency";
     countryId: number;
+    currency?: string;
 }
 
-const updateAssetDetailsDb = async (asset: Asset) => {
+const updateAssetDetailsDb = async (asset: Asset, startTime: number) => {
     //? Check if the asset already exists in the database by checking against symbol and country id
     const isAssetPresent = await db
         .selectFrom("stratify.assets as assets")
         .where("assets.symbol", "=", asset.symbol)
         .where("assets.countryId", "=", asset.countryId)
+        .selectAll()
         .executeTakeFirst();
 
     //? If the asset exists, update the name and type in the database
     if (isAssetPresent) {
-        await db
+        //? If the asset was already updated then the details should not be overwritten again
+        const isAlreadyUpdated = isAssetPresent.updatedAt
+            ? new Date(isAssetPresent.updatedAt).getTime() > startTime
+            : false;
+
+        if (isAlreadyUpdated) {
+            return;
+        }
+
+        return await db
             .updateTable("stratify.assets as assets")
             .set({
                 name: asset.name,
                 type: asset.assetType.toUpperCase(),
+                currency: asset.currency || isAssetPresent.currency,
                 updatedAt: new Date(),
             })
             .where("assets.symbol", "=", asset.symbol)
@@ -49,9 +61,13 @@ const updateAssetDetailsDb = async (asset: Asset) => {
 
 //? Call the function to update asset name and type in the database
 //? This was split out to a standalone function so that it could be called concurrently with p-limit
-const processAsset = async (asset: Asset, progressBar: SingleBar) => {
+const processAsset = async (
+    asset: Asset,
+    progressBar: SingleBar,
+    startTime: number,
+) => {
     try {
-        await updateAssetDetailsDb(asset);
+        await updateAssetDetailsDb(asset, startTime);
         progressBar.increment();
     } catch (error) {
         logger.error(
@@ -88,8 +104,12 @@ async function updateAssetDetails() {
 
     progressBar.start(allAssets.length, 0);
 
+    const startTime = new Date().getTime();
+
     for (const asset of allAssets) {
-        updatePromises.push(limit(() => processAsset(asset, progressBar)));
+        updatePromises.push(
+            limit(() => processAsset(asset, progressBar, startTime)),
+        );
     }
 
     await Promise.all(updatePromises);

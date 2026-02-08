@@ -5,6 +5,8 @@ const clearDatabase = async () => {
     try {
         await db.deleteFrom("stratify.portfolios").execute();
         await db.deleteFrom("stratify.trades").execute();
+        await db.deleteFrom("stratify.assetPrices").execute();
+        await db.deleteFrom("stratify.assets").execute();
         await db.deleteFrom("auth.user").execute();
     } catch (error) {
         console.error("Error clearing database:", error);

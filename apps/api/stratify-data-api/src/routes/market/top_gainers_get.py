@@ -6,13 +6,15 @@ top_gainers_get = APIRouter()
 
 @top_gainers_get.get("/market/top-gainers", tags=["market"])
 async def get_top_gainers(
-    minimumPercentageChange: float = 3.0,
-    limit: int = 10,
+    minimumPercentageChange: float = 3.0, # default to 3 percent gain
+    minimumVolume: int = 1000000, # default to 1 million volume
+    limit: int = 10, # default to top 10 gainers
 ) -> QuoteListGetResponse:
     try:
         top_gainers = query_by_percent_change(
             'GT',
             minimumPercentageChange,
+            minimumVolume,
             limit,
         )
         

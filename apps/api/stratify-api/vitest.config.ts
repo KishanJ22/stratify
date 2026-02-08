@@ -22,6 +22,7 @@ export default defineConfig({
                 "src/utils/**",
                 "src/routes/auth.ts",
                 "src/tests/**",
+                "**/*/_mocks/**",
             ],
         },
         fileParallelism: false,

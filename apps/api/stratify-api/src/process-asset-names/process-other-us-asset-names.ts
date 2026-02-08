@@ -15,6 +15,7 @@ export async function processOtherUsAssetNames() {
         const cleanedName = columns[1]
             .replace(" Common Stock", "")
             .replace(" common stock", "")
+            .replace(" Common Shares", "")
             .replace(" Ordinary Shares", "")
             .replace(" Ordinary Share", "")
             .replace(" Class A Common Stock", "")

@@ -68,11 +68,15 @@ export async function processLseAssetNames() {
     const formattedAssets = sheetToJson.map((row) => {
         const isEtf = row.MiFIRIdentifierCode === "ETFS";
 
+        //? Convert GBX to GBP for consistency
+        const currency = row.currency === "GBX" ? "GBP" : row.currency;
+
         const asset = {
             symbol: row.symbol,
             name: row.assetName,
             assetType: isEtf ? "ETF" : "Stock",
             countryId: 223, // Country ID for United Kingdom
+            currency,
         } satisfies Asset;
 
         return asset;

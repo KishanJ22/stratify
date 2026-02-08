@@ -6,14 +6,14 @@ class ExchangeDetails(BaseModel):
     exchangeTimezone: Optional[str] = None
 
 class OHLCV(BaseModel):
-    open: float
-    high: float
-    low: float
-    close: float
-    volume: int
-    change: float
-    changePercent: float
+    open: Optional[float] = None
+    high: Optional[float] = None
+    low: Optional[float] = None
+    close: Optional[float] = None
+    volume: Optional[int] = None
+    change: Optional[float] = None
+    changePercent: Optional[float] = None
 
 class PriceDetails(BaseModel):
-    currentPrice: float
+    currentPrice: Optional[float] = None
     dayTradingActivity: OHLCV

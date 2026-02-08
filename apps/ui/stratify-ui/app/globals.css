@@ -39,21 +39,21 @@
   --primary-darker: #156A6A;
   --primary-darkest: #0D4545;
 
-  --secondary-lightest: #F5FBFA;
-  --secondary-lighter: #E0F5F4;
-  --secondary-light: #CAEFED;
-  --secondary-base: #A0DFDD;
-  --secondary-dark: #7AB0AE;
-  --secondary-darker: #568180;
-  --secondary-darkest: #355252;
+  --secondary-lightest: #F3EFF8;
+  --secondary-lighter: #DDD3EB;
+  --secondary-light: #C1B0DB;
+  --secondary-base: #7B5EA7;
+  --secondary-dark: #624B86;
+  --secondary-darker: #4A3865;
+  --secondary-darkest: #312544;
 
-  --accent-lightest: #E8FAFA;
-  --accent-lighter: #C9F4F4;
-  --accent-light: #A5ECEC;
-  --accent-base: #4AC9C9;
-  --accent-dark: #3AA5A5;
-  --accent-darker: #2B8282;
-  --accent-darkest: #1D5F5F;
+  --accent-lightest: #FEF7E0;
+  --accent-lighter: #FDEAB3;
+  --accent-light: #FBD968;
+  --accent-base: #F5A623;
+  --accent-dark: #C4851C;
+  --accent-darker: #936415;
+  --accent-darkest: #62430E;
 
   --negative-lightest: #FDE8E8;
   --negative-lighter: #F9C9C9;
