@@ -1,5 +1,12 @@
 # stratify-data-api
 
+## 0.3.1
+
+### Patch Changes
+
+- 6918c44: - Change format of data returned in market endpoints to avoid returning unnecessary data
+    - Add minimumVolume parameter to percentage change query to filter out assets that have low trading volume
+
 ## 0.3.0
 
 ### Minor Changes
