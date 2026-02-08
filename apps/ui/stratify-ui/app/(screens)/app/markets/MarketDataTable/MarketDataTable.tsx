@@ -8,6 +8,7 @@ import { MarketDataTab } from "../MarketDataTabs";
 import { useTopLosers } from "../hooks/useTopLosers";
 import { useMostActiveAssets } from "../hooks/useMostActiveAssets";
 import { useEffect } from "react";
+import { useAutoRefetch } from "@/app/utils/auto-refetch";
 
 export type AssetType =
     paths["/data/market/top-gainers"]["get"]["responses"]["200"]["content"]["application/json"]["data"][number]["assetType"];
@@ -49,27 +50,22 @@ const MarketDataTable = ({ selectedTab }: MarketDataTableProps) => {
         fetchMostActiveAssetsList,
     } = useMostActiveAssets();
 
-    useEffect(() => {
-        if (selectedTab === "topGainers" && topGainersData.length === 0) {
+    const intervalMs = 60 * 1000; // 1 minute
+
+    //? Auto refetch the data for the selected tab every minute to keep data up-to-date
+    useAutoRefetch(() => {
+        if (selectedTab === "topGainers") {
             fetchTopGainersList();
         }
 
-        if (selectedTab === "topLosers" && topLosersData.length === 0) {
+        if (selectedTab === "topLosers") {
             fetchTopLosersList();
         }
 
-        if (selectedTab === "mostActive" && mostActiveAssetsData.length === 0) {
+        if (selectedTab === "mostActive") {
             fetchMostActiveAssetsList();
         }
-    }, [
-        selectedTab,
-        fetchTopGainersList,
-        fetchTopLosersList,
-        fetchMostActiveAssetsList,
-        topGainersData.length,
-        topLosersData.length,
-        mostActiveAssetsData.length,
-    ]);
+    }, intervalMs);
 
     const data =
         selectedTab === "topGainers"
