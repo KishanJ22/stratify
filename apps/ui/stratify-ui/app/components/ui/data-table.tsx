@@ -22,12 +22,14 @@ interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
     data: TData[];
     isLoading?: boolean;
+    isLoadingRowCount?: number;
 }
 
 export function DataTable<TData, TValue>({
     columns,
     data,
     isLoading,
+    isLoadingRowCount = 5,
 }: DataTableProps<TData, TValue>) {
     const table = useReactTable({
         data,
@@ -57,14 +59,6 @@ export function DataTable<TData, TValue>({
                                     isCurrencyColumn ||
                                     isNumericColumn;
 
-                                if (isLoading) {
-                                    return (
-                                        <TableHead key={header.id}>
-                                            <Skeleton className="h-4 w-full" />
-                                        </TableHead>
-                                    );
-                                }
-
                                 return (
                                     <TableHead
                                         key={header.id}
@@ -88,7 +82,28 @@ export function DataTable<TData, TValue>({
                     ))}
                 </TableHeader>
                 <TableBody>
-                    {table.getRowModel().rows?.length ? (
+                    {isLoading ? (
+                        Array.from({ length: isLoadingRowCount }).map(
+                            (_, index) => (
+                                <TableRow
+                                    key={index}
+                                    data-testid="skeleton-row"
+                                >
+                                    {columns.map((column) => {
+                                        const key = `${column.header}-${index}`;
+                                        return (
+                                            <TableCell
+                                                key={key}
+                                                data-testid="skeleton-cell"
+                                            >
+                                                <Skeleton className="h-4 w-full" />
+                                            </TableCell>
+                                        );
+                                    })}
+                                </TableRow>
+                            ),
+                        )
+                    ) : table.getRowModel().rows?.length ? (
                         table.getRowModel().rows.map((row) => (
                             <TableRow
                                 key={row.id}

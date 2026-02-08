@@ -77,14 +77,22 @@ export const columns: ColumnDef<Asset>[] = [
         accessorKey: "assetType",
         header: "Asset Type",
         cell: ({ row }) => (
-            <BadgeCell {...assetTypeMap[row.original.assetType]} />
+            <BadgeCell
+                {...assetTypeMap[row.original.assetType]}
+                data-testid="asset-type-badge"
+            />
         ),
     },
     {
         accessorKey: "marketState",
         header: "Market State",
         cell: ({ row }) => {
-            return <BadgeCell {...marketStateMap[row.original.marketState]} />;
+            return (
+                <BadgeCell
+                    {...marketStateMap[row.original.marketState]}
+                    data-testid="market-state-badge"
+                />
+            );
         },
     },
     {
