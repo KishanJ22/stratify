@@ -10,7 +10,7 @@
         "docs"
     ],
     "scripts": {
-        "prebuild": "pnpm generate-spec",
+        "prebuild": "pnpm generate-spec && pnpm data-api-typegen",
         "build": "tsc",
         "predev": "pnpm generate-spec",
         "dev": "tsx --watch src/app.ts",
