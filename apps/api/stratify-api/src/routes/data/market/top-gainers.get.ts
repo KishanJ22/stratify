@@ -37,7 +37,14 @@ export default function topGainersGet(fastify: FastifyInstance) {
                     "Fetching top gainers from data API",
                 );
                 const topGainersData = await dataApiClient()
-                    .GET("/market/top-gainers")
+                    .GET("/market/top-gainers", {
+                        params: {
+                            query: {
+                                limit: 10,
+                                minimumVolume: 2000000, // 2 million volume
+                            },
+                        },
+                    })
                     .then((res) => res.data?.data);
 
                 const assetDetails = topGainersData?.map(async (asset) => {

@@ -4,6 +4,7 @@ from src.routes.market.format_quote_info import format_quote_info
 def query_by_percent_change(
         percentageOperation: str, 
         minimumPercentageChange: float,
+        minimumVolume: int,
         limit: int,
         sortAscending: bool = False,
     ):
@@ -12,6 +13,7 @@ def query_by_percent_change(
             EquityQuery('is-in', ['region', 'us', 'gb']), # US and UK markets
             EquityQuery('is-in', ['exchange', 'LSE', 'NYQ', 'ASE', 'NGM', 'NMS']), # Exchanges that data is available for
             EquityQuery(percentageOperation, ['percentchange', minimumPercentageChange]), # More than 3 percent gain
+            EquityQuery('GT', ['dayvolume', minimumVolume]), # Minimum volume
         ])
         
         results = screen(query, size=limit, sortField='percentchange', sortAsc=sortAscending)

@@ -6,14 +6,14 @@ most_active_get = APIRouter()
 
 @most_active_get.get("/market/most-active", tags=["market"])
 async def get_most_active(
-    marketCap: int = 2000000000,
-    dayVolume: int = 5000000,
-    limit: int = 10,
+    minimumMarketCap: int = 2000000000, # default to 2 billion market cap
+    minimumVolume: int = 1000000, # default to 1 million volume
+    limit: int = 10, # default to top 10 most active stocks
 ) -> QuoteListGetResponse:
     try:
         most_active_assets = query_by_trading_activity(
-            marketCap,
-            dayVolume,
+            minimumMarketCap,
+            minimumVolume,
             limit,
         )
         

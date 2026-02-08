@@ -34,7 +34,14 @@ export default function topLosersGet(fastify: FastifyInstance) {
             try {
                 logger.info({ requestId }, "Fetching top losers from data API");
                 const topLosersData = await dataApiClient()
-                    .GET("/market/top-losers")
+                    .GET("/market/top-losers", {
+                        params: {
+                            query: {
+                                limit: 10,
+                                minimumVolume: 2000000, // 2 million volume
+                            },
+                        },
+                    })
                     .then((res) => res.data?.data);
 
                 const assetDetails = topLosersData?.map(async (asset) => {

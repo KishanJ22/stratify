@@ -37,7 +37,14 @@ export default function mostActiveGet(fastify: FastifyInstance) {
                     "Fetching most active from data API",
                 );
                 const mostActiveData = await dataApiClient()
-                    .GET("/market/most-active")
+                    .GET("/market/most-active", {
+                        params: {
+                            query: {
+                                limit: 10,
+                                minimumVolume: 2000000, // 2 million volume
+                            },
+                        },
+                    })
                     .then((res) => res.data?.data);
 
                 const assetDetails = mostActiveData?.map(async (asset) => {
