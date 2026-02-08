@@ -7,7 +7,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 export type TopGainersList =
     paths["/data/market/top-gainers"]["get"]["responses"]["200"]["content"]["application/json"]["data"];
 
-export const useTopGainers = (enabled: boolean) => {
+export const useTopGainers = () => {
     const client = useKyClient();
     const queryClient = useQueryClient();
 
@@ -25,13 +25,13 @@ export const useTopGainers = (enabled: boolean) => {
             client
                 .GET("/data/market/top-gainers")
                 .then((res) => res.data?.data || []),
-        enabled: !!cachedTopGainersList || enabled,
+        enabled: false,
     });
 
     return {
         data: fetchedTopGainersList || cachedTopGainersList,
         error,
         isLoading,
-        refetchTopGainersList: refetch,
+        fetchTopGainersList: refetch,
     };
 };

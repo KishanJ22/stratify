@@ -7,6 +7,7 @@ import { columns } from "./marketDataTableColumns";
 import { MarketDataTab } from "../MarketDataTabs";
 import { useTopLosers } from "../hooks/useTopLosers";
 import { useMostActiveAssets } from "../hooks/useMostActiveAssets";
+import { useEffect } from "react";
 
 export type AssetType =
     paths["/data/market/top-gainers"]["get"]["responses"]["200"]["content"]["application/json"]["data"][number]["assetType"];
@@ -30,15 +31,45 @@ interface MarketDataTableProps {
 }
 
 const MarketDataTable = ({ selectedTab }: MarketDataTableProps) => {
-    const { data: topGainersData, isLoading: isTopGainersLoading } =
-        useTopGainers(selectedTab === "topGainers");
+    const {
+        data: topGainersData,
+        isLoading: isTopGainersLoading,
+        fetchTopGainersList,
+    } = useTopGainers();
 
-    const { data: topLosersData, isLoading: isLoadingLosers } = useTopLosers(
-        selectedTab === "topLosers",
-    );
+    const {
+        data: topLosersData,
+        isLoading: isTopLosersLoading,
+        fetchTopLosersList,
+    } = useTopLosers();
 
-    const { data: mostActiveAssetsData, isLoading: isLoadingMostActiveAssets } =
-        useMostActiveAssets(selectedTab === "mostActive");
+    const {
+        data: mostActiveAssetsData,
+        isLoading: isMostActiveAssetsLoading,
+        fetchMostActiveAssetsList,
+    } = useMostActiveAssets();
+
+    useEffect(() => {
+        if (selectedTab === "topGainers" && topGainersData.length === 0) {
+            fetchTopGainersList();
+        }
+
+        if (selectedTab === "topLosers" && topLosersData.length === 0) {
+            fetchTopLosersList();
+        }
+
+        if (selectedTab === "mostActive" && mostActiveAssetsData.length === 0) {
+            fetchMostActiveAssetsList();
+        }
+    }, [
+        selectedTab,
+        fetchTopGainersList,
+        fetchTopLosersList,
+        fetchMostActiveAssetsList,
+        topGainersData.length,
+        topLosersData.length,
+        mostActiveAssetsData.length,
+    ]);
 
     const data =
         selectedTab === "topGainers"
@@ -51,8 +82,8 @@ const MarketDataTable = ({ selectedTab }: MarketDataTableProps) => {
         selectedTab === "topGainers"
             ? isTopGainersLoading
             : selectedTab === "topLosers"
-              ? isLoadingLosers
-              : isLoadingMostActiveAssets;
+              ? isTopLosersLoading
+              : isMostActiveAssetsLoading;
 
     const assets = data.reduce((acc, asset) => {
         acc.push({

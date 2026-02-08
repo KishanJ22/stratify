@@ -7,7 +7,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 export type MostActiveAssetsList =
     paths["/data/market/most-active"]["get"]["responses"]["200"]["content"]["application/json"]["data"];
 
-export const useMostActiveAssets = (enabled: boolean) => {
+export const useMostActiveAssets = () => {
     const client = useKyClient();
     const queryClient = useQueryClient();
 
@@ -27,13 +27,13 @@ export const useMostActiveAssets = (enabled: boolean) => {
             client
                 .GET("/data/market/most-active")
                 .then((res) => res.data?.data || []),
-        enabled: !!cachedMostActiveAssetsList || enabled,
+        enabled: false,
     });
 
     return {
         data: fetchedMostActiveAssetsList || cachedMostActiveAssetsList,
         error,
         isLoading,
-        refetchMostActiveAssetsList: refetch,
+        fetchMostActiveAssetsList: refetch,
     };
 };
