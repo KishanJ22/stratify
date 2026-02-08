@@ -40,22 +40,6 @@ const mockTopLosersData = [
     },
 ] satisfies Asset[];
 
-const mockMostActiveAssetsData = [
-    {
-        name: "Tesla, Inc.",
-        symbol: "TSLA",
-        assetType: "STOCK",
-        marketState: "REGULAR",
-        currency: "USD",
-        priceDetails: {
-            currentPrice: 400.5,
-            volume: 2000000,
-            priceChange: 5.0,
-            priceChangePercent: 0.72,
-        },
-    },
-] satisfies Asset[];
-
 const mockUseTopGainers = vi.fn();
 const mockUseTopLosers = vi.fn();
 const mockUseMostActiveAssets = vi.fn();
