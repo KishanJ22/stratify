@@ -8,7 +8,7 @@ import { paths } from "@/openapi/types/stratify-api";
 type Asset =
     paths["/data/market/top-gainers"]["get"]["responses"]["200"]["content"]["application/json"]["data"][number];
 
-const mockResponseData = [
+const mockTopGainersData = [
     {
         name: "Apple Inc.",
         symbol: "AAPL",
@@ -24,9 +24,41 @@ const mockResponseData = [
     },
 ] satisfies Asset[];
 
-const mockUseTopGainers = vi.fn();
+const mockTopLosersData = [
+    {
+        name: "Nvidia Corporation",
+        symbol: "NVDA",
+        assetType: "STOCK",
+        marketState: "REGULAR",
+        currency: "USD",
+        priceDetails: {
+            currentPrice: 200.75,
+            volume: 500000,
+            priceChange: -3.0,
+            priceChangePercent: -1.48,
+        },
+    },
+] satisfies Asset[];
 
+const mockMostActiveAssetsData = [
+    {
+        name: "Tesla, Inc.",
+        symbol: "TSLA",
+        assetType: "STOCK",
+        marketState: "REGULAR",
+        currency: "USD",
+        priceDetails: {
+            currentPrice: 400.5,
+            volume: 2000000,
+            priceChange: 5.0,
+            priceChangePercent: 0.72,
+        },
+    },
+] satisfies Asset[];
+
+const mockUseTopGainers = vi.fn();
 const mockUseTopLosers = vi.fn();
+const mockUseMostActiveAssets = vi.fn();
 
 vi.mock("../hooks/useTopGainers", () => ({
     useTopGainers: () => mockUseTopGainers(),
@@ -34,6 +66,10 @@ vi.mock("../hooks/useTopGainers", () => ({
 
 vi.mock("../hooks/useTopLosers", () => ({
     useTopLosers: () => mockUseTopLosers(),
+}));
+
+vi.mock("../hooks/useMostActiveAssets", () => ({
+    useMostActiveAssets: () => mockUseMostActiveAssets(),
 }));
 
 describe("MarketDataTable", () => {
@@ -49,7 +85,17 @@ describe("MarketDataTable", () => {
 
     it("render table with data", () => {
         mockUseTopGainers.mockReturnValue({
-            data: mockResponseData,
+            data: mockTopGainersData,
+            isLoading: false,
+        });
+
+        mockUseTopLosers.mockReturnValue({
+            data: [],
+            isLoading: false,
+        });
+
+        mockUseMostActiveAssets.mockReturnValue({
+            data: [],
             isLoading: false,
         });
 
@@ -85,8 +131,18 @@ describe("MarketDataTable", () => {
 
     it("renders loading state when data is loading", () => {
         mockUseTopGainers.mockReturnValue({
-            data: mockResponseData,
+            data: [],
             isLoading: true,
+        });
+
+        mockUseTopLosers.mockReturnValue({
+            data: [],
+            isLoading: false,
+        });
+
+        mockUseMostActiveAssets.mockReturnValue({
+            data: [],
+            isLoading: false,
         });
 
         renderComponent("topGainers");
@@ -113,6 +169,16 @@ describe("MarketDataTable", () => {
             isLoading: false,
         });
 
+        mockUseTopLosers.mockReturnValue({
+            data: [],
+            isLoading: false,
+        });
+
+        mockUseMostActiveAssets.mockReturnValue({
+            data: [],
+            isLoading: false,
+        });
+
         renderComponent("topGainers");
 
         const tableHeaders = [
@@ -132,8 +198,8 @@ describe("MarketDataTable", () => {
     });
 
     it("renders only the selected tab's data", () => {
-        mockUseTopGainers.mockReturnValue({
-            data: mockResponseData,
+        mockUseTopLosers.mockReturnValue({
+            data: mockTopLosersData,
             isLoading: false,
         });
 
@@ -150,6 +216,20 @@ describe("MarketDataTable", () => {
 
         tableHeaders.forEach((header) => {
             expect(screen.getByText(header)).toBeInTheDocument();
+        });
+
+        const assetRow = [
+            "Nvidia Corporation (NVDA)",
+            "Stock",
+            "Open",
+            "200.75 (USD)",
+            "500,000",
+            "-3",
+            "-1.48%",
+        ];
+
+        assetRow.forEach((cell) => {
+            expect(screen.getByText(cell)).toBeInTheDocument();
         });
     });
 });
