@@ -1,0 +1,881 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Stratify Data API",
+    "description": "A REST API for accessing stock market data powered by Yahoo Finance and Stooq.",
+    "version": "0.3.0"
+  },
+  "paths": {
+    "/stocks": {
+      "get": {
+        "tags": [
+          "stocks"
+        ],
+        "summary": "Get Stocks",
+        "operationId": "get_stocks_stocks_get",
+        "parameters": [
+          {
+            "name": "symbols",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Comma-separated stock symbols",
+              "examples": {
+                "Symbols": "AAPL,MSFT,GOOGL"
+              },
+              "title": "Symbols"
+            },
+            "description": "Comma-separated stock symbols"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/stocks/{symbol}": {
+      "get": {
+        "tags": [
+          "stocks"
+        ],
+        "summary": "Get Stock",
+        "operationId": "get_stock_stocks__symbol__get",
+        "parameters": [
+          {
+            "name": "symbol",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Symbol"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/market/top-gainers": {
+      "get": {
+        "tags": [
+          "market"
+        ],
+        "summary": "Get Top Gainers",
+        "operationId": "get_top_gainers_market_top_gainers_get",
+        "parameters": [
+          {
+            "name": "minimumPercentageChange",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "default": 3.0,
+              "title": "Minimumpercentagechange"
+            }
+          },
+          {
+            "name": "minimumVolume",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1000000,
+              "title": "Minimumvolume"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuoteListGetResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/market/top-losers": {
+      "get": {
+        "tags": [
+          "market"
+        ],
+        "summary": "Get Top Losers",
+        "operationId": "get_top_losers_market_top_losers_get",
+        "parameters": [
+          {
+            "name": "minimumPercentageChange",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "default": -3.0,
+              "title": "Minimumpercentagechange"
+            }
+          },
+          {
+            "name": "minimumVolume",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1000000,
+              "title": "Minimumvolume"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuoteListGetResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/market/most-active": {
+      "get": {
+        "tags": [
+          "market"
+        ],
+        "summary": "Get Most Active",
+        "operationId": "get_most_active_market_most_active_get",
+        "parameters": [
+          {
+            "name": "minimumMarketCap",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 2000000000,
+              "title": "Minimummarketcap"
+            }
+          },
+          {
+            "name": "minimumVolume",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1000000,
+              "title": "Minimumvolume"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuoteListGetResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/cryptocurrencies": {
+      "get": {
+        "tags": [
+          "cryptocurrencies"
+        ],
+        "summary": "Get Cryptocurrencies",
+        "operationId": "get_cryptocurrencies_cryptocurrencies_get",
+        "parameters": [
+          {
+            "name": "symbols",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Comma-separated cryptocurrency symbols",
+              "examples": {
+                "Symbols": "BTC-USD,ETH-USD,ADA-GBP"
+              },
+              "title": "Symbols"
+            },
+            "description": "Comma-separated cryptocurrency symbols"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/cryptocurrencies/{symbol}": {
+      "get": {
+        "tags": [
+          "cryptocurrencies"
+        ],
+        "summary": "Get Cryptocurrency",
+        "operationId": "get_cryptocurrency_cryptocurrencies__symbol__get",
+        "parameters": [
+          {
+            "name": "symbol",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Symbol"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CryptoSymbolGetResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/funds": {
+      "get": {
+        "tags": [
+          "funds"
+        ],
+        "summary": "Get Funds",
+        "operationId": "get_funds_funds_get",
+        "parameters": [
+          {
+            "name": "symbols",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Comma-separated fund symbols",
+              "examples": {
+                "Symbols": "VUAG.L, IITU.L"
+              },
+              "title": "Symbols"
+            },
+            "description": "Comma-separated fund symbols"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FundsGetResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/funds/{symbol}": {
+      "get": {
+        "tags": [
+          "funds"
+        ],
+        "summary": "Get Fund",
+        "operationId": "get_fund_funds__symbol__get",
+        "parameters": [
+          {
+            "name": "symbol",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Symbol"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FundSymbolGetResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/reference-data/industries": {
+      "get": {
+        "tags": [
+          "reference-data"
+        ],
+        "summary": "Get Industries",
+        "operationId": "get_industries_reference_data_industries_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/": {
+      "get": {
+        "summary": "Get Root",
+        "operationId": "get_root__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "summary": "Get Health",
+        "operationId": "get_health_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CryptoSymbolGetResponse": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/CryptocurrencyItem"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "CryptoSymbolGetResponse"
+      },
+      "CryptocurrencyItem": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "symbol": {
+            "type": "string",
+            "title": "Symbol"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "fromCurrency": {
+            "type": "string",
+            "title": "Fromcurrency"
+          },
+          "toCurrency": {
+            "type": "string",
+            "title": "Tocurrency"
+          },
+          "marketCap": {
+            "type": "number",
+            "title": "Marketcap"
+          },
+          "marketState": {
+            "type": "string",
+            "title": "Marketstate"
+          },
+          "allTimeHigh": {
+            "type": "number",
+            "title": "Alltimehigh"
+          },
+          "allTimeLow": {
+            "type": "number",
+            "title": "Alltimelow"
+          },
+          "priceDetails": {
+            "$ref": "#/components/schemas/PriceDetails"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "symbol",
+          "description",
+          "fromCurrency",
+          "toCurrency",
+          "marketCap",
+          "marketState",
+          "allTimeHigh",
+          "allTimeLow",
+          "priceDetails"
+        ],
+        "title": "CryptocurrencyItem"
+      },
+      "ExchangeDetails": {
+        "properties": {
+          "exchangeName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Exchangename"
+          },
+          "exchangeTimezone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Exchangetimezone"
+          }
+        },
+        "type": "object",
+        "title": "ExchangeDetails"
+      },
+      "FundItem": {
+        "properties": {
+          "shortName": {
+            "type": "string",
+            "title": "Shortname"
+          },
+          "longName": {
+            "type": "string",
+            "title": "Longname"
+          },
+          "symbol": {
+            "type": "string",
+            "title": "Symbol"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type"
+          },
+          "fundFamily": {
+            "type": "string",
+            "title": "Fundfamily"
+          },
+          "marketState": {
+            "type": "string",
+            "title": "Marketstate"
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency"
+          },
+          "exchange": {
+            "$ref": "#/components/schemas/ExchangeDetails"
+          },
+          "priceDetails": {
+            "$ref": "#/components/schemas/PriceDetails"
+          }
+        },
+        "type": "object",
+        "required": [
+          "shortName",
+          "longName",
+          "symbol",
+          "type",
+          "fundFamily",
+          "marketState",
+          "currency",
+          "exchange",
+          "priceDetails"
+        ],
+        "title": "FundItem"
+      },
+      "FundSymbolGetResponse": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/FundItem"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "FundSymbolGetResponse"
+      },
+      "FundsGetResponse": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/FundItem"
+            },
+            "type": "array",
+            "title": "Data"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "FundsGetResponse"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "OHLCV": {
+        "properties": {
+          "open": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Open"
+          },
+          "high": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "High"
+          },
+          "low": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Low"
+          },
+          "close": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Close"
+          },
+          "volume": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Volume"
+          },
+          "change": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Change"
+          },
+          "changePercent": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Changepercent"
+          }
+        },
+        "type": "object",
+        "title": "OHLCV"
+      },
+      "PriceDetails": {
+        "properties": {
+          "currentPrice": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Currentprice"
+          },
+          "dayTradingActivity": {
+            "$ref": "#/components/schemas/OHLCV"
+          }
+        },
+        "type": "object",
+        "required": [
+          "dayTradingActivity"
+        ],
+        "title": "PriceDetails"
+      },
+      "QuoteItem": {
+        "properties": {
+          "symbol": {
+            "type": "string",
+            "title": "Symbol"
+          },
+          "marketState": {
+            "type": "string",
+            "title": "Marketstate"
+          },
+          "priceDetails": {
+            "$ref": "#/components/schemas/PriceDetails"
+          }
+        },
+        "type": "object",
+        "required": [
+          "symbol",
+          "marketState",
+          "priceDetails"
+        ],
+        "title": "QuoteItem"
+      },
+      "QuoteListGetResponse": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/QuoteItem"
+            },
+            "type": "array",
+            "title": "Data"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "QuoteListGetResponse"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}
