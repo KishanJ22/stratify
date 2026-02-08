@@ -3,7 +3,7 @@ import { Dispatch, SetStateAction } from "react";
 
 export type MarketDataTab = "topGainers" | "topLosers" | "mostActive";
 
-interface MarketDataTabsProps {
+export interface MarketDataTabsProps {
     selectedTab: MarketDataTab;
     setSelectedTab: Dispatch<SetStateAction<MarketDataTab>>;
 }
