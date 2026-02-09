@@ -12,7 +12,7 @@
     "scripts": {
         "prebuild": "pnpm generate-spec && pnpm data-api-typegen",
         "build": "tsc",
-        "predev": "pnpm generate-spec",
+        "predev": "pnpm generate-spec && pnpm data-api-typegen",
         "dev": "tsx --watch src/app.ts",
         "prod": "node dist/app.js",
         "lint": "eslint ./src",
@@ -32,6 +32,7 @@
         "db:seed-create": "pnpm kysely seed:make",
         "db:seed-run": "pnpm kysely seed:run",
         "db:insert-assets": "tsx src/database/scripts/insert-assets.ts && tsx src/process-asset-names/update-asset-details.ts",
+        "db:update-asset-details": "tsx src/process-asset-names/update-asset-details.ts",
         "db:drop-asset-prices": "tsx src/database/scripts/drop-asset-prices.ts",
         "test-db:start": "docker compose -f ./docker-compose.yml up -d && pnpm dotenv -e .env.test tsx src/utils/test-db-healthcheck.ts && pnpm test-db:prepare",
         "test-db:prepare": "pnpm dotenv -e .env.test pnpm kysely migrate:latest && pnpm dotenv -e .env.test pnpm db:seed-run",
