@@ -3,6 +3,7 @@
 import { useState } from "react";
 import MarketDataTabs, { MarketDataTab } from "./MarketDataTabs";
 import MarketDataTable from "./MarketDataTable/MarketDataTable";
+import AssetSearch from "./AssetSearch/AssetSearch";
 
 export default function MarketsPage() {
     const [selectedTab, setSelectedTab] = useState<MarketDataTab>("topGainers");
@@ -13,10 +14,13 @@ export default function MarketsPage() {
                 Markets
             </div>
 
-            <MarketDataTabs
-                selectedTab={selectedTab}
-                setSelectedTab={setSelectedTab}
-            />
+            <div className="flex items-center justify-between mt-4">
+                <MarketDataTabs
+                    selectedTab={selectedTab}
+                    setSelectedTab={setSelectedTab}
+                />
+                <AssetSearch />
+            </div>
             <MarketDataTable selectedTab={selectedTab} />
         </div>
     );
