@@ -8,7 +8,7 @@ export type SearchAsset =
 export const useAssetSearch = (searchQuery: string) => {
     const client = useKyClient();
 
-    const { data, isPending, error, mutateAsync } = useMutation({
+    const { data, isPending, error, mutateAsync, reset } = useMutation({
         mutationKey: ["assetSearch", searchQuery],
         mutationFn: async () =>
             client
@@ -21,5 +21,6 @@ export const useAssetSearch = (searchQuery: string) => {
         isSearching: isPending,
         searchError: error,
         search: mutateAsync,
+        resetSearch: reset,
     };
 };

@@ -23,7 +23,7 @@ const AssetSearch = () => {
         wait: 500,
     })[0];
 
-    const { searchResults, isSearching, search } =
+    const { searchResults, isSearching, search, resetSearch } =
         useAssetSearch(debouncedSearchValue);
 
     useEffect(() => {
@@ -33,7 +33,14 @@ const AssetSearch = () => {
     }, [debouncedSearchValue, search]);
 
     return (
-        <Popover>
+        <Popover
+            onOpenChange={(isOpen) => {
+                if (!isOpen) {
+                    setSearchValue("");
+                    resetSearch();
+                }
+            }}
+        >
             <PopoverTrigger asChild>
                 <Button variant="secondary">
                     <span className="flex items-center gap-2">
