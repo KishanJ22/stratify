@@ -3,7 +3,7 @@
   "info": {
     "title": "Stratify Data API",
     "description": "A REST API for accessing stock market data powered by Yahoo Finance and Stooq.",
-    "version": "0.3.0"
+    "version": "0.3.1"
   },
   "paths": {
     "/stocks": {
@@ -74,7 +74,9 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/SymbolGetResponse"
+                }
               }
             }
           },
@@ -699,6 +701,34 @@
         "type": "object",
         "title": "HTTPValidationError"
       },
+      "IndustryDetails": {
+        "properties": {
+          "industry": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Industry"
+          },
+          "sector": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sector"
+          }
+        },
+        "type": "object",
+        "title": "IndustryDetails"
+      },
       "OHLCV": {
         "properties": {
           "open": {
@@ -842,6 +872,100 @@
           "data"
         ],
         "title": "QuoteListGetResponse"
+      },
+      "StockItem": {
+        "properties": {
+          "displayName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Displayname"
+          },
+          "shortName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Shortname"
+          },
+          "longName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Longname"
+          },
+          "summary": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Summary"
+          },
+          "marketState": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Marketstate"
+          },
+          "marketCap": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Marketcap"
+          },
+          "industryDetails": {
+            "$ref": "#/components/schemas/IndustryDetails"
+          },
+          "priceDetails": {
+            "$ref": "#/components/schemas/PriceDetails"
+          }
+        },
+        "type": "object",
+        "required": [
+          "industryDetails",
+          "priceDetails"
+        ],
+        "title": "StockItem"
+      },
+      "SymbolGetResponse": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/StockItem"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "SymbolGetResponse"
       },
       "ValidationError": {
         "properties": {
