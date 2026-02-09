@@ -23,8 +23,14 @@ const AssetSearch = () => {
         wait: 500,
     })[0];
 
-    const { searchResults, isSearching, search, resetSearch } =
-        useAssetSearch(debouncedSearchValue);
+    const {
+        searchResults,
+        isSearching,
+        search,
+        resetSearch,
+        searchStatus,
+        isNoResultsFound,
+    } = useAssetSearch(debouncedSearchValue);
 
     useEffect(() => {
         if (debouncedSearchValue.length > 0) {
@@ -50,7 +56,7 @@ const AssetSearch = () => {
                 </Button>
             </PopoverTrigger>
             <PopoverContent
-                className="bg-primary-lightest rounded-xl border border-primary-dark mt-2"
+                className="bg-primary-lightest rounded-xl border border-primary-dark mt-6"
                 align="end"
             >
                 <Command>
@@ -61,24 +67,34 @@ const AssetSearch = () => {
                             setSearchValue(searchValue)
                         }
                     />
-                    <CommandList className="p-1 gap-y-1.5">
-                        {isSearching && (
-                            <div className="flex flex-col gap-2">
-                                {Array.from({ length: 5 }).map((_, index) => (
-                                    <Skeleton
-                                        key={index}
-                                        className="w-full h-10 rounded-xl"
+                    {searchStatus != "idle" && (
+                        <CommandList className="p-1 gap-y-1.5">
+                            {isSearching ? (
+                                <div className="flex flex-col gap-2">
+                                    {Array.from({ length: 5 }).map(
+                                        (_, index) => (
+                                            <Skeleton
+                                                key={index}
+                                                className="w-full h-10 rounded-xl"
+                                            />
+                                        ),
+                                    )}
+                                </div>
+                            ) : (
+                                searchResults?.map((asset) => (
+                                    <AssetSearchItem
+                                        key={`${asset.symbol}-${asset.name}`}
+                                        asset={asset}
                                     />
-                                ))}
-                            </div>
-                        )}
-                        {searchResults?.map((asset) => (
-                            <AssetSearchItem
-                                key={`${asset.symbol}-${asset.name}`}
-                                asset={asset}
-                            />
-                        ))}
-                    </CommandList>
+                                ))
+                            )}
+                            {isNoResultsFound && (
+                                <div className="p-2 text-center text-base font-sans text-primary-dark">
+                                    No assets found.
+                                </div>
+                            )}
+                        </CommandList>
+                    )}
                 </Command>
             </PopoverContent>
         </Popover>
