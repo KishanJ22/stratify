@@ -4,6 +4,7 @@ import logger from "../../logger.js";
 import { getFromStore } from "../../plugins/localStorage.js";
 import { UserDetails } from "../../utils/decodeToken.js";
 import db from "../../database/db.js";
+import { createNotFound } from "../../utils/createNotFoundSchema.js";
 
 const portfolioSchema = Type.Object({
     id: Type.Number(),
@@ -16,9 +17,7 @@ const successResponseSchema = Type.Object({
 
 type SuccessResponse = Static<typeof successResponseSchema>;
 
-const notFoundSchema = Type.Object({
-    message: Type.Literal("noPortfoliosFound"),
-});
+const notFoundSchema = createNotFound("noPortfoliosFound");
 
 type NotFoundResponse = Static<typeof notFoundSchema>;
 
@@ -29,7 +28,7 @@ const fetchPortfolios = (userId: string) => {
         .select(["id", "name"]);
 };
 
-export default function portfolioListGet(fastify: FastifyInstance) {
+export default async function portfolioListGet(fastify: FastifyInstance) {
     fastify.route<{
         Reply: SuccessResponse | NotFoundResponse;
     }>({
