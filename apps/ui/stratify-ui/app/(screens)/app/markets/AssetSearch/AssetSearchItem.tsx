@@ -3,7 +3,7 @@ import { ChartColumnIncreasing, ChartColumnDecreasing } from "lucide-react";
 import { SearchAsset } from "./useAssetSearch";
 import AssetBadge, { assetTypeMap } from "../MarketDataTable/AssetBadge";
 
-interface AssetSearchItemProps {
+export interface AssetSearchItemProps {
     asset: SearchAsset;
 }
 

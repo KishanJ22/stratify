@@ -70,7 +70,10 @@ const AssetSearch = () => {
                     {searchStatus != "idle" && (
                         <CommandList className="p-1 gap-y-1.5">
                             {isSearching ? (
-                                <div className="flex flex-col gap-2">
+                                <div
+                                    className="flex flex-col gap-2"
+                                    data-testid="loading-state"
+                                >
                                     {Array.from({ length: 5 }).map(
                                         (_, index) => (
                                             <Skeleton
