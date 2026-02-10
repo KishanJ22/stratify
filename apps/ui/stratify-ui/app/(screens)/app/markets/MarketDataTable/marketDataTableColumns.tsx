@@ -1,7 +1,10 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Asset } from "./MarketDataTable";
 import { Button } from "@/app/components/ui/button";
-import AssetBadge, { assetTypeMap, marketStateMap } from "./AssetBadge";
+import AssetBadge, {
+    assetTypeMap,
+    marketStateMap,
+} from "@/app/components/(app)/AssetBadge";
 
 export const columns: ColumnDef<Asset>[] = [
     {
