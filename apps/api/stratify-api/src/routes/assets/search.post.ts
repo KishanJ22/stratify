@@ -6,21 +6,23 @@ import { dataApiClient } from "../../lib/api/data-api-client.js";
 import {
     NotFoundResponse,
     notFoundSchema,
-    SearchAsset,
     searchAssetsRequestBody,
     SearchAssetsRequestBody,
     searchAssetsResponseSchema,
     SearchAssetsSuccessResponse,
 } from "./search-schemas.js";
-import type { AssetType } from "../../schemas/common-schemas.js";
+import { formatSearchAsset } from "./formatSearchAsset.js";
 
 const assetsSearchQuery = (query: string) => {
     return db
         .selectFrom("stratify.assets as assets")
         .where((eb) =>
-            eb.or([
-                eb(sql<string>`LOWER(assets.name)`, "like", query + "%"),
-                eb(sql<string>`LOWER(assets.symbol)`, "like", query + "%"),
+            eb.and([
+                eb.or([
+                    eb(sql<string>`LOWER(assets.name)`, "like", query + "%"),
+                    eb(sql<string>`LOWER(assets.symbol)`, "like", query + "%"),
+                ]),
+                eb("assets.type", "!=", "CURRENCY"),
             ]),
         )
         .select([
@@ -32,64 +34,35 @@ const assetsSearchQuery = (query: string) => {
         ]);
 };
 
-type DbAsset = InferResult<ReturnType<typeof assetsSearchQuery>>[number];
+export type DbSearchAsset = InferResult<
+    ReturnType<typeof assetsSearchQuery>
+>[number];
 
-const retrieveStockDetails = async (asset: DbAsset) => {
+const fetchAssetPrice = async (asset: DbSearchAsset) => {
     // Append .L for London Stock Exchange assets (UK assets)
-    const symbol = asset.countryId === 223 ? `${asset.symbol}.L` : asset.symbol;
+    const symbol = asset.countryId === 223 ? `${asset.symbol}-L` : asset.symbol;
 
     try {
-        const assetDetails = await dataApiClient()
-            .GET("/stocks/{symbol}", {
+        const response = await dataApiClient()
+            .GET("/assets/{symbol}/current-price", {
                 params: {
                     path: {
                         symbol,
                     },
                 },
             })
-            .then((response) => response.data?.data);
+            .then((res) => res.data?.data);
 
-        return assetDetails;
+        return response;
     } catch (error) {
-        logger.error({ error, symbol }, "Error retrieving stock details");
-    }
-};
-
-const retrieveCryptoDetails = async (asset: DbAsset) => {
-    try {
-        const assetDetails = await dataApiClient()
-            .GET("/cryptocurrencies/{symbol}", {
-                params: {
-                    path: {
-                        symbol: asset.symbol,
-                    },
-                },
-            })
-            .then((response) => response.data?.data);
-
-        return assetDetails;
-    } catch (error) {
-        logger.error({ error }, "Error retrieving crypto details");
-    }
-};
-
-const retrieveFundDetails = async (asset: DbAsset) => {
-    const symbol = asset.countryId === 223 ? `${asset.symbol}.L` : asset.symbol;
-
-    try {
-        const assetDetails = await dataApiClient()
-            .GET("/funds/{symbol}", {
-                params: {
-                    path: {
-                        symbol,
-                    },
-                },
-            })
-            .then((response) => response.data?.data);
-
-        return assetDetails;
-    } catch (error) {
-        logger.error({ error }, "Error retrieving fund details");
+        logger.error(
+            {
+                error,
+                symbol,
+            },
+            "Error fetching asset price for symbol",
+        );
+        throw error;
     }
 };
 
@@ -97,70 +70,15 @@ const searchAssets = async (query: string) => {
     try {
         const assetsFromDb = await assetsSearchQuery(query).execute();
 
-        const assetsWithPriceDetails = await Promise.all(
+        const formattedAssets = await Promise.all(
             assetsFromDb.map(async (asset) => {
-                const assetType = asset.assetType as AssetType;
+                const currentPriceData = await fetchAssetPrice(asset);
 
-                if (assetType === "STOCK") {
-                    const assetDetails = await retrieveStockDetails(asset);
-
-                    return {
-                        ...asset,
-                        assetType,
-                        currentPrice:
-                            assetDetails?.priceDetails.currentPrice ?? null,
-                        priceChange:
-                            assetDetails?.priceDetails.dayTradingActivity
-                                .change ?? null,
-                        priceChangePercent:
-                            assetDetails?.priceDetails.dayTradingActivity
-                                .changePercent ?? null,
-                    } satisfies SearchAsset;
-                }
-
-                if (assetType === "CRYPTOCURRENCY") {
-                    const assetDetails = await retrieveCryptoDetails(asset);
-
-                    return {
-                        ...asset,
-                        assetType,
-                        currentPrice:
-                            assetDetails?.priceDetails.currentPrice ?? null,
-                        priceChange:
-                            assetDetails?.priceDetails.dayTradingActivity
-                                .change ?? null,
-                        priceChangePercent:
-                            assetDetails?.priceDetails.dayTradingActivity
-                                .changePercent ?? null,
-                    } satisfies SearchAsset;
-                }
-
-                if (assetType === "ETF") {
-                    const assetDetails = await retrieveFundDetails(asset);
-
-                    return {
-                        ...asset,
-                        assetType,
-                        currentPrice:
-                            assetDetails?.priceDetails.currentPrice ?? null,
-                        priceChange:
-                            assetDetails?.priceDetails.dayTradingActivity
-                                .change ?? null,
-                        priceChangePercent:
-                            assetDetails?.priceDetails.dayTradingActivity
-                                .changePercent ?? null,
-                    } satisfies SearchAsset;
-                }
-
-                return null;
+                return formatSearchAsset(asset, currentPriceData);
             }),
         );
 
-        const filteredAssets = assetsWithPriceDetails.filter(
-            (asset) => asset !== null,
-        );
-
-        return filteredAssets satisfies SearchAsset[];
+        return formattedAssets;
     } catch (error) {
         logger.error({ error }, "Error searching for assets");
     }
