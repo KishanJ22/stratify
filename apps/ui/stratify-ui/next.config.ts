@@ -13,4 +13,7 @@ const nextConfig: NextConfig = {
     }
 };
 
+// Required for building Docker images for use in production
+if (process.env.ENVIRONMENT !== "local") nextConfig.output = "standalone";
+
 export default nextConfig;
