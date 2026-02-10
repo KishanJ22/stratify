@@ -1,5 +1,11 @@
 # stratify-data-api
 
+## 0.3.2
+
+### Patch Changes
+
+- 234d9d1: Add endpoint to retrieve the current price for an asset
+
 ## 0.3.1
 
 ### Patch Changes

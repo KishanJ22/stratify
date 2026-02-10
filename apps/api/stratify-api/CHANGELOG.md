@@ -1,5 +1,12 @@
 # @stratify/stratify-api
 
+## 0.2.13
+
+### Patch Changes
+
+- 234d9d1: - Build endpoint to allow users to search for assets by asset name or asset symbol
+    - Fix issue where an unreadable name would be used as the asset name for assets that start with "ORD", use issuer name instead
+
 ## 0.2.12
 
 ### Patch Changes
