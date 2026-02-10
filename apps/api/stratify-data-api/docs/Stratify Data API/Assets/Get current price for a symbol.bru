@@ -1,0 +1,20 @@
+meta {
+  name: Get current price for a symbol
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/assets/:symbol/current-price
+  body: none
+  auth: inherit
+}
+
+params:path {
+  symbol: AAPL
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

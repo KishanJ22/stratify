@@ -477,6 +477,50 @@
         }
       }
     },
+    "/assets/{symbol}/current-price": {
+      "get": {
+        "tags": [
+          "stocks",
+          "cryptocurrencies",
+          "funds"
+        ],
+        "summary": "Get Current Price",
+        "operationId": "get_current_price_assets__symbol__current_price_get",
+        "parameters": [
+          {
+            "name": "symbol",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Symbol"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentPriceResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/": {
       "get": {
         "summary": "Get Root",
@@ -580,6 +624,41 @@
           "priceDetails"
         ],
         "title": "CryptocurrencyItem"
+      },
+      "CurrentPrice": {
+        "properties": {
+          "currentPrice": {
+            "type": "number",
+            "title": "Currentprice"
+          },
+          "change": {
+            "type": "number",
+            "title": "Change"
+          },
+          "changePercent": {
+            "type": "number",
+            "title": "Changepercent"
+          }
+        },
+        "type": "object",
+        "required": [
+          "currentPrice",
+          "change",
+          "changePercent"
+        ],
+        "title": "CurrentPrice"
+      },
+      "CurrentPriceResponse": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/CurrentPrice"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "CurrentPriceResponse"
       },
       "ExchangeDetails": {
         "properties": {
