@@ -19,11 +19,11 @@ export const decodeToken = async (token: string) => {
         // Dev tokens are prefixed with "Dev-"
         const isDevToken = token.startsWith("Dev-");
 
-        // Dev tokens should not be passed through in production
-        const isDevEnvironment = config.server.environment != "production";
+        // Dev tokens should only be used if dev mode is enabled
+        const isDevModeEnabled = config.server.devMode;
 
         // Handle dev tokens separately
-        if (isDevToken && isDevEnvironment) {
+        if (isDevToken && isDevModeEnabled) {
             const payload = decodeJwt(token.split("Dev-")[1]);
 
             return {

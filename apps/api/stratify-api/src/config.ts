@@ -29,6 +29,7 @@ const configSchema = Type.Object({
             Type.Literal("test"),
             Type.Literal("production"),
         ]),
+        devMode: Type.Boolean(),
     }),
     auth: Type.Object({
         baseUrl: Type.String({ minLength: 1 }),
@@ -63,6 +64,7 @@ export const config: ConfigSchema = {
         port: Number(process.env.PORT) || 2000,
         environment: (process.env
             .ENVIRONMENT as ConfigSchema["server"]["environment"])!,
+        devMode: process.env.DEV_MODE === "true",
     },
     mail: {
         host: process.env.MAIL_SERVER_HOST!,
