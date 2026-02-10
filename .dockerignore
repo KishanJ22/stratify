@@ -1,0 +1,14 @@
+node_modules
+.next
+
+**/pricing_ingestor/data/
+.Python
+.env
+.gitignore
+.pytest_cache/
+.DS_Store
+.venv
+.turbo/
+__pycache__
+
+.DS_Store
