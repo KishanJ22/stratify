@@ -1,5 +1,11 @@
 # stratify-data-api
 
+## 0.3.3
+
+### Patch Changes
+
+- 678e1b4: Write Dockerfile to prepare apps for deployment
+
 ## 0.3.2
 
 ### Patch Changes

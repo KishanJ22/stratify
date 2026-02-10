@@ -1,5 +1,13 @@
 # @stratify/stratify-ui
 
+## 0.1.13
+
+### Patch Changes
+
+- 678e1b4: Write Dockerfile to prepare app for deployment and add minor fixes to colours used on landing page and auth pages
+- Updated dependencies [678e1b4]
+    - @stratify/stratify-api@0.2.14
+
 ## 0.1.12
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @stratify/stratify-api
 
+## 0.2.14
+
+### Patch Changes
+
+- 678e1b4: Write Dockerfile to prepare apps for deployment
+
 ## 0.2.13
 
 ### Patch Changes
