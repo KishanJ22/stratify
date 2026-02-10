@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import StratifyIcon from "../../Common/StratifyIcon";
+import StratifyIcon from "../Common/StratifyIcon";
 import { useSessionContext } from "@/app/(screens)/app/SessionProvider";
-import { Avatar, AvatarFallback } from "../../ui/avatar";
+import { Avatar, AvatarFallback } from "../ui/avatar";
 
 type NavLink = {
     label: string;

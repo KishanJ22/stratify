@@ -15,7 +15,7 @@ class SymbolGetResponse(BaseModel):
 symbol_get = APIRouter()
 
 @symbol_get.get("/stocks/{symbol}", tags=["stocks"])
-async def get_stock(symbol: str):
+async def get_stock(symbol: str) -> SymbolGetResponse:
     try:
         cleaned_symbol = clean_symbol(symbol)
         symbol_data = Ticker(cleaned_symbol).info

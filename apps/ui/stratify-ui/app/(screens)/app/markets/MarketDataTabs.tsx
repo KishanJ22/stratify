@@ -31,35 +31,32 @@ const MarketDataTabs = ({
     }, [fetchTopGainersList, isInitialLoad]);
 
     return (
-        <div className="mt-4">
-            <Tabs
-                defaultValue={selectedTab}
-                onValueChange={(value) =>
-                    setSelectedTab(value as MarketDataTab)
-                }
-            >
-                <TabsList>
-                    <TabsTrigger
-                        value="topGainers"
-                        onClick={() => fetchTopGainersList()}
-                    >
-                        Top Gainers
-                    </TabsTrigger>
-                    <TabsTrigger
-                        value="topLosers"
-                        onClick={() => fetchTopLosersList()}
-                    >
-                        Top Losers
-                    </TabsTrigger>
-                    <TabsTrigger
-                        value="mostActive"
-                        onClick={() => fetchMostActiveAssetsList()}
-                    >
-                        Most Active
-                    </TabsTrigger>
-                </TabsList>
-            </Tabs>
-        </div>
+        <Tabs
+            defaultValue={selectedTab}
+            onValueChange={(value) => setSelectedTab(value as MarketDataTab)}
+            className="w-full"
+        >
+            <TabsList>
+                <TabsTrigger
+                    value="topGainers"
+                    onClick={() => fetchTopGainersList()}
+                >
+                    Top Gainers
+                </TabsTrigger>
+                <TabsTrigger
+                    value="topLosers"
+                    onClick={() => fetchTopLosersList()}
+                >
+                    Top Losers
+                </TabsTrigger>
+                <TabsTrigger
+                    value="mostActive"
+                    onClick={() => fetchMostActiveAssetsList()}
+                >
+                    Most Active
+                </TabsTrigger>
+            </TabsList>
+        </Tabs>
     );
 };
 

@@ -71,9 +71,12 @@ export async function processLseAssetNames() {
         //? Convert GBX to GBP for consistency
         const currency = row.currency === "GBX" ? "GBP" : row.currency;
 
+        const isOrdinaryShare = row.assetName.startsWith("ORD");
+
         const asset = {
             symbol: row.symbol,
-            name: row.assetName,
+            //? If the asset name starts with "ORD" then the issuer name should be used
+            name: isOrdinaryShare ? row.issuerName : row.assetName,
             assetType: isEtf ? "ETF" : "Stock",
             countryId: 223, // Country ID for United Kingdom
             currency,

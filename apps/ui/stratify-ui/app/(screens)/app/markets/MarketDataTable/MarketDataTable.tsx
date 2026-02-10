@@ -7,7 +7,6 @@ import { columns } from "./marketDataTableColumns";
 import { MarketDataTab } from "../MarketDataTabs";
 import { useTopLosers } from "../hooks/useTopLosers";
 import { useMostActiveAssets } from "../hooks/useMostActiveAssets";
-import { useEffect } from "react";
 import { useAutoRefetch } from "@/app/utils/auto-refetch";
 
 export type AssetType =

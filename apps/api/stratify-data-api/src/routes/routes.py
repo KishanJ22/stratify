@@ -9,6 +9,7 @@ from src.routes.cryptocurrencies.symbol.crypto_symbol_get import crypto_symbol_g
 from src.routes.funds.funds_get import funds_get
 from src.routes.funds.symbol.fund_symbol_get import fund_symbol_get
 from src.routes.reference_data.industries_get import industries_get
+from src.routes.assets.symbol.current_price_get import current_price_get
 
 router = APIRouter()
 
@@ -22,3 +23,4 @@ router.include_router(crypto_symbol_get)
 router.include_router(funds_get)
 router.include_router(fund_symbol_get)
 router.include_router(industries_get)
+router.include_router(current_price_get)

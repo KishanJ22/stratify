@@ -1,60 +1,10 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { Asset, AssetType, MarketState } from "./MarketDataTable";
+import { Asset } from "./MarketDataTable";
 import { Button } from "@/app/components/ui/button";
-import { Badge } from "@/app/components/ui/badge";
-
-interface BadgeProps {
-    className: string;
-    label: string;
-}
-
-type BadgeConfigurationMap<T extends string> = Record<T, BadgeProps>;
-
-const assetTypeMap: BadgeConfigurationMap<AssetType> = {
-    STOCK: {
-        className: "bg-secondary-lighter text-secondary-darker",
-        label: "Stock",
-    },
-    ETF: {
-        className: "bg-primary-lighter text-primary-darker",
-        label: "Exchange Traded Fund",
-    },
-    CRYPTOCURRENCY: {
-        className: "bg-accent-lighter text-accent-darker",
-        label: "Cryptocurrency",
-    },
-};
-
-const marketStateMap: BadgeConfigurationMap<MarketState> = {
-    PRE: {
-        className: "bg-primary-lighter text-primary-darker",
-        label: "Pre-market",
-    },
-    PREPRE: {
-        className: "bg-primary-lighter text-primary-darker",
-        label: "Pre-market",
-    },
-    REGULAR: {
-        className: "bg-primary-base text-primary-lightest",
-        label: "Open",
-    },
-    POST: {
-        className: "bg-primary-darker text-primary-lighter",
-        label: "After-hours",
-    },
-    POSTPOST: {
-        className: "bg-primary-darker text-primary-lighter",
-        label: "After-hours",
-    },
-    CLOSED: {
-        className: "bg-muted-dark text-muted-lighter",
-        label: "Closed",
-    },
-};
-
-const BadgeCell = ({ className, label }: BadgeProps) => (
-    <Badge className={className}>{label}</Badge>
-);
+import AssetBadge, {
+    assetTypeMap,
+    marketStateMap,
+} from "@/app/components/(app)/AssetBadge";
 
 export const columns: ColumnDef<Asset>[] = [
     {
@@ -77,7 +27,7 @@ export const columns: ColumnDef<Asset>[] = [
         accessorKey: "assetType",
         header: "Asset Type",
         cell: ({ row }) => (
-            <BadgeCell
+            <AssetBadge
                 {...assetTypeMap[row.original.assetType]}
                 data-testid="asset-type-badge"
             />
@@ -88,7 +38,7 @@ export const columns: ColumnDef<Asset>[] = [
         header: "Market State",
         cell: ({ row }) => {
             return (
-                <BadgeCell
+                <AssetBadge
                     {...marketStateMap[row.original.marketState]}
                     data-testid="market-state-badge"
                 />

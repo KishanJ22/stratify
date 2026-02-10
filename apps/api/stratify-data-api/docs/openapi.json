@@ -3,7 +3,7 @@
   "info": {
     "title": "Stratify Data API",
     "description": "A REST API for accessing stock market data powered by Yahoo Finance and Stooq.",
-    "version": "0.3.0"
+    "version": "0.3.1"
   },
   "paths": {
     "/stocks": {
@@ -74,7 +74,9 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/SymbolGetResponse"
+                }
               }
             }
           },
@@ -475,6 +477,50 @@
         }
       }
     },
+    "/assets/{symbol}/current-price": {
+      "get": {
+        "tags": [
+          "stocks",
+          "cryptocurrencies",
+          "funds"
+        ],
+        "summary": "Get Current Price",
+        "operationId": "get_current_price_assets__symbol__current_price_get",
+        "parameters": [
+          {
+            "name": "symbol",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Symbol"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentPriceResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/": {
       "get": {
         "summary": "Get Root",
@@ -578,6 +624,57 @@
           "priceDetails"
         ],
         "title": "CryptocurrencyItem"
+      },
+      "CurrentPrice": {
+        "properties": {
+          "currentPrice": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Currentprice"
+          },
+          "change": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Change"
+          },
+          "changePercent": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Changepercent"
+          }
+        },
+        "type": "object",
+        "title": "CurrentPrice"
+      },
+      "CurrentPriceResponse": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/CurrentPrice"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "CurrentPriceResponse"
       },
       "ExchangeDetails": {
         "properties": {
@@ -698,6 +795,34 @@
         },
         "type": "object",
         "title": "HTTPValidationError"
+      },
+      "IndustryDetails": {
+        "properties": {
+          "industry": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Industry"
+          },
+          "sector": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sector"
+          }
+        },
+        "type": "object",
+        "title": "IndustryDetails"
       },
       "OHLCV": {
         "properties": {
@@ -842,6 +967,100 @@
           "data"
         ],
         "title": "QuoteListGetResponse"
+      },
+      "StockItem": {
+        "properties": {
+          "displayName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Displayname"
+          },
+          "shortName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Shortname"
+          },
+          "longName": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Longname"
+          },
+          "summary": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Summary"
+          },
+          "marketState": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Marketstate"
+          },
+          "marketCap": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Marketcap"
+          },
+          "industryDetails": {
+            "$ref": "#/components/schemas/IndustryDetails"
+          },
+          "priceDetails": {
+            "$ref": "#/components/schemas/PriceDetails"
+          }
+        },
+        "type": "object",
+        "required": [
+          "industryDetails",
+          "priceDetails"
+        ],
+        "title": "StockItem"
+      },
+      "SymbolGetResponse": {
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/StockItem"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "SymbolGetResponse"
       },
       "ValidationError": {
         "properties": {
