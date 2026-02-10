@@ -29,3 +29,9 @@ export type SearchAssetsSuccessResponse = Static<
 
 export const notFoundSchema = createNotFound("noAssetsFound");
 export type NotFoundResponse = Static<typeof notFoundSchema>;
+
+export const badRequestSchema = Type.Object({
+    message: Type.Literal("invalidSearchQuery"),
+});
+
+export type BadRequestResponse = Static<typeof badRequestSchema>;

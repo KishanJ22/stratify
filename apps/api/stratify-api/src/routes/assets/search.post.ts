@@ -4,6 +4,8 @@ import db from "../../database/db.js";
 import { InferResult, sql } from "kysely";
 import { dataApiClient } from "../../lib/api/data-api-client.js";
 import {
+    BadRequestResponse,
+    badRequestSchema,
     NotFoundResponse,
     notFoundSchema,
     searchAssetsRequestBody,
@@ -18,10 +20,13 @@ const assetsSearchQuery = (query: string) => {
         .selectFrom("stratify.assets as assets")
         .where((eb) =>
             eb.and([
+                //? Use LOWER to turn the asset name and symbol to lowercase for case-insensitive searching
+                //? And "like" keyword for partial string matching
                 eb.or([
                     eb(sql<string>`LOWER(assets.name)`, "like", query + "%"),
                     eb(sql<string>`LOWER(assets.symbol)`, "like", query + "%"),
                 ]),
+                //! Filter out currencies otherwise there will be too many assets sent to the data API which will timeout
                 eb("assets.type", "!=", "CURRENCY"),
             ]),
         )
@@ -62,7 +67,6 @@ const fetchAssetPrice = async (asset: DbSearchAsset) => {
             },
             "Error fetching asset price for symbol",
         );
-        throw error;
     }
 };
 
@@ -87,7 +91,10 @@ const searchAssets = async (query: string) => {
 export default async function searchAssetsPost(fastify: FastifyInstance) {
     fastify.route<{
         Body: SearchAssetsRequestBody;
-        Reply: SearchAssetsSuccessResponse | NotFoundResponse;
+        Reply:
+            | SearchAssetsSuccessResponse
+            | BadRequestResponse
+            | NotFoundResponse;
     }>({
         method: "POST",
         url: "/assets/search",
@@ -95,12 +102,20 @@ export default async function searchAssetsPost(fastify: FastifyInstance) {
             body: searchAssetsRequestBody,
             response: {
                 200: searchAssetsResponseSchema,
+                400: badRequestSchema,
                 404: notFoundSchema,
             },
         },
         handler: async (request, reply) => {
             try {
                 const { query } = request.body;
+
+                //? Return 400 bad request if the query is empty or only contains whitespace
+                if (!query || query.trim() == "") {
+                    return reply
+                        .status(400)
+                        .send({ message: "invalidSearchQuery" });
+                }
 
                 const assets = await searchAssets(query.toLowerCase());
 
