@@ -25,23 +25,6 @@ export const loggerVariant = {
             pid: undefined,
             hostname: undefined,
         },
-        transport: {
-            target: "pino-loki",
-            batching: false,
-            options: {
-                host: process.env.LOKI_URL!,
-                labels: {
-                    application: "Stratify API",
-                    environment: process.env.ENVIRONMENT!,
-                },
-                basicAuth: {
-                    username: process.env.LOKI_USERNAME!,
-                    password: process.env.LOKI_PASSWORD!,
-                },
-                batchSize: 1,
-                timeThreshold: 15 * 1000,
-            },
-        },
     },
     test: {
         level: process.env.LOG_LEVEL ?? "debug",
