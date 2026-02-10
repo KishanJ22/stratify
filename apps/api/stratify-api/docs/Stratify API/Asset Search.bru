@@ -1,0 +1,22 @@
+meta {
+  name: Asset Search
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}/assets/search
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "query": "Vanguard"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
