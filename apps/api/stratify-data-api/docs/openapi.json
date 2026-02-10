@@ -628,24 +628,40 @@
       "CurrentPrice": {
         "properties": {
           "currentPrice": {
-            "type": "number",
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Currentprice"
           },
           "change": {
-            "type": "number",
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Change"
           },
           "changePercent": {
-            "type": "number",
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Changepercent"
           }
         },
         "type": "object",
-        "required": [
-          "currentPrice",
-          "change",
-          "changePercent"
-        ],
         "title": "CurrentPrice"
       },
       "CurrentPriceResponse": {

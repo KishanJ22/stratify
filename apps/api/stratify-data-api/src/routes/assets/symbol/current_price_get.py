@@ -2,11 +2,12 @@ from fastapi import APIRouter, Query, HTTPException
 from yfinance import Ticker
 from pydantic import BaseModel
 from src.utils.clean_symbol import clean_symbol
+from typing import Optional
 
 class CurrentPrice(BaseModel):
-    currentPrice: float
-    change: float
-    changePercent: float
+    currentPrice: Optional[float] = None
+    change: Optional[float] = None
+    changePercent: Optional[float] = None
     
 class CurrentPriceResponse(BaseModel):
     data: CurrentPrice
