@@ -47,24 +47,17 @@ const proxyRequest = async (request: NextRequest) => {
         const targetPath = pathname.replace(/^\/api/, "");
         const targetUrl = `${targetBaseUrl}${targetPath}${search}`;
 
-        //? Handle the preflight request for CORS
-        if (requestMethod === "OPTIONS") {
-            // Get origin and check if it's allowed for CORS
-            const origin = request.headers.get("origin") || "";
-            const isAllowedOrigin = allowedOrigins.includes(origin);
-            const allowedOrigin = isAllowedOrigin ? origin : ""; // Allow the UI URL to access the API
+        // Get origin and check if it's allowed for CORS
+        const origin = request.headers.get("origin") || "";
+        const isAllowedOrigin = allowedOrigins.includes(origin);
+        const allowedOrigin = isAllowedOrigin ? origin : ""; // Allow the UI URL to access the API
 
-            return new NextResponse(null, {
-                headers: {
-                    "Access-Control-Allow-Origin": allowedOrigin,
-                    "Access-Control-Allow-Methods":
-                        "GET, POST, PUT, DELETE, OPTIONS", // Allow these HTTP methods
-                    "Access-Control-Allow-Headers":
-                        "Authorization, Content-Type", // Allow Auth header
-                    "Access-Control-Max-Age": "86400", // Cache preflight response for 24 hours
-                },
-            });
-        }
+        const responseHeaders = {
+            "Access-Control-Allow-Origin": allowedOrigin,
+            "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS", // Allow these HTTP methods
+            "Access-Control-Allow-Headers": "Authorization, Content-Type", // Allow Auth header
+            "Access-Control-Max-Age": "86400", // Cache preflight response for 24 hours
+        };
 
         if (!isAuthRequest) {
             const token = await getAccessTokenFromCookies();
@@ -78,6 +71,7 @@ const proxyRequest = async (request: NextRequest) => {
             request: {
                 headers,
             },
+            headers: responseHeaders,
         });
     } catch (error) {
         console.error("Proxy error:", error);
