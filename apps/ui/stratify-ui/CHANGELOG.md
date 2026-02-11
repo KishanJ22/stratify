@@ -1,5 +1,13 @@
 # @stratify/stratify-ui
 
+## 0.1.14
+
+### Patch Changes
+
+- bce7cdd: Update allowed/trusted origins list and only send access control headers on preflight (OPTIONS) requests to fix CORS issues on deployed environments
+- Updated dependencies [bce7cdd]
+    - @stratify/stratify-api@0.2.15
+
 ## 0.1.13
 
 ### Patch Changes
