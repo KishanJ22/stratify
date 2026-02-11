@@ -71,8 +71,8 @@ export const auth = betterAuth({
     },
     trustedOrigins: [
         "http://localhost:3000",
-        "https://stratify.kjet.dev",
         "https://stratify-dev.kjet.dev",
-        "https://stratify-staging.kjet.dev",
+        "https://stratify-test.kjetcloud.com",
+        "https://stratify.kjetcloud.com",
     ],
 });

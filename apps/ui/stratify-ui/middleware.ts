@@ -1,14 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAccessTokenFromCookies } from "./lib/auth/get-access-token";
 
-//? Add URLs for deployed environments here
-const allowedOrigins = ["http://localhost:3000", "http://127.0.0.1:3000"];
+const allowedOrigins = [
+    "http://localhost:3000",
+    "https://stratify-dev.kjet.dev",
+    "https://stratify-test.kjetcloud.com",
+    "https://stratify.kjetcloud.com",
+];
 
 const API_URL = process.env.STRATIFY_API_URL;
 const AUTH_API_URL = process.env.STRATIFY_AUTH_API_URL;
 
 const proxyRequest = async (request: NextRequest) => {
     const requestPathname = request.nextUrl.pathname;
+    const requestMethod = request.method;
 
     // Allow calls to health endpoint without proxying
     if (requestPathname.startsWith("/api/health")) {
@@ -34,10 +39,6 @@ const proxyRequest = async (request: NextRequest) => {
     try {
         const { pathname, search } = request.nextUrl;
 
-        // Get origin and check if it's allowed for CORS
-        const origin = request.headers.get("origin") || "";
-        const isAllowedOrigin = allowedOrigins.includes(origin);
-
         const headers = new Headers(request.headers);
 
         // Determine the target URL based on the request type
@@ -46,12 +47,24 @@ const proxyRequest = async (request: NextRequest) => {
         const targetPath = pathname.replace(/^\/api/, "");
         const targetUrl = `${targetBaseUrl}${targetPath}${search}`;
 
-        // Add CORS header for allowed origin to prevent CORS issues
-        const responseHeaders = {
-            ...(isAllowedOrigin && {
-                "Access-Control-Allow-Origin": origin,
-            }),
-        };
+        //? Handle the preflight request for CORS
+        if (requestMethod === "OPTIONS") {
+            // Get origin and check if it's allowed for CORS
+            const origin = request.headers.get("origin") || "";
+            const isAllowedOrigin = allowedOrigins.includes(origin);
+            const allowedOrigin = isAllowedOrigin ? origin : ""; // Allow the UI URL to access the API
+
+            return new NextResponse(null, {
+                headers: {
+                    "Access-Control-Allow-Origin": allowedOrigin,
+                    "Access-Control-Allow-Methods":
+                        "GET, POST, PUT, DELETE, OPTIONS", // Allow these HTTP methods
+                    "Access-Control-Allow-Headers":
+                        "Authorization, Content-Type", // Allow Auth header
+                    "Access-Control-Max-Age": "86400", // Cache preflight response for 24 hours
+                },
+            });
+        }
 
         if (!isAuthRequest) {
             const token = await getAccessTokenFromCookies();
@@ -65,7 +78,6 @@ const proxyRequest = async (request: NextRequest) => {
             request: {
                 headers,
             },
-            headers: responseHeaders,
         });
     } catch (error) {
         console.error("Proxy error:", error);
