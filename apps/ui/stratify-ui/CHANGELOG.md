@@ -1,5 +1,11 @@
 # @stratify/stratify-ui
 
+## 0.1.15
+
+### Patch Changes
+
+- 2b1bc92: Fix CORS headers not being set as response headers in middleware
+
 ## 0.1.14
 
 ### Patch Changes
