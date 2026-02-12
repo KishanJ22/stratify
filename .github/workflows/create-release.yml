@@ -26,8 +26,10 @@ jobs:
             - name: Determine commit range for detecting changes
               id: commit_range
               run: |
+                  # Base - Main before merging PR
                   echo "BASE_COMMIT=$(git rev-parse HEAD~2)" >> "$GITHUB_OUTPUT"
-                  echo "REF_COMMIT=$(git rev-parse HEAD~1)" >> "$GITHUB_OUTPUT"
+                  # Ref - Main after merging PR and bumping package.json versions
+                  echo "REF_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
             - name: Detect changed package(s)
               id: filter
