@@ -10,7 +10,7 @@ const CreatePortfolioButton = () => {
     return (
         <>
             <Button
-                variant="secondary"
+                variant="primaryLighter"
                 size="lg"
                 onClick={() => setIsCreatePortfolioModalOpen(true)}
             >
