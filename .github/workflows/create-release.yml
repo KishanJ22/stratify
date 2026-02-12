@@ -1,0 +1,117 @@
+name: Create Release
+
+on:
+    workflow_run:
+        workflows: [Update Package Version]
+        types: completed
+
+jobs:
+    #? This is required to detect which apps have changes so that the release manifest only includes the changed apps
+    detect-changes:
+        name: Detect Changes
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            pull-requests: read
+        outputs:
+            stratify-data-api: ${{ steps.filter.outputs.stratify-data-api }}
+            stratify-api: ${{ steps.filter.outputs.stratify-api }}
+            stratify-ui: ${{ steps.filter.outputs.stratify-ui }}
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Determine commit range for detecting changes
+              id: commit_range
+              run: |
+                  echo "BASE_COMMIT=$(git rev-parse HEAD~2)" >> "$GITHUB_OUTPUT"
+                  echo "REF_COMMIT=$(git rev-parse HEAD~1)" >> "$GITHUB_OUTPUT"
+
+            - name: Detect changed package(s)
+              id: filter
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  BASE_COMMIT: ${{ steps.commit_range.outputs.BASE_COMMIT }}
+                  REF_COMMIT: ${{ steps.commit_range.outputs.REF_COMMIT }}
+              uses: dorny/paths-filter@v3
+              with:
+                  base: ${{ env.BASE_COMMIT }}
+                  ref: ${{ env.REF_COMMIT }}
+                  filters: |
+                      stratify-data-api:
+                        - 'apps/api/stratify-data-api/**'
+                      stratify-api:
+                        - 'apps/api/stratify-api/**'
+                      stratify-ui:
+                        - 'apps/ui/stratify-ui/**'
+
+    create-release:
+        name: Create Release
+        runs-on: ubuntu-latest
+        needs: detect-changes
+        permissions:
+            contents: read
+            packages: read
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Get latest release tag
+              id: latest_release
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: echo "release_tag=$(gh release view --repo $GITHUB_REPOSITORY --json tagName -q .tagName || echo "null")" >> "GITHUB_OUTPUT"
+
+            - name: Create release tag
+              id: create_release_tag
+              run: |
+                  new_release_tag=""
+                  current_date=$(date +"%d-%m-%Y") # Get today's date
+
+                  latest_release_tag=${{ steps.latest_release.outputs.release_tag }}
+
+                  if [ "$latest_release_tag" = "null" ]; then
+                      new_release_tag="release-$current_date.1"
+                  elif [[ "$latest_release_tag" == release-$current_date.* ]]; then
+                      release_tag_number=$(echo "$latest_release_tag" | awk -F "." '{print $NF}')
+                      incremented_release_tag_number=$((release_tag_number + 1))
+                      new_release_tag="release-$current_date.$incremented_release_tag_number"
+                  else
+                      new_release_tag="release-$current_date.1"
+                  fi
+
+                  echo "NEW_RELEASE_TAG=$new_release_tag" >> "GITHUB_OUTPUT"
+
+            - name: Create release manifest
+              id: release_manifest
+              run: |
+                  is_data_api_changed=${{ needs.detect-changes.outputs.stratify-data-api }}
+                  is_api_changed=${{ needs.detect-changes.outputs.stratify-api }}
+                  is_ui_changed=${{ needs.detect-changes.outputs.stratify-ui }}
+
+                  data_api_version=$(jq -r '.version' apps/api/stratify-data-api/package.json)
+                  api_version=$(jq -r '.version' apps/api/stratify-api/package.json)
+                  ui_version=$(jq -r '.version' apps/ui/stratify-ui/package.json)
+
+                  release_manifest="{
+                    "releaseTag": "${{ steps.create_release_tag.outputs.NEW_RELEASE_TAG }}",
+                    "apps": {
+                        "stratify-data-api": { "isChanged": $is_data_api_changed, "version": "$data_api_version" }, 
+                        "stratify-api": { "isChanged": $is_api_changed, "version": "$api_version" }, 
+                        "stratify-ui": { "isChanged": $is_ui_changed, "version": "$ui_version" }
+                    }
+                  }"
+
+                  echo "RELEASE_MANIFEST=$release_manifest" >> "GITHUB_OUTPUT"
+
+            - name: Create Github Release
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  release_tag=${{ steps.create_release_tag.outputs.NEW_RELEASE_TAG }}
+                  release_manifest=${{ steps.release_manifest.outputs.RELEASE_MANIFEST }}
+                  gh release create $release_tag --repo $GITHUB_REPOSITORY --title $release_tag --notes "Release manifest: $release_manifest" --latest
