@@ -10,13 +10,16 @@ jobs:
     detect-changes:
         name: Detect Changes
         runs-on: ubuntu-latest
+        #? Only run this job (and the create-release job) if the "Update Package Version" workflow run was successful
+        if: ${{ github.event.workflow_run.conclusion == 'success' }}
         permissions:
             contents: read
             pull-requests: read
+        #? Get the outputs from the change detection step, default them to 'false'
         outputs:
-            stratify-data-api: ${{ steps.filter.outputs.stratify-data-api }}
-            stratify-api: ${{ steps.filter.outputs.stratify-api }}
-            stratify-ui: ${{ steps.filter.outputs.stratify-ui }}
+            stratify-data-api: ${{ steps.filter.outputs.stratify-data-api || 'false' }}
+            stratify-api: ${{ steps.filter.outputs.stratify-api || 'false' }}
+            stratify-ui: ${{ steps.filter.outputs.stratify-ui || 'false' }}
         steps:
             - name: Checkout repository
               uses: actions/checkout@v4
@@ -28,7 +31,7 @@ jobs:
               run: |
                   # Base - Main before merging PR
                   echo "BASE_COMMIT=$(git rev-parse HEAD~2)" >> "$GITHUB_OUTPUT"
-                  # Ref - Main after merging PR and bumping package.json versions
+                  # Ref - Main after merging PR and updating package.json versions
                   echo "REF_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
             - name: Detect changed package(s)
@@ -52,6 +55,7 @@ jobs:
     create-release:
         name: Create Release
         runs-on: ubuntu-latest
+        if: ${{ github.event.workflow_run.conclusion == 'success' }}
         needs: detect-changes
         permissions:
             contents: write
@@ -62,68 +66,92 @@ jobs:
               with:
                   fetch-depth: 0
 
+            #? Get the latest release for the repo and extract the tag name. If there's no release then return null
             - name: Get latest release tag
               id: latest_release
               env:
                   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              run: echo "release_tag=$(gh release view --repo $GITHUB_REPOSITORY --json tagName -q .tagName || echo "null")" >> "GITHUB_OUTPUT"
+              run: echo "release_tag=$(gh release view --repo $GITHUB_REPOSITORY --json tagName -q .tagName || echo "null")" >> "$GITHUB_OUTPUT"
 
+              #? Create a new release tag in the format release-DD-MM-YYYY.N where N is the count of the releases created on that day
             - name: Create release tag
               id: create_release_tag
+              env:
+                  LATEST_RELEASE_TAG: ${{ steps.latest_release.outputs.release_tag }}
               run: |
                   new_release_tag=""
                   current_date=$(date +"%d-%m-%Y") # Get today's date
 
-                  latest_release_tag=${{ steps.latest_release.outputs.release_tag }}
-
-                  if [ "$latest_release_tag" = "null" ]; then
+                  #? If there's no release or the latest release is not from today, then set the release tag to 1
+                  if [ "$LATEST_RELEASE_TAG" = "null" ] || [[ "$LATEST_RELEASE_TAG" != release-$current_date.* ]]; then
                       new_release_tag="release-$current_date.1"
-                  elif [[ "$latest_release_tag" == release-$current_date.* ]]; then
-                      release_tag_number=$(echo "$latest_release_tag" | awk -F "." '{print $NF}')
+                  else
+                      #? Otherwise, increment the release tag number
+                      release_tag_number=$(echo "$LATEST_RELEASE_TAG" | awk -F "." '{print $NF}')
                       incremented_release_tag_number=$((release_tag_number + 1))
                       new_release_tag="release-$current_date.$incremented_release_tag_number"
-                  else
-                      new_release_tag="release-$current_date.1"
                   fi
 
-                  echo "NEW_RELEASE_TAG=$new_release_tag" >> "GITHUB_OUTPUT"
+                  echo "NEW_RELEASE_TAG=$new_release_tag" >> "$GITHUB_OUTPUT"
 
             - name: Create release manifest
               id: release_manifest
+              env:
+                  IS_DATA_API_CHANGED: ${{ needs.detect-changes.outputs.stratify-data-api }}
+                  IS_API_CHANGED: ${{ needs.detect-changes.outputs.stratify-api }}
+                  IS_UI_CHANGED: ${{ needs.detect-changes.outputs.stratify-ui }}
+                  RELEASE_TAG: ${{ steps.create_release_tag.outputs.NEW_RELEASE_TAG }}
               run: |
-                  is_data_api_changed=${{ needs.detect-changes.outputs.stratify-data-api }}
-                  is_api_changed=${{ needs.detect-changes.outputs.stratify-api }}
-                  is_ui_changed=${{ needs.detect-changes.outputs.stratify-ui }}
-
-                  is_nothing_changed=$([[ $is_data_api_changed = 'false' ]] && [[ $is_api_changed = 'false' ]] && [[ $is_ui_changed = 'false' ]] && echo "true" || echo "false")
-
-                  if [ "$is_nothing_changed" = "true" ]; then
-                      echo "No changes detected, skipping release creation"
-                      echo "RELEASE_MANIFEST=null" >> "GITHUB_OUTPUT"
-                      exit 0
+                  #? If no apps have been changed, then skip the release creation by returning early and outputting skip_release=true
+                  if [[ "$IS_DATA_API_CHANGED" == "false" ]] && \
+                     [[ "$IS_API_CHANGED" == "false" ]] && \
+                     [[ "$IS_UI_CHANGED" == "false" ]]; then
+                    echo "No changes detected, skipping release creation"
+                    echo "skip_release=true" >> "$GITHUB_OUTPUT"
+                    exit 0
                   fi
 
+                  #? Get the version of each app from their package.json file
                   data_api_version=$(jq -r '.version' apps/api/stratify-data-api/package.json)
                   api_version=$(jq -r '.version' apps/api/stratify-api/package.json)
                   ui_version=$(jq -r '.version' apps/ui/stratify-ui/package.json)
 
-                  release_manifest="{
-                    "releaseTag": "${{ steps.create_release_tag.outputs.NEW_RELEASE_TAG }}",
-                    "apps": {
-                        "stratify-data-api": { "isChanged": $is_data_api_changed, "version": "$data_api_version" }, 
-                        "stratify-api": { "isChanged": $is_api_changed, "version": "$api_version" }, 
-                        "stratify-ui": { "isChanged": $is_ui_changed, "version": "$ui_version" }
-                    }
-                  }"
 
-                  echo "RELEASE_MANIFEST=$release_manifest" >> "GITHUB_OUTPUT"
+                  #? Create a release manifest in a JSON, including the release tag and the apps with their versions
+                  jq -n \
+                  --arg releaseTag "$RELEASE_TAG" \
+                  --argjson isDataApiChanged "$IS_DATA_API_CHANGED" \
+                  --arg dataApiVersion "$data_api_version" \
+                  --argjson isApiChanged "$IS_API_CHANGED" \
+                  --arg apiVersion "$api_version" \
+                  --argjson isUiChanged "$IS_UI_CHANGED" \
+                  --arg uiVersion "$ui_version" \
+                  '{
+                      releaseTag: $releaseTag,
+                      apps: {
+                      "stratify-data-api": {
+                          isChanged: $isDataApiChanged,
+                          version: $dataApiVersion
+                      },
+                      "stratify-api": {
+                          isChanged: $isApiChanged,
+                          version: $apiVersion
+                      },
+                      "stratify-ui": {
+                          isChanged: $isUiChanged,
+                          version: $uiVersion
+                      }
+                      }
+                  }' > release-manifest.json
 
+                  cat release-manifest.json
+                  echo "skip_release=false" >> "$GITHUB_OUTPUT"
+
+            #? If there are changes, create a release on Github using the release tag and include the release manifest in the notes
             - name: Create Github Release
-              if: ${{ steps.release_manifest.outputs.RELEASE_MANIFEST != 'null' }}
+              if: ${{ steps.release_manifest.outputs.skip_release == 'false' }}
               env:
                   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  RELEASE_TAG: ${{ steps.create_release_tag.outputs.NEW_RELEASE_TAG }}
               run: |
-                  release_tag=${{ steps.create_release_tag.outputs.NEW_RELEASE_TAG }}
-                  release_manifest=${{ steps.release_manifest.outputs.RELEASE_MANIFEST }}
-
-                  gh release create $release_tag --repo $GITHUB_REPOSITORY --title $release_tag --notes "Release manifest: $release_manifest" --latest
+                  gh release create "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --title "$RELEASE_TAG" --notes-file release-manifest.json --latest
