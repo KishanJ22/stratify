@@ -1,5 +1,14 @@
 # @stratify/stratify-ui
 
+## 0.1.17
+
+### Patch Changes
+
+- aee4058: Version bump for all packages to create the first release
+    - Change in stratify-data-api to only generate an openapi spec when running locally
+- Updated dependencies [aee4058]
+    - @stratify/stratify-api@0.2.16
+
 ## 0.1.16
 
 ### Patch Changes
