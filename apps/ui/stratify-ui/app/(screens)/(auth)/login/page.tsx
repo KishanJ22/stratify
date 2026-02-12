@@ -35,13 +35,13 @@ export default function LoginPage() {
                     height={650}
                     className="blur-sm z-0 absolute"
                 />
-                <div className="relative bg-primary-lightest/80 rounded-3xl mx-8 pt-14 w-1/3">
-                    <h1 className="text-4xl text-primary-darker text-center font-bold pb-8">
+                <div className="relative bg-primary-lightest/80 rounded-3xl mx-8 pt-14 min-w-lg">
+                    <h1 className="text-4xl text-secondary-darker text-center font-bold pb-8">
                         Log In
                     </h1>
                     <LoginForm />
                     <div className="flex flex-row justify-center py-6">
-                        <div className="text-sm text-primary-darker">
+                        <div className="text-sm text-secondary-darker">
                             {"Don't have an account?"}
                         </div>
                         <div
@@ -50,7 +50,7 @@ export default function LoginPage() {
                         >
                             <Button
                                 variant="link"
-                                className="text-primary-darker hover:text-primary-base transition-colors -my-2"
+                                className="text-secondary-darker hover:text-secondary-base transition-colors -my-2"
                             >
                                 Sign Up
                                 <ChevronRight size={14} />

@@ -157,7 +157,6 @@ const CreatePortfolioModal = ({
                                     label="Name"
                                     placeholder="Main Portfolio"
                                     error={portfolioNameError}
-                                    inputClassName="border-primary-dark focus-visible:ring-primary-darker"
                                 />
                             );
                         }}
@@ -172,6 +171,7 @@ const CreatePortfolioModal = ({
                             <DialogFooter className="flex flex-col justify-end mt-8">
                                 <form.SubmitButton
                                     label="Create"
+                                    variant="default"
                                     isDisabled={
                                         !form.state.canSubmit ||
                                         isSubmitDisabled

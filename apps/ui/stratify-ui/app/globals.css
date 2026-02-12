@@ -39,13 +39,13 @@
   --primary-darker: #156A6A;
   --primary-darkest: #0D4545;
 
-  --secondary-lightest: #F3EFF8;
-  --secondary-lighter: #DDD3EB;
-  --secondary-light: #C1B0DB;
-  --secondary-base: #7B5EA7;
-  --secondary-dark: #624B86;
-  --secondary-darker: #4A3865;
-  --secondary-darkest: #312544;
+  --secondary-lightest:#E8ECF5;
+  --secondary-lighter: #C4CDE6;
+  --secondary-light: #7A8FCC;
+  --secondary-base: #1A3690;
+  --secondary-dark: #152B73;
+  --secondary-darker: #102057;
+  --secondary-darkest: #0A163A;
 
   --accent-lightest: #FEF7E0;
   --accent-lighter: #FDEAB3;

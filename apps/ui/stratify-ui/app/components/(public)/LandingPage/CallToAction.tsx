@@ -28,7 +28,7 @@ const CallToAction = () => {
                     Get Started
                 </Button>
                 <Button
-                    variant="secondary"
+                    variant="primaryLighter"
                     size="lg"
                     onClick={() => push("/learn")}
                 >

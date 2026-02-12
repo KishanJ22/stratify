@@ -48,7 +48,7 @@ const AssetSearch = () => {
             }}
         >
             <PopoverTrigger asChild>
-                <Button variant="secondary">
+                <Button variant="primaryLighter">
                     <span className="flex items-center gap-2">
                         <Search size={16} />
                         Search

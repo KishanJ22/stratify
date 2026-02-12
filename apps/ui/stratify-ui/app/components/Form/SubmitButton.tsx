@@ -1,11 +1,13 @@
 import { Button } from "../ui/button";
 import { Spinner } from "../ui/spinner";
+import { ButtonProps } from "../ui/button";
 
 interface SubmitButtonProps {
     label: string;
     isDisabled?: boolean;
     isLoading?: boolean;
     className?: string;
+    variant?: ButtonProps["variant"];
 }
 
 const SubmitButton = ({
@@ -13,11 +15,12 @@ const SubmitButton = ({
     isDisabled,
     isLoading,
     className,
+    variant = "secondary",
 }: SubmitButtonProps) => {
     return (
         <Button
             type="submit"
-            variant="default"
+            variant={variant}
             disabled={isDisabled}
             className={className}
         >
