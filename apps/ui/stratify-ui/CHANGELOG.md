@@ -1,5 +1,13 @@
 # @stratify/stratify-ui
 
+## 0.1.22
+
+### Patch Changes
+
+- f548b43: Reorganise execution of workflows when merging with main and run deployments on self-hosted runner
+- Updated dependencies [f548b43]
+    - @stratify/stratify-api@0.2.21
+
 ## 0.1.21
 
 ### Patch Changes

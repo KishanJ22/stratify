@@ -1,5 +1,11 @@
 # @stratify/stratify-api
 
+## 0.2.21
+
+### Patch Changes
+
+- f548b43: Reorganise execution of workflows when merging with main and run deployments on self-hosted runner
+
 ## 0.2.20
 
 ### Patch Changes

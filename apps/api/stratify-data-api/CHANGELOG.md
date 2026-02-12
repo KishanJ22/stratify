@@ -1,5 +1,11 @@
 # stratify-data-api
 
+## 0.3.9
+
+### Patch Changes
+
+- f548b43: Reorganise execution of workflows when merging with main and run deployments on self-hosted runner
+
 ## 0.3.8
 
 ### Patch Changes
