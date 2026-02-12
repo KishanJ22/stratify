@@ -1,5 +1,11 @@
 # stratify-data-api
 
+## 0.3.10
+
+### Patch Changes
+
+- 8517d3e: Fix workflow syntax and perform changeset update after build is completed
+
 ## 0.3.9
 
 ### Patch Changes

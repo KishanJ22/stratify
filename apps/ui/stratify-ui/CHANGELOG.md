@@ -1,5 +1,13 @@
 # @stratify/stratify-ui
 
+## 0.1.23
+
+### Patch Changes
+
+- 8517d3e: Fix workflow syntax and perform changeset update after build is completed
+- Updated dependencies [8517d3e]
+    - @stratify/stratify-api@0.2.22
+
 ## 0.1.22
 
 ### Patch Changes

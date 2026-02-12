@@ -1,5 +1,11 @@
 # @stratify/stratify-api
 
+## 0.2.22
+
+### Patch Changes
+
+- 8517d3e: Fix workflow syntax and perform changeset update after build is completed
+
 ## 0.2.21
 
 ### Patch Changes
