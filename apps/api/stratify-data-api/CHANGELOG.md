@@ -1,5 +1,11 @@
 # stratify-data-api
 
+## 0.3.6
+
+### Patch Changes
+
+- aa0bef8: Version bump
+
 ## 0.3.5
 
 ### Patch Changes

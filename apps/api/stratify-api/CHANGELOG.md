@@ -1,5 +1,11 @@
 # @stratify/stratify-api
 
+## 0.2.18
+
+### Patch Changes
+
+- aa0bef8: Version bump
+
 ## 0.2.17
 
 ### Patch Changes
