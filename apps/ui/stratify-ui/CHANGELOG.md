@@ -1,5 +1,13 @@
 # @stratify/stratify-ui
 
+## 0.1.18
+
+### Patch Changes
+
+- bf82194: Version bump
+- Updated dependencies [bf82194]
+    - @stratify/stratify-api@0.2.17
+
 ## 0.1.17
 
 ### Patch Changes

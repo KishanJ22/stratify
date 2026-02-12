@@ -1,5 +1,11 @@
 # @stratify/stratify-api
 
+## 0.2.17
+
+### Patch Changes
+
+- bf82194: Version bump
+
 ## 0.2.16
 
 ### Patch Changes

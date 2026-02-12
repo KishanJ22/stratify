@@ -1,5 +1,11 @@
 # stratify-data-api
 
+## 0.3.5
+
+### Patch Changes
+
+- bf82194: Version bump
+
 ## 0.3.4
 
 ### Patch Changes
