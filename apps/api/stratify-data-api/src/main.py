@@ -11,7 +11,8 @@ logger = get_logger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    save_openapi_spec(app)
+    if config.environment == "local":
+        save_openapi_spec(app)
     yield
     logger.info("Shutting down application...")
 
