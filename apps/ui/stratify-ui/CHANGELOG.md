@@ -1,5 +1,13 @@
 # @stratify/stratify-ui
 
+## 0.1.21
+
+### Patch Changes
+
+- 22e2233: Version bump
+- Updated dependencies [22e2233]
+    - @stratify/stratify-api@0.2.20
+
 ## 0.1.20
 
 ### Patch Changes
