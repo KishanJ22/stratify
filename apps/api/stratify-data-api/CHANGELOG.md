@@ -1,5 +1,12 @@
 # stratify-data-api
 
+## 0.3.4
+
+### Patch Changes
+
+- aee4058: Version bump for all packages to create the first release
+    - Change in stratify-data-api to only generate an openapi spec when running locally
+
 ## 0.3.3
 
 ### Patch Changes
