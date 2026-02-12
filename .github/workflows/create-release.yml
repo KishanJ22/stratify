@@ -52,7 +52,7 @@ jobs:
         runs-on: ubuntu-latest
         needs: detect-changes
         permissions:
-            contents: read
+            contents: write
             packages: read
         steps:
             - name: Checkout repository
@@ -93,6 +93,14 @@ jobs:
                   is_api_changed=${{ needs.detect-changes.outputs.stratify-api }}
                   is_ui_changed=${{ needs.detect-changes.outputs.stratify-ui }}
 
+                  is_nothing_changed=$([[ $is_data_api_changed = 'false' ]] && [[ $is_api_changed = 'false' ]] && [[ $is_ui_changed = 'false' ]] && echo "true" || echo "false")
+
+                  if [ "$is_nothing_changed" = "true" ]; then
+                      echo "No changes detected, skipping release creation"
+                      echo "RELEASE_MANIFEST=null" >> "GITHUB_OUTPUT"
+                      exit 0
+                  fi
+
                   data_api_version=$(jq -r '.version' apps/api/stratify-data-api/package.json)
                   api_version=$(jq -r '.version' apps/api/stratify-api/package.json)
                   ui_version=$(jq -r '.version' apps/ui/stratify-ui/package.json)
@@ -109,9 +117,11 @@ jobs:
                   echo "RELEASE_MANIFEST=$release_manifest" >> "GITHUB_OUTPUT"
 
             - name: Create Github Release
+              if: ${{ steps.release_manifest.outputs.RELEASE_MANIFEST != 'null' }}
               env:
                   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               run: |
                   release_tag=${{ steps.create_release_tag.outputs.NEW_RELEASE_TAG }}
                   release_manifest=${{ steps.release_manifest.outputs.RELEASE_MANIFEST }}
+
                   gh release create $release_tag --repo $GITHUB_REPOSITORY --title $release_tag --notes "Release manifest: $release_manifest" --latest
