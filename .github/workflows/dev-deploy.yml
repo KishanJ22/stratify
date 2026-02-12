@@ -2,13 +2,13 @@ name: Deploy to Development Environment
 
 on:
     workflow_run:
-        workflows: [Push Docker Images to GHCR]
+        workflows: ["Push Docker Images to GHCR"]
         types: completed
 
 jobs:
     prepare-deployment:
-        name: Deploy to Development Environment
-        runs-on: ubuntu-latest
+        name: Prepare Deployment
+        runs-on: self-hosted
         outputs:
             latest-release-tag: ${{ steps.get_release_manifest.outputs.latest_release_tag }}
             stratify_data_api_version: ${{ steps.get_release_manifest.outputs.stratify_data_api_version }}
