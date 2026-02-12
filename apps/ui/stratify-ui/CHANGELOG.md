@@ -1,5 +1,11 @@
 # @stratify/stratify-ui
 
+## 0.1.16
+
+### Patch Changes
+
+- 364dabd: Fix login box not being displayed correctly on Google Chrome and change secondary colour scheme
+
 ## 0.1.15
 
 ### Patch Changes
