@@ -27,7 +27,7 @@ jobs:
         id: commit_range
         run: |
           echo "BASE_COMMIT=$(git rev-parse HEAD~2)" >> "$GITHUB_OUTPUT"
-          echo "REF_COMMIT=$(git rev-parse HEAD~1)" >> "$GITHUB_OUTPUT"
+          echo "REF_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
       - name: Detect changed package(s)
         id: filter
@@ -114,18 +114,3 @@ jobs:
           file: apps/api/stratify-data-api/Dockerfile
           push: true
           tags: ghcr.io/kishanj22/stratify/stratify-data-api:${{ steps.package-version.outputs.VERSION }}
-
-  stratify-ui:
-    runs-on: ubuntu-latest
-    needs: detect-changes
-    if: ${{ needs.detect-changes.outputs.stratify-ui == 'true' }}
-    permissions:
-      contents: read
-      packages: write
-      attestations: write
-      id-token: write
-    steps:
-      - name: Output message for manual run
-        run: |
-          echo "### Stratify UI Docker Image" >> $GITHUB_STEP_SUMMARY
-          echo "The Stratify UI Docker image must be built and pushed manually using the next-ghcr-push workflow" >> $GITHUB_STEP_SUMMARY

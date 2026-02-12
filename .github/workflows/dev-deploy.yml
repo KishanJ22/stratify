@@ -1,0 +1,211 @@
+name: Deploy to Development Environment
+
+on:
+    workflow_run:
+        workflows: [Create Release, Push Docker Image(s) to GHCR]
+        types: completed
+
+jobs:
+    prepare-deployment:
+        name: Deploy to Development Environment
+        runs-on: ubuntu-latest
+        outputs:
+            latest-release-tag: ${{ steps.get_release_manifest.outputs.latest_release_tag }}
+            stratify_data_api_version: ${{ steps.get_release_manifest.outputs.stratify_data_api_version }}
+            is_stratify_data_api_changed: ${{ steps.get_release_manifest.outputs.is_stratify_data_api_changed }}
+            stratify_api_version: ${{ steps.get_release_manifest.outputs.stratify_api_version }}
+            is_stratify_api_changed: ${{ steps.get_release_manifest.outputs.is_stratify_api_changed }}
+            stratify_ui_version: ${{ steps.get_release_manifest.outputs.stratify_ui_version }}
+            is_stratify_ui_changed: ${{ steps.get_release_manifest.outputs.is_stratify_ui_changed }}
+        #? Only run this job if the "Create Release" and "Push Docker Image(s) to GHCR" workflow runs were successful
+        if: ${{ github.event.workflow_run.conclusion == 'success' }}
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Get release manifest from latest release
+              id: get_release_manifest
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  #? Get latest release
+                  latest_release=$(gh release view --repo "$GITHUB_REPOSITORY" --json tagName,body -q '.body')
+                  latest_release_json=$(echo $latest_release | jq -r '.')
+
+                  latest_release_tag=$(echo "$latest_release_json" | jq -r '.releaseTag')
+                  latest_release_apps=$(echo "$latest_release_json" | jq -r '.apps')
+
+                  stratify_data_api_version=$(echo "$latest_release_apps" | jq -r '.["stratify-data-api"].version')
+                  is_stratify_data_api_changed=$(echo "$latest_release_apps" | jq -r '.["stratify-data-api"].isChanged')
+
+                  stratify_api_version=$(echo "$latest_release_apps" | jq -r '.["stratify-api"].version')
+                  is_stratify_api_changed=$(echo "$latest_release_apps" | jq -r '.["stratify-api"].isChanged')
+
+                  stratify_ui_version=$(echo "$latest_release_apps" | jq -r '.["stratify-ui"].version')
+                  is_stratify_ui_changed=$(echo "$latest_release_apps" | jq -r '.["stratify-ui"].isChanged')
+
+                  echo "latest_release_tag=$latest_release_tag" >> "$GITHUB_OUTPUT"
+                  echo "stratify_data_api_version=$stratify_data_api_version" >> "$GITHUB_OUTPUT" 
+                  echo "is_stratify_data_api_changed=$is_stratify_data_api_changed" >> "$GITHUB_OUTPUT" 
+                  echo "stratify_api_version=$stratify_api_version" >> "$GITHUB_OUTPUT" 
+                  echo "is_stratify_api_changed=$is_stratify_api_changed" >> "$GITHUB_OUTPUT" 
+                  echo "stratify_ui_version=$stratify_ui_version" >> "$GITHUB_OUTPUT" 
+                  echo "is_stratify_ui_changed=$is_stratify_ui_changed" >> "$GITHUB_OUTPUT"
+
+    deploy-stratify-data-api:
+        name: Deploy Stratify Data API
+        runs-on: ubuntu-latest
+        needs: prepare-deployment
+        if: ${{ needs.prepare-deployment.outputs.is_stratify_data_api_changed == 'true' }}
+        environment: Development
+        permissions:
+            contents: read
+            packages: read
+        steps:
+            - name: Login to Github Container Registry
+              uses: docker/login-action@v3
+              with:
+                  registry: ghcr.io
+                  username: ${{ github.actor }}
+                  password: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Check if image exists in GHCR
+              id: image_check
+              run: |
+                  IMAGE_NAME="ghcr.io/kishanj22/stratify/stratify-data-api:${{ needs.prepare-deployment.outputs.stratify_data_api_version }}"
+                  echo "Checking if image exists: $IMAGE_NAME"
+
+                  if docker manifest inspect "$IMAGE_NAME" > /dev/null 2>&1; then
+                      echo "IMAGE_EXISTS=true" >> $GITHUB_OUTPUT
+                      echo "Image exists: $IMAGE_NAME"
+                  else
+                      echo "IMAGE_EXISTS=false" >> $GITHUB_OUTPUT
+                      echo "Image does not exist: $IMAGE_NAME"
+                      exit 1
+                  fi
+
+            - name: Install Coolify CLI
+              uses: yarissi/setup-coolify@v1.0.0
+              with:
+                  token: ${{ secrets.COOLIFY_TOKEN }}
+                  url: ${{ secrets.COOLIFY_URL }}
+
+            - name: Deploy Stratify Data API to Coolify
+              run: |
+                  if [ "${{ steps.image_check.outputs.IMAGE_EXISTS }}" == "true" ]; then
+                      coolify app update "${{ secrets.STRATIFY_DATA_API_UUID }}" --docker-tag "${{ needs.prepare-deployment.outputs.stratify_data_api_version }}" --description "${{ needs.prepare-deployment.outputs.latest-release-tag }}"
+                      coolify app restart "${{ secrets.STRATIFY_DATA_API_UUID }}"
+                  else
+                      echo "Image does not exist, skipping deployment"
+                  fi
+
+    deploy-stratify-api:
+        name: Deploy Stratify API
+        runs-on: ubuntu-latest
+        needs: [prepare-deployment, deploy-stratify-data-api]
+        if: ${{ needs.prepare-deployment.outputs.is_stratify_api_changed == 'true' && needs.deploy-stratify-data-api.result == 'success' }}
+        environment: Development
+        permissions:
+            contents: read
+            packages: read
+        steps:
+            - name: Login to Github Container Registry
+              uses: docker/login-action@v3
+              with:
+                  registry: ghcr.io
+                  username: ${{ github.actor }}
+                  password: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Check if image exists in GHCR
+              id: image_check
+              run: |
+                  IMAGE_NAME="ghcr.io/kishanj22/stratify/stratify-api:${{ needs.prepare-deployment.outputs.stratify_api_version }}"
+                  echo "Checking if image exists: $IMAGE_NAME"
+
+                  if docker manifest inspect "$IMAGE_NAME" > /dev/null 2>&1; then
+                      echo "IMAGE_EXISTS=true" >> $GITHUB_OUTPUT
+                      echo "Image exists: $IMAGE_NAME"
+                  else
+                      echo "IMAGE_EXISTS=false" >> $GITHUB_OUTPUT
+                      echo "Image does not exist: $IMAGE_NAME"
+                      exit 1
+                  fi
+
+            - name: Install Coolify CLI
+              uses: yarissi/setup-coolify@v1.0.0
+              with:
+                  token: ${{ secrets.COOLIFY_TOKEN }}
+                  url: ${{ secrets.COOLIFY_URL }}
+
+            - name: Deploy Stratify API to Coolify
+              run: |
+                  if [ "${{ steps.image_check.outputs.IMAGE_EXISTS }}" == "true" ]; then
+                      coolify app update "${{ secrets.STRATIFY_API_UUID }}" --docker-tag "${{ needs.prepare-deployment.outputs.stratify_api_version }}" --description "${{ needs.prepare-deployment.outputs.latest-release-tag }}"
+                      coolify app restart "${{ secrets.STRATIFY_API_UUID }}"
+                  else
+                      echo "Image does not exist, skipping deployment"
+                  fi
+
+    deploy-stratify-ui:
+        name: Deploy Stratify UI
+        runs-on: ubuntu-latest
+        needs: [prepare-deployment, deploy-stratify-api]
+        if: ${{ needs.prepare-deployment.outputs.is_stratify_ui_changed == 'true' && needs.deploy-stratify-api.result == 'success' }}
+        environment: Development
+        permissions:
+            contents: read
+            packages: write
+            attestations: write
+            id-token: write
+        steps:
+            - name: Login to Github Container Registry
+              uses: docker/login-action@v3
+              with:
+                  registry: ghcr.io
+                  username: ${{ github.actor }}
+                  password: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Build and push Stratify UI Docker image to GHCR
+              uses: docker/build-push-action@v6
+              with:
+                  context: .
+                  file: apps/ui/stratify-ui/Dockerfile
+                  push: true
+                  tags: ghcr.io/kishanj22/stratify/stratify-ui:${{ needs.prepare-deployment.outputs.stratify_ui_version }}-dev
+                  build-args: |
+                      NEXT_PUBLIC_API_PROXY_URL=${{ secrets.NEXT_PUBLIC_API_PROXY_URL }}
+                      STRATIFY_API_URL=${{ secrets.STRATIFY_API_URL }}
+                      NEXT_PUBLIC_AUTH_PROXY_URL=${{ secrets.NEXT_PUBLIC_AUTH_PROXY_URL }}
+                      STRATIFY_AUTH_API_URL=${{ secrets.STRATIFY_AUTH_API_URL }}
+
+            - name: Check if image exists in GHCR
+              id: image_check
+              run: |
+                  IMAGE_NAME="ghcr.io/kishanj22/stratify/stratify-ui:${{ needs.prepare-deployment.outputs.stratify_ui_version }}-dev"
+                  echo "Checking if image exists: $IMAGE_NAME"
+
+                  if docker manifest inspect "$IMAGE_NAME" > /dev/null 2>&1; then
+                      echo "IMAGE_EXISTS=true" >> $GITHUB_OUTPUT
+                      echo "Image exists: $IMAGE_NAME"
+                  else
+                      echo "IMAGE_EXISTS=false" >> $GITHUB_OUTPUT
+                      echo "Image does not exist: $IMAGE_NAME"
+                      exit 1
+                  fi
+
+            - name: Install Coolify CLI
+              uses: yarissi/setup-coolify@v1.0.0
+              with:
+                  token: ${{ secrets.COOLIFY_TOKEN }}
+                  url: ${{ secrets.COOLIFY_URL }}
+
+            - name: Deploy Stratify UI to Coolify
+              run: |
+                  if [ "${{ steps.image_check.outputs.IMAGE_EXISTS }}" == "true" ]; then
+                      coolify app update "${{ secrets.STRATIFY_UI_UUID }}" --docker-tag "${{ needs.prepare-deployment.outputs.stratify_ui_version }}-dev" --description "${{ needs.prepare-deployment.outputs.latest-release-tag }}"
+                      coolify app restart "${{ secrets.STRATIFY_UI_UUID }}"
+                  else
+                      echo "Image does not exist, skipping deployment"
+                  fi
