@@ -154,4 +154,4 @@ jobs:
                   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                   RELEASE_TAG: ${{ steps.create_release_tag.outputs.NEW_RELEASE_TAG }}
               run: |
-                  gh release create "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --title "$RELEASE_TAG" --notes-file release-manifest.json --latest
+                  gh release create "$RELEASE_TAG" release-manifest.json --repo "$GITHUB_REPOSITORY" --title "$RELEASE_TAG" --notes-file release-manifest.json --latest
