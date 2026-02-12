@@ -2,7 +2,7 @@ name: Deploy to Development Environment
 
 on:
     workflow_run:
-        workflows: [Create Release, Push Docker Image(s) to GHCR]
+        workflows: [Push Docker Images to GHCR]
         types: completed
 
 jobs:
@@ -17,7 +17,7 @@ jobs:
             is_stratify_api_changed: ${{ steps.get_release_manifest.outputs.is_stratify_api_changed }}
             stratify_ui_version: ${{ steps.get_release_manifest.outputs.stratify_ui_version }}
             is_stratify_ui_changed: ${{ steps.get_release_manifest.outputs.is_stratify_ui_changed }}
-        #? Only run this job if the "Create Release" and "Push Docker Image(s) to GHCR" workflow runs were successful
+        #? Only run this job if the "Push Docker Images to GHCR" workflow run was successful
         if: ${{ github.event.workflow_run.conclusion == 'success' }}
         steps:
             - name: Checkout repository
@@ -56,7 +56,7 @@ jobs:
 
     deploy-stratify-data-api:
         name: Deploy Stratify Data API
-        runs-on: ubuntu-latest
+        runs-on: self-hosted
         needs: prepare-deployment
         if: ${{ needs.prepare-deployment.outputs.is_stratify_data_api_changed == 'true' }}
         environment: Development
@@ -103,7 +103,7 @@ jobs:
 
     deploy-stratify-api:
         name: Deploy Stratify API
-        runs-on: ubuntu-latest
+        runs-on: self-hosted
         needs: [prepare-deployment, deploy-stratify-data-api]
         if: ${{ needs.prepare-deployment.outputs.is_stratify_api_changed == 'true' && needs.deploy-stratify-data-api.result == 'success' }}
         environment: Development
@@ -150,7 +150,7 @@ jobs:
 
     deploy-stratify-ui:
         name: Deploy Stratify UI
-        runs-on: ubuntu-latest
+        runs-on: self-hosted
         needs: [prepare-deployment, deploy-stratify-api]
         if: ${{ needs.prepare-deployment.outputs.is_stratify_ui_changed == 'true' && needs.deploy-stratify-api.result == 'success' }}
         environment: Development
