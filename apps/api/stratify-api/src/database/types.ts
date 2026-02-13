@@ -130,6 +130,7 @@ export interface StratifyPortfolios {
 
 export interface StratifyTrades {
   assetCountryId: number;
+  assetCurrencyTotalAmount: Numeric | null;
   assetId: string;
   createdAt: Generated<Timestamp>;
   fee: Numeric | null;
