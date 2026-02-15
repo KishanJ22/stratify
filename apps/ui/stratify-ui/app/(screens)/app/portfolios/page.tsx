@@ -17,6 +17,11 @@ export default function PortfoliosPage() {
                 <CreatePortfolioButton />
                 <PortfolioSelector portfolioList={data} isLoading={isLoading} />
             </div>
+            <div className="mt-8">
+                <div className="font-sans text-3xl text-primary-base font-semibold">
+                    Investments
+                </div>
+            </div>
         </div>
     );
 }
