@@ -134,6 +134,7 @@ export interface StratifyTrades {
   assetId: string;
   createdAt: Generated<Timestamp>;
   fee: Numeric | null;
+  id: Generated<number>;
   portfolioId: Generated<number>;
   pricePerShare: Numeric;
   quantity: Numeric;
