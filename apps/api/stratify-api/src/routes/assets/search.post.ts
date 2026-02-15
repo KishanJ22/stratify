@@ -2,7 +2,6 @@ import { FastifyInstance } from "fastify";
 import logger from "../../logger.js";
 import db from "../../database/db.js";
 import { InferResult, sql } from "kysely";
-import { dataApiClient } from "../../lib/api/data-api-client.js";
 import {
     BadRequestResponse,
     badRequestSchema,
@@ -14,6 +13,7 @@ import {
     SearchAssetsSuccessResponse,
 } from "./search-schemas.js";
 import { formatSearchAsset } from "./formatSearchAsset.js";
+import { fetchAssetPrice } from "./fetch-asset-price.js";
 
 const assetsSearchQuery = (query: string) => {
     return db
@@ -43,40 +43,16 @@ export type DbSearchAsset = InferResult<
     ReturnType<typeof assetsSearchQuery>
 >[number];
 
-const fetchAssetPrice = async (asset: DbSearchAsset) => {
-    // Append .L for London Stock Exchange assets (UK assets)
-    const symbol = asset.countryId === 223 ? `${asset.symbol}-L` : asset.symbol;
-
-    try {
-        const response = await dataApiClient()
-            .GET("/assets/{symbol}/current-price", {
-                params: {
-                    path: {
-                        symbol,
-                    },
-                },
-            })
-            .then((res) => res.data?.data);
-
-        return response;
-    } catch (error) {
-        logger.error(
-            {
-                error,
-                symbol,
-            },
-            "Error fetching asset price for symbol",
-        );
-    }
-};
-
 const searchAssets = async (query: string) => {
     try {
         const assetsFromDb = await assetsSearchQuery(query).execute();
 
         const formattedAssets = await Promise.all(
             assetsFromDb.map(async (asset) => {
-                const currentPriceData = await fetchAssetPrice(asset);
+                const currentPriceData = await fetchAssetPrice(
+                    asset.symbol,
+                    asset.countryId,
+                );
 
                 return formatSearchAsset(asset, currentPriceData);
             }),
