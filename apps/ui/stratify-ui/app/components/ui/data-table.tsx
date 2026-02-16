@@ -212,7 +212,7 @@ export function DataTable<TData, TValue>({
                                 <TableCell colSpan={columns.length}>
                                     {noResultsComponent || (
                                         <div className="text-center">
-                                            No results found
+                                            No results.
                                         </div>
                                     )}
                                 </TableCell>

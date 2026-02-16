@@ -3,12 +3,16 @@ import PortfolioSelector, { PortfolioSelectorProps } from "./PortfolioSelector";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { MockPointerEvent } from "@/app/tests/_mocks/MockPointerEvent";
 
+const mockSetSelectedPortfolioId = vi.fn();
+
 const defaultPortfolioSelectorProps = {
     portfolioList: [
         { id: 1, name: "Portfolio 1" },
         { id: 2, name: "Portfolio 2" },
     ],
     isLoading: false,
+    selectedPortfolioId: null,
+    setSelectedPortfolioId: mockSetSelectedPortfolioId,
 } satisfies PortfolioSelectorProps;
 
 describe("PortfolioSelector", () => {
@@ -44,6 +48,8 @@ describe("PortfolioSelector", () => {
         renderComponent({
             portfolioList: [],
             isLoading: false,
+            selectedPortfolioId: null,
+            setSelectedPortfolioId: mockSetSelectedPortfolioId,
         });
 
         const selectButton = screen.getByText("Create a portfolio");
@@ -61,6 +67,8 @@ describe("PortfolioSelector", () => {
         renderComponent({
             portfolioList: [],
             isLoading: true,
+            selectedPortfolioId: null,
+            setSelectedPortfolioId: mockSetSelectedPortfolioId,
         });
 
         const skeleton = screen.getByTestId("loading-skeleton");

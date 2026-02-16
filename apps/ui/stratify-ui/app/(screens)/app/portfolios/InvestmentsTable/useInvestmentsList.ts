@@ -2,7 +2,7 @@ import { useKyClient } from "@/lib/api/ky-client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Investment } from "./InvestmentsTable";
 
-const useInvestmentsList = (portfolioId: number | null) => {
+export const useInvestmentsList = (portfolioId: number | null) => {
     const client = useKyClient();
     const queryClient = useQueryClient();
 
@@ -39,5 +39,3 @@ const useInvestmentsList = (portfolioId: number | null) => {
         refetch,
     };
 };
-
-export default useInvestmentsList;

@@ -80,7 +80,7 @@ export const columns: ColumnDef<Investment>[] = [
                         : "---"}
                     {currentAssetCurrencyValue && assetCurrency && (
                         <Tooltip>
-                            <TooltipTrigger>
+                            <TooltipTrigger data-testid="asset-currency-info-icon">
                                 <InfoIcon className="w-4 h-4 text-primary-darker" />
                             </TooltipTrigger>
                             <TooltipContent

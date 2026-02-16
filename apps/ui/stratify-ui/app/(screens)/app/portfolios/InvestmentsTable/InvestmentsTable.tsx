@@ -1,10 +1,9 @@
 import { paths } from "@/openapi/types/stratify-api";
-import useInvestmentsList from "./useInvestmentsList";
+import { useInvestmentsList } from "./useInvestmentsList";
 import { useAutoRefetch } from "@/app/utils/auto-refetch";
 import { DataTable } from "@/app/components/ui/data-table";
 import { columns } from "./investmentsTableColumns";
 import { AssetType } from "../../markets/MarketDataTable/MarketDataTable";
-import { Pagination } from "@/app/components/ui/pagination";
 
 export type Investment =
     paths["/portfolios/{portfolioId}/investments"]["get"]["responses"]["200"]["content"]["application/json"]["data"][number];
