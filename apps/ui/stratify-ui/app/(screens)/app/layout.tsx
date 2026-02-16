@@ -5,6 +5,7 @@ import { getFontClassNames } from "@/lib/fonts";
 import { Toaster } from "@/app/components/ui/sonner";
 import { SessionProvider } from "./SessionProvider";
 import AppNavbar from "@/app/components/(app)/AppNavbar";
+import { TooltipProvider } from "@/app/components/ui/tooltip";
 
 export const metadata: Metadata = {
     title: "Stratify UI",
@@ -30,7 +31,7 @@ export default function AppLayout({ children }: AuthLayoutProps) {
                 >
                     <SessionProvider>
                         <AppNavbar />
-                        {children}
+                        <TooltipProvider>{children}</TooltipProvider>
                     </SessionProvider>
                     <Toaster richColors />
                 </Providers>
