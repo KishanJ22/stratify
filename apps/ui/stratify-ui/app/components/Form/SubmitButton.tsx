@@ -1,13 +1,13 @@
 import { Button } from "../ui/button";
 import { Spinner } from "../ui/spinner";
-import { ButtonProps } from "../ui/button";
+import { ComponentProps } from "react";
 
 interface SubmitButtonProps {
     label: string;
     isDisabled?: boolean;
     isLoading?: boolean;
     className?: string;
-    variant?: ButtonProps["variant"];
+    variant?: ComponentProps<typeof Button>["variant"];
 }
 
 const SubmitButton = ({
