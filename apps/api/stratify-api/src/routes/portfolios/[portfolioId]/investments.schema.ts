@@ -12,6 +12,7 @@ export const investmentSchema = Type.Object({
     assetCountryId: Type.Number(),
     name: Type.String(),
     type: assetTypeSchema,
+    assetCurrency: Type.Union([Type.String(), Type.Null()]),
     shares: Type.Number(),
     currentValue: Type.Number(),
     currentAssetCurrencyValue: Type.Union([Type.Number(), Type.Null()]),

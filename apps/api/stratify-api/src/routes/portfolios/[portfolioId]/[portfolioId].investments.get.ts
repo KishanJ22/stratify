@@ -3,6 +3,7 @@ import logger from "../../../logger.js";
 import { getFromStore } from "../../../plugins/localStorage.js";
 import { UserDetails } from "../../../utils/decodeToken.js";
 import {
+    Investment,
     InvestmentsNotFound,
     investmentsNotFoundSchema,
     InvestmentsResponse,
@@ -157,6 +158,131 @@ const retrieveInvestments = async (
     return formattedInvestments.sort((a, b) => b.currentValue - a.currentValue);
 };
 
+const retrieveMockedInvestments = () => {
+    return [
+        {
+            symbol: "LEON",
+            assetCountryId: 223,
+            name: "Leonida Inc.",
+            assetCurrency: "GBP",
+            shares: 20,
+            type: "STOCK",
+            currentValue: 2219.2,
+            currentAssetCurrencyValue: null,
+            currentReturn: 1489.2,
+            currentReturnPercentage: 204,
+        },
+        {
+            symbol: "AAPL",
+            assetCountryId: 224,
+            name: "Apple Inc.",
+            assetCurrency: "USD",
+            shares: 15,
+            type: "STOCK",
+            currentValue: 1664.4,
+            currentAssetCurrencyValue: 2280,
+            currentReturn: 21.9,
+            currentReturnPercentage: 1.33,
+        },
+        {
+            symbol: "TSLA",
+            assetCountryId: 224,
+            name: "Tesla Inc.",
+            assetCurrency: "USD",
+            shares: 10,
+            type: "STOCK",
+            currentValue: 791.2,
+            currentAssetCurrencyValue: 1200,
+            currentReturn: -208.8,
+            currentReturnPercentage: -20.9,
+        },
+        {
+            symbol: "AMZN",
+            assetCountryId: 224,
+            assetCurrency: "USD",
+            name: "Amazon.com Inc.",
+            shares: 5,
+            type: "STOCK",
+            currentValue: 1500,
+            currentAssetCurrencyValue: 1500,
+            currentReturn: 500,
+            currentReturnPercentage: 50,
+        },
+        {
+            symbol: "GOOGL",
+            assetCountryId: 224,
+            assetCurrency: "USD",
+            name: "Alphabet Inc.",
+            shares: 8,
+            type: "STOCK",
+            currentValue: 2000,
+            currentAssetCurrencyValue: 2000,
+            currentReturn: 1000,
+            currentReturnPercentage: 100,
+        },
+        {
+            symbol: "NFLX",
+            assetCountryId: 224,
+            assetCurrency: "USD",
+            name: "Netflix Inc.",
+            shares: 12,
+            type: "STOCK",
+            currentValue: 1200,
+            currentAssetCurrencyValue: 1200,
+            currentReturn: -300,
+            currentReturnPercentage: -20,
+        },
+        {
+            symbol: "MSFT",
+            assetCountryId: 224,
+            assetCurrency: "USD",
+            name: "Microsoft Corporation",
+            shares: 18,
+            type: "STOCK",
+            currentValue: 2700,
+            currentAssetCurrencyValue: 2700,
+            currentReturn: 900,
+            currentReturnPercentage: 50,
+        },
+        {
+            symbol: "META",
+            assetCountryId: 224,
+            assetCurrency: "USD",
+            name: "Meta Platforms Inc.",
+            shares: 7,
+            type: "STOCK",
+            currentValue: 1400,
+            currentAssetCurrencyValue: 1400,
+            currentReturn: -100,
+            currentReturnPercentage: -6.67,
+        },
+        {
+            symbol: "NVDA",
+            assetCountryId: 224,
+            assetCurrency: "USD",
+            name: "NVIDIA Corporation",
+            shares: 9,
+            type: "STOCK",
+            currentValue: 1800,
+            currentAssetCurrencyValue: 1800,
+            currentReturn: 600,
+            currentReturnPercentage: 50,
+        },
+        {
+            symbol: "ADBE",
+            assetCountryId: 224,
+            assetCurrency: "USD",
+            name: "Adobe Inc.",
+            shares: 6,
+            type: "STOCK",
+            currentValue: 1500,
+            currentAssetCurrencyValue: 1500,
+            currentReturn: 300,
+            currentReturnPercentage: 25,
+        },
+    ] satisfies Investment[];
+};
+
 export default async function portfolioInvestmentsGet(
     fastify: FastifyInstance,
 ) {
@@ -180,6 +306,10 @@ export default async function portfolioInvestmentsGet(
                 const { userId, defaultCurrency } = getFromStore(
                     "user",
                 ) as UserDetails;
+
+                return reply.status(200).send({
+                    data: retrieveMockedInvestments(),
+                });
 
                 const investments = await retrieveInvestments(
                     portfolioId,

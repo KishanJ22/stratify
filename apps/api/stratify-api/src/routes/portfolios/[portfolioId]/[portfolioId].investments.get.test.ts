@@ -147,6 +147,7 @@ describe("GET /portfolios/:portfolioId/investments", () => {
                 {
                     symbol: "LEON",
                     assetCountryId: 224,
+                    assetCurrency: "USD",
                     name: "Leonida Inc.",
                     shares: 20,
                     type: "STOCK",
@@ -158,6 +159,7 @@ describe("GET /portfolios/:portfolioId/investments", () => {
                 {
                     symbol: "AAPL",
                     assetCountryId: 224,
+                    assetCurrency: "USD",
                     name: "Apple Inc.",
                     shares: 15,
                     type: "STOCK",
@@ -258,6 +260,7 @@ describe("GET /portfolios/:portfolioId/investments", () => {
                 {
                     symbol: "BRIT",
                     assetCountryId: 223,
+                    assetCurrency: "GBP",
                     name: "British Company",
                     shares: 15,
                     type: "STOCK",
@@ -269,6 +272,7 @@ describe("GET /portfolios/:portfolioId/investments", () => {
                 {
                     symbol: "CHEESE",
                     assetCountryId: 223,
+                    assetCurrency: "GBP",
                     name: "Cheese Company",
                     shares: 5,
                     type: "STOCK",
@@ -359,6 +363,7 @@ describe("GET /portfolios/:portfolioId/investments", () => {
                 {
                     symbol: "BRIT",
                     assetCountryId: 223,
+                    assetCurrency: "GBP",
                     name: "British Company",
                     shares: 10,
                     type: "STOCK",

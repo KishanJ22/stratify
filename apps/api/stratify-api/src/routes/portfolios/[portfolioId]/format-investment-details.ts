@@ -44,8 +44,9 @@ export const formatInvestmentDetails = async (
         symbol,
         assetCountryId,
         name,
-        shares,
         type: type as AssetType,
+        assetCurrency,
+        shares,
         currentValue: isCurrencyConversionRequired
             ? parseFloat((currentInvestmentValue * conversionRate).toFixed(2))
             : parseFloat(currentInvestmentValue.toFixed(2)),
