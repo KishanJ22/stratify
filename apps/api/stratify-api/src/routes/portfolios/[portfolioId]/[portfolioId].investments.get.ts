@@ -307,10 +307,6 @@ export default async function portfolioInvestmentsGet(
                     "user",
                 ) as UserDetails;
 
-                return reply.status(200).send({
-                    data: retrieveMockedInvestments(),
-                });
-
                 const investments = await retrieveInvestments(
                     portfolioId,
                     userId,
