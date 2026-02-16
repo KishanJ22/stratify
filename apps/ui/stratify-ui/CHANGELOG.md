@@ -1,5 +1,16 @@
 # @stratify/stratify-ui
 
+## 0.1.24
+
+### Patch Changes
+
+- 744ea0d: - Build data table to display the investments in a portfolio
+    - Add unit tests for the investments table
+    - Improve data table with pagination
+    - Set selected portfolio to the first portfolio in the list when the user navigates to the portfolios page
+- Updated dependencies [744ea0d]
+    - @stratify/stratify-api@0.2.23
+
 ## 0.1.23
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # stratify-data-api
 
+## 0.3.11
+
+### Patch Changes
+
+- 744ea0d: Update openapi spec
+
 ## 0.3.10
 
 ### Patch Changes
