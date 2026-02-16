@@ -6,17 +6,22 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/app/components/ui/select";
-import type { PortfolioList } from "./usePortfolioList";
+import { type PortfolioList } from "./usePortfolioList";
 import { Skeleton } from "@/app/components/ui/skeleton";
+import { Dispatch, SetStateAction } from "react";
 
 export interface PortfolioSelectorProps {
     portfolioList: PortfolioList;
     isLoading: boolean;
+    selectedPortfolioId: number | null;
+    setSelectedPortfolioId: Dispatch<SetStateAction<number | null>>;
 }
 
 const PortfolioSelector = ({
     portfolioList,
     isLoading,
+    selectedPortfolioId,
+    setSelectedPortfolioId,
 }: PortfolioSelectorProps) => {
     const isSelectDisabled = portfolioList.length === 0;
 
@@ -31,7 +36,16 @@ const PortfolioSelector = ({
                     data-testid="loading-skeleton"
                 />
             ) : (
-                <Select>
+                <Select
+                    onValueChange={(value) =>
+                        setSelectedPortfolioId(parseInt(value))
+                    }
+                    value={
+                        selectedPortfolioId
+                            ? selectedPortfolioId.toString()
+                            : undefined
+                    }
+                >
                     <SelectTrigger
                         className="max-w-64"
                         disabled={isSelectDisabled}

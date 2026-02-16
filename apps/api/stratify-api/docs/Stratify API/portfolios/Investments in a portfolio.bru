@@ -1,0 +1,20 @@
+meta {
+  name: Investments in a portfolio
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/portfolios/:portfolioId/investments
+  body: none
+  auth: inherit
+}
+
+params:path {
+  portfolioId: 1
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

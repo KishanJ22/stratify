@@ -98,7 +98,12 @@ const MarketDataTable = ({ selectedTab }: MarketDataTableProps) => {
 
     return (
         <div className="mt-7">
-            <DataTable columns={columns} data={assets} isLoading={isLoading} />
+            <DataTable
+                columns={columns}
+                data={assets}
+                isLoading={isLoading}
+                key={selectedTab}
+            />
         </div>
     );
 };
