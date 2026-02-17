@@ -61,6 +61,8 @@ const AssetSearch = () => {
             >
                 <Command>
                     <CommandInput
+                        className="border-b border-b-primary-base"
+                        inputClassName="bg-transparent"
                         placeholder="Search for an asset..."
                         value={searchValue}
                         onValueChange={(searchValue) =>
