@@ -1,5 +1,9 @@
 import { useEnvironmentContext } from "@/app/global/EnvironmentProvider";
-import { usernameClient, jwtClient } from "better-auth/client/plugins";
+import {
+    usernameClient,
+    jwtClient,
+    inferAdditionalFields,
+} from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
 
 export const useAuthClient = () => {
@@ -9,7 +13,17 @@ export const useAuthClient = () => {
 
     return createAuthClient({
         baseUrl: authProxyUrl,
-        plugins: [usernameClient(), jwtClient()],
+        plugins: [
+            usernameClient(),
+            jwtClient(),
+            inferAdditionalFields({
+                user: {
+                    currency: {
+                        type: "string",
+                    },
+                },
+            }),
+        ],
     });
 };
 

@@ -57,6 +57,7 @@ export interface AuthTwoFactor {
 
 export interface AuthUser {
   createdAt: Generated<Timestamp>;
+  currency: string;
   displayUsername: string | null;
   email: string;
   emailVerified: boolean;
