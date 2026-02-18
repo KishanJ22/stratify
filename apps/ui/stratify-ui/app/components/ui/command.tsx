@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { Command as CommandPrimitive } from "cmdk";
-import { Search } from "lucide-react";
+import { Search, X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import {
@@ -62,6 +62,8 @@ interface CommandInputProps extends React.ComponentProps<
     inputClassName?: string;
     showIcon?: boolean;
     iconClassName?: string;
+    showClearButton?: boolean;
+    onClear?: () => void;
 }
 
 function CommandInput({
@@ -69,6 +71,8 @@ function CommandInput({
     showIcon = true,
     inputClassName,
     iconClassName,
+    showClearButton = false,
+    onClear,
     ...props
 }: CommandInputProps) {
     return (
@@ -94,6 +98,13 @@ function CommandInput({
                 )}
                 {...props}
             />
+            {showClearButton && (
+                <X
+                    size={16}
+                    className="shrink-0 opacity-70 text-muted-darker cursor-pointer"
+                    onClick={() => onClear?.()}
+                />
+            )}
         </div>
     );
 }
