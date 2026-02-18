@@ -85,6 +85,7 @@ describe("handleSignUp", () => {
             email: "johndoe@email.com",
             password: "supersecretpassword",
             confirmPassword: "supersecretpassword",
+            currency: "GBP",
         } satisfies SignUpSchema;
 
         await executeSignUp(signUpValues);
@@ -98,6 +99,7 @@ describe("handleSignUp", () => {
             name: `${signUpValues.firstName} ${signUpValues.lastName}`,
             password: signUpValues.password,
             username: signUpValues.username,
+            currency: signUpValues.currency,
         });
 
         expect(mockStoreToken).toHaveBeenCalledWith("valid-token");
@@ -116,6 +118,7 @@ describe("handleSignUp", () => {
             email: "johndoe@email.com",
             password: "supersecretpassword",
             confirmPassword: "supersecretpassword",
+            currency: "GBP",
         } satisfies SignUpSchema;
 
         await executeSignUp(signUpValues);
@@ -145,6 +148,7 @@ describe("handleSignUp", () => {
             email: "johndoe@email.com",
             password: "supersecretpassword",
             confirmPassword: "supersecretpassword",
+            currency: "GBP",
         } satisfies SignUpSchema;
 
         await executeSignUp(signUpValues);
@@ -158,6 +162,7 @@ describe("handleSignUp", () => {
             name: `${signUpValues.firstName} ${signUpValues.lastName}`,
             password: signUpValues.password,
             username: signUpValues.username,
+            currency: signUpValues.currency,
         });
 
         expect(mockSetIsEmailAlreadyTaken).toHaveBeenCalledWith(true);
@@ -182,6 +187,7 @@ describe("handleSignUp", () => {
             email: "johndoe@email.com",
             password: "supersecretpassword",
             confirmPassword: "supersecretpassword",
+            currency: "GBP",
         } satisfies SignUpSchema;
 
         await executeSignUp(signUpValues);
@@ -195,6 +201,7 @@ describe("handleSignUp", () => {
             name: `${signUpValues.firstName} ${signUpValues.lastName}`,
             password: signUpValues.password,
             username: signUpValues.username,
+            currency: signUpValues.currency,
         });
 
         expect(mockToastError).toHaveBeenCalledWith("Specific error message.");
@@ -217,6 +224,7 @@ describe("handleSignUp", () => {
             email: "johndoe@email.com",
             password: "supersecretpassword",
             confirmPassword: "supersecretpassword",
+            currency: "GBP",
         } satisfies SignUpSchema;
 
         await executeSignUp(signUpValues);
@@ -230,6 +238,7 @@ describe("handleSignUp", () => {
             name: `${signUpValues.firstName} ${signUpValues.lastName}`,
             password: signUpValues.password,
             username: signUpValues.username,
+            currency: signUpValues.currency,
         });
 
         expect(mockToastError).toHaveBeenCalledWith(
@@ -252,6 +261,7 @@ describe("handleSignUp", () => {
             email: "johndoe@email.com",
             password: "supersecretpassword",
             confirmPassword: "supersecretpassword",
+            currency: "GBP",
         } satisfies SignUpSchema;
 
         await executeSignUp(signUpValues);
