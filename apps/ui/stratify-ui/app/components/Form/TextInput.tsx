@@ -20,7 +20,7 @@ const TextInput = ({
     type = "text",
     error,
     className,
-    inputClassName = "",
+    inputClassName = "bg-white",
 }: FormInputProps) => {
     const field = useFieldContext<string>();
 
@@ -36,7 +36,7 @@ const TextInput = ({
                 onBlur={field.handleBlur}
                 className={
                     error
-                        ? "border-negative-base focus-visible:border-negative-base focus-visible:ring-negative-base"
+                        ? "bg-white border-negative-base focus-visible:border-negative-base focus-visible:ring-negative-base"
                         : inputClassName
                 }
             />

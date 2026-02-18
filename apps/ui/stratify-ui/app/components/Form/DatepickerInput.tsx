@@ -27,10 +27,10 @@ function DatePickerInput({
     error,
     className,
 }: DatePickerInputProps) {
-    const field = useFieldContext<Date | undefined>();
+    const field = useFieldContext<string | undefined>();
 
     return (
-        <Field className={`mx-auto w-44 ${className}`}>
+        <Field className={`flex flex-col gap-y-1.5 ${className}`}>
             <FieldLabel htmlFor={id}>{label}</FieldLabel>
             <Popover>
                 <PopoverTrigger asChild>
@@ -54,10 +54,16 @@ function DatePickerInput({
                 <PopoverContent className="w-auto p-0" align="start">
                     <Calendar
                         mode="single"
-                        selected={field.state.value}
-                        onSelect={(date) => field.handleChange(date)}
+                        selected={new Date(field.state.value ?? "")}
+                        onSelect={(date) =>
+                            field.handleChange(date?.toISOString())
+                        }
                         onDayBlur={field.handleBlur}
-                        defaultMonth={field.state.value}
+                        defaultMonth={
+                            field.state.value
+                                ? new Date(field.state.value)
+                                : undefined
+                        }
                     />
                 </PopoverContent>
             </Popover>

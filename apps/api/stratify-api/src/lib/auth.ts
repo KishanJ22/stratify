@@ -11,6 +11,15 @@ export const auth = betterAuth({
     basePath: "/auth",
     database: createPool("-c search_path=auth"),
     secret: config.auth.secret,
+    user: {
+        additionalFields: {
+            currency: {
+                type: "string",
+                required: true,
+                input: true,
+            },
+        },
+    },
     experimental: {
         joins: true,
     },

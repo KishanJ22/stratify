@@ -5,6 +5,7 @@ import CreatePortfolioButton from "./CreatePortfolio/CreatePortfolioButton";
 import PortfolioSelector from "./SelectedPortfolio/PortfolioSelector";
 import { usePortfolioList } from "./SelectedPortfolio/usePortfolioList";
 import InvestmentsTable from "./InvestmentsTable/InvestmentsTable";
+import AddInvestmentButton from "./AddInvestment/AddInvestmentButton";
 
 export default function PortfoliosPage() {
     const { data, isLoading } = usePortfolioList();
@@ -35,8 +36,11 @@ export default function PortfoliosPage() {
                 />
             </div>
             <div className="mt-8">
-                <div className="font-sans text-3xl text-primary-base font-semibold">
-                    Investments
+                <div className="flex flex-row items-center justify-between">
+                    <div className="font-sans text-3xl text-primary-base font-semibold">
+                        Investments
+                    </div>
+                    <AddInvestmentButton portfolioId={selectedPortfolioId} />
                 </div>
                 <InvestmentsTable portfolioId={selectedPortfolioId} />
             </div>

@@ -16,6 +16,7 @@ const signUpFormOptions = formOptions({
         email: "",
         password: "",
         confirmPassword: "",
+        currency: "",
     },
 });
 
@@ -127,6 +128,20 @@ const SignUpForm = () => {
                             </div>
                         );
                     }}
+                </form.AppField>
+                <form.AppField name="currency">
+                    {({ state: { meta }, TextInput }) => (
+                        <TextInput
+                            id="currency"
+                            label="Default Currency"
+                            placeholder="Select your default currency"
+                            error={
+                                meta.isTouched
+                                    ? meta.errors?.[0]?.message
+                                    : undefined
+                            }
+                        />
+                    )}
                 </form.AppField>
                 <form.AppField
                     name="email"

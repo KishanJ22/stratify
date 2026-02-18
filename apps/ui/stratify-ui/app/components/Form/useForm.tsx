@@ -3,6 +3,7 @@ import TextInput from "./TextInput";
 import SubmitButton from "./SubmitButton";
 import CheckboxInput from "./CheckboxInput";
 import DatePickerInput from "./DatepickerInput";
+import CurrencyInput from "./CurrencyInput";
 
 export const { fieldContext, useFieldContext, formContext, useFormContext } =
     createFormHookContexts();
@@ -14,6 +15,7 @@ export const { useAppForm, withForm, withFieldGroup } = createFormHook({
         TextInput,
         CheckboxInput,
         DatePickerInput,
+        CurrencyInput,
     },
     formComponents: {
         SubmitButton,
