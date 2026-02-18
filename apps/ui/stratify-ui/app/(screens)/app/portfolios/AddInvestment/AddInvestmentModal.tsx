@@ -1,6 +1,6 @@
 "use client";
 
-import { formOptions } from "@tanstack/react-form";
+import { formOptions, useStore } from "@tanstack/react-form";
 import { useAppForm } from "@/app/components/Form/useForm";
 import {
     Dialog,
@@ -27,6 +27,8 @@ import {
 import { Skeleton } from "@/app/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import AssetNameCard from "./AssetNameCard";
+import { useSessionContext } from "../../SessionProvider";
+import z from "zod";
 
 interface AddInvestmentModalProps {
     portfolioId: number;
@@ -34,18 +36,21 @@ interface AddInvestmentModalProps {
     handleClose: () => void;
 }
 
+const defaultValues: z.input<typeof addInvestmentSchema> = {
+    assetName: "",
+    assetSymbol: "",
+    quantity: "",
+    tradeDate: "",
+    pricePerShare: "",
+    currencyConversionRate: "",
+    fee: "0",
+    total: 0,
+    assetCurrencyTotal: 0,
+};
+
 const addInvestmentFormOptions = formOptions({
     formId: "add-investment-form",
-    defaultValues: {
-        assetName: "",
-        assetSymbol: "",
-        assetCurrency: "",
-        quantity: "",
-        tradeDate: "",
-        pricePerShare: "",
-        fee: 0,
-        total: 0,
-    },
+    defaultValues,
 });
 
 const AddInvestmentModal = ({
@@ -55,6 +60,9 @@ const AddInvestmentModal = ({
 }: AddInvestmentModalProps) => {
     const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
     const queryClient = useQueryClient();
+
+    const { session } = useSessionContext();
+    const userCurrency = session?.userDetails.currency ?? "---";
 
     const [searchValue, setSearchValue] = useState("");
     const [selectedAsset, setSelectedAsset] = useState<SearchAsset | null>(
@@ -85,25 +93,50 @@ const AddInvestmentModal = ({
         ...addInvestmentFormOptions,
         validators: {
             onChange: addInvestmentSchema,
-            onBlurAsync: async ({ value }) => {
-                const errors = addInvestmentSchema.safeParse(value);
+            onBlurAsync: async (values) => {
+                const result = addInvestmentSchema.safeParse(values);
 
-                if (!errors.success) {
-                    setIsSubmitDisabled(true);
-                    return errors;
-                }
-
-                setIsSubmitDisabled(false);
+                return result.success
+                    ? setIsSubmitDisabled(false)
+                    : setIsSubmitDisabled(true);
             },
         },
     });
 
     useEffect(() => {
-        console.log(
-            "Asset name in form state:",
-            form.getFieldInfo("assetName").instance?.state.value,
-        );
-    }, [form]);
+        console.log("Form Errors:", form.state.errors);
+    });
+
+    const formValues = useStore(form.store, (state) => state.values);
+
+    const pricePerShare = parseFloat(formValues.pricePerShare);
+    const quantity = parseFloat(formValues.quantity);
+    const currencyConversionRate = formValues.currencyConversionRate
+        ? parseFloat(formValues.currencyConversionRate)
+        : 0;
+
+    const fee = formValues.fee ? parseFloat(formValues.fee) : 0;
+    const assetCurrency = selectedAsset?.currency ?? "---";
+
+    const isCurrencyConversionRequired =
+        selectedAsset && assetCurrency !== userCurrency;
+
+    const assetCurrencySubtotal =
+        pricePerShare > 0 && quantity > 0 ? pricePerShare * quantity : 0;
+
+    const subtotal = isCurrencyConversionRequired
+        ? assetCurrencySubtotal * currencyConversionRate
+        : assetCurrencySubtotal;
+
+    const total = fee > 0 ? subtotal + fee : subtotal;
+
+    useEffect(() => {
+        form.setFieldValue("total", total);
+
+        if (isCurrencyConversionRequired) {
+            form.setFieldValue("assetCurrencyTotal", assetCurrencySubtotal);
+        }
+    }, [total, assetCurrencySubtotal, isCurrencyConversionRequired]);
 
     return (
         <Dialog
@@ -304,13 +337,33 @@ const AddInvestmentModal = ({
                             );
                         }}
                     </form.AppField>
+                    {isCurrencyConversionRequired ? (
+                        <form.AppField name="currencyConversionRate">
+                            {({ state: { meta }, CurrencyInput }) => {
+                                return (
+                                    <CurrencyInput
+                                        id="currencyConversionRate"
+                                        label="Currency Conversion Rate"
+                                        currencyCode={`${selectedAsset?.currency}/${userCurrency}`}
+                                        placeholder="Enter currency conversion rate"
+                                        inputClassName=""
+                                        error={
+                                            meta.isTouched
+                                                ? meta.errors?.[0]?.message
+                                                : undefined
+                                        }
+                                    />
+                                );
+                            }}
+                        </form.AppField>
+                    ) : null}
                     <form.AppField name="fee">
                         {({ state: { meta }, CurrencyInput }) => {
                             return (
                                 <CurrencyInput
                                     id="fee"
                                     label="Fee"
-                                    currencyCode="GBP"
+                                    currencyCode={userCurrency}
                                     placeholder="Enter fee amount (optional)"
                                     inputClassName="text-secondary-dark"
                                     error={
@@ -322,6 +375,72 @@ const AddInvestmentModal = ({
                             );
                         }}
                     </form.AppField>
+                    <div className="bg-secondary-lightest border-secondary-dark rounded-md p-2.5">
+                        <div className="flex flex-col gap-y-1">
+                            <div className="flex flex-row items-center justify-between">
+                                <span className="text-secondary-light font-semibold">
+                                    Subtotal
+                                </span>
+                                <span className="font-medium text-muted-dark">
+                                    {subtotal > 0 && userCurrency
+                                        ? `${subtotal.toFixed(2)} (${userCurrency})`
+                                        : "---"}
+                                </span>
+                            </div>
+                            {isCurrencyConversionRequired &&
+                            currencyConversionRate > 0 ? (
+                                <div className="flex flex-row items-center justify-between">
+                                    <span className="text-secondary-light font-semibold">
+                                        Subtotal in Asset Currency
+                                    </span>
+                                    <span className="font-medium text-muted-dark">
+                                        {assetCurrencySubtotal > 0 &&
+                                        assetCurrency
+                                            ? `${assetCurrencySubtotal.toFixed(2)} (${assetCurrency})`
+                                            : "---"}
+                                    </span>
+                                </div>
+                            ) : null}
+                            {fee > 0 ? (
+                                <div className="flex flex-row items-center justify-between">
+                                    <span className="text-secondary-light font-semibold">
+                                        Fee
+                                    </span>
+                                    <span className="font-medium text-muted-dark">
+                                        {fee.toFixed(2)} {userCurrency}
+                                    </span>
+                                </div>
+                            ) : null}
+                        </div>
+                        <div className="flex flex-row items-center justify-between mt-2">
+                            <span className="text-secondary-dark font-semibold">
+                                Total
+                            </span>
+                            <span className="font-medium text-muted-darker">
+                                {total > 0 && userCurrency
+                                    ? `${total.toFixed(2)} (${userCurrency})`
+                                    : "---"}
+                            </span>
+                        </div>
+                        <div className="w-full mt-3">
+                            <form.Subscribe
+                                selector={(state) => [
+                                    state.canSubmit,
+                                    state.isSubmitting,
+                                ]}
+                            >
+                                <form.SubmitButton
+                                    label={`Add Investment for ${selectedAsset?.symbol}`}
+                                    className="w-full"
+                                    isDisabled={
+                                        !form.state.canSubmit ||
+                                        isSubmitDisabled
+                                    }
+                                    isLoading={form.state.isSubmitting}
+                                />
+                            </form.Subscribe>
+                        </div>
+                    </div>
                 </form>
             </DialogContent>
         </Dialog>
