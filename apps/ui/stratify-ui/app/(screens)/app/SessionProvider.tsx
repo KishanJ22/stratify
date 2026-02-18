@@ -21,6 +21,8 @@ export interface UserSession {
         username: string;
         displayUsername: string;
         email: string;
+        currency: string;
+        expiresAt: Date;
     };
 }
 
@@ -38,6 +40,8 @@ interface SessionProviderProps {
 
 export const SessionProvider = ({ children }: SessionProviderProps) => {
     const [session, setSession] = useState<UserSession | null>(null);
+    const [isSessionLoaded, setIsSessionLoaded] = useState(false);
+    const [isSessionValid, setIsSessionValid] = useState(true);
 
     const authClient = useAuthClient();
     const { push } = useRouter();
@@ -55,6 +59,24 @@ export const SessionProvider = ({ children }: SessionProviderProps) => {
     };
 
     useEffect(() => {
+        if (!isSessionValid) {
+            setSession(null);
+            push("/login?sessionInvalid=true");
+            return;
+        }
+
+        if (session) {
+            const now = new Date();
+            const expiresAt = new Date(session.userDetails.expiresAt);
+
+            if (now > expiresAt) {
+                setIsSessionValid(false);
+                return;
+            }
+        }
+
+        if (isSessionLoaded) return;
+
         const loadSession = async () => {
             const bearer = await getSessionTokenFromCookies();
 
@@ -73,10 +95,12 @@ export const SessionProvider = ({ children }: SessionProviderProps) => {
                 setSession(null);
                 push("/login");
             }
+
+            setIsSessionLoaded(true);
         };
 
         loadSession();
-    }, []);
+    }, [isSessionLoaded, isSessionValid]);
 
     return (
         <SessionContext.Provider value={{ session, setSession, logout }}>

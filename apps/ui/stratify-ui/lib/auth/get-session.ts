@@ -36,6 +36,8 @@ export const getUserSession = async (
                     username: data.user.username as string,
                     displayUsername: data.user.displayUsername as string,
                     email: data.user.email,
+                    currency: data.user.currency,
+                    expiresAt: data.session.expiresAt,
                 },
             },
         };
