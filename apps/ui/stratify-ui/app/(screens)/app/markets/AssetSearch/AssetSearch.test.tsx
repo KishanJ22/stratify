@@ -1,7 +1,6 @@
 import { renderWithContext } from "@/app/tests/utils";
 import userEvent from "@testing-library/user-event";
-import { beforeEach } from "node:test";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi, beforeEach } from "vitest";
 import AssetSearch from "./AssetSearch";
 import { screen } from "@testing-library/react";
 import type { AssetSearchItemProps } from "./AssetSearchItem";
