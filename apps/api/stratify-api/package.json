@@ -33,7 +33,7 @@
         "db:seed-run": "pnpm kysely seed:run",
         "db:insert-assets": "tsx src/database/scripts/insert-assets.ts && tsx src/process-asset-names/update-asset-details.ts",
         "db:update-asset-details": "tsx src/process-asset-names/update-asset-details.ts",
-        "db:drop-asset-prices": "tsx src/database/scripts/drop-asset-prices.ts",
+        "db:drop-assets": "tsx src/database/scripts/drop-assets.ts",
         "test-db:start": "docker compose -f ./docker-compose.yml up -d && pnpm dotenv -e .env.test tsx src/utils/test-db-healthcheck.ts && pnpm test-db:prepare",
         "test-db:prepare": "pnpm dotenv -e .env.test pnpm kysely migrate:latest && pnpm dotenv -e .env.test pnpm db:seed-run",
         "test-db:stop": "docker compose -f ./docker-compose.yml down --volumes"
