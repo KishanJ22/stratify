@@ -4,6 +4,7 @@ import logger from "../../logger.js";
 export const fetchCurrentPrice = async (
     assetSymbol: string,
     assetCountryId: number,
+    isCryptocurrency?: boolean,
 ) => {
     // Append .L for London Stock Exchange assets (UK assets)
     const symbol = assetCountryId === 223 ? `${assetSymbol}-L` : assetSymbol;
@@ -13,7 +14,7 @@ export const fetchCurrentPrice = async (
             .GET("/assets/{symbol}/current-price", {
                 params: {
                     path: {
-                        symbol,
+                        symbol: isCryptocurrency ? `${symbol}-USD` : symbol,
                     },
                 },
             })
@@ -25,6 +26,7 @@ export const fetchCurrentPrice = async (
             {
                 error,
                 symbol,
+                isCryptocurrency,
             },
             "Error fetching asset price for symbol",
         );

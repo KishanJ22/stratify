@@ -52,6 +52,7 @@ const searchAssets = async (query: string) => {
                 const currentPriceData = await fetchCurrentPrice(
                     asset.symbol,
                     asset.countryId,
+                    asset.assetType === "CRYPTOCURRENCY",
                 );
 
                 return formatSearchAsset(asset, currentPriceData);
