@@ -45,6 +45,7 @@ describe("POST /assets/search", () => {
         await db
             .insertInto("stratify.assets")
             .values({
+                id: 1,
                 name: "Apple Inc.",
                 symbol: "AAPL",
                 currency: "USD",
@@ -92,6 +93,7 @@ describe("POST /assets/search", () => {
         await db
             .insertInto("stratify.assets")
             .values({
+                id: 1,
                 name: "Apple Inc.",
                 symbol: "AAPL",
                 currency: "USD",
@@ -137,6 +139,7 @@ describe("POST /assets/search", () => {
         await db
             .insertInto("stratify.assets")
             .values({
+                id: 1,
                 name: "Apple Inc.",
                 symbol: "AAPL",
                 currency: "USD",
@@ -200,6 +203,7 @@ describe("POST /assets/search", () => {
         await db
             .insertInto("stratify.assets")
             .values({
+                id: 1,
                 name: "Apple Inc.",
                 symbol: "AAPL",
                 currency: "USD",

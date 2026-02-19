@@ -10,7 +10,7 @@ export async function up(db: Kysely<any>) {
     await db.schema
         .withSchema("stratify")
         .alterTable("trades")
-        .dropColumn("country_id")
+        .dropColumn("asset_country_id")
         .dropColumn("asset_id")
         .execute();
 
@@ -150,7 +150,7 @@ export async function down(db: Kysely<any>): Promise<void> {
     await db.schema
         .withSchema("stratify")
         .alterTable("trades")
-        .addColumn("country_id", "integer")
+        .addColumn("asset_country_id", "integer")
         .addColumn("asset_id", "varchar")
         .execute();
 

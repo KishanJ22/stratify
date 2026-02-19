@@ -49,6 +49,7 @@ describe("GET /portfolios/:portfolioId/investments", () => {
             .insertInto("stratify.assets")
             .values([
                 {
+                    id: 1,
                     name: "Apple Inc.",
                     symbol: "AAPL",
                     currency: "USD",
@@ -56,10 +57,19 @@ describe("GET /portfolios/:portfolioId/investments", () => {
                     countryId: 224, // Country ID for united states
                 },
                 {
+                    id: 2,
                     name: "Leonida Inc.",
                     symbol: "LEON",
                     currency: "USD",
                     type: "STOCK",
+                    countryId: 224, // Country ID for united states
+                },
+                {
+                    id: 3,
+                    name: "USD/GBP",
+                    symbol: "USDGBP",
+                    currency: "USD",
+                    type: "CURRENCY",
                     countryId: 224, // Country ID for united states
                 },
             ])
@@ -69,8 +79,7 @@ describe("GET /portfolios/:portfolioId/investments", () => {
             .insertInto("stratify.assetPrices")
             .values([
                 {
-                    assetId: "USDGBP",
-                    countryId: 224,
+                    assetId: 3,
                     priceDate: new Date(),
                     lowPrice: 0.75,
                     highPrice: 0.77,
@@ -95,8 +104,7 @@ describe("GET /portfolios/:portfolioId/investments", () => {
             .values([
                 {
                     portfolioId: portfolio.id,
-                    assetId: "AAPL",
-                    assetCountryId: 224,
+                    assetId: 1,
                     quantity: 5,
                     pricePerShare: 150,
                     totalAmount: 750,
@@ -106,8 +114,7 @@ describe("GET /portfolios/:portfolioId/investments", () => {
                 },
                 {
                     portfolioId: portfolio.id,
-                    assetId: "AAPL",
-                    assetCountryId: 224,
+                    assetId: 1,
                     quantity: 10,
                     pricePerShare: 150,
                     totalAmount: 1500,
@@ -117,8 +124,7 @@ describe("GET /portfolios/:portfolioId/investments", () => {
                 },
                 {
                     portfolioId: portfolio.id,
-                    assetId: "LEON",
-                    assetCountryId: 224,
+                    assetId: 2,
                     quantity: 20,
                     pricePerShare: 50,
                     totalAmount: 1000,
@@ -181,6 +187,7 @@ describe("GET /portfolios/:portfolioId/investments", () => {
             .insertInto("stratify.assets")
             .values([
                 {
+                    id: 1,
                     name: "British Company",
                     symbol: "BRIT",
                     currency: "GBP",
@@ -188,6 +195,7 @@ describe("GET /portfolios/:portfolioId/investments", () => {
                     countryId: 223, // Country ID for united states
                 },
                 {
+                    id: 2,
                     name: "Cheese Company",
                     symbol: "CHEESE",
                     currency: "GBP",
@@ -211,8 +219,7 @@ describe("GET /portfolios/:portfolioId/investments", () => {
             .values([
                 {
                     portfolioId: portfolio.id,
-                    assetId: "BRIT",
-                    assetCountryId: 223,
+                    assetId: 1,
                     quantity: 5,
                     pricePerShare: 150,
                     totalAmount: 750,
@@ -221,8 +228,7 @@ describe("GET /portfolios/:portfolioId/investments", () => {
                 },
                 {
                     portfolioId: portfolio.id,
-                    assetId: "BRIT",
-                    assetCountryId: 223,
+                    assetId: 1,
                     quantity: 10,
                     pricePerShare: 150,
                     totalAmount: 1500,
@@ -231,8 +237,7 @@ describe("GET /portfolios/:portfolioId/investments", () => {
                 },
                 {
                     portfolioId: portfolio.id,
-                    assetId: "CHEESE",
-                    assetCountryId: 223,
+                    assetId: 2,
                     quantity: 5,
                     pricePerShare: 100,
                     totalAmount: 500,
@@ -294,6 +299,7 @@ describe("GET /portfolios/:portfolioId/investments", () => {
             .insertInto("stratify.assets")
             .values([
                 {
+                    id: 1,
                     name: "British Company",
                     symbol: "BRIT",
                     currency: "GBP",
@@ -301,6 +307,7 @@ describe("GET /portfolios/:portfolioId/investments", () => {
                     countryId: 223, // Country ID for united states
                 },
                 {
+                    id: 2,
                     name: "Cheese Company",
                     symbol: "CHEESE",
                     currency: "GBP",
@@ -324,8 +331,7 @@ describe("GET /portfolios/:portfolioId/investments", () => {
             .values([
                 {
                     portfolioId: portfolio.id,
-                    assetId: "BRIT",
-                    assetCountryId: 223,
+                    assetId: 1,
                     quantity: 15,
                     pricePerShare: 150,
                     totalAmount: 2250,
@@ -334,8 +340,7 @@ describe("GET /portfolios/:portfolioId/investments", () => {
                 },
                 {
                     portfolioId: portfolio.id,
-                    assetId: "BRIT",
-                    assetCountryId: 223,
+                    assetId: 1,
                     quantity: 5,
                     pricePerShare: 170,
                     totalAmount: 850,
@@ -429,21 +434,31 @@ describe("GET /portfolios/:portfolioId/investments", () => {
 
         await db
             .insertInto("stratify.assets")
-            .values({
-                name: "Apple Inc.",
-                symbol: "AAPL",
-                currency: "USD",
-                type: "STOCK",
-                countryId: 224, // Country ID for united states
-            })
+            .values([
+                {
+                    id: 1,
+                    name: "Apple Inc.",
+                    symbol: "AAPL",
+                    currency: "USD",
+                    type: "STOCK",
+                    countryId: 224, // Country ID for united states
+                },
+                {
+                    id: 2,
+                    name: "USDGBP",
+                    symbol: "USDGBP",
+                    currency: "USD",
+                    type: "CURRENCY",
+                    countryId: 224, // Country ID for united states
+                },
+            ])
             .execute();
 
         await db
             .insertInto("stratify.assetPrices")
             .values([
                 {
-                    assetId: "USDGBP",
-                    countryId: 224,
+                    assetId: 2,
                     priceDate: new Date(),
                     lowPrice: 0.75,
                     highPrice: 0.77,
