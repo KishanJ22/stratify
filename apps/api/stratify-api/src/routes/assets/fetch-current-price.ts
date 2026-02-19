@@ -1,7 +1,7 @@
 import { dataApiClient } from "../../lib/api/data-api-client.js";
 import logger from "../../logger.js";
 
-export const fetchAssetPrice = async (
+export const fetchCurrentPrice = async (
     assetSymbol: string,
     assetCountryId: number,
 ) => {

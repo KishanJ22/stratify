@@ -13,7 +13,7 @@ import {
     SearchAssetsSuccessResponse,
 } from "./search-schemas.js";
 import { formatSearchAsset } from "./formatSearchAsset.js";
-import { fetchAssetPrice } from "./fetch-asset-price.js";
+import { fetchCurrentPrice } from "./fetch-current-price.js";
 
 const assetsSearchQuery = (query: string) => {
     return db
@@ -49,7 +49,7 @@ const searchAssets = async (query: string) => {
 
         const formattedAssets = await Promise.all(
             assetsFromDb.map(async (asset) => {
-                const currentPriceData = await fetchAssetPrice(
+                const currentPriceData = await fetchCurrentPrice(
                     asset.symbol,
                     asset.countryId,
                 );

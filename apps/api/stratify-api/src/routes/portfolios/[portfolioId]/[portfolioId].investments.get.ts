@@ -13,7 +13,7 @@ import {
 } from "./investments.schema.js";
 import db from "../../../database/db.js";
 import { InferResult } from "kysely";
-import { fetchAssetPrice } from "../../assets/fetch-asset-price.js";
+import { fetchCurrentPrice } from "../../assets/fetch-current-price.js";
 import { formatInvestmentDetails } from "./format-investment-details.js";
 
 const portfolioInvestmentsQuery = (portfolioId: number, userId: string) =>
@@ -136,7 +136,7 @@ const retrieveInvestments = async (
 
             //? Get the current value of the asset and multiply it by the number of shares held to get the overall investment value
             //? The current price of the asset is in the asset's currency so it needs to be converted to the user's currency if they are different
-            const currentInvestmentValue = await fetchAssetPrice(
+            const currentInvestmentValue = await fetchCurrentPrice(
                 symbol,
                 assetCountryId,
             ).then((priceDetails) => {
