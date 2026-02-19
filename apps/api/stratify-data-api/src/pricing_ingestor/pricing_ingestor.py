@@ -101,14 +101,20 @@ def data_validation(dataframe: pd.DataFrame, filepath: str):
 def determine_asset_type(filepath: str) -> str:
     is_currency = filepath.lower().find("currencies") != -1
     is_cryptocurrency = filepath.lower().find("cryptocurrencies") != -1
+    is_etf = filepath.lower().find("etfs") != -1
+    is_stock = filepath.lower().find("stocks") != -1
     
     if is_cryptocurrency:
         return "cryptocurrency"
     
-    if is_currency and not is_cryptocurrency:
+    if is_currency:
         return "currency"
     
-    return "stock"    
+    if is_etf:
+        return "etf"
+    
+    if is_stock:
+        return "stock"
 
 def split_ticker(df: pd.DataFrame, filepath: str) -> tuple[str, str]:
         is_currency = filepath.lower().find("currencies") != -1
