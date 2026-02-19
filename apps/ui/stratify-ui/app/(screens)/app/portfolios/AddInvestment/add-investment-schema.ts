@@ -3,8 +3,7 @@ import * as zod from "zod";
 const endOfDayToday = new Date(new Date().setHours(23, 59, 59, 999));
 
 export const addInvestmentSchema = zod.object({
-    assetName: zod.string().min(1, "Asset should be selected"),
-    assetSymbol: zod.string(),
+    assetName: zod.string().min(1, { error: "Asset should be selected" }),
     tradeDate: zod.string().refine(
         (date) => {
             const parsedDate = Date.parse(date);
@@ -31,17 +30,15 @@ export const addInvestmentSchema = zod.object({
         },
         { error: "Quantity should be a number greater than 0" },
     ),
-    currencyConversionRate: zod.optional(
-        zod.string().refine(
-            (value) => {
-                const numberValue = parseFloat(value);
+    currencyConversionRate: zod.string().refine(
+        (value) => {
+            const numberValue = parseFloat(value);
 
-                return !isNaN(numberValue) && numberValue > 0;
-            },
-            {
-                error: "Currency conversion rate should be greater than 0",
-            },
-        ),
+            return !isNaN(numberValue) && numberValue > 0;
+        },
+        {
+            error: "Currency conversion rate should be greater than 0",
+        },
     ),
     fee: zod.optional(
         zod.string().refine((value) => {

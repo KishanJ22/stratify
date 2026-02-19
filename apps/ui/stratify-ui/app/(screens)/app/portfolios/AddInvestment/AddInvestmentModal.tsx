@@ -38,11 +38,10 @@ interface AddInvestmentModalProps {
 
 const defaultValues: z.input<typeof addInvestmentSchema> = {
     assetName: "",
-    assetSymbol: "",
     quantity: "",
     tradeDate: "",
     pricePerShare: "",
-    currencyConversionRate: "",
+    currencyConversionRate: "1",
     fee: "0",
     total: 0,
     assetCurrencyTotal: 0,
@@ -93,8 +92,23 @@ const AddInvestmentModal = ({
         ...addInvestmentFormOptions,
         validators: {
             onChange: addInvestmentSchema,
-            onBlurAsync: async (values) => {
-                const result = addInvestmentSchema.safeParse(values);
+            onBlurAsync: async ({ value }) => {
+                const result = addInvestmentSchema.safeParse(value);
+
+                //? If currency conversion is required but the conversion rate isn't set, then the submit button should be disabled
+                if (selectedAsset?.currency !== userCurrency) {
+                    const currencyConversionRateValue =
+                        value.currencyConversionRate
+                            ? parseFloat(value.currencyConversionRate)
+                            : undefined;
+
+                    if (
+                        !currencyConversionRateValue ||
+                        currencyConversionRateValue <= 0
+                    ) {
+                        return setIsSubmitDisabled(true);
+                    }
+                }
 
                 return result.success
                     ? setIsSubmitDisabled(false)
@@ -103,17 +117,15 @@ const AddInvestmentModal = ({
         },
     });
 
-    useEffect(() => {
-        console.log("Form Errors:", form.state.errors);
-    });
-
     const formValues = useStore(form.store, (state) => state.values);
 
-    const pricePerShare = parseFloat(formValues.pricePerShare);
-    const quantity = parseFloat(formValues.quantity);
+    const pricePerShare = formValues.pricePerShare
+        ? parseFloat(formValues.pricePerShare)
+        : 0;
+    const quantity = formValues.quantity ? parseFloat(formValues.quantity) : 0;
     const currencyConversionRate = formValues.currencyConversionRate
         ? parseFloat(formValues.currencyConversionRate)
-        : 0;
+        : 1;
 
     const fee = formValues.fee ? parseFloat(formValues.fee) : 0;
     const assetCurrency = selectedAsset?.currency ?? "---";
@@ -191,6 +203,9 @@ const AddInvestmentModal = ({
                                                         setIsAssetListOpen(
                                                             false,
                                                         );
+                                                        setIsSubmitDisabled(
+                                                            true,
+                                                        );
                                                         form.reset();
                                                     }}
                                                 >
@@ -254,7 +269,6 @@ const AddInvestmentModal = ({
                                                                         field.handleChange(
                                                                             asset.name,
                                                                         );
-
                                                                         setSelectedAsset(
                                                                             asset,
                                                                         );
@@ -346,7 +360,6 @@ const AddInvestmentModal = ({
                                         label="Currency Conversion Rate"
                                         currencyCode={`${selectedAsset?.currency}/${userCurrency}`}
                                         placeholder="Enter currency conversion rate"
-                                        inputClassName=""
                                         error={
                                             meta.isTouched
                                                 ? meta.errors?.[0]?.message
@@ -375,7 +388,7 @@ const AddInvestmentModal = ({
                             );
                         }}
                     </form.AppField>
-                    <div className="bg-secondary-lightest border-secondary-dark rounded-md p-2.5">
+                    <div className="bg-secondary-lightest border border-secondary-dark rounded-md p-2.5">
                         <div className="flex flex-col gap-y-1">
                             <div className="flex flex-row items-center justify-between">
                                 <span className="text-secondary-light font-semibold">
@@ -430,7 +443,7 @@ const AddInvestmentModal = ({
                                 ]}
                             >
                                 <form.SubmitButton
-                                    label={`Add Investment for ${selectedAsset?.symbol}`}
+                                    label="Add Investment"
                                     className="w-full"
                                     isDisabled={
                                         !form.state.canSubmit ||
