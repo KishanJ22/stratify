@@ -27,7 +27,7 @@ interface AssetPrice {
 interface Asset {
     ticker: string;
     country: string;
-    type: "stock" | "cryptocurrency" | "currency";
+    type: "stock" | "cryptocurrency" | "currency" | "etf";
     assetPricesList: AssetPrice[];
 }
 
@@ -36,17 +36,19 @@ const insertAssetDetails = async (
     asset: Asset,
     countryDetails: Country,
 ) => {
-    // Check if the asset is already present in the db
+    //? Check if the asset is already present in the db
     const isAssetPresent = await trx
         .selectFrom("stratify.assets as assets")
         .where("assets.symbol", "=", asset.ticker)
         .where("assets.countryId", "=", countryDetails.countryId)
+        .where("assets.type", "=", asset.type.toUpperCase())
+        .select("assets.id as id")
         .executeTakeFirst();
 
-    // If the asset is not in the database, then add it
+    // If the asset is not in the database, then insert it
     if (!isAssetPresent) {
         // Insert the asset into the database
-        await trx
+        const assetId = await trx
             .insertInto("stratify.assets")
             .values({
                 symbol: asset.ticker,
@@ -55,27 +57,30 @@ const insertAssetDetails = async (
                 currency: countryDetails.currencyCode,
                 type: asset.type.toUpperCase(),
             })
-            .returning("symbol as assetId")
+            .returning("id")
             .executeTakeFirstOrThrow();
+
+        return assetId;
     }
+
+    return isAssetPresent;
 };
 
 const insertAssetPrices = async (
     trx: ControlledTransaction<DB>,
     asset: Asset,
-    countryId: number,
+    assetId: number,
 ) => {
     const chunkSize = 8000;
 
     const assetPrices = asset.assetPricesList.map((price) => ({
-        assetId: asset.ticker,
+        assetId,
         priceDate: new Date(price.date),
         openPrice: price.open,
         highPrice: price.high,
         lowPrice: price.low,
         closePrice: price.close,
         volume: price.volume,
-        countryId,
     }));
 
     for (let i = 0; i < assetPrices.length; i += chunkSize) {
@@ -84,15 +89,13 @@ const insertAssetPrices = async (
             .insertInto("stratify.assetPrices")
             .values(chunk)
             .onConflict((oc) =>
-                oc
-                    .columns(["assetId", "priceDate", "countryId"])
-                    .doUpdateSet((eb) => ({
-                        openPrice: eb.ref("excluded.openPrice"),
-                        highPrice: eb.ref("excluded.highPrice"),
-                        lowPrice: eb.ref("excluded.lowPrice"),
-                        closePrice: eb.ref("excluded.closePrice"),
-                        volume: eb.ref("excluded.volume"),
-                    })),
+                oc.columns(["assetId", "priceDate"]).doUpdateSet((eb) => ({
+                    openPrice: eb.ref("excluded.openPrice"),
+                    highPrice: eb.ref("excluded.highPrice"),
+                    lowPrice: eb.ref("excluded.lowPrice"),
+                    closePrice: eb.ref("excluded.closePrice"),
+                    volume: eb.ref("excluded.volume"),
+                })),
             )
             .execute();
     }
@@ -140,12 +143,12 @@ const processAssetFile = async (
             );
 
             if (countryDetails) {
-                await insertAssetDetails(transaction, asset, countryDetails);
-                await insertAssetPrices(
+                const { id } = await insertAssetDetails(
                     transaction,
                     asset,
-                    countryDetails.countryId,
+                    countryDetails,
                 );
+                await insertAssetPrices(transaction, asset, id);
 
                 await transaction.commit().execute();
             }
