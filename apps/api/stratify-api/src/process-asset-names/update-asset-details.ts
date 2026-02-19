@@ -31,6 +31,7 @@ const updateAssetDetailsDb = async (asset: Asset, startTime: number) => {
         .selectFrom("stratify.assets as assets")
         .where("assets.symbol", "=", asset.symbol)
         .where("assets.countryId", "=", asset.countryId)
+        .where("assets.type", "=", asset.assetType.toUpperCase())
         .selectAll()
         .executeTakeFirst();
 
@@ -49,12 +50,12 @@ const updateAssetDetailsDb = async (asset: Asset, startTime: number) => {
             .updateTable("stratify.assets as assets")
             .set({
                 name: asset.name,
-                type: asset.assetType.toUpperCase(),
                 currency: asset.currency || isAssetPresent.currency,
                 updatedAt: new Date(),
             })
             .where("assets.symbol", "=", asset.symbol)
             .where("assets.countryId", "=", asset.countryId)
+            .where("assets.type", "=", asset.assetType.toUpperCase())
             .executeTakeFirstOrThrow();
     }
 };
