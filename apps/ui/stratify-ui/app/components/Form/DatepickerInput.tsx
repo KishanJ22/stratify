@@ -11,6 +11,7 @@ import {
 import { format } from "date-fns";
 import { useFieldContext } from "./useForm";
 import { CalendarIcon } from "lucide-react";
+import { useState } from "react";
 
 interface DatePickerInputProps {
     label: string;
@@ -28,11 +29,12 @@ function DatePickerInput({
     className,
 }: DatePickerInputProps) {
     const field = useFieldContext<string | undefined>();
+    const [isDatepickerOpen, setIsDatepickerOpen] = useState(false);
 
     return (
         <Field className={`flex flex-col gap-y-1.5 ${className}`}>
             <FieldLabel htmlFor={id}>{label}</FieldLabel>
-            <Popover>
+            <Popover open={isDatepickerOpen} onOpenChange={setIsDatepickerOpen}>
                 <PopoverTrigger asChild>
                     <Button
                         variant="ghost"
@@ -55,10 +57,11 @@ function DatePickerInput({
                     <Calendar
                         mode="single"
                         selected={new Date(field.state.value ?? "")}
-                        onSelect={(date) =>
-                            field.handleChange(date?.toISOString())
-                        }
-                        onDayBlur={field.handleBlur}
+                        onSelect={(date) => {
+                            field.handleChange(date?.toISOString());
+                            setIsDatepickerOpen(false);
+                        }}
+                        onDayBlur={() => field.handleBlur()}
                         defaultMonth={
                             field.state.value
                                 ? new Date(field.state.value)

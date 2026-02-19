@@ -29,6 +29,8 @@ import { cn } from "@/lib/utils";
 import AssetNameCard from "./AssetNameCard";
 import { useSessionContext } from "../../SessionProvider";
 import z from "zod";
+import { useHistoricAssetPrice } from "./useHistoricAssetPrice";
+import { useHistoricCurrencyPairPrice } from "./useHistoricConversionRate";
 
 interface AddInvestmentModalProps {
     portfolioId: number;
@@ -118,6 +120,34 @@ const AddInvestmentModal = ({
     });
 
     const formValues = useStore(form.store, (state) => state.values);
+
+    const {
+        data: historicAssetPrice,
+        mutate: fetchHistoricAssetPrice,
+        isPending: isFetchingHistoricPrice,
+    } = useHistoricAssetPrice();
+
+    const {
+        data: historicCurrencyPairPrice,
+        mutate: fetchHistoricCurrencyPairPrice,
+        isPending: isFetchingHistoricCurrencyPairPrice,
+    } = useHistoricCurrencyPairPrice();
+
+    useEffect(() => {
+        if (historicAssetPrice) {
+            form.setFieldValue(
+                "pricePerShare",
+                historicAssetPrice.price.toString(),
+            );
+        }
+
+        if (historicCurrencyPairPrice) {
+            form.setFieldValue(
+                "currencyConversionRate",
+                historicCurrencyPairPrice.price.toString(),
+            );
+        }
+    }, [historicAssetPrice, historicCurrencyPairPrice, form]);
 
     const pricePerShare = formValues.pricePerShare
         ? parseFloat(formValues.pricePerShare)
@@ -297,7 +327,26 @@ const AddInvestmentModal = ({
                             );
                         }}
                     </form.AppField>
-                    <form.AppField name="tradeDate">
+                    <form.AppField
+                        name="tradeDate"
+                        listeners={{
+                            onChange: ({ value }) => {
+                                if (selectedAsset) {
+                                    fetchHistoricAssetPrice({
+                                        assetId: selectedAsset.id,
+                                        tradeDate: value,
+                                    });
+
+                                    if (isCurrencyConversionRequired) {
+                                        fetchHistoricCurrencyPairPrice({
+                                            currencyPair: `${selectedAsset.currency}${userCurrency}`,
+                                            tradeDate: value,
+                                        });
+                                    }
+                                }
+                            },
+                        }}
+                    >
                         {({ state: { meta }, DatePickerInput }) => {
                             return (
                                 <DatePickerInput
@@ -320,6 +369,7 @@ const AddInvestmentModal = ({
                                 <CurrencyInput
                                     id="pricePerShare"
                                     label="Price per Share"
+                                    isLoading={isFetchingHistoricPrice}
                                     currencyCode={
                                         selectedAsset?.currency ?? "---"
                                     }
@@ -358,6 +408,9 @@ const AddInvestmentModal = ({
                                     <CurrencyInput
                                         id="currencyConversionRate"
                                         label="Currency Conversion Rate"
+                                        isLoading={
+                                            isFetchingHistoricCurrencyPairPrice
+                                        }
                                         currencyCode={`${selectedAsset?.currency}/${userCurrency}`}
                                         placeholder="Enter currency conversion rate"
                                         error={
