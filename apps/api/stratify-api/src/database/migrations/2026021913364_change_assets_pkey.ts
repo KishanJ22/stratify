@@ -10,7 +10,7 @@ export async function up(db: Kysely<any>) {
     await db.schema
         .withSchema("stratify")
         .alterTable("trades")
-        .dropColumn("asset_country_id")
+        .dropColumn("country_id")
         .dropColumn("asset_id")
         .execute();
 
@@ -61,6 +61,15 @@ export async function up(db: Kysely<any>) {
         .withSchema("stratify")
         .alterTable("asset_prices")
         .addColumn("asset_id", "serial")
+        .execute();
+
+    await db.schema
+        .withSchema("stratify")
+        .alterTable("asset_prices")
+        .addPrimaryKeyConstraint("asset_prices_pkey", [
+            "asset_id",
+            "price_date",
+        ])
         .execute();
 
     await db.schema
@@ -122,11 +131,19 @@ export async function down(db: Kysely<any>): Promise<void> {
     await db.schema
         .withSchema("stratify")
         .alterTable("asset_prices")
-        .addColumn("country_id", "integer", (col) =>
-            col.notNull().references("countries.id").onDelete("cascade"),
-        )
-        .addColumn("asset_id", "varchar", (col) =>
-            col.notNull().references("assets.symbol").onDelete("cascade"),
+        .addColumn("country_id", "integer", (col) => col.notNull())
+        .addColumn("asset_id", "varchar", (col) => col.notNull())
+        .execute();
+
+    await db.schema
+        .withSchema("stratify")
+        .alterTable("asset_prices")
+        .addForeignKeyConstraint(
+            "asset_prices_asset_fkey",
+            ["asset_id", "country_id"],
+            "assets",
+            ["symbol", "country_id"],
+            (fk) => fk.onDelete("cascade"),
         )
         .execute();
 
