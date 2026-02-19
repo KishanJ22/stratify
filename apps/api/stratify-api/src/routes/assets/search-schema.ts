@@ -9,6 +9,7 @@ export const searchAssetsRequestBody = Type.Object({
 export type SearchAssetsRequestBody = Static<typeof searchAssetsRequestBody>;
 
 export const searchAssetSchema = Type.Object({
+    id: Type.Number(),
     name: Type.String(),
     symbol: Type.String(),
     currency: Type.Union([Type.String(), Type.Null()]),

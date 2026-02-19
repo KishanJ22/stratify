@@ -11,7 +11,7 @@ import {
     SearchAssetsRequestBody,
     searchAssetsResponseSchema,
     SearchAssetsSuccessResponse,
-} from "./search-schemas.js";
+} from "./search-schema.js";
 import { formatSearchAsset } from "./formatSearchAsset.js";
 import { fetchCurrentPrice } from "./fetch-current-price.js";
 
@@ -31,6 +31,7 @@ const assetsSearchQuery = (query: string) => {
             ]),
         )
         .select([
+            "assets.id as id",
             "assets.name as name",
             "assets.symbol as symbol",
             "assets.currency as currency",

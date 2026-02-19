@@ -73,6 +73,7 @@ describe("POST /assets/search", () => {
         expect(json).toEqual({
             data: [
                 {
+                    id: 1,
                     name: "Apple Inc.",
                     symbol: "AAPL",
                     currency: "USD",
@@ -121,6 +122,7 @@ describe("POST /assets/search", () => {
         expect(json).toEqual({
             data: [
                 {
+                    id: 1,
                     name: "Apple Inc.",
                     symbol: "AAPL",
                     currency: "USD",
@@ -231,6 +233,7 @@ describe("POST /assets/search", () => {
         expect(json).toEqual({
             data: [
                 {
+                    id: 1,
                     name: "Apple Inc.",
                     symbol: "AAPL",
                     currency: "USD",
