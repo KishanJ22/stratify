@@ -24,7 +24,9 @@ const requestBodySchema = Type.Object({
 type RequestBody = Static<typeof requestBodySchema>;
 
 const successResponseSchema = Type.Object({
-    success: Type.Boolean(),
+    data: Type.Object({
+        success: Type.Boolean(),
+    }),
 });
 type SuccessResponse = Static<typeof successResponseSchema>;
 
@@ -156,7 +158,7 @@ export default async function addTradePost(fastify: FastifyInstance) {
                     trade: tradeDetails,
                 }).executeTakeFirstOrThrow();
 
-                return reply.status(201).send({ success: true });
+                return reply.status(201).send({ data: { success: true } });
             } catch (error) {
                 logger.error({ error }, "Error inserting trade into database");
 
