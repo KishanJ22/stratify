@@ -297,14 +297,14 @@ export default async function portfolioInvestmentsGet(
             try {
                 const { portfolioId } = request.params;
 
-                const { userId, defaultCurrency } = getFromStore(
+                const { userId, currency } = getFromStore(
                     "user",
                 ) as UserDetails;
 
                 const investments = await retrieveInvestments(
                     portfolioId,
                     userId,
-                    defaultCurrency,
+                    currency,
                 );
 
                 if (investments.length === 0) {
