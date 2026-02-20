@@ -133,6 +133,7 @@ export interface StratifyTrades {
   assetCurrencyTotalAmount: Numeric | null;
   assetId: Generated<number>;
   createdAt: Generated<Timestamp>;
+  currencyConversionRate: Numeric | null;
   fee: Numeric | null;
   id: Generated<number>;
   portfolioId: Generated<number>;
