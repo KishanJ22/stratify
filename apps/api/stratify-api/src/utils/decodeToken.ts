@@ -6,7 +6,7 @@ export interface UserDetails {
     userId: string;
     name: string;
     email: string;
-    defaultCurrency: string;
+    currency: string;
     username?: string;
     displayUsername?: string;
 }
@@ -31,9 +31,9 @@ export const decodeToken = async (token: string) => {
                 userId: payload.id as string,
                 email: payload.email as string,
                 name: payload.name as string,
+                currency: payload.currency as string,
                 username: payload.username as string | undefined,
                 displayUsername: payload.displayUsername as string | undefined,
-                defaultCurrency: "GBP", // TODO: Placeholder until a currency can be set
             } satisfies UserDetails;
         }
 
@@ -48,7 +48,7 @@ export const decodeToken = async (token: string) => {
             name: payload.name as string,
             username: payload.username as string | undefined,
             displayUsername: payload.displayUsername as string | undefined,
-            defaultCurrency: "GBP", // TODO: Placeholder until a currency can be set
+            currency: payload.currency as string,
         } satisfies UserDetails;
     } catch (err) {
         logger.error({ err }, "Error decoding JWT");
