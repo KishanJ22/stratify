@@ -133,6 +133,7 @@ const retrieveInvestments = async (
             const currentInvestmentValue = await fetchCurrentPrice(
                 symbol,
                 assetCountryId,
+                assetDetails.type === "CRYPTOCURRENCY",
             ).then((priceDetails) => {
                 const price = priceDetails?.currentPrice ?? 0;
                 return price * investment.shares;
