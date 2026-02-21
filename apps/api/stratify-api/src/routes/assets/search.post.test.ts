@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeAll, beforeEach } from "vitest";
 import loadMockApp from "../../__mocks__/mockApp.js";
 import { createUser } from "../../tests/create-user.js";
 import db from "../../database/db.js";
+import { generateDevToken } from "../../utils/generateDevToken.js";
 
 const mockAssetPriceResponse = {
     data: {
@@ -24,12 +25,13 @@ vi.mock("../../lib/api/data-api-client.js", () => ({
 }));
 
 describe("POST /assets/search", () => {
-    const devToken =
-        "Bearer Dev-eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NjkwMzQ3NTgsIm5hbWUiOiJ0ZXN0LXVzZXIiLCJlbWFpbCI6InRlc3QtdXNlckB0ZXN0LmNvbSIsImVtYWlsVmVyaWZpZWQiOmZhbHNlLCJpbWFnZSI6bnVsbCwiY3JlYXRlZEF0IjoiMjAyNi0wMS0yMVQyMDo1MjoxMC45MTFaIiwidXBkYXRlZEF0IjoiMjAyNi0wMS0yMVQyMDo1MjoxMC45MTFaIiwidXNlcm5hbWUiOiJ0ZXN0LXVzZXIiLCJkaXNwbGF5VXNlcm5hbWUiOiJ0ZXN0LXVzZXIiLCJ0d29GYWN0b3JFbmFibGVkIjpmYWxzZSwiaWQiOiJ0ZXN0LXVzZXIiLCJzdWIiOiJ0ZXN0LXVzZXIiLCJleHAiOjE3NjkwMzgzNTgsImlzcyI6Imh0dHA6Ly8xMjcuMC4wLjE6MjAwMCIsImF1ZCI6Imh0dHA6Ly8xMjcuMC4wLjE6MjAwMCJ9.4h0c9ETlknvzcvHhQULDfCx5OF0_nlo-S_j0BbXqrdQbkzigNUqeU2E3EC-2YeSBMwJk6ERGar_LJ-sBAtK9DQ";
+    let devToken = "";
 
     let app: any;
 
     beforeAll(async () => {
+        devToken = await generateDevToken({ userId: "test-user" });
+
         app = await loadMockApp();
     });
 
@@ -45,6 +47,7 @@ describe("POST /assets/search", () => {
         await db
             .insertInto("stratify.assets")
             .values({
+                id: 1,
                 name: "Apple Inc.",
                 symbol: "AAPL",
                 currency: "USD",
@@ -72,6 +75,7 @@ describe("POST /assets/search", () => {
         expect(json).toEqual({
             data: [
                 {
+                    id: 1,
                     name: "Apple Inc.",
                     symbol: "AAPL",
                     currency: "USD",
@@ -92,6 +96,7 @@ describe("POST /assets/search", () => {
         await db
             .insertInto("stratify.assets")
             .values({
+                id: 1,
                 name: "Apple Inc.",
                 symbol: "AAPL",
                 currency: "USD",
@@ -119,6 +124,7 @@ describe("POST /assets/search", () => {
         expect(json).toEqual({
             data: [
                 {
+                    id: 1,
                     name: "Apple Inc.",
                     symbol: "AAPL",
                     currency: "USD",
@@ -137,6 +143,7 @@ describe("POST /assets/search", () => {
         await db
             .insertInto("stratify.assets")
             .values({
+                id: 1,
                 name: "Apple Inc.",
                 symbol: "AAPL",
                 currency: "USD",
@@ -200,6 +207,7 @@ describe("POST /assets/search", () => {
         await db
             .insertInto("stratify.assets")
             .values({
+                id: 1,
                 name: "Apple Inc.",
                 symbol: "AAPL",
                 currency: "USD",
@@ -227,6 +235,7 @@ describe("POST /assets/search", () => {
         expect(json).toEqual({
             data: [
                 {
+                    id: 1,
                     name: "Apple Inc.",
                     symbol: "AAPL",
                     currency: "USD",

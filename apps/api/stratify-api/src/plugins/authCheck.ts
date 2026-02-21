@@ -9,6 +9,7 @@ async function authCheck(fastify: FastifyInstance) {
         const isPublicRoute =
             request.url.includes("/auth/") ||
             request.url.includes("/health") ||
+            request.url.includes("/currencies") ||
             request.url === "/";
 
         // Applies auth check for non-public routes

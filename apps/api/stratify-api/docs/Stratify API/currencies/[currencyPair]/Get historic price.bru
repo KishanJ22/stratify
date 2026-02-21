@@ -1,0 +1,28 @@
+meta {
+  name: Get historic price
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/currencies/:currencyPair/historic-price?tradeDate=2026-02-18
+  body: none
+  auth: inherit
+}
+
+params:query {
+  tradeDate: 2026-02-18
+}
+
+params:path {
+  currencyPair: USDGBP
+}
+
+vars:pre-request {
+  currencyPair: USDGBP
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

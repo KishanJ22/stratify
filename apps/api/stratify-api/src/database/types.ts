@@ -57,6 +57,7 @@ export interface AuthTwoFactor {
 
 export interface AuthUser {
   createdAt: Generated<Timestamp>;
+  currency: string;
   displayUsername: string | null;
   email: string;
   emailVerified: boolean;
@@ -78,9 +79,8 @@ export interface AuthVerification {
 }
 
 export interface StratifyAssetPrices {
-  assetId: string;
+  assetId: Generated<number>;
   closePrice: Numeric;
-  countryId: number;
   createdAt: Generated<Timestamp>;
   highPrice: Numeric;
   lowPrice: Numeric;
@@ -93,6 +93,7 @@ export interface StratifyAssets {
   countryId: number;
   createdAt: Generated<Timestamp>;
   currency: string | null;
+  id: Generated<number>;
   name: string;
   symbol: string;
   type: string;
@@ -129,10 +130,10 @@ export interface StratifyPortfolios {
 }
 
 export interface StratifyTrades {
-  assetCountryId: number;
   assetCurrencyTotalAmount: Numeric | null;
-  assetId: string;
+  assetId: Generated<number>;
   createdAt: Generated<Timestamp>;
+  currencyConversionRate: Numeric | null;
   fee: Numeric | null;
   id: Generated<number>;
   portfolioId: Generated<number>;

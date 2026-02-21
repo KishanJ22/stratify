@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { Command as CommandPrimitive } from "cmdk";
-import { Search } from "lucide-react";
+import { Search, X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import {
@@ -56,27 +56,55 @@ function CommandDialog({
     );
 }
 
+interface CommandInputProps extends React.ComponentProps<
+    typeof CommandPrimitive.Input
+> {
+    inputClassName?: string;
+    showIcon?: boolean;
+    iconClassName?: string;
+    showClearButton?: boolean;
+    onClear?: () => void;
+}
+
 function CommandInput({
     className,
+    showIcon = true,
+    inputClassName,
+    iconClassName,
+    showClearButton = false,
+    onClear,
     ...props
-}: React.ComponentProps<typeof CommandPrimitive.Input>) {
+}: CommandInputProps) {
     return (
         <div
             data-slot="command-input-wrapper"
-            className="flex items-center gap-2 border-b border-b-primary-base p-2"
+            className={cn("flex items-center gap-2 p-2", className)}
         >
-            <Search
-                size={16}
-                className="shrink-0 opacity-70 text-primary-dark"
-            />
+            {showIcon && (
+                <Search
+                    size={16}
+                    className={cn(
+                        "shrink-0 opacity-70 text-primary-dark",
+                        iconClassName,
+                    )}
+                />
+            )}
+
             <CommandPrimitive.Input
                 data-slot="command-input"
                 className={cn(
-                    "placeholder:text-muted-dark flex w-full rounded-md bg-transparent font-sans text-sm outline-hidden disabled:cursor-not-allowed disabled:opacity-50",
-                    className,
+                    "placeholder:text-muted-dark flex w-full rounded-md font-sans text-sm outline-hidden disabled:cursor-not-allowed disabled:opacity-50",
+                    inputClassName,
                 )}
                 {...props}
             />
+            {showClearButton && (
+                <X
+                    size={16}
+                    className="shrink-0 opacity-70 text-muted-darker cursor-pointer"
+                    onClick={() => onClear?.()}
+                />
+            )}
         </div>
     );
 }

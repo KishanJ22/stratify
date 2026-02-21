@@ -1,7 +1,6 @@
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi, beforeEach } from "vitest";
 import LoginPage from "./page";
-import { beforeEach } from "node:test";
 import { render, screen } from "@testing-library/react";
 
 const mockRouterPush = vi.fn();

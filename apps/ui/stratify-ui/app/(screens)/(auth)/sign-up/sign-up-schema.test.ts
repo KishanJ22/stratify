@@ -8,6 +8,7 @@ const mockSuccessValues = {
     username: "johndoe",
     password: "Password1!",
     confirmPassword: "Password1!",
+    currency: "GBP",
 };
 
 describe("signUpSchema", () => {

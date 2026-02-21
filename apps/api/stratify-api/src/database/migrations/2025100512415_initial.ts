@@ -17,7 +17,7 @@ const createStocksTable = (db: Kysely<any>) =>
         .createTable("stocks")
         .addColumn("symbol", "varchar", (col) => col.primaryKey()) // Stock symbol as primary key
         .addColumn("name", "varchar", (col) => col.notNull()) // Stock name
-        .addColumn("type", "varchar", (col) => col.notNull()) // Stock type (e.g., ETF/index fund, common stock)
+        .addColumn("type", "varchar", (col) => col.notNull()) // Stock type (e.g., Stock, ETF, Cryptocurrency)
         .addColumn("country_id", "integer", (col) =>
             col.references("countries.id").onDelete("cascade").notNull(),
         ); // Foreign key referencing countries table - gets the country where the stock is listed here

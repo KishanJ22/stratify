@@ -7,6 +7,11 @@ export const currencyConversionRateQuery = (
 ) =>
     db
         .selectFrom("stratify.assetPrices as assetPrices")
-        .where("assetPrices.assetId", "=", `${fromCurrency}${toCurrency}`)
+        .innerJoin(
+            "stratify.assets as assets",
+            "assets.id",
+            "assetPrices.assetId",
+        )
+        .where("assets.symbol", "=", `${fromCurrency}${toCurrency}`)
         .where("assetPrices.priceDate", "=", date)
         .select("assetPrices.closePrice as price");

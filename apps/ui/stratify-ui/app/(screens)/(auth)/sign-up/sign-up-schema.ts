@@ -23,6 +23,7 @@ export const signUpSchema = zod
                 "Password must contain at least one special character",
             ),
         confirmPassword: zod.string(),
+        currency: zod.string().min(1, "Currency should be set"),
     })
     .refine(({ password, confirmPassword }) => password === confirmPassword, {
         error: "Passwords do not match",

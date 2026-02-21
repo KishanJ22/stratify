@@ -49,6 +49,7 @@ export const handleSignUp = async (
                 name: `${value.firstName} ${value.lastName}`,
                 password: value.password,
                 username: value.username,
+                currency: value.currency,
             });
 
         if (signUpData?.token) {

@@ -6,6 +6,14 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { signUpSchema } from "./sign-up-schema";
 import { handleSignUp } from "./handle-sign-up";
+import { Field, FieldLabel } from "@/app/components/ui/field";
+import { Currency, useCurrencyList } from "./useCurrencyList";
+import {
+    Command,
+    CommandInput,
+    CommandList,
+} from "@/app/components/ui/command";
+import { Skeleton } from "@/app/components/ui/skeleton";
 
 const signUpFormOptions = formOptions({
     formId: "sign-up-form",
@@ -16,6 +24,7 @@ const signUpFormOptions = formOptions({
         email: "",
         password: "",
         confirmPassword: "",
+        currency: "",
     },
 });
 
@@ -23,6 +32,13 @@ const SignUpForm = () => {
     const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
     const [isUsernameAlreadyTaken, setIsUsernameAlreadyTaken] = useState(false);
     const [isEmailAlreadyTaken, setIsEmailAlreadyTaken] = useState(false);
+    const [selectedCurrency, setSelectedCurrency] = useState<Currency | null>(
+        null,
+    );
+    const [currencySearch, setCurrencySearch] = useState("");
+    const [isCurrencyListOpen, setIsCurrencyListOpen] = useState(false);
+
+    const { data, isLoading } = useCurrencyList();
 
     const authClient = useAuthClient();
     const { push } = useRouter();
@@ -95,7 +111,7 @@ const SignUpForm = () => {
                     )}
                 </form.AppField>
             </div>
-            <div className="flex flex-col gap-y-6 w-full">
+            <div className="flex flex-row gap-x-8">
                 <form.AppField
                     name="username"
                     validators={{
@@ -116,7 +132,7 @@ const SignUpForm = () => {
 
                         return (
                             <div
-                                className={`flex flex-col ${isUsernameAlreadyTaken ? "gap-y-1" : ""}`}
+                                className={`flex flex-col w-1/2 ${isUsernameAlreadyTaken ? "gap-y-1" : ""}`}
                             >
                                 <TextInput
                                     id="username"
@@ -128,6 +144,113 @@ const SignUpForm = () => {
                         );
                     }}
                 </form.AppField>
+                <form.AppField name="currency">
+                    {(field) => {
+                        const displayValue = selectedCurrency
+                            ? `${selectedCurrency.name} (${selectedCurrency.code})`
+                            : "";
+
+                        const filteredData = data.filter(
+                            (currency) =>
+                                currency.name
+                                    .toLowerCase()
+                                    .includes(currencySearch.toLowerCase()) ||
+                                currency.code
+                                    .toLowerCase()
+                                    .includes(currencySearch.toLowerCase()),
+                        );
+
+                        return (
+                            <Field className="flex flex-col gap-y-1.5 w-1/2">
+                                <FieldLabel htmlFor="currency">
+                                    Preferred Currency
+                                </FieldLabel>
+                                <Command>
+                                    <CommandInput
+                                        id="currency"
+                                        placeholder="Select a currency"
+                                        value={
+                                            field.state.value
+                                                ? displayValue
+                                                : currencySearch
+                                        }
+                                        className="static bg-white border border-secondary-dark rounded-md focus-visible:ring-secondary-dark h-full"
+                                        inputClassName="placeholder:text-secondary-light text-secondary-dark"
+                                        showIcon={false}
+                                        onValueChange={(searchValue) =>
+                                            setCurrencySearch(searchValue)
+                                        }
+                                        onFocus={() =>
+                                            setIsCurrencyListOpen(true)
+                                        }
+                                        showClearButton={
+                                            selectedCurrency !== null
+                                        }
+                                        onClear={() => {
+                                            field.handleChange("");
+                                            setSelectedCurrency(null);
+                                            setCurrencySearch("");
+                                        }}
+                                    />
+                                    <CommandList
+                                        className={`absolute w-auto mt-11 p-1 gap-y-1.5 max-h-[150px] bg-white border border-secondary-dark rounded-md ${isCurrencyListOpen ? "" : "hidden"}`}
+                                    >
+                                        {isLoading ? (
+                                            <div className="flex flex-col gap-2">
+                                                {Array.from({
+                                                    length: 3,
+                                                }).map((_, index) => (
+                                                    <Skeleton
+                                                        key={index}
+                                                        className="w-full h-10 rounded-xl bg-secondary-lighter"
+                                                    />
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            <div className="flex flex-col gap-y-1 w-full">
+                                                {filteredData.length > 0 ? (
+                                                    filteredData.map(
+                                                        (currency) => (
+                                                            <div
+                                                                key={
+                                                                    currency.code
+                                                                }
+                                                                className="flex items-center font-sans text-secondary-dark rounded-md cursor-pointer hover:bg-secondary-lighter"
+                                                                onClick={() => {
+                                                                    field.handleChange(
+                                                                        currency.code,
+                                                                    );
+
+                                                                    setSelectedCurrency(
+                                                                        currency,
+                                                                    );
+
+                                                                    setIsCurrencyListOpen(
+                                                                        false,
+                                                                    );
+                                                                }}
+                                                            >
+                                                                {currency.name}{" "}
+                                                                ({currency.code}
+                                                                )
+                                                            </div>
+                                                        ),
+                                                    )
+                                                ) : (
+                                                    <div className="items-center font-sans text-secondary-dark rounded-md">
+                                                        No currencies found
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+                                    </CommandList>
+                                </Command>
+                            </Field>
+                        );
+                    }}
+                </form.AppField>
+            </div>
+            <div className="flex flex-col gap-y-6 w-full">
                 <form.AppField
                     name="email"
                     validators={{

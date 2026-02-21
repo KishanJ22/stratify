@@ -1,6 +1,6 @@
 import { paths } from "../../lib/api/stratify-data-api.js";
 import { AssetType } from "../../schemas/common-schemas.js";
-import { SearchAsset } from "./search-schemas.js";
+import { SearchAsset } from "./search-schema.js";
 import type { DbSearchAsset } from "./search.post.js";
 
 type CurrentPriceData =
@@ -11,6 +11,7 @@ export const formatSearchAsset = (
     priceDetails?: CurrentPriceData,
 ) => {
     return {
+        id: asset.id,
         name: asset.name,
         symbol: asset.symbol,
         currency: asset.currency,

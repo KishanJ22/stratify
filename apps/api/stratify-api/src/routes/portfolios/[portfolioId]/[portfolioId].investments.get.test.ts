@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeAll, beforeEach } from "vitest";
 import loadMockApp from "../../../__mocks__/mockApp.js";
 import db from "../../../database/db.js";
 import { createUser } from "../../../tests/create-user.js";
+import { generateDevToken } from "../../../utils/generateDevToken.js";
 
 const mockAssetPriceResponse = {
     data: {
@@ -24,15 +25,18 @@ vi.mock("../../../lib/api/data-api-client", () => ({
 }));
 
 describe("GET /portfolios/:portfolioId/investments", () => {
-    const devToken =
-        "Bearer Dev-eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NjkwMzQ3NTgsIm5hbWUiOiJ0ZXN0LXVzZXIiLCJlbWFpbCI6InRlc3QtdXNlckB0ZXN0LmNvbSIsImVtYWlsVmVyaWZpZWQiOmZhbHNlLCJpbWFnZSI6bnVsbCwiY3JlYXRlZEF0IjoiMjAyNi0wMS0yMVQyMDo1MjoxMC45MTFaIiwidXBkYXRlZEF0IjoiMjAyNi0wMS0yMVQyMDo1MjoxMC45MTFaIiwidXNlcm5hbWUiOiJ0ZXN0LXVzZXIiLCJkaXNwbGF5VXNlcm5hbWUiOiJ0ZXN0LXVzZXIiLCJ0d29GYWN0b3JFbmFibGVkIjpmYWxzZSwiaWQiOiJ0ZXN0LXVzZXIiLCJzdWIiOiJ0ZXN0LXVzZXIiLCJleHAiOjE3NjkwMzgzNTgsImlzcyI6Imh0dHA6Ly8xMjcuMC4wLjE6MjAwMCIsImF1ZCI6Imh0dHA6Ly8xMjcuMC4wLjE6MjAwMCJ9.4h0c9ETlknvzcvHhQULDfCx5OF0_nlo-S_j0BbXqrdQbkzigNUqeU2E3EC-2YeSBMwJk6ERGar_LJ-sBAtK9DQ";
+    let devToken = "";
 
-    const secondDevToken =
-        "Bearer Dev-eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3NjkwMzQ3NTgsIm5hbWUiOiJhbm90aGVyLXRlc3QtdXNlciIsImVtYWlsIjoiYW5vdGhlci10ZXN0LXVzZXJAdGVzdC5jb20iLCJlbWFpbFZlcmlmaWVkIjpmYWxzZSwiaW1hZ2UiOm51bGwsImNyZWF0ZWRBdCI6IjIwMjYtMDEtMjFUMjA6NTI6MTAuOTExWiIsInVwZGF0ZWRBdCI6IjIwMjYtMDEtMjFUMjA6NTI6MTAuOTExWiIsInVzZXJuYW1lIjoiYW5vdGhlci10ZXN0LXVzZXIiLCJkaXNwbGF5VXNlcm5hbWUiOiJhbm90aGVyLXRlc3QtdXNlciIsInR3b0ZhY3RvckVuYWJsZWQiOmZhbHNlLCJpZCI6ImFub3RoZXItdGVzdC11c2VyIiwic3ViIjoiYW5vdGhlci10ZXN0LXVzZXIiLCJleHAiOjE3NjkwMzgzNTgsImlzcyI6Imh0dHA6Ly8xMjcuMC4wLjE6MjAwMCIsImF1ZCI6Imh0dHA6Ly8xMjcuMC4wLjE6MjAwMCJ9.loa5vJNiu9uwpmSTilPMCDI4NF2e0GP6ATO7fmQNuRjg-ByCgmJTcAUd-jNY4A2Lkls_VTED07WYEe8SelVRCA";
+    let secondDevToken = "";
 
     let app: any;
 
     beforeAll(async () => {
+        devToken = await generateDevToken({ userId: "test-user" });
+        secondDevToken = await generateDevToken({
+            userId: "another-test-user",
+        });
+
         app = await loadMockApp();
     });
 
@@ -49,6 +53,7 @@ describe("GET /portfolios/:portfolioId/investments", () => {
             .insertInto("stratify.assets")
             .values([
                 {
+                    id: 1,
                     name: "Apple Inc.",
                     symbol: "AAPL",
                     currency: "USD",
@@ -56,10 +61,19 @@ describe("GET /portfolios/:portfolioId/investments", () => {
                     countryId: 224, // Country ID for united states
                 },
                 {
+                    id: 2,
                     name: "Leonida Inc.",
                     symbol: "LEON",
                     currency: "USD",
                     type: "STOCK",
+                    countryId: 224, // Country ID for united states
+                },
+                {
+                    id: 3,
+                    name: "USD/GBP",
+                    symbol: "USDGBP",
+                    currency: "USD",
+                    type: "CURRENCY",
                     countryId: 224, // Country ID for united states
                 },
             ])
@@ -69,8 +83,7 @@ describe("GET /portfolios/:portfolioId/investments", () => {
             .insertInto("stratify.assetPrices")
             .values([
                 {
-                    assetId: "USDGBP",
-                    countryId: 224,
+                    assetId: 3,
                     priceDate: new Date(),
                     lowPrice: 0.75,
                     highPrice: 0.77,
@@ -95,8 +108,7 @@ describe("GET /portfolios/:portfolioId/investments", () => {
             .values([
                 {
                     portfolioId: portfolio.id,
-                    assetId: "AAPL",
-                    assetCountryId: 224,
+                    assetId: 1,
                     quantity: 5,
                     pricePerShare: 150,
                     totalAmount: 750,
@@ -106,8 +118,7 @@ describe("GET /portfolios/:portfolioId/investments", () => {
                 },
                 {
                     portfolioId: portfolio.id,
-                    assetId: "AAPL",
-                    assetCountryId: 224,
+                    assetId: 1,
                     quantity: 10,
                     pricePerShare: 150,
                     totalAmount: 1500,
@@ -117,8 +128,7 @@ describe("GET /portfolios/:portfolioId/investments", () => {
                 },
                 {
                     portfolioId: portfolio.id,
-                    assetId: "LEON",
-                    assetCountryId: 224,
+                    assetId: 2,
                     quantity: 20,
                     pricePerShare: 50,
                     totalAmount: 1000,
@@ -145,6 +155,7 @@ describe("GET /portfolios/:portfolioId/investments", () => {
         expect(json).toEqual({
             data: [
                 {
+                    assetId: 2,
                     symbol: "LEON",
                     assetCountryId: 224,
                     assetCurrency: "USD",
@@ -157,6 +168,7 @@ describe("GET /portfolios/:portfolioId/investments", () => {
                     currentReturnPercentage: 204,
                 },
                 {
+                    assetId: 1,
                     symbol: "AAPL",
                     assetCountryId: 224,
                     assetCurrency: "USD",
@@ -181,6 +193,7 @@ describe("GET /portfolios/:portfolioId/investments", () => {
             .insertInto("stratify.assets")
             .values([
                 {
+                    id: 1,
                     name: "British Company",
                     symbol: "BRIT",
                     currency: "GBP",
@@ -188,6 +201,7 @@ describe("GET /portfolios/:portfolioId/investments", () => {
                     countryId: 223, // Country ID for united states
                 },
                 {
+                    id: 2,
                     name: "Cheese Company",
                     symbol: "CHEESE",
                     currency: "GBP",
@@ -211,8 +225,7 @@ describe("GET /portfolios/:portfolioId/investments", () => {
             .values([
                 {
                     portfolioId: portfolio.id,
-                    assetId: "BRIT",
-                    assetCountryId: 223,
+                    assetId: 1,
                     quantity: 5,
                     pricePerShare: 150,
                     totalAmount: 750,
@@ -221,8 +234,7 @@ describe("GET /portfolios/:portfolioId/investments", () => {
                 },
                 {
                     portfolioId: portfolio.id,
-                    assetId: "BRIT",
-                    assetCountryId: 223,
+                    assetId: 1,
                     quantity: 10,
                     pricePerShare: 150,
                     totalAmount: 1500,
@@ -231,8 +243,7 @@ describe("GET /portfolios/:portfolioId/investments", () => {
                 },
                 {
                     portfolioId: portfolio.id,
-                    assetId: "CHEESE",
-                    assetCountryId: 223,
+                    assetId: 2,
                     quantity: 5,
                     pricePerShare: 100,
                     totalAmount: 500,
@@ -258,6 +269,7 @@ describe("GET /portfolios/:portfolioId/investments", () => {
         expect(json).toEqual({
             data: [
                 {
+                    assetId: 1,
                     symbol: "BRIT",
                     assetCountryId: 223,
                     assetCurrency: "GBP",
@@ -270,6 +282,7 @@ describe("GET /portfolios/:portfolioId/investments", () => {
                     currentReturnPercentage: 1.33,
                 },
                 {
+                    assetId: 2,
                     symbol: "CHEESE",
                     assetCountryId: 223,
                     assetCurrency: "GBP",
@@ -294,6 +307,7 @@ describe("GET /portfolios/:portfolioId/investments", () => {
             .insertInto("stratify.assets")
             .values([
                 {
+                    id: 1,
                     name: "British Company",
                     symbol: "BRIT",
                     currency: "GBP",
@@ -301,6 +315,7 @@ describe("GET /portfolios/:portfolioId/investments", () => {
                     countryId: 223, // Country ID for united states
                 },
                 {
+                    id: 2,
                     name: "Cheese Company",
                     symbol: "CHEESE",
                     currency: "GBP",
@@ -324,8 +339,7 @@ describe("GET /portfolios/:portfolioId/investments", () => {
             .values([
                 {
                     portfolioId: portfolio.id,
-                    assetId: "BRIT",
-                    assetCountryId: 223,
+                    assetId: 1,
                     quantity: 15,
                     pricePerShare: 150,
                     totalAmount: 2250,
@@ -334,8 +348,7 @@ describe("GET /portfolios/:portfolioId/investments", () => {
                 },
                 {
                     portfolioId: portfolio.id,
-                    assetId: "BRIT",
-                    assetCountryId: 223,
+                    assetId: 1,
                     quantity: 5,
                     pricePerShare: 170,
                     totalAmount: 850,
@@ -361,6 +374,7 @@ describe("GET /portfolios/:portfolioId/investments", () => {
         expect(json).toEqual({
             data: [
                 {
+                    assetId: 1,
                     symbol: "BRIT",
                     assetCountryId: 223,
                     assetCurrency: "GBP",
@@ -429,21 +443,31 @@ describe("GET /portfolios/:portfolioId/investments", () => {
 
         await db
             .insertInto("stratify.assets")
-            .values({
-                name: "Apple Inc.",
-                symbol: "AAPL",
-                currency: "USD",
-                type: "STOCK",
-                countryId: 224, // Country ID for united states
-            })
+            .values([
+                {
+                    id: 1,
+                    name: "Apple Inc.",
+                    symbol: "AAPL",
+                    currency: "USD",
+                    type: "STOCK",
+                    countryId: 224, // Country ID for united states
+                },
+                {
+                    id: 2,
+                    name: "USDGBP",
+                    symbol: "USDGBP",
+                    currency: "USD",
+                    type: "CURRENCY",
+                    countryId: 224, // Country ID for united states
+                },
+            ])
             .execute();
 
         await db
             .insertInto("stratify.assetPrices")
             .values([
                 {
-                    assetId: "USDGBP",
-                    countryId: 224,
+                    assetId: 2,
                     priceDate: new Date(),
                     lowPrice: 0.75,
                     highPrice: 0.77,

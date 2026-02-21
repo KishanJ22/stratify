@@ -9,6 +9,15 @@ vi.mock("next/navigation", () => ({
     }),
 }));
 
+vi.mock("./useCurrencyList", () => ({
+    useCurrencyList: () => ({
+        data: [
+            { code: "USD", name: "US Dollar" },
+            { code: "GBP", name: "British Pound" },
+        ]
+    }),
+}));
+
 describe("Sign up form", () => {
     beforeEach(() => {
         const root = document.createElement("div");
@@ -27,6 +36,7 @@ describe("Sign up form", () => {
             "First name",
             "Last name",
             "Username",
+            "Preferred Currency",
             "Email address",
             "Password",
             "Confirm Password",

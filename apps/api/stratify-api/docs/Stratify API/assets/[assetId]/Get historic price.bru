@@ -1,0 +1,24 @@
+meta {
+  name: Get historic price
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/assets/:assetId/historic-price?tradeDate=2026-02-18
+  body: none
+  auth: inherit
+}
+
+params:query {
+  tradeDate: 2026-02-18
+}
+
+params:path {
+  assetId: 25656
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

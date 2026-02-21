@@ -11,6 +11,9 @@ interface FormInputProps {
     error?: string;
     className?: string;
     inputClassName?: string;
+    dataTestId?: string;
+    disabled?: boolean;
+    defaultValue?: string;
 }
 
 const TextInput = ({
@@ -20,23 +23,30 @@ const TextInput = ({
     type = "text",
     error,
     className,
-    inputClassName = "",
+    inputClassName = "bg-white",
+    dataTestId,
+    disabled = false,
+    defaultValue,
 }: FormInputProps) => {
     const field = useFieldContext<string>();
 
     return (
-        <Field className={`flex flex-col gap-y-1.5 ${className}`}>
+        <Field
+            className={`flex flex-col gap-y-1.5 ${className}`}
+            data-testid={dataTestId}
+        >
             <FieldLabel htmlFor={id}>{label}</FieldLabel>
             <Input
                 type={type}
                 id={id}
                 placeholder={placeholder}
-                value={field.state.value}
+                value={defaultValue ? defaultValue : field.state.value}
                 onChange={(e) => field.handleChange(e.target.value)}
                 onBlur={field.handleBlur}
+                disabled={disabled}
                 className={
                     error
-                        ? "border-negative-base focus-visible:border-negative-base focus-visible:ring-negative-base"
+                        ? "bg-white border-negative-base focus-visible:border-negative-base focus-visible:ring-negative-base"
                         : inputClassName
                 }
             />

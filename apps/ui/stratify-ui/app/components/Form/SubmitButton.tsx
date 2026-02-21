@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
 import { Spinner } from "../ui/spinner";
 import { ComponentProps } from "react";
@@ -22,7 +23,10 @@ const SubmitButton = ({
             type="submit"
             variant={variant}
             disabled={isDisabled}
-            className={className}
+            className={cn(
+                className,
+                "cursor-pointer hover:border hover:border-secondary-light",
+            )}
         >
             <div className="flex flex-row gap-x-2 items-center">
                 {isLoading && <Spinner />}
