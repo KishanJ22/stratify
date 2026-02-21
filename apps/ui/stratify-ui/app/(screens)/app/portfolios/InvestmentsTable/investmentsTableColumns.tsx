@@ -8,8 +8,13 @@ import {
     TooltipTrigger,
 } from "@/app/components/ui/tooltip";
 import { InfoIcon } from "lucide-react";
+import { Dispatch, SetStateAction } from "react";
 
-export const columns = (userCurrency: string): ColumnDef<Investment>[] => [
+export const columns = (
+    userCurrency: string,
+    setIsAddTradeModalOpen: Dispatch<SetStateAction<boolean>>,
+    setInvestmentToAddTradeFor: Dispatch<SetStateAction<Investment | null>>,
+): ColumnDef<Investment>[] => [
     {
         accessorKey: "name",
         header: "Asset Name",
@@ -134,22 +139,20 @@ export const columns = (userCurrency: string): ColumnDef<Investment>[] => [
             type: "action",
             headerClassName: "w-[120px]",
         },
-        cell: ({ row }) => {
-            // TODO Implement add trade functionality to click through to a modal to add a trade for a specific investment
-            //? See AB#65
-            const { symbol, shares, assetCountryId } = row.original;
-
-            return (
-                <div className="flex flex-row gap-2">
-                    <Button
-                        disabled={shares === 0}
-                        variant="link"
-                        className="font-medium text-primary-darker hover:text-primary-dark transition-colors hover:underline hover:cursor-pointer"
-                    >
-                        Add trade
-                    </Button>
-                </div>
-            );
-        },
+        cell: ({ row }) => (
+            <div className="flex flex-row gap-2">
+                <Button
+                    disabled={row.original.shares === 0}
+                    variant="link"
+                    className="font-medium text-primary-darker hover:text-primary-dark transition-colors hover:underline hover:cursor-pointer"
+                    onClick={() => {
+                        setIsAddTradeModalOpen(true);
+                        setInvestmentToAddTradeFor(row.original);
+                    }}
+                >
+                    Add trade
+                </Button>
+            </div>
+        ),
     },
 ];
