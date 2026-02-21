@@ -54,3 +54,5 @@ export const addInvestmentSchema = zod.object({
         zod.number().min(0, { error: "Total should be greater than 0" }),
     ),
 });
+
+export type AddInvestmentSchema = zod.input<typeof addInvestmentSchema>;

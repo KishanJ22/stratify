@@ -12,7 +12,10 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
-import { addInvestmentSchema } from "./add-investment-schema";
+import {
+    AddInvestmentSchema,
+    addInvestmentSchema,
+} from "./add-investment-schema";
 import { Field, FieldLabel } from "@/app/components/ui/field";
 import { useDebouncedValue } from "@tanstack/react-pacer";
 import {
@@ -28,9 +31,15 @@ import { Skeleton } from "@/app/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import AssetNameCard from "./AssetNameCard";
 import { useSessionContext } from "../../SessionProvider";
-import z from "zod";
 import { useHistoricAssetPrice } from "./useHistoricAssetPrice";
 import { useHistoricCurrencyPairPrice } from "./useHistoricConversionRate";
+import {
+    AddTradeErrorResponse,
+    AddTradeRequestSchema,
+    useAddTrade,
+} from "./useAddTrade";
+import { HTTPError } from "ky";
+import { toast } from "sonner";
 
 interface AddInvestmentModalProps {
     portfolioId: number;
@@ -38,7 +47,7 @@ interface AddInvestmentModalProps {
     handleClose: () => void;
 }
 
-const defaultValues: z.input<typeof addInvestmentSchema> = {
+const defaultValues: AddInvestmentSchema = {
     assetName: "",
     quantity: "",
     tradeDate: "",
@@ -84,6 +93,9 @@ const AddInvestmentModal = ({
         resetSearch,
     } = useAssetSearch(debouncedSearchValue);
 
+    const { mutate: addTrade, isPending: isAddingTrade } =
+        useAddTrade(portfolioId);
+
     useEffect(() => {
         if (debouncedSearchValue.length > 0) {
             search();
@@ -116,6 +128,62 @@ const AddInvestmentModal = ({
                     ? setIsSubmitDisabled(false)
                     : setIsSubmitDisabled(true);
             },
+        },
+        onSubmit: async ({ value }) => {
+            if (!selectedAsset) return;
+
+            const requestBody = {
+                assetId: selectedAsset.id,
+                quantity: parseFloat(value.quantity),
+                pricePerShare: parseFloat(value.pricePerShare),
+                currencyConversionRate: parseFloat(
+                    value.currencyConversionRate,
+                ),
+                fee: parseFloat(value.fee || "0"),
+                tradeAction: "BUY",
+                totalAmount: value.total,
+                assetCurrencyTotalAmount: value.assetCurrencyTotal || 0,
+                tradeDate: value.tradeDate,
+            } satisfies AddTradeRequestSchema;
+
+            addTrade(requestBody, {
+                onSuccess: () => {
+                    //? Invalidate the query for getting the investments in the portfolio so that the now updated list can be fetched
+                    queryClient.invalidateQueries({
+                        queryKey: ["investments-list", portfolioId],
+                    });
+
+                    toast.success(
+                        "Investment added to your portfolio successfully.",
+                    );
+
+                    handleClose();
+                    form.reset();
+                },
+                onError: async (error) => {
+                    const httpError = error as HTTPError;
+
+                    if (httpError.response) {
+                        const errorJson: AddTradeErrorResponse =
+                            await httpError.response.json();
+
+                        const errorMessage = errorJson?.message;
+
+                        if (errorMessage === "portfolioNotFound") {
+                            toast.error(
+                                "Your portfolio could not be found. Please refresh the page and try again.",
+                            );
+                            setIsSubmitDisabled(true);
+                        }
+                    }
+                },
+            });
+        },
+        onSubmitInvalid: () => {
+            toast.error(
+                "Investment could not be added to your portfolio. Please check the form for errors.",
+            );
+            setIsSubmitDisabled(true);
         },
     });
 
@@ -314,8 +382,9 @@ const AddInvestmentModal = ({
                                                     </div>
                                                 )}
                                                 {isNoResultsFound &&
+                                                    !searchResults &&
                                                     searchStatus ===
-                                                        "error" && (
+                                                        "success" && (
                                                         <div className="p-2 text-center text-base font-sans text-secondary-dark">
                                                             No assets found.
                                                         </div>
@@ -502,7 +571,9 @@ const AddInvestmentModal = ({
                                         !form.state.canSubmit ||
                                         isSubmitDisabled
                                     }
-                                    isLoading={form.state.isSubmitting}
+                                    isLoading={
+                                        isAddingTrade || form.state.isSubmitting
+                                    }
                                 />
                             </form.Subscribe>
                         </div>
