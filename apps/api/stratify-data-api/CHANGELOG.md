@@ -1,5 +1,11 @@
 # stratify-data-api
 
+## 0.3.12
+
+### Patch Changes
+
+- eaaee1a: Modify asset price ingestor to set the type of each asset based on the filepath
+
 ## 0.3.11
 
 ### Patch Changes

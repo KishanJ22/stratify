@@ -1,6 +1,6 @@
 {
     "name": "@stratify/stratify-api",
-    "version": "0.2.23",
+    "version": "0.3.0",
     "description": "",
     "type": "module",
     "main": "dist/app.js",
