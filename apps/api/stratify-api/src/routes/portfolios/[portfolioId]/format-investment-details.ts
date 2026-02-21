@@ -1,5 +1,5 @@
 import { AssetType } from "../../../schemas/common-schemas.js";
-import { currencyConversionRateQuery } from "../../../utils/currency-conversion-rate-query.js";
+import { latestCurrencyConversionRateQuery } from "../../../utils/latestCurrencyRateQuery.js";
 import {
     AssetDetails,
     GroupedInvestment,
@@ -24,10 +24,9 @@ export const formatInvestmentDetails = async (
 
     //? If the asset currency is different to the user's currency, then the current value and investment return need to be converted
     if (isCurrencyConversionRequired && assetCurrency && userCurrency) {
-        const { price } = await currencyConversionRateQuery(
+        const { price } = await latestCurrencyConversionRateQuery(
             assetCurrency,
             userCurrency,
-            new Date(),
         ).executeTakeFirstOrThrow();
 
         conversionRate = parseFloat(price);
