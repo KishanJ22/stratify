@@ -3,7 +3,7 @@ import InvestmentsTable, { Investment } from "./InvestmentsTable";
 import { renderWithContext } from "@/app/tests/utils";
 import { screen } from "@testing-library/react";
 import { TooltipProvider } from "@/app/components/ui/tooltip";
-import userEvent from "@testing-library/user-event";
+import MockSessionProvider from "@/app/tests/_mocks/MockSessionProvider";
 
 const mockInvestmentsData = [
     {
@@ -26,8 +26,6 @@ vi.mock("./useInvestmentsList", () => ({
     useInvestmentsList: () => mockUseInvestmentsList(),
 }));
 
-const user = userEvent.setup();
-
 describe("InvestmentsTable", () => {
     beforeEach(() => {
         vi.clearAllMocks();
@@ -37,7 +35,9 @@ describe("InvestmentsTable", () => {
         renderWithContext({
             children: (
                 <TooltipProvider>
-                    <InvestmentsTable portfolioId={1} />
+                    <MockSessionProvider>
+                        <InvestmentsTable portfolioId={1} />
+                    </MockSessionProvider>
                 </TooltipProvider>
             ),
         });
@@ -55,8 +55,8 @@ describe("InvestmentsTable", () => {
             "Asset Name",
             "Shares",
             "Asset Type",
-            "Current Value",
-            "Return",
+            "Current Value (GBP)",
+            "Return (GBP)",
         ];
 
         tableHeaders.forEach((header) => {
@@ -102,8 +102,8 @@ describe("InvestmentsTable", () => {
             "Asset Name",
             "Shares",
             "Asset Type",
-            "Current Value",
-            "Return",
+            "Current Value (GBP)",
+            "Return (GBP)",
         ];
 
         tableHeaders.forEach((header) => {
