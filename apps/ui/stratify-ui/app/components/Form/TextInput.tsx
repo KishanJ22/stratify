@@ -12,6 +12,8 @@ interface FormInputProps {
     className?: string;
     inputClassName?: string;
     dataTestId?: string;
+    disabled?: boolean;
+    defaultValue?: string;
 }
 
 const TextInput = ({
@@ -23,6 +25,8 @@ const TextInput = ({
     className,
     inputClassName = "bg-white",
     dataTestId,
+    disabled = false,
+    defaultValue,
 }: FormInputProps) => {
     const field = useFieldContext<string>();
 
@@ -36,9 +40,10 @@ const TextInput = ({
                 type={type}
                 id={id}
                 placeholder={placeholder}
-                value={field.state.value}
+                value={defaultValue ? defaultValue : field.state.value}
                 onChange={(e) => field.handleChange(e.target.value)}
                 onBlur={field.handleBlur}
+                disabled={disabled}
                 className={
                     error
                         ? "bg-white border-negative-base focus-visible:border-negative-base focus-visible:ring-negative-base"
