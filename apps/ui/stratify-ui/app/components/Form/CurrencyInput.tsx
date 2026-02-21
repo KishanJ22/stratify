@@ -17,6 +17,7 @@ interface CurrencyInputProps {
     className?: string;
     inputClassName?: string;
     isLoading?: boolean;
+    dataTestId?: string;
 }
 
 const CurrencyInput = ({
@@ -28,11 +29,15 @@ const CurrencyInput = ({
     className,
     inputClassName,
     isLoading,
+    dataTestId,
 }: CurrencyInputProps) => {
     const field = useFieldContext<string>();
 
     return (
-        <Field className={`flex flex-col gap-y-1.5 ${className}`}>
+        <Field
+            className={`flex flex-col gap-y-1.5 ${className}`}
+            data-testid={dataTestId}
+        >
             <FieldLabel htmlFor={id}>{label}</FieldLabel>
             <InputGroup>
                 {isLoading ? (

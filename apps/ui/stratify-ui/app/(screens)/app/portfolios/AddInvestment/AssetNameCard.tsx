@@ -3,7 +3,7 @@
 import AssetBadge, { assetTypeMap } from "@/app/components/(app)/AssetBadge";
 import { SearchAsset } from "../../markets/AssetSearch/useAssetSearch";
 
-interface AssetNameCardProps {
+export interface AssetNameCardProps {
     asset: SearchAsset;
     onSelect: () => void;
 }

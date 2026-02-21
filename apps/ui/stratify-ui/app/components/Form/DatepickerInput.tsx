@@ -19,6 +19,7 @@ interface DatePickerInputProps {
     placeholder?: string;
     error?: string;
     className?: string;
+    dataTestId?: string;
 }
 
 function DatePickerInput({
@@ -27,12 +28,16 @@ function DatePickerInput({
     placeholder = "Select a date",
     error,
     className,
+    dataTestId,
 }: DatePickerInputProps) {
     const field = useFieldContext<string | undefined>();
     const [isDatepickerOpen, setIsDatepickerOpen] = useState(false);
 
     return (
-        <Field className={`flex flex-col gap-y-1.5 ${className}`}>
+        <Field
+            className={`flex flex-col gap-y-1.5 ${className}`}
+            data-testid={dataTestId}
+        >
             <FieldLabel htmlFor={id}>{label}</FieldLabel>
             <Popover open={isDatepickerOpen} onOpenChange={setIsDatepickerOpen}>
                 <PopoverTrigger asChild>

@@ -31,17 +31,17 @@ import { Skeleton } from "@/app/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import AssetNameCard from "./AssetNameCard";
 import { useSessionContext } from "../../SessionProvider";
-import { useHistoricAssetPrice } from "./useHistoricAssetPrice";
-import { useHistoricCurrencyPairPrice } from "./useHistoricConversionRate";
+import { useHistoricAssetPrice } from "../hooks/useHistoricAssetPrice";
+import { useHistoricCurrencyPairPrice } from "../hooks/useHistoricConversionRate";
 import {
     AddTradeErrorResponse,
     AddTradeRequestSchema,
     useAddTrade,
-} from "./useAddTrade";
+} from "../hooks/useAddTrade";
 import { HTTPError } from "ky";
 import { toast } from "sonner";
 
-interface AddInvestmentModalProps {
+export interface AddInvestmentModalProps {
     portfolioId: number;
     isOpen: boolean;
     handleClose: () => void;
@@ -259,7 +259,10 @@ const AddInvestmentModal = ({
             <DialogContent className="bg-muted-lightest border border-primary-dark font-sans">
                 <DialogHeader>
                     <div className="flex flex-row items-center justify-between">
-                        <DialogTitle className="font-medium text-lg leading-7 text-secondary-darker">
+                        <DialogTitle
+                            className="font-medium text-lg leading-7 text-secondary-darker"
+                            data-testid="modal-title"
+                        >
                             Add Investment
                         </DialogTitle>
                         <X
@@ -272,7 +275,10 @@ const AddInvestmentModal = ({
                             data-testid="close-modal-icon"
                         />
                     </div>
-                    <DialogDescription className="text-secondary-darker leading-5">
+                    <DialogDescription
+                        className="text-secondary-darker leading-5"
+                        data-testid="modal-description"
+                    >
                         Add a new investment to monitor its performance and see
                         how it impacts your portfolio alongside other
                         investments.
@@ -288,7 +294,10 @@ const AddInvestmentModal = ({
                     <form.AppField name="assetName">
                         {(field) => {
                             return (
-                                <Field className="flex flex-col gap-y-1.5">
+                                <Field
+                                    className="flex flex-col gap-y-1.5"
+                                    data-testid="asset-name-field"
+                                >
                                     <FieldLabel htmlFor="assetName">
                                         <span className="flex flex-row w-full items-center justify-between">
                                             Asset Name
@@ -420,6 +429,7 @@ const AddInvestmentModal = ({
                             return (
                                 <DatePickerInput
                                     id="tradeDate"
+                                    dataTestId="trade-date-field"
                                     label="Trade Date"
                                     placeholder="Select trade date"
                                     className="w-full"
@@ -437,6 +447,7 @@ const AddInvestmentModal = ({
                             return (
                                 <CurrencyInput
                                     id="pricePerShare"
+                                    dataTestId="price-per-share-field"
                                     label="Price per Share"
                                     isLoading={isFetchingHistoricPrice}
                                     currencyCode={
@@ -458,6 +469,7 @@ const AddInvestmentModal = ({
                             return (
                                 <TextInput
                                     id="quantity"
+                                    dataTestId="quantity-field"
                                     label="Number of Shares"
                                     placeholder="Enter number of shares"
                                     inputClassName="bg-white text-secondary-dark"
@@ -497,6 +509,7 @@ const AddInvestmentModal = ({
                             return (
                                 <CurrencyInput
                                     id="fee"
+                                    dataTestId="fee-field"
                                     label="Fee"
                                     currencyCode={userCurrency}
                                     placeholder="Enter fee amount (optional)"

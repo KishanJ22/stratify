@@ -41,11 +41,14 @@ export const addInvestmentSchema = zod.object({
         },
     ),
     fee: zod.optional(
-        zod.string().refine((value) => {
-            const numberValue = parseFloat(value);
+        zod.string().refine(
+            (value) => {
+                const numberValue = parseFloat(value);
 
-            return !isNaN(numberValue) && numberValue >= 0;
-        }),
+                return !isNaN(numberValue) && numberValue >= 0;
+            },
+            { error: "Fee should be a number greater than or equal to 0" },
+        ),
     ),
     total: zod
         .number({ error: "Total should be a number" })

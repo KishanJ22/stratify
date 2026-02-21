@@ -14,7 +14,7 @@ export type AddTradeRequestSchema =
 export const useAddTrade = (portfolioId: number) => {
     const client = useKyClient();
 
-    const { isPending, mutate } = useMutation({
+    const { isPending, mutate, isSuccess } = useMutation({
         mutationFn: async (value: AddTradeRequestSchema) =>
             client.POST("/portfolios/{portfolioId}/add-trade", {
                 params: {
@@ -39,5 +39,6 @@ export const useAddTrade = (portfolioId: number) => {
     return {
         mutate,
         isPending,
+        isSuccess,
     };
 };

@@ -11,6 +11,7 @@ interface FormInputProps {
     error?: string;
     className?: string;
     inputClassName?: string;
+    dataTestId?: string;
 }
 
 const TextInput = ({
@@ -21,11 +22,15 @@ const TextInput = ({
     error,
     className,
     inputClassName = "bg-white",
+    dataTestId,
 }: FormInputProps) => {
     const field = useFieldContext<string>();
 
     return (
-        <Field className={`flex flex-col gap-y-1.5 ${className}`}>
+        <Field
+            className={`flex flex-col gap-y-1.5 ${className}`}
+            data-testid={dataTestId}
+        >
             <FieldLabel htmlFor={id}>{label}</FieldLabel>
             <Input
                 type={type}

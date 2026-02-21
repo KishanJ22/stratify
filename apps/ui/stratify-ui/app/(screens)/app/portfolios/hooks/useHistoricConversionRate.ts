@@ -3,15 +3,18 @@
 import { useKyClient } from "@/lib/api/ky-client";
 import { useMutation } from "@tanstack/react-query";
 
-export const useHistoricAssetPrice = () => {
+export const useHistoricCurrencyPairPrice = () => {
     const client = useKyClient();
 
-    const { data, mutate, isPending } = useMutation({
-        mutationFn: async (value: { assetId: number; tradeDate: string }) =>
+    const { data, mutate, isPending, isSuccess } = useMutation({
+        mutationFn: async (value: {
+            currencyPair: string;
+            tradeDate: string;
+        }) =>
             client
-                .GET("/assets/{assetId}/historic-price", {
+                .GET("/currencies/{currencyPair}/historic-price", {
                     params: {
-                        path: { assetId: value.assetId },
+                        path: { currencyPair: value.currencyPair },
                         query: { tradeDate: value.tradeDate },
                     },
                 })
@@ -21,6 +24,7 @@ export const useHistoricAssetPrice = () => {
     return {
         data,
         isPending,
+        isSuccess,
         mutate,
     };
 };
