@@ -4,6 +4,7 @@ import { useAutoRefetch } from "@/app/utils/auto-refetch";
 import { DataTable } from "@/app/components/ui/data-table";
 import { columns } from "./investmentsTableColumns";
 import { AssetType } from "../../markets/MarketDataTable/MarketDataTable";
+import { useSessionContext } from "../../SessionProvider";
 
 export type Investment =
     paths["/portfolios/{portfolioId}/investments"]["get"]["responses"]["200"]["content"]["application/json"]["data"][number];
@@ -32,6 +33,7 @@ const NoInvestmentsComponent = () => (
 );
 
 const InvestmentsTable = ({ portfolioId }: InvestmentsTableProps) => {
+    const { session } = useSessionContext();
     const { data, isLoading, refetch } = useInvestmentsList(portfolioId);
 
     const intervalMs = 60 * 1000; // 1 minute
@@ -43,7 +45,7 @@ const InvestmentsTable = ({ portfolioId }: InvestmentsTableProps) => {
     return (
         <div className="mt-2">
             <DataTable
-                columns={columns}
+                columns={columns(session?.userDetails.currency as string)}
                 data={isPortfolioSelected ? data : noPortfolioSelectedData}
                 isLoading={isLoading}
                 noResultsComponent={

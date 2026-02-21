@@ -9,7 +9,7 @@ import {
 } from "@/app/components/ui/tooltip";
 import { InfoIcon } from "lucide-react";
 
-export const columns: ColumnDef<Investment>[] = [
+export const columns = (userCurrency: string): ColumnDef<Investment>[] => [
     {
         accessorKey: "name",
         header: "Asset Name",
@@ -63,7 +63,7 @@ export const columns: ColumnDef<Investment>[] = [
     },
     {
         accessorKey: "currentValue",
-        header: "Current Value",
+        header: `Current Value (${userCurrency})`,
         meta: {
             align: "right",
             type: "currency",
@@ -98,7 +98,7 @@ export const columns: ColumnDef<Investment>[] = [
     },
     {
         accessorKey: "currentReturn",
-        header: "Return",
+        header: `Return (${userCurrency})`,
         meta: {
             align: "right",
             headerClassName: "w-[150px]",
