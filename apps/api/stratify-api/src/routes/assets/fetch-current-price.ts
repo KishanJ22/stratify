@@ -7,7 +7,7 @@ export const fetchCurrentPrice = async (
     isCryptocurrency?: boolean,
 ) => {
     // Append .L for London Stock Exchange assets (UK assets)
-    const symbol = assetCountryId === 223 ? `${assetSymbol}-L` : assetSymbol;
+    const symbol = assetCountryId === 223 ? `${assetSymbol}.L` : assetSymbol;
 
     try {
         const response = await dataApiClient()
