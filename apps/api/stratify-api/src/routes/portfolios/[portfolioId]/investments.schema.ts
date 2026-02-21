@@ -8,6 +8,7 @@ export const portfolioIdParamSchema = Type.Object({
 export type PortfolioIdParam = Static<typeof portfolioIdParamSchema>;
 
 export const investmentSchema = Type.Object({
+    assetId: Type.Number(),
     symbol: Type.String(),
     assetCountryId: Type.Number(),
     name: Type.String(),

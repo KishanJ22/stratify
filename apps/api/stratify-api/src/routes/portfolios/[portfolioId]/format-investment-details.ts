@@ -40,6 +40,7 @@ export const formatInvestmentDetails = async (
             : 0;
 
     return {
+        assetId: assetDetails.assetId,
         symbol,
         assetCountryId,
         name,

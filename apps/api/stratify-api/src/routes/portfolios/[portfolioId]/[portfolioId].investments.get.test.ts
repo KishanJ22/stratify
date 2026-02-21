@@ -155,6 +155,7 @@ describe("GET /portfolios/:portfolioId/investments", () => {
         expect(json).toEqual({
             data: [
                 {
+                    assetId: 2,
                     symbol: "LEON",
                     assetCountryId: 224,
                     assetCurrency: "USD",
@@ -167,6 +168,7 @@ describe("GET /portfolios/:portfolioId/investments", () => {
                     currentReturnPercentage: 204,
                 },
                 {
+                    assetId: 1,
                     symbol: "AAPL",
                     assetCountryId: 224,
                     assetCurrency: "USD",
@@ -267,6 +269,7 @@ describe("GET /portfolios/:portfolioId/investments", () => {
         expect(json).toEqual({
             data: [
                 {
+                    assetId: 1,
                     symbol: "BRIT",
                     assetCountryId: 223,
                     assetCurrency: "GBP",
@@ -279,6 +282,7 @@ describe("GET /portfolios/:portfolioId/investments", () => {
                     currentReturnPercentage: 1.33,
                 },
                 {
+                    assetId: 2,
                     symbol: "CHEESE",
                     assetCountryId: 223,
                     assetCurrency: "GBP",
@@ -370,6 +374,7 @@ describe("GET /portfolios/:portfolioId/investments", () => {
         expect(json).toEqual({
             data: [
                 {
+                    assetId: 1,
                     symbol: "BRIT",
                     assetCountryId: 223,
                     assetCurrency: "GBP",
