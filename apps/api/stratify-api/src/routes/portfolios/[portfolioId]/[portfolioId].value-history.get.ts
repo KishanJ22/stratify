@@ -11,6 +11,7 @@ import { Static, Type } from "@sinclair/typebox";
 import { createNotFound } from "../../../utils/createNotFoundSchema.js";
 import { fetchCurrentPrice } from "../../assets/fetch-current-price.js";
 import db from "../../../database/db.js";
+import { AssetType } from "../../../schemas/common-schemas.js";
 
 const valueHistorySchema = Type.Object({
     portfolioValue: Type.Number(),
@@ -66,6 +67,14 @@ const bulkHistoricCurrencyConversionQuery = (
             "assetPrices.closePrice as price",
         ]);
 
+interface UniqueAsset {
+    assetId: number;
+    assetSymbol: string;
+    assetCountryId: number;
+    assetType: AssetType;
+    assetCurrency: string | null;
+}
+
 const calculatePortfolioValueHistory = async (portfolioId: number) => {
     const { userId, userCurrency } = getFromStore("user") as UserDetails;
 
@@ -77,29 +86,37 @@ const calculatePortfolioValueHistory = async (portfolioId: number) => {
         userId,
     ).execute();
 
-    const uniqueAssets = [
-        ...new Set(
-            trades.map((trade) => {
-                return {
-                    assetId: trade.assetId,
-                    assetSymbol: trade.assetSymbol,
-                    assetCountryId: trade.assetCountryId,
-                    assetType: trade.assetType,
-                };
-            }),
-        ),
-    ];
+    const uniqueAssetsMap = new Map<number, UniqueAsset>();
 
-    const uniqueAssetIds = uniqueAssets.map((asset) => asset.assetId);
-    const currencyConversionsRequired = new Set<string>();
-
-    trades.forEach((trade) => {
-        if (trade.assetCurrency && trade.assetCurrency !== userCurrency) {
-            currencyConversionsRequired.add(
-                `${trade.assetCurrency}${userCurrency}`,
-            );
+    trades.map((trade) => {
+        if (!uniqueAssetsMap.has(trade.assetId)) {
+            uniqueAssetsMap.set(trade.assetId, {
+                assetId: trade.assetId,
+                assetSymbol: trade.assetSymbol,
+                assetCountryId: trade.assetCountryId,
+                assetType: trade.assetType as AssetType,
+                assetCurrency: trade.assetCurrency,
+            });
         }
     });
+
+    const uniqueAssets = Array.from(uniqueAssetsMap.values());
+
+    const uniqueAssetIds = uniqueAssets.map((asset) => asset.assetId);
+
+    const currencyConversionsRequired = new Set<string>();
+
+    uniqueAssets.forEach((asset) => {
+        const key = `${asset.assetCurrency}${userCurrency}`;
+
+        if (asset?.assetCurrency && asset.assetCurrency !== userCurrency) {
+            if (!currencyConversionsRequired.has(key)) {
+                currencyConversionsRequired.add(key);
+            }
+        }
+    });
+
+    const currencyPairs = Array.from(currencyConversionsRequired);
 
     const oldestTradeDate = trades.reduce((oldest, trade) => {
         return trade.tradeDate < oldest ? trade.tradeDate : oldest;
@@ -113,11 +130,13 @@ const calculatePortfolioValueHistory = async (portfolioId: number) => {
     ).execute();
 
     const historicCurrencyConversions =
-        await bulkHistoricCurrencyConversionQuery(
-            Array.from(currencyConversionsRequired),
-            oldestTradeDate,
-            today,
-        ).execute();
+        currencyPairs.length > 0
+            ? await bulkHistoricCurrencyConversionQuery(
+                  currencyPairs,
+                  oldestTradeDate,
+                  today,
+              ).execute()
+            : [];
 
     //? Add the historic asset prices and currency conversion rates to a map so that the prices can be accessed by asset ID and price date
     //? This allows for a much quicker lookup as it avoids having to query the database for each day and each trade in the portfolio
@@ -141,14 +160,14 @@ const calculatePortfolioValueHistory = async (portfolioId: number) => {
     const currentPricesMap = new Map<number, number>();
 
     await Promise.all(
-        trades.map(async (trade) => {
+        uniqueAssets.map(async (asset) => {
             const currentPrice = await fetchCurrentPrice(
-                trade.assetSymbol,
-                trade.assetCountryId,
-                trade.assetType === "CRYPTOCURRENCY",
+                asset.assetSymbol,
+                asset.assetCountryId,
+                asset.assetType === "CRYPTOCURRENCY",
             ).then((price) => price?.currentPrice || 0);
 
-            currentPricesMap.set(trade.assetId, currentPrice);
+            currentPricesMap.set(asset.assetId, currentPrice ?? 0);
         }),
     );
 
@@ -160,6 +179,19 @@ const calculatePortfolioValueHistory = async (portfolioId: number) => {
         date.setDate(date.getDate() + 1)
     ) {
         const formattedDate = date.toISOString().split("T")[0];
+
+        //? If the current date is a weekend, then the conversion rate and/or asset price from Friday should be used as markets are closed on weekends (except for cryptocurrencies)
+        const isWeekend =
+            new Date(date).getDay() === 0 || new Date(date).getDay() === 6;
+
+        const fridayDate = new Date(
+            new Date(date).setDate(
+                date.getDate() - (date.getDay() === 0 ? 2 : 1),
+            ),
+        );
+
+        const formattedFridayDate = fridayDate.toISOString().split("T")[0];
+
         let totalValue = 0;
 
         //? Map storing a running quantity for each asset by asset ID up to the current date
@@ -197,36 +229,31 @@ const calculatePortfolioValueHistory = async (portfolioId: number) => {
                     ? currentPricesMap.get(assetId)
                     : assetPriceMap.get(`${assetId}-${formattedDate}`)) || 0;
 
+            const fridayPricePerShare =
+                assetPriceMap.get(`${assetId}-${formattedFridayDate}`) || 0;
+
             const trade = trades.find((trade) => trade.assetId === assetId);
             const currencyPair = `${trade?.assetCurrency}${userCurrency}`;
 
             //? If the asset currency is different from the user's currency, then convert the price per share to the user's currency
             if (currencyConversionsRequired.has(currencyPair)) {
-                //? If the current date is a weekend, then the conversion rate from Friday should be used as there are no conversion rates available for the weekend
-                const isWeekend =
-                    new Date(formattedDate).getDay() === 0 ||
-                    new Date(formattedDate).getDay() === 6;
-
-                //? If it's a weekend, then set the conversion date to the previous Friday otherwise use the current date for the conversion rate
                 const conversionDate = isWeekend
-                    ? new Date(
-                          new Date(formattedDate).setDate(
-                              new Date(formattedDate).getDate() -
-                                  (new Date(formattedDate).getDay() === 6
-                                      ? 1
-                                      : 2),
-                          ),
-                      )
-                    : new Date(formattedDate);
+                    ? formattedFridayDate
+                    : formattedDate;
 
-                const key = `${currencyPair}-${conversionDate.toISOString().split("T")[0]}`;
-                const conversionRate = currencyConversionMap.get(key) || 0;
+                const key = `${currencyPair}-${conversionDate}`;
+                const conversionRate = currencyConversionMap.get(key) || 1;
 
-                if (conversionRate) {
+                if (isWeekend && trade?.assetType !== "CRYPTOCURRENCY") {
+                    totalValue +=
+                        quantity * fridayPricePerShare * conversionRate;
+                } else {
                     totalValue += quantity * pricePerShare * conversionRate;
                 }
             } else {
-                totalValue += quantity * pricePerShare;
+                isWeekend
+                    ? (totalValue += quantity * fridayPricePerShare)
+                    : (totalValue += quantity * pricePerShare);
             }
         }
 
