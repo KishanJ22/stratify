@@ -12,6 +12,7 @@ import { createNotFound } from "../../../utils/createNotFoundSchema.js";
 import { fetchCurrentPrice } from "../../assets/fetch-current-price.js";
 import db from "../../../database/db.js";
 import { AssetType } from "../../../schemas/common-schemas.js";
+import { getCurrencyConversionRate } from "../../../utils/getCurrencyConversionRate.js";
 
 const valueHistorySchema = Type.Object({
     portfolioValue: Type.Number(),
@@ -232,28 +233,39 @@ const calculatePortfolioValueHistory = async (portfolioId: number) => {
             const fridayPricePerShare =
                 assetPriceMap.get(`${assetId}-${formattedFridayDate}`) || 0;
 
+            const investmentAmount = isWeekend
+                ? quantity * fridayPricePerShare
+                : quantity * pricePerShare;
+
             const trade = trades.find((trade) => trade.assetId === assetId);
             const currencyPair = `${trade?.assetCurrency}${userCurrency}`;
 
             //? If the asset currency is different from the user's currency, then convert the price per share to the user's currency
             if (currencyConversionsRequired.has(currencyPair)) {
-                const conversionDate = isWeekend
-                    ? formattedFridayDate
-                    : formattedDate;
+                const key = `${currencyPair}-${formattedDate}`;
 
-                const key = `${currencyPair}-${conversionDate}`;
-                const conversionRate = currencyConversionMap.get(key) || 1;
+                const conversionRate = isWeekend
+                    ? currencyConversionMap.get(
+                          `${currencyPair}-${formattedFridayDate}`,
+                      )
+                    : currencyConversionMap.get(key);
 
-                if (isWeekend && trade?.assetType !== "CRYPTOCURRENCY") {
-                    totalValue +=
-                        quantity * fridayPricePerShare * conversionRate;
+                if (conversionRate) {
+                    const convertedInvestmentAmount =
+                        investmentAmount * conversionRate;
+                    totalValue += convertedInvestmentAmount;
                 } else {
-                    totalValue += quantity * pricePerShare * conversionRate;
+                    const currentConversionRate =
+                        await getCurrencyConversionRate(
+                            trade?.assetCurrency || "",
+                            userCurrency,
+                            investmentAmount,
+                        );
+
+                    totalValue += currentConversionRate;
                 }
             } else {
-                isWeekend
-                    ? (totalValue += quantity * fridayPricePerShare)
-                    : (totalValue += quantity * pricePerShare);
+                totalValue += investmentAmount;
             }
         }
 
