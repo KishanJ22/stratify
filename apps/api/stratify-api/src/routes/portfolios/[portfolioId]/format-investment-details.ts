@@ -1,19 +1,22 @@
 import { AssetType } from "../../../schemas/common-schemas.js";
 import { latestCurrencyConversionRateQuery } from "../../../utils/latestCurrencyRateQuery.js";
-import {
-    AssetDetails,
-    GroupedInvestment,
-} from "./[portfolioId].investments.get.js";
-import { Investment } from "./investments.schema.js";
+import type { GroupedInvestment } from "./[portfolioId].investments.get.js";
+import type { Investment } from "./investments.schema.js";
 
 export const formatInvestmentDetails = async (
     investment: GroupedInvestment,
-    assetDetails: AssetDetails,
     currentInvestmentValue: number,
     userCurrency: string | null,
 ) => {
-    const { name, type, assetCurrency } = assetDetails;
-    const { symbol, assetCountryId, shares, totalPurchaseValue } = investment;
+    const {
+        symbol,
+        name,
+        type,
+        assetCurrency,
+        countryId,
+        shares,
+        totalPurchaseValue,
+    } = investment;
 
     const currentReturn = currentInvestmentValue - totalPurchaseValue;
 
@@ -40,9 +43,9 @@ export const formatInvestmentDetails = async (
             : 0;
 
     return {
-        assetId: assetDetails.assetId,
+        assetId: investment.id,
         symbol,
-        assetCountryId,
+        assetCountryId: countryId,
         name,
         type: type as AssetType,
         assetCurrency,

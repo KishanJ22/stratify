@@ -3,7 +3,6 @@ import logger from "../../../logger.js";
 import { getFromStore } from "../../../plugins/localStorage.js";
 import { UserDetails } from "../../../utils/decodeToken.js";
 import {
-    Investment,
     InvestmentsNotFound,
     investmentsNotFoundSchema,
     InvestmentsResponse,
@@ -12,11 +11,14 @@ import {
     portfolioIdParamSchema,
 } from "./investments.schema.js";
 import db from "../../../database/db.js";
-import { InferResult } from "kysely";
 import { fetchCurrentPrice } from "../../assets/fetch-current-price.js";
 import { formatInvestmentDetails } from "./format-investment-details.js";
+import type { AssetType } from "../../../schemas/common-schemas.js";
 
-const portfolioInvestmentsQuery = (portfolioId: number, userId: string) =>
+export const portfolioInvestmentsQuery = (
+    portfolioId: number,
+    userId: string,
+) =>
     db
         .selectFrom("stratify.trades as trades")
         .innerJoin(
@@ -36,40 +38,29 @@ const portfolioInvestmentsQuery = (portfolioId: number, userId: string) =>
             "trades.totalAmount as totalAmount",
             "trades.assetCurrencyTotalAmount as assetCurrencyTotalAmount",
             "assets.id as assetId",
-            "assets.symbol as symbol",
+            "assets.symbol as assetSymbol",
+            "assets.name as assetName",
+            "assets.type as assetType",
             "assets.countryId as assetCountryId",
+            "assets.currency as assetCurrency",
         ])
         //? Order by trade date from oldest to newest
         .orderBy("trades.tradeDate", "asc");
 
-const assetDetailsQuery = (assetId: number) =>
-    db
-        .selectFrom("stratify.assets as assets")
-        .where("assets.id", "=", assetId)
-        .select([
-            "assets.id as assetId",
-            "assets.name as name",
-            "assets.type as type",
-            "assets.currency as assetCurrency",
-        ]);
-
-export type AssetDetails = InferResult<
-    ReturnType<typeof assetDetailsQuery>
->[number];
-
 export interface GroupedInvestment {
     id: number;
     symbol: string;
-    assetCountryId: number;
+    name: string;
+    assetCurrency: string | null;
+    countryId: number;
+    type: AssetType;
     shares: number;
     totalPurchaseValue: number;
 }
 
-const retrieveInvestments = async (
-    portfolioId: number,
-    userId: string,
-    userCurrency: string,
-) => {
+const retrieveInvestments = async (portfolioId: number) => {
+    const { userId, userCurrency } = getFromStore("user") as UserDetails;
+
     const trades = await portfolioInvestmentsQuery(
         portfolioId,
         userId,
@@ -111,8 +102,11 @@ const retrieveInvestments = async (
             acc.set(key, {
                 id: key,
                 shares: currentHoldingQuantity,
-                symbol: trade.symbol,
-                assetCountryId: trade.assetCountryId,
+                name: trade.assetName,
+                type: trade.assetType as AssetType,
+                assetCurrency: trade.assetCurrency,
+                symbol: trade.assetSymbol,
+                countryId: trade.assetCountryId,
                 totalPurchaseValue,
             });
         }
@@ -124,17 +118,14 @@ const retrieveInvestments = async (
 
     const formattedInvestments = await Promise.all(
         groupedInvestments.map(async (investment) => {
-            const { id, symbol, assetCountryId } = investment;
-
-            const assetDetails =
-                await assetDetailsQuery(id).executeTakeFirstOrThrow();
+            const { symbol, countryId, type } = investment;
 
             //? Get the current value of the asset and multiply it by the number of shares held to get the overall investment value
             //? The current price of the asset is in the asset's currency so it needs to be converted to the user's currency if they are different
             const currentInvestmentValue = await fetchCurrentPrice(
                 symbol,
-                assetCountryId,
-                assetDetails.type === "CRYPTOCURRENCY",
+                countryId,
+                type === "CRYPTOCURRENCY",
             ).then((priceDetails) => {
                 const price = priceDetails?.currentPrice ?? 0;
                 return price * investment.shares;
@@ -143,7 +134,6 @@ const retrieveInvestments = async (
             //? Format the details of the investment, convert the monetary amounts by currency if needed and return it
             return await formatInvestmentDetails(
                 investment,
-                assetDetails,
                 currentInvestmentValue,
                 userCurrency,
             );
@@ -174,15 +164,7 @@ export default async function portfolioInvestmentsGet(
             try {
                 const { portfolioId } = request.params;
 
-                const { userId, currency } = getFromStore(
-                    "user",
-                ) as UserDetails;
-
-                const investments = await retrieveInvestments(
-                    portfolioId,
-                    userId,
-                    currency,
-                );
+                const investments = await retrieveInvestments(portfolioId);
 
                 if (investments.length === 0) {
                     return reply.status(404).send({
