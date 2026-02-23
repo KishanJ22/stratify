@@ -153,6 +153,10 @@ const AddInvestmentModal = ({
                         queryKey: ["investments-list", portfolioId],
                     });
 
+                    queryClient.invalidateQueries({
+                        queryKey: ["portfolio-value-history", portfolioId],
+                    });
+
                     toast.success(
                         "Investment added to your portfolio successfully.",
                     );
