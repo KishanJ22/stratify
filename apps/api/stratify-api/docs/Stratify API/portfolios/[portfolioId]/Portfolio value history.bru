@@ -1,11 +1,11 @@
 meta {
-  name: Investments List
+  name: Portfolio value history
   type: http
-  seq: 3
+  seq: 2
 }
 
 get {
-  url: {{baseUrl}}/portfolios/:portfolioId/investments
+  url: {{baseUrl}}/portfolios/:portfolioId/value-history
   body: none
   auth: inherit
 }

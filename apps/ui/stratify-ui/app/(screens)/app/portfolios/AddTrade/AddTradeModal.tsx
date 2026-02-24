@@ -129,6 +129,10 @@ const AddTradeModal = ({
                         queryKey: ["investments-list", portfolioId],
                     });
 
+                    queryClient.invalidateQueries({
+                        queryKey: ["portfolio-value-history", portfolioId],
+                    });
+
                     toast.success(
                         "Trade added to your portfolio successfully.",
                     );

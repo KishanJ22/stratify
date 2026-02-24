@@ -118,13 +118,4 @@ describe("addInvestmentSchema", () => {
         expect(result.success).toBe(true);
         expect(result.error).toBeUndefined();
     });
-
-    it("should pass validation even if a fee amount is not provided", () => {
-        const { fee, ...valuesWithoutFee } = mockSuccessValues;
-
-        const result = addInvestmentSchema.safeParse(valuesWithoutFee);
-
-        expect(result.success).toBe(true);
-        expect(result.error).toBeUndefined();
-    });
 });

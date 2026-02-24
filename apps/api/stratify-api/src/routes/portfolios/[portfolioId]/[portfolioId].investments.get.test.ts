@@ -14,7 +14,7 @@ const mockAssetPriceResponse = {
     },
 };
 
-const mockGetCurrentPrice = vi.fn();
+const mockGetCurrentPrice = vi.fn().mockResolvedValue(mockAssetPriceResponse);
 
 const mockDataApiClient = {
     GET: mockGetCurrentPrice,
@@ -45,8 +45,6 @@ describe("GET /portfolios/:portfolioId/investments", () => {
     });
 
     it("should return a list of investments for a portfolio successfully", async () => {
-        mockGetCurrentPrice.mockResolvedValue(mockAssetPriceResponse);
-
         await createUser("test-user").execute();
 
         await db
@@ -185,8 +183,6 @@ describe("GET /portfolios/:portfolioId/investments", () => {
     });
 
     it("should return a list of investments where the asset currency is the same as the user's currency without performing currency conversion", async () => {
-        mockGetCurrentPrice.mockResolvedValue(mockAssetPriceResponse);
-
         await createUser("test-user").execute();
 
         await db
@@ -299,8 +295,6 @@ describe("GET /portfolios/:portfolioId/investments", () => {
     });
 
     it("should not count SELL trades towards the total shares and returns of an investment", async () => {
-        mockGetCurrentPrice.mockResolvedValue(mockAssetPriceResponse);
-
         await createUser("test-user").execute();
 
         await db
@@ -436,8 +430,6 @@ describe("GET /portfolios/:portfolioId/investments", () => {
     });
 
     it("should not allow a user to get the investments of another user's portfolio", async () => {
-        mockGetCurrentPrice.mockResolvedValue(mockAssetPriceResponse);
-
         await createUser("test-user").execute();
         await createUser("another-test-user").execute();
 

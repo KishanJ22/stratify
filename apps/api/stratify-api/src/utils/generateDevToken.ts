@@ -3,13 +3,13 @@ import { SignJWT } from "jose";
 interface GenerateDevTokenOptions {
     userId: string;
     name?: string;
-    currency?: string;
+    userCurrency?: string;
 }
 
 export const generateDevToken = async ({
     userId,
     name = "Dev User",
-    currency = "GBP",
+    userCurrency = "GBP",
 }: GenerateDevTokenOptions) => {
     const payload = {
         id: userId,
@@ -17,7 +17,7 @@ export const generateDevToken = async ({
         username: name,
         displayUsername: name,
         email: `${name.toLowerCase().replace(/\s/g, "")}@test.com`,
-        currency,
+        currency: userCurrency,
     };
 
     const secret = new TextEncoder().encode("secret");

@@ -6,6 +6,7 @@ import PortfolioSelector from "./SelectedPortfolio/PortfolioSelector";
 import { usePortfolioList } from "./SelectedPortfolio/usePortfolioList";
 import InvestmentsTable from "./InvestmentsTable/InvestmentsTable";
 import AddInvestmentButton from "./AddInvestment/AddInvestmentButton";
+import PortfolioValueChart from "./PortfolioValueChart/PortfolioValueChart";
 
 export default function PortfoliosPage() {
     const { data, isLoading } = usePortfolioList();
@@ -26,14 +27,23 @@ export default function PortfoliosPage() {
                 Portfolios
             </div>
 
-            <div className="mt-4">
-                <CreatePortfolioButton />
-                <PortfolioSelector
-                    portfolioList={data}
-                    isLoading={isLoading}
-                    selectedPortfolioId={selectedPortfolioId}
-                    setSelectedPortfolioId={setSelectedPortfolioId}
-                />
+            <div className="mt-4 w-full">
+                <div className="flex flex-row">
+                    <div>
+                        <CreatePortfolioButton />
+                        <PortfolioSelector
+                            portfolioList={data}
+                            isLoading={isLoading}
+                            selectedPortfolioId={selectedPortfolioId}
+                            setSelectedPortfolioId={setSelectedPortfolioId}
+                        />
+                    </div>
+                    <div className="ml-4 w-full">
+                        <PortfolioValueChart
+                            portfolioId={selectedPortfolioId}
+                        />
+                    </div>
+                </div>
             </div>
             <div className="mt-8">
                 <div className="flex flex-row items-center justify-between">
