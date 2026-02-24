@@ -87,6 +87,10 @@ const calculatePortfolioValueHistory = async (portfolioId: number) => {
         userId,
     ).execute();
 
+    if (trades.length === 0) {
+        return [];
+    }
+
     const uniqueAssetsMap = new Map<number, UniqueAsset>();
 
     trades.map((trade) => {
@@ -300,6 +304,12 @@ export default async function portfolioValueHistoryGet(
 
                 const valueHistory =
                     await calculatePortfolioValueHistory(portfolioId);
+
+                if (valueHistory.length === 0) {
+                    return reply.status(404).send({
+                        message: "portfolioNotFound",
+                    });
+                }
 
                 return reply.status(200).send({ data: valueHistory });
             } catch (error) {
