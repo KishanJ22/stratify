@@ -7,6 +7,7 @@ import MockSessionProvider from "@/app/tests/_mocks/MockSessionProvider";
 
 const mockInvestmentsData = [
     {
+        assetId: 1,
         symbol: "LEON",
         assetCountryId: 224,
         assetCurrency: "USD",

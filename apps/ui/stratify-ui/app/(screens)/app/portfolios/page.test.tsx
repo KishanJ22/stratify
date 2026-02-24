@@ -3,13 +3,16 @@ import { describe, expect, it } from "vitest";
 import PortfoliosPage from "./page";
 import { renderWithContext } from "@/app/tests/utils";
 import MockSessionProvider from "@/app/tests/_mocks/MockSessionProvider";
+import { TooltipProvider } from "@/app/components/ui/tooltip";
 
 describe("Portfolios page", () => {
     const renderPage = () =>
         renderWithContext({
             children: (
                 <MockSessionProvider>
-                    <PortfoliosPage />
+                    <TooltipProvider>
+                        <PortfoliosPage />
+                    </TooltipProvider>
                 </MockSessionProvider>
             ),
         });

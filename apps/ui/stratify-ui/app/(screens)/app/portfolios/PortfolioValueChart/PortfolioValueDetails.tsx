@@ -65,13 +65,20 @@ const PortfolioValueDetails = ({
                 <HistoryDateRangeSelector
                     selectedDateRange={selectedDateRange}
                     setSelectedDateRange={setSelectedDateRange}
+                    disabled={filteredData.length === 0}
                 />
             </div>
             <div className="flex flex-row text-muted-base text-3xl font-semibold">
-                <div>{latestValue?.toLocaleString() ?? "---"}</div>
-                <div className="text-base ml-1 mt-2 content-end">
-                    {currency ? `(${currency})` : null}
-                </div>
+                {latestValue !== null ? (
+                    <>
+                        <div>{latestValue.toLocaleString()}</div>
+                        <div className="text-base ml-1 mt-2 content-end">
+                            {currency ? `(${currency})` : null}
+                        </div>
+                    </>
+                ) : (
+                    <div>No data available</div>
+                )}
             </div>
 
             <div
@@ -95,9 +102,7 @@ const PortfolioValueDetails = ({
                             {changeInDateRangeLabel[selectedDateRange]}
                         </span>
                     </div>
-                ) : (
-                    <div className="text-muted-dark">{"---"}</div>
-                )}
+                ) : null}
             </div>
         </div>
     );

@@ -37,16 +37,19 @@ const dateRanges = [
 interface HistoryDateRangeSelectorProps {
     selectedDateRange: DateRange;
     setSelectedDateRange: Dispatch<SetStateAction<DateRange>>;
+    disabled: boolean;
 }
 
 const HistoryDateRangeSelector = ({
     selectedDateRange,
     setSelectedDateRange,
+    disabled,
 }: HistoryDateRangeSelectorProps) => {
     return (
         <Select
             value={selectedDateRange}
             onValueChange={(value) => setSelectedDateRange(value as DateRange)}
+            disabled={disabled}
         >
             <SelectTrigger className="max-w-36">
                 <SelectValue data-testid="date-range-select-value" />

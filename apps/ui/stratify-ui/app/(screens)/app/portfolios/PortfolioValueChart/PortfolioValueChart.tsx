@@ -8,6 +8,7 @@ import { useState } from "react";
 import { DateRange } from "./HistoryDateRangeSelector";
 import PortfolioValueDetails from "./PortfolioValueDetails";
 import PortfolioValueChartSkeleton from "./PortfolioValueChartSkeleton";
+import { placeholderChartData } from "./placeholderChartData";
 
 interface ChartTooltip {
     active?: boolean;
@@ -104,10 +105,20 @@ const PortfolioValueChart = ({ portfolioId }: PortfolioValueChartProps) => {
                         label: "Portfolio value",
                         color: "var(--primary-base)",
                     },
+                    noData: {
+                        label: "No data available",
+                        color: "var(--muted-base)",
+                    },
                 }}
                 className="aspect-auto w-full h-[250px]"
             >
-                <AreaChart data={filteredData}>
+                <AreaChart
+                    data={
+                        filteredData.length > 0
+                            ? filteredData
+                            : placeholderChartData
+                    }
+                >
                     <defs>
                         <linearGradient
                             id="fillValue"
@@ -118,12 +129,20 @@ const PortfolioValueChart = ({ portfolioId }: PortfolioValueChartProps) => {
                         >
                             <stop
                                 offset="5%"
-                                stopColor="var(--primary-base)"
+                                stopColor={
+                                    filteredData.length > 0
+                                        ? "var(--primary-base)"
+                                        : "var(--muted-base)"
+                                }
                                 stopOpacity={0.8}
                             />
                             <stop
                                 offset="95%"
-                                stopColor="var(--primary-base)"
+                                stopColor={
+                                    filteredData.length > 0
+                                        ? "var(--primary-base)"
+                                        : "var(--muted-base)"
+                                }
                                 stopOpacity={0.1}
                             />
                         </linearGradient>
@@ -131,6 +150,7 @@ const PortfolioValueChart = ({ portfolioId }: PortfolioValueChartProps) => {
                     <CartesianGrid vertical={false} />
                     <XAxis
                         dataKey="date"
+                        hide={filteredData.length === 0}
                         tickLine={false}
                         axisLine={false}
                         tickMargin={8}
@@ -143,24 +163,30 @@ const PortfolioValueChart = ({ portfolioId }: PortfolioValueChartProps) => {
                             });
                         }}
                     />
-                    <ChartTooltip
-                        cursor={false}
-                        content={({ active, payload }) => (
-                            <CustomChartTooltip
-                                active={active}
-                                date={payload?.[0]?.payload.date}
-                                portfolioValue={
-                                    payload?.[0]?.payload.portfolioValue
-                                }
-                                currency={currency!}
-                            />
-                        )}
-                    />
+                    {filteredData.length > 0 ? (
+                        <ChartTooltip
+                            cursor={false}
+                            content={({ active, payload }) => (
+                                <CustomChartTooltip
+                                    active={active}
+                                    date={payload?.[0]?.payload.date}
+                                    portfolioValue={
+                                        payload?.[0]?.payload.portfolioValue
+                                    }
+                                    currency={currency!}
+                                />
+                            )}
+                        />
+                    ) : null}
                     <Area
                         dataKey="portfolioValue"
                         type="bump"
                         fill="url(#fillValue)"
-                        stroke="var(--primary-base)"
+                        stroke={
+                            filteredData.length > 0
+                                ? "var(--primary-base)"
+                                : "var(--muted-base)"
+                        }
                     />
                 </AreaChart>
             </ChartContainer>

@@ -1,7 +1,10 @@
 import { Skeleton } from "@/app/components/ui/skeleton";
 
 const PortfolioValueChartSkeleton = () => (
-    <div className="flex flex-col w-full">
+    <div
+        className="flex flex-col w-full"
+        data-testid="portfolio-value-chart-skeleton"
+    >
         <div className="flex flex-row justify-between">
             <Skeleton className="w-32 h-5" />
             <Skeleton className="w-32 h-5" />
