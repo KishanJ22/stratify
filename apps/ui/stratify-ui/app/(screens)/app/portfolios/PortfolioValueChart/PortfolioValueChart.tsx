@@ -5,7 +5,7 @@ import { ChartContainer, ChartTooltip } from "@/app/components/ui/chart";
 import { useSessionContext } from "../../SessionProvider";
 import { usePortfolioValueHistory } from "./usePortfolioValueHistory";
 import { useState } from "react";
-import { DateRange } from "./HistoricDateRangeSelector";
+import { DateRange } from "./HistoryDateRangeSelector";
 import PortfolioValueDetails from "./PortfolioValueDetails";
 import PortfolioValueChartSkeleton from "./PortfolioValueChartSkeleton";
 

@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction } from "react";
 import HistoryDateRangeSelector, {
     DateRange,
-} from "./HistoricDateRangeSelector";
+} from "./HistoryDateRangeSelector";
 import { PortfolioValueHistory } from "./usePortfolioValueHistory";
 import {
     ChartColumnDecreasing,
