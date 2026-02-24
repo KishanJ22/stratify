@@ -2,7 +2,7 @@ import { useKyClient } from "@/lib/api/ky-client";
 import { paths } from "@/openapi/types/stratify-api";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
-type PortfolioValueHistory =
+export type PortfolioValueHistory =
     paths["/portfolios/{portfolioId}/value-history"]["get"]["responses"]["200"]["content"]["application/json"]["data"][number];
 
 export const usePortfolioValueHistory = (portfolioId: number | null) => {
