@@ -48,7 +48,7 @@ const HistoryDateRangeSelector = ({
             value={selectedDateRange}
             onValueChange={(value) => setSelectedDateRange(value as DateRange)}
         >
-            <SelectTrigger className="max-w-32">
+            <SelectTrigger className="max-w-36">
                 <SelectValue data-testid="date-range-select-value" />
             </SelectTrigger>
             <SelectContent side="bottom" align="start">

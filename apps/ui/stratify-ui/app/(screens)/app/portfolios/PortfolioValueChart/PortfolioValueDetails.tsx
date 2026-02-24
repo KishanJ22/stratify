@@ -10,7 +10,6 @@ import {
 } from "lucide-react";
 import { Tooltip } from "@/app/components/ui/tooltip";
 import { cn } from "@/lib/utils";
-import { Skeleton } from "@/app/components/ui/skeleton";
 
 const changeInDateRangeLabel = {
     "7d": "in the past seven days",
@@ -22,7 +21,6 @@ const changeInDateRangeLabel = {
 
 interface PortfolioValueDetailsProps {
     filteredData: PortfolioValueHistory[];
-    isLoading: boolean;
     selectedDateRange: DateRange;
     setSelectedDateRange: Dispatch<SetStateAction<DateRange>>;
     currency?: string;
@@ -30,8 +28,7 @@ interface PortfolioValueDetailsProps {
 
 const PortfolioValueDetails = ({
     filteredData,
-    currency = "---",
-    isLoading,
+    currency,
     selectedDateRange,
     setSelectedDateRange,
 }: PortfolioValueDetailsProps) => {
@@ -53,13 +50,7 @@ const PortfolioValueDetails = ({
 
     const sign = isPositiveChange ? "+" : "";
 
-    return isLoading ? (
-        <div className="flex flex-col">
-            <Skeleton className="w-32 h-5 self-start" />
-            <Skeleton className="w-32 h-10 self-start mt-1" />
-            <Skeleton className="w-44 h-5 self-start mt-1" />
-        </div>
-    ) : (
+    return (
         <div className="flex flex-col">
             <div className="flex flex-row items-center text-2xl text-primary-dark font-semibold justify-between">
                 <div className="flex flex-row items-center gap-x-1.5">
@@ -77,9 +68,9 @@ const PortfolioValueDetails = ({
                 />
             </div>
             <div className="flex flex-row text-muted-base text-3xl font-semibold">
-                <div>{latestValue?.toLocaleString()}</div>
+                <div>{latestValue?.toLocaleString() ?? "---"}</div>
                 <div className="text-base ml-1 mt-2 content-end">
-                    ({currency})
+                    {currency ? `(${currency})` : null}
                 </div>
             </div>
 
@@ -99,7 +90,7 @@ const PortfolioValueDetails = ({
                             <ChartColumnDecreasing size={22} />
                         )}
                         {sign}
-                        {portfolioValueChange.toLocaleString()}%
+                        {portfolioValueChange.toFixed(2)}%
                         <span className="ml-1 text-sm">
                             {changeInDateRangeLabel[selectedDateRange]}
                         </span>
@@ -111,4 +102,5 @@ const PortfolioValueDetails = ({
         </div>
     );
 };
+
 export default PortfolioValueDetails;

@@ -3,11 +3,11 @@
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
 import { ChartContainer, ChartTooltip } from "@/app/components/ui/chart";
 import { useSessionContext } from "../../SessionProvider";
-import { Skeleton } from "@/app/components/ui/skeleton";
 import { usePortfolioValueHistory } from "./usePortfolioValueHistory";
 import { useState } from "react";
 import { DateRange } from "./HistoricDateRangeSelector";
 import PortfolioValueDetails from "./PortfolioValueDetails";
+import PortfolioValueChartSkeleton from "./PortfolioValueChartSkeleton";
 
 interface ChartTooltip {
     active?: boolean;
@@ -52,6 +52,7 @@ const PortfolioValueChart = ({ portfolioId }: PortfolioValueChartProps) => {
 
     const [selectedDateRange, setSelectedDateRange] =
         useState<DateRange>("30d");
+
     const { data, isLoading } = usePortfolioValueHistory(portfolioId);
 
     const filteredData =
@@ -87,85 +88,82 @@ const PortfolioValueChart = ({ portfolioId }: PortfolioValueChartProps) => {
             return valueDate >= startDate;
         }) ?? [];
 
-    return (
+    return isLoading ? (
+        <PortfolioValueChartSkeleton />
+    ) : (
         <div className="flex flex-col w-full font-sans">
             <PortfolioValueDetails
                 filteredData={filteredData}
-                currency={currency}
-                isLoading={isLoading}
+                currency={currency!}
                 selectedDateRange={selectedDateRange}
                 setSelectedDateRange={setSelectedDateRange}
             />
-            {isLoading ? (
-                <Skeleton className="w-full h-[250px] mt-2" />
-            ) : (
-                <ChartContainer
-                    config={{
-                        portfolioValue: {
-                            label: "Portfolio value",
-                            color: "var(--primary-base)",
-                        },
-                    }}
-                    className="aspect-auto w-full h-[250px]"
-                >
-                    <AreaChart data={filteredData}>
-                        <defs>
-                            <linearGradient
-                                id="fillValue"
-                                x1="0"
-                                y1="0"
-                                x2="0"
-                                y2="1"
-                            >
-                                <stop
-                                    offset="5%"
-                                    stopColor="var(--primary-base)"
-                                    stopOpacity={0.8}
-                                />
-                                <stop
-                                    offset="95%"
-                                    stopColor="var(--primary-base)"
-                                    stopOpacity={0.1}
-                                />
-                            </linearGradient>
-                        </defs>
-                        <CartesianGrid vertical={false} />
-                        <XAxis
-                            dataKey="date"
-                            tickLine={false}
-                            axisLine={false}
-                            tickMargin={8}
-                            minTickGap={40}
-                            tickFormatter={(value) => {
-                                const date = new Date(value);
-                                return date.toLocaleDateString("en-US", {
-                                    month: "short",
-                                    day: "numeric",
-                                });
-                            }}
-                        />
-                        <ChartTooltip
-                            cursor={false}
-                            content={({ active, payload }) => (
-                                <CustomChartTooltip
-                                    active={active}
-                                    date={payload?.[0]?.payload.date}
-                                    portfolioValue={
-                                        payload?.[0]?.payload.portfolioValue
-                                    }
-                                    currency={currency!}
-                                />
-                            )}
-                        />
-                        <Area
-                            dataKey="portfolioValue"
-                            type="bump"
-                            fill="url(#fillValue)"
-                            stroke="var(--primary-base)"
-                        />
-                    </AreaChart>
-                </ChartContainer>
-            )}
+            <ChartContainer
+                config={{
+                    portfolioValue: {
+                        label: "Portfolio value",
+                        color: "var(--primary-base)",
+                    },
+                }}
+                className="aspect-auto w-full h-[250px]"
+            >
+                <AreaChart data={filteredData}>
+                    <defs>
+                        <linearGradient
+                            id="fillValue"
+                            x1="0"
+                            y1="0"
+                            x2="0"
+                            y2="1"
+                        >
+                            <stop
+                                offset="5%"
+                                stopColor="var(--primary-base)"
+                                stopOpacity={0.8}
+                            />
+                            <stop
+                                offset="95%"
+                                stopColor="var(--primary-base)"
+                                stopOpacity={0.1}
+                            />
+                        </linearGradient>
+                    </defs>
+                    <CartesianGrid vertical={false} />
+                    <XAxis
+                        dataKey="date"
+                        tickLine={false}
+                        axisLine={false}
+                        tickMargin={8}
+                        minTickGap={40}
+                        tickFormatter={(value) => {
+                            const date = new Date(value);
+                            return date.toLocaleDateString("en-US", {
+                                month: "short",
+                                day: "numeric",
+                            });
+                        }}
+                    />
+                    <ChartTooltip
+                        cursor={false}
+                        content={({ active, payload }) => (
+                            <CustomChartTooltip
+                                active={active}
+                                date={payload?.[0]?.payload.date}
+                                portfolioValue={
+                                    payload?.[0]?.payload.portfolioValue
+                                }
+                                currency={currency!}
+                            />
+                        )}
+                    />
+                    <Area
+                        dataKey="portfolioValue"
+                        type="bump"
+                        fill="url(#fillValue)"
+                        stroke="var(--primary-base)"
+                    />
+                </AreaChart>
+            </ChartContainer>
         </div>
     );
 };
