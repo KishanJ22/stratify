@@ -17,7 +17,7 @@ export const generateDevToken = async ({
         username: name,
         displayUsername: name,
         email: `${name.toLowerCase().replace(/\s/g, "")}@test.com`,
-        userCurrency,
+        currency: userCurrency,
     };
 
     const secret = new TextEncoder().encode("secret");
