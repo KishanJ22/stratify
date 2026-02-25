@@ -20,18 +20,11 @@ jobs:
     timeout-minutes: 10
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
-      - name: Create Github Token for changeset-push app
-        uses: actions/create-github-app-token@v2
-        id: app-token
-        with:
-          app-id: ${{ secrets.CHANGESET_PUSH_APP_ID }}
-          private-key: ${{ secrets.CHANGESET_PUSH_SECRET }}
-
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          token: ${{ steps.app-token.outputs.token }}
+          token: ${{ secrets.DEPLOY_KEY }}
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
