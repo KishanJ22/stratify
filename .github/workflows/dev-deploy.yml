@@ -105,7 +105,7 @@ jobs:
         name: Deploy Stratify API
         runs-on: self-hosted
         needs: [prepare-deployment, deploy-stratify-data-api]
-        if: ${{ needs.prepare-deployment.outputs.is_stratify_api_changed == 'true' && (needs.deploy-stratify-data-api.result == 'success' || needs.deploy-stratify-data-api.result == 'skipped') }}
+        if: ${{ always() && needs.prepare-deployment.outputs.is_stratify_api_changed == 'true' && needs.deploy-stratify-data-api.result != 'failure' }}
         environment: Development
         permissions:
             contents: read
@@ -152,7 +152,7 @@ jobs:
         name: Deploy Stratify UI
         runs-on: self-hosted
         needs: [prepare-deployment, deploy-stratify-api]
-        if: ${{ needs.prepare-deployment.outputs.is_stratify_ui_changed == 'true' && (needs.deploy-stratify-api.result == 'success' || needs.deploy-stratify-api.result == 'skipped') }}
+        if: ${{ always() && needs.prepare-deployment.outputs.is_stratify_ui_changed == 'true' && needs.deploy-stratify-api.result != 'failure' }}
         environment: Development
         permissions:
             contents: read
