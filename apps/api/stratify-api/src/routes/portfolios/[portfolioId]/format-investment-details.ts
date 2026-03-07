@@ -18,8 +18,6 @@ export const formatInvestmentDetails = async (
         totalPurchaseValue,
     } = investment;
 
-    const currentReturn = currentInvestmentValue - totalPurchaseValue;
-
     const isCurrencyConversionRequired =
         assetCurrency && userCurrency !== assetCurrency ? true : false;
 
@@ -27,13 +25,29 @@ export const formatInvestmentDetails = async (
 
     //? If the asset currency is different to the user's currency, then the current value and investment return need to be converted
     if (isCurrencyConversionRequired && assetCurrency && userCurrency) {
-        const { price } = await latestCurrencyConversionRateQuery(
-            assetCurrency,
-            userCurrency,
-        ).executeTakeFirstOrThrow();
+        if (assetCurrency === "GBX" && userCurrency === "GBP") {
+            conversionRate = 0.01;
+        } else {
+            const currencyPair = `${assetCurrency === "GBX" ? "GBP" : assetCurrency}${userCurrency}`;
+            const { price } =
+                await latestCurrencyConversionRateQuery(
+                    currencyPair,
+                ).executeTakeFirstOrThrow();
 
-        conversionRate = parseFloat(price);
+            if (price) {
+                conversionRate =
+                    assetCurrency === "GBX"
+                        ? parseFloat(price) * 0.01
+                        : parseFloat(price);
+            }
+        }
     }
+
+    const convertedCurrentInvestmentValue = isCurrencyConversionRequired
+        ? currentInvestmentValue * conversionRate
+        : currentInvestmentValue;
+
+    const currentReturn = convertedCurrentInvestmentValue - totalPurchaseValue;
 
     const currentReturnPercentage =
         totalPurchaseValue > 0
@@ -50,15 +64,11 @@ export const formatInvestmentDetails = async (
         type: type as AssetType,
         assetCurrency,
         shares,
-        currentValue: isCurrencyConversionRequired
-            ? parseFloat((currentInvestmentValue * conversionRate).toFixed(2))
-            : parseFloat(currentInvestmentValue.toFixed(2)),
+        currentValue: parseFloat(convertedCurrentInvestmentValue.toFixed(2)),
         currentAssetCurrencyValue: isCurrencyConversionRequired
             ? parseFloat(currentInvestmentValue.toFixed(2))
             : null,
-        currentReturn: isCurrencyConversionRequired
-            ? parseFloat((currentReturn * conversionRate).toFixed(2))
-            : parseFloat(currentReturn.toFixed(2)),
+        currentReturn: parseFloat(currentReturn.toFixed(2)),
         currentReturnPercentage,
     } satisfies Investment;
 };
