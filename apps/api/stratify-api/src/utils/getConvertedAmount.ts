@@ -1,6 +1,6 @@
 import { Convert } from "easy-currencies";
 
-export const getCurrencyConversionRate = async (
+export const getConvertedAmount = async (
     fromCurrency: string,
     toCurrency: string,
     amount: number,
