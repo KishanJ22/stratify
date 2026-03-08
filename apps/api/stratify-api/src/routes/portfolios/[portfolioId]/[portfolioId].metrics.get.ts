@@ -12,6 +12,14 @@ import { retrieveInvestments } from "./retrievePortfolioInvestments.js";
 import { calculateAssetVariance } from "./calculateAssetVariance.js";
 import logger from "../../../logger.js";
 
+const riskLevelValues = ["low", "medium", "high"] as const;
+
+const riskLevelSchema = Type.Union(
+    riskLevelValues.map((level) => Type.Literal(level)),
+);
+
+type RiskLevel = Static<typeof riskLevelSchema>;
+
 const portfolioMetrics = Type.Object({
     totalValue: Type.Number(),
     overallReturn: Type.Object({
@@ -21,6 +29,7 @@ const portfolioMetrics = Type.Object({
     riskMetrics: Type.Object({
         volatility: Type.Number(),
         sortinoRatio: Type.Number(),
+        riskLevel: riskLevelSchema,
     }),
 });
 
@@ -39,6 +48,21 @@ const metricsNotFoundSchema = createNotFound("metricsNotFound");
 type MetricsNotFoundResponse = Static<typeof metricsNotFoundSchema>;
 
 type NotFoundResponse = PortfolioNotFoundResponse | MetricsNotFoundResponse;
+
+const determineRiskLevel = (
+    volatility: number,
+    sortinoRatio: number,
+): RiskLevel => {
+    if (volatility < 10 && sortinoRatio > 2) {
+        return "low";
+    }
+
+    if (volatility < 20 && sortinoRatio > 1) {
+        return "medium";
+    }
+
+    return "high";
+};
 
 const retrievePortfolioMetrics = async (portfolioId: number) => {
     const investments = await retrieveInvestments(portfolioId);
@@ -75,31 +99,44 @@ const retrievePortfolioMetrics = async (portfolioId: number) => {
         assetWeights.map(async ({ id }) => await calculateAssetVariance(id)),
     );
 
-    const { portfolioVariance, downsideVariance } = assetWeights.reduce(
-        (acc, asset) => {
-            const assetVariance = assetVariances.find(
-                (variance) => variance.assetId === asset.id,
-            );
+    //? Calculate the portfolio variance by summing the weighted variances of each asset
+    const { portfolioVariance, downsideVariance, meanMonthlyReturn } =
+        assetWeights.reduce(
+            (acc, asset) => {
+                const assetVariance = assetVariances.find(
+                    (variance) => variance.assetId === asset.id,
+                );
 
-            if (assetVariance) {
-                return {
-                    portfolioVariance:
-                        acc.portfolioVariance +
-                        Math.pow(asset.weight, 2) * assetVariance.variance,
-                    downsideVariance:
-                        acc.downsideVariance +
-                        Math.pow(asset.weight, 2) *
-                            assetVariance.downsideVariance,
-                };
-            }
+                if (assetVariance) {
+                    return {
+                        portfolioVariance:
+                            acc.portfolioVariance +
+                            Math.pow(asset.weight, 2) * assetVariance.variance,
+                        downsideVariance:
+                            acc.downsideVariance +
+                            Math.pow(asset.weight, 2) *
+                                assetVariance.downsideVariance,
+                        meanMonthlyReturn:
+                            acc.meanMonthlyReturn +
+                            asset.weight * assetVariance.meanReturn,
+                    };
+                }
 
-            return acc;
-        },
-        {
-            portfolioVariance: 0,
-            downsideVariance: 0,
-        },
-    );
+                return acc;
+            },
+            {
+                portfolioVariance: 0,
+                downsideVariance: 0,
+                meanMonthlyReturn: 0,
+            },
+        );
+
+    //? Multiply the variances and mean monthly portfolio return by 12 to get annualised values that follow the same timescale
+    const volatility = Math.sqrt(portfolioVariance * 12) * 100;
+    const sortinoRatio =
+        (meanMonthlyReturn * 12) / Math.sqrt(downsideVariance * 12);
+
+    const riskLevel = determineRiskLevel(volatility, sortinoRatio);
 
     return {
         totalValue,
@@ -108,8 +145,9 @@ const retrievePortfolioMetrics = async (portfolioId: number) => {
             absolute: overallReturnAbsolute,
         },
         riskMetrics: {
-            volatility: Math.sqrt(portfolioVariance) * 100,
-            sortinoRatio: overallReturnPercentage / Math.sqrt(downsideVariance),
+            volatility,
+            sortinoRatio,
+            riskLevel,
         },
     } satisfies PortfolioMetrics;
 };

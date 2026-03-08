@@ -1,7 +1,7 @@
 import db from "../../../database/db.js";
 
 export const calculateAssetVariance = async (assetId: number) => {
-    //? Start date set to 5 years ago
+    //? Calculate the variance and downside variance based on monthly returns over the last 5 years
     const startDate = new Date(
         new Date().setFullYear(new Date().getFullYear() - 5),
     );
@@ -14,7 +14,7 @@ export const calculateAssetVariance = async (assetId: number) => {
     const monthlyReturns: number[] = [];
 
     for (
-        let date = new Date(startDate);
+        let date = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
         date < new Date();
         date.setMonth(date.getMonth() + 1)
     ) {
@@ -71,7 +71,7 @@ export const calculateAssetVariance = async (assetId: number) => {
 
     const minimumAcceptableReturn = 0;
 
-    //? Go through each data point (monthly return) and calculate the variance
+    //? Go through the monthly returns and calculate the variance and downside variance
     const { variance, downsideVariance } = monthlyReturns.reduce(
         (acc, ret) => {
             return {
@@ -92,6 +92,7 @@ export const calculateAssetVariance = async (assetId: number) => {
         assetId,
         variance: variance / (monthlyReturns.length - 1),
         downsideVariance: downsideVariance / (monthlyReturns.length - 1),
+        meanReturn,
     };
 };
 
