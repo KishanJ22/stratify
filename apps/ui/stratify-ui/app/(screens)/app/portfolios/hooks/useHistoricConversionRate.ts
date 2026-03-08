@@ -6,7 +6,7 @@ import { useMutation } from "@tanstack/react-query";
 export const useHistoricCurrencyPairPrice = () => {
     const client = useKyClient();
 
-    const { data, mutate, isPending, isSuccess } = useMutation({
+    const { data, mutate, isPending, isSuccess, reset } = useMutation({
         mutationFn: async (value: {
             currencyPair: string;
             tradeDate: string;
@@ -26,5 +26,6 @@ export const useHistoricCurrencyPairPrice = () => {
         isPending,
         isSuccess,
         mutate,
+        reset
     };
 };

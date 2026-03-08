@@ -161,8 +161,7 @@ const AddInvestmentModal = ({
                         "Investment added to your portfolio successfully.",
                     );
 
-                    handleClose();
-                    form.reset();
+                    closeModal();
                 },
                 onError: async (error) => {
                     const httpError = error as HTTPError;
@@ -197,12 +196,14 @@ const AddInvestmentModal = ({
         data: historicAssetPrice,
         mutate: fetchHistoricAssetPrice,
         isPending: isFetchingHistoricPrice,
+        reset: resetHistoricAssetPrice,
     } = useHistoricAssetPrice();
 
     const {
         data: historicCurrencyPairPrice,
         mutate: fetchHistoricCurrencyPairPrice,
         isPending: isFetchingHistoricCurrencyPairPrice,
+        reset: resetHistoricCurrencyPairPrice,
     } = useHistoricCurrencyPairPrice();
 
     useEffect(() => {
@@ -213,13 +214,27 @@ const AddInvestmentModal = ({
             );
         }
 
+        if (selectedAsset?.currency === "GBX" && userCurrency === "GBP") {
+            form.setFieldValue("currencyConversionRate", "0.01");
+        }
+
         if (historicCurrencyPairPrice) {
+            const conversionRate =
+                selectedAsset?.currency === "GBX"
+                    ? parseFloat(historicCurrencyPairPrice.price) / 100
+                    : parseFloat(historicCurrencyPairPrice.price);
+
             form.setFieldValue(
                 "currencyConversionRate",
-                historicCurrencyPairPrice.price.toString(),
+                conversionRate.toString(),
             );
         }
-    }, [historicAssetPrice, historicCurrencyPairPrice, form]);
+    }, [
+        historicAssetPrice,
+        historicCurrencyPairPrice,
+        form,
+        selectedAsset?.currency,
+    ]);
 
     const pricePerShare = formValues.pricePerShare
         ? parseFloat(formValues.pricePerShare)
@@ -252,14 +267,18 @@ const AddInvestmentModal = ({
         }
     }, [total, assetCurrencySubtotal, isCurrencyConversionRequired]);
 
+    const closeModal = () => {
+        setSearchValue("");
+        setSelectedAsset(null);
+        setIsSubmitDisabled(true);
+        form.reset();
+        resetHistoricAssetPrice();
+        resetHistoricCurrencyPairPrice();
+        handleClose();
+    };
+
     return (
-        <Dialog
-            open={isOpen}
-            onOpenChange={() => {
-                handleClose();
-                form.reset();
-            }}
-        >
+        <Dialog open={isOpen} onOpenChange={() => closeModal()}>
             <DialogContent className="bg-muted-lightest border border-primary-dark font-sans">
                 <DialogHeader>
                     <div className="flex flex-row items-center justify-between">
@@ -272,10 +291,7 @@ const AddInvestmentModal = ({
                         <X
                             size={20}
                             className="cursor-pointer text-muted-dark hover:text-primary-darker transition-colors"
-                            onClick={() => {
-                                handleClose();
-                                form.reset();
-                            }}
+                            onClick={() => closeModal()}
                             data-testid="close-modal-icon"
                         />
                     </div>
@@ -317,6 +333,8 @@ const AddInvestmentModal = ({
                                                         setIsSubmitDisabled(
                                                             true,
                                                         );
+                                                        resetHistoricAssetPrice();
+                                                        resetHistoricCurrencyPairPrice();
                                                         form.reset();
                                                     }}
                                                 >
@@ -421,7 +439,7 @@ const AddInvestmentModal = ({
 
                                     if (isCurrencyConversionRequired) {
                                         fetchHistoricCurrencyPairPrice({
-                                            currencyPair: `${selectedAsset.currency}${userCurrency}`,
+                                            currencyPair: `${selectedAsset.currency === "GBX" ? "GBP" : selectedAsset.currency}${userCurrency}`,
                                             tradeDate: value,
                                         });
                                     }
