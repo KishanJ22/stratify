@@ -61,10 +61,6 @@ const PortfolioValueChart = ({ portfolioId }: PortfolioValueChartProps) => {
             const valueDate = new Date(value.date);
             const startDate = new Date();
 
-            const isWeekend =
-                valueDate.getDay() === 0 || valueDate.getDay() === 6;
-            if (isWeekend) return false;
-
             switch (selectedDateRange) {
                 case "7d": {
                     startDate.setDate(new Date().getDate() - 7);
