@@ -3,7 +3,6 @@ import {
     PortfolioIdParam,
     portfolioIdParamSchema,
 } from "./investments.schema.js";
-import { portfolioInvestmentsQuery } from "./[portfolioId].investments.get.js";
 import logger from "../../../logger.js";
 import { getFromStore } from "../../../plugins/localStorage.js";
 import { UserDetails } from "../../../utils/decodeToken.js";
@@ -13,6 +12,7 @@ import { fetchCurrentPrice } from "../../assets/fetch-current-price.js";
 import db from "../../../database/db.js";
 import { AssetType } from "../../../schemas/common-schemas.js";
 import { latestCurrencyConversionRateQuery } from "../../../utils/latestCurrencyRateQuery.js";
+import { portfolioInvestmentsQuery } from "./portfolioInvestmentsQuery.js";
 
 const valueHistorySchema = Type.Object({
     portfolioValue: Type.Number(),

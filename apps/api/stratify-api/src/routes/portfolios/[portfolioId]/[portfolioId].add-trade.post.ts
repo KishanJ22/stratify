@@ -9,6 +9,7 @@ import { UserDetails } from "../../../utils/decodeToken.js";
 import logger from "../../../logger.js";
 import db from "../../../database/db.js";
 import { createNotFound } from "../../../utils/createNotFoundSchema.js";
+import { portfolioExistsForUserCheck } from "./portfolioExistsQuery.js";
 
 const requestBodySchema = Type.Object({
     assetId: Type.Number(),
@@ -40,15 +41,6 @@ type CannotSellMoreThanHeldResponse = Static<
     typeof cannotSellMoreThanHeldSchema
 >;
 
-//? Query to check if the user owns this portfolio
-const portfolioExistsForUserCheck = (portfolioId: number, userId: string) =>
-    db
-        .selectFrom("stratify.portfolios")
-        .where("id", "=", portfolioId)
-        .where("userId", "=", userId)
-        .select("id");
-
-//? Query to get all of the trades for a specific asset
 const portfolioInvestmentQuery = (portfolioId: number, assetId: number) =>
     db
         .selectFrom("stratify.trades as trades")

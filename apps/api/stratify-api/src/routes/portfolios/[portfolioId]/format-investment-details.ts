@@ -1,7 +1,7 @@
 import { AssetType } from "../../../schemas/common-schemas.js";
 import { latestCurrencyConversionRateQuery } from "../../../utils/latestCurrencyRateQuery.js";
-import type { GroupedInvestment } from "./[portfolioId].investments.get.js";
 import type { Investment } from "./investments.schema.js";
+import { GroupedInvestment } from "./retrievePortfolioInvestments.js";
 
 export const formatInvestmentDetails = async (
     investment: GroupedInvestment,
@@ -64,6 +64,7 @@ export const formatInvestmentDetails = async (
         type: type as AssetType,
         assetCurrency,
         shares,
+        totalPurchaseValue: parseFloat(totalPurchaseValue.toFixed(2)),
         currentValue: parseFloat(convertedCurrentInvestmentValue.toFixed(2)),
         currentAssetCurrencyValue: isCurrencyConversionRequired
             ? parseFloat(currentInvestmentValue.toFixed(2))
