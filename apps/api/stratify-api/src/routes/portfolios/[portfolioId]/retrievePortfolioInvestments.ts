@@ -2,7 +2,7 @@ import { getFromStore } from "../../../plugins/localStorage.js";
 import { AssetType } from "../../../schemas/common-schemas.js";
 import { UserDetails } from "../../../utils/decodeToken.js";
 import { fetchCurrentPrice } from "../../assets/fetch-current-price.js";
-import { formatInvestmentDetails } from "./format-investment-details.js";
+import { formatInvestmentDetails } from "./formatInvestmentDetails.js";
 import { portfolioInvestmentsQuery } from "./portfolioInvestmentsQuery.js";
 
 export interface GroupedInvestment {
@@ -97,8 +97,8 @@ export const retrieveInvestments = async (portfolioId: number) => {
                 symbol: trade.assetSymbol,
                 countryId: trade.assetCountryId,
                 currentAverageCost,
-                totalBuyAmount,
-                realisedReturn,
+                totalBuyAmount: parseFloat(totalBuyAmount.toFixed(2)),
+                realisedReturn: parseFloat(realisedReturn.toFixed(2)),
             });
         }
 

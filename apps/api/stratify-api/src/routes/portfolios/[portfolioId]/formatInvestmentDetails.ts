@@ -69,6 +69,6 @@ export const formatInvestmentDetails = async (
             ? parseFloat(currentInvestmentValue.toFixed(2))
             : null,
         currentReturn: parseFloat(currentReturn.toFixed(2)),
-        currentReturnPercentage,
+        currentReturnPercentage: parseFloat(currentReturnPercentage.toFixed(2)),
     } satisfies Investment;
 };

@@ -164,6 +164,7 @@ describe("GET /portfolios/:portfolioId/investments", () => {
                     currentAssetCurrencyValue: 2280,
                     currentReturn: 164.4,
                     currentReturnPercentage: 10.96,
+                    totalBuyAmount: 1500,
                 },
                 {
                     assetId: 2,
@@ -177,6 +178,7 @@ describe("GET /portfolios/:portfolioId/investments", () => {
                     currentAssetCurrencyValue: 1520,
                     currentReturn: 359.6,
                     currentReturnPercentage: 47.95,
+                    totalBuyAmount: 750,
                 },
             ],
         });
@@ -276,6 +278,7 @@ describe("GET /portfolios/:portfolioId/investments", () => {
                     currentAssetCurrencyValue: null,
                     currentReturn: 30,
                     currentReturnPercentage: 1.33,
+                    totalBuyAmount: 2250,
                 },
                 {
                     assetId: 2,
@@ -289,12 +292,13 @@ describe("GET /portfolios/:portfolioId/investments", () => {
                     currentAssetCurrencyValue: null,
                     currentReturn: 260,
                     currentReturnPercentage: 52,
+                    totalBuyAmount: 500,
                 },
             ],
         });
     });
 
-    it("should not count SELL trades towards the total shares and returns of an investment", async () => {
+    it("should not count SELL trades towards the total count of an investment", async () => {
         await createUser("test-user").execute();
 
         await db
@@ -378,7 +382,8 @@ describe("GET /portfolios/:portfolioId/investments", () => {
                     currentValue: 1520,
                     currentAssetCurrencyValue: null,
                     currentReturn: 120,
-                    currentReturnPercentage: 8.57,
+                    currentReturnPercentage: 5.33,
+                    totalBuyAmount: 2250,
                 },
             ],
         });
