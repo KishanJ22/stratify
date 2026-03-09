@@ -83,7 +83,7 @@ export const columns = (
                     {currentValue > 0
                         ? `${currentValue.toLocaleString()}`
                         : "---"}
-                    {currentAssetCurrencyValue && assetCurrency && (
+                    {currentAssetCurrencyValue && assetCurrency ? (
                         <Tooltip>
                             <TooltipTrigger data-testid="asset-currency-info-icon">
                                 <InfoIcon className="w-4 h-4 text-primary-darker" />
@@ -96,7 +96,7 @@ export const columns = (
                                 {`(${assetCurrency})`}
                             </TooltipContent>
                         </Tooltip>
-                    )}
+                    ) : null}
                 </div>
             );
         },
@@ -114,7 +114,7 @@ export const columns = (
             const isPositive = currentReturn > 0;
             const sign = isPositive ? "+" : "";
 
-            const isPlaceholderRow = row.original.shares === 0;
+            const isPlaceholderRow = row.original.currentReturn === 0 && row.original.shares === 0;
 
             return isPlaceholderRow ? (
                 "---"
@@ -142,7 +142,7 @@ export const columns = (
         cell: ({ row }) => (
             <div className="flex flex-row gap-2">
                 <Button
-                    disabled={row.original.shares === 0}
+                    disabled={row.original.currentReturn === 0 && row.original.shares === 0}
                     variant="link"
                     className="font-medium text-primary-darker hover:text-primary-dark transition-colors hover:underline hover:cursor-pointer"
                     onClick={() => {
