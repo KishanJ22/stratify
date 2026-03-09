@@ -13,7 +13,9 @@ export interface GroupedInvestment {
     countryId: number;
     type: AssetType;
     shares: number;
-    totalPurchaseValue: number;
+    currentAverageCost: number;
+    totalBuyAmount: number;
+    realisedReturn: number;
 }
 
 export const retrieveInvestments = async (portfolioId: number) => {
@@ -28,7 +30,6 @@ export const retrieveInvestments = async (portfolioId: number) => {
         return [];
     }
 
-    // TODO: Add calculation of realised gains/losses for sold shares, only unrealised returns for currently held shares are calculated
     const groupedInvestmentsMap = trades.reduce((acc, trade) => {
         const key = trade.assetId;
 
@@ -40,23 +41,53 @@ export const retrieveInvestments = async (portfolioId: number) => {
             (t) => t.assetId === trade.assetId,
         );
 
-        //? How many shares of this asset are currently held?
-        const currentHoldingQuantity = tradesForAsset.reduce((sum, t) => {
-            const quantity = parseFloat(t.quantity);
-            return t.tradeAction === "BUY" ? sum + quantity : sum - quantity;
-        }, 0);
+        const {
+            currentHoldingQuantity,
+            totalBuyQuantity,
+            totalBuyAmount,
+            totalSellQuantity,
+            totalSellAmount,
+        } = tradesForAsset.reduce(
+            (sum, t) => {
+                const quantity = parseFloat(t.quantity);
+                const totalAmount = parseFloat(t.totalAmount);
 
-        //? What is the total cost for the currently held shares of this asset (in the user's currency)?
-        const totalPurchaseValue = tradesForAsset.reduce((sum, t) => {
-            const tradeAmount = parseFloat(t.totalAmount);
+                return {
+                    currentHoldingQuantity:
+                        sum.currentHoldingQuantity +
+                        (t.tradeAction === "BUY" ? quantity : -quantity),
+                    totalBuyQuantity:
+                        sum.totalBuyQuantity +
+                        (t.tradeAction === "BUY" ? quantity : 0),
+                    totalBuyAmount:
+                        sum.totalBuyAmount +
+                        (t.tradeAction === "BUY" ? totalAmount : 0),
+                    totalSellQuantity:
+                        sum.totalSellQuantity +
+                        (t.tradeAction === "SELL" ? quantity : 0),
+                    totalSellAmount:
+                        sum.totalSellAmount +
+                        (t.tradeAction === "SELL" ? totalAmount : 0),
+                };
+            },
+            {
+                currentHoldingQuantity: 0,
+                totalBuyQuantity: 0,
+                totalBuyAmount: 0,
+                totalSellQuantity: 0,
+                totalSellAmount: 0,
+            },
+        );
 
-            return t.tradeAction === "BUY"
-                ? sum + tradeAmount
-                : sum - tradeAmount;
-        }, 0);
+        const averageCost =
+            totalBuyQuantity > 0 ? totalBuyAmount / totalBuyQuantity : 0;
 
-        //? Only return the asset if the user is holding shares of it. If the quantity currently held is 0, then the investment has been fully sold
-        if (currentHoldingQuantity > 0) {
+        const currentAverageCost = averageCost * currentHoldingQuantity;
+
+        const realisedReturn =
+            totalSellAmount - averageCost * totalSellQuantity;
+
+        if (currentHoldingQuantity > 0 || realisedReturn !== 0) {
             acc.set(key, {
                 id: key,
                 shares: currentHoldingQuantity,
@@ -65,7 +96,9 @@ export const retrieveInvestments = async (portfolioId: number) => {
                 assetCurrency: trade.assetCurrency,
                 symbol: trade.assetSymbol,
                 countryId: trade.assetCountryId,
-                totalPurchaseValue,
+                currentAverageCost,
+                totalBuyAmount,
+                realisedReturn,
             });
         }
 

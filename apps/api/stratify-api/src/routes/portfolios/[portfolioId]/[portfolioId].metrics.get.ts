@@ -71,24 +71,23 @@ const retrievePortfolioMetrics = async (portfolioId: number) => {
         return null;
     }
 
-    const { totalValue, totalPurchaseValue } = investments.reduce(
+    const { totalValue, totalCost, overallReturnAbsolute } = investments.reduce(
         (acc, investment) => {
-            const currentInvestmentValue = investment.currentValue;
-
             return {
-                totalValue: acc.totalValue + currentInvestmentValue,
-                totalPurchaseValue:
-                    acc.totalPurchaseValue + investment.totalPurchaseValue,
+                totalValue: acc.totalValue + investment.currentValue,
+                totalCost: acc.totalCost + investment.totalBuyAmount,
+                overallReturnAbsolute:
+                    acc.overallReturnAbsolute + investment.currentReturn,
             };
         },
         {
             totalValue: 0,
-            totalPurchaseValue: 0,
+            totalCost: 0,
+            overallReturnAbsolute: 0,
         },
     );
 
-    const overallReturnAbsolute = totalValue - totalPurchaseValue;
-    const overallReturnPercentage = overallReturnAbsolute / totalPurchaseValue;
+    const overallReturnPercentage = overallReturnAbsolute / totalCost;
 
     const assetWeights = investments.map((investment) => ({
         id: investment.assetId,
@@ -107,7 +106,7 @@ const retrievePortfolioMetrics = async (portfolioId: number) => {
                     (variance) => variance.assetId === asset.id,
                 );
 
-                if (assetVariance) {
+                if (assetVariance && asset.weight) {
                     return {
                         portfolioVariance:
                             acc.portfolioVariance +
@@ -132,9 +131,12 @@ const retrievePortfolioMetrics = async (portfolioId: number) => {
         );
 
     //? Multiply the variances and mean monthly portfolio return by 12 to get annualised values that follow the same timescale
-    const volatility = Math.sqrt(portfolioVariance * 12) * 100;
+    const volatility =
+        portfolioVariance > 0 ? Math.sqrt(portfolioVariance * 12) * 100 : 0;
     const sortinoRatio =
-        (meanMonthlyReturn * 12) / Math.sqrt(downsideVariance * 12);
+        downsideVariance > 0 && meanMonthlyReturn > 0
+            ? (meanMonthlyReturn * 12) / Math.sqrt(downsideVariance * 12)
+            : 0;
 
     const riskLevel = determineRiskLevel(volatility, sortinoRatio);
 

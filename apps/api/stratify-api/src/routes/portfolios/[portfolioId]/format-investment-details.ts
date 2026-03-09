@@ -15,7 +15,9 @@ export const formatInvestmentDetails = async (
         assetCurrency,
         countryId,
         shares,
-        totalPurchaseValue,
+        currentAverageCost,
+        totalBuyAmount,
+        realisedReturn,
     } = investment;
 
     const isCurrencyConversionRequired =
@@ -47,14 +49,11 @@ export const formatInvestmentDetails = async (
         ? currentInvestmentValue * conversionRate
         : currentInvestmentValue;
 
-    const currentReturn = convertedCurrentInvestmentValue - totalPurchaseValue;
+    const currentReturn =
+        convertedCurrentInvestmentValue - currentAverageCost + realisedReturn;
 
     const currentReturnPercentage =
-        totalPurchaseValue > 0
-            ? parseFloat(
-                  ((currentReturn / totalPurchaseValue) * 100).toFixed(2),
-              )
-            : 0;
+        totalBuyAmount > 0 ? (currentReturn / totalBuyAmount) * 100 : 0;
 
     return {
         assetId: investment.id,
@@ -64,7 +63,7 @@ export const formatInvestmentDetails = async (
         type: type as AssetType,
         assetCurrency,
         shares,
-        totalPurchaseValue: parseFloat(totalPurchaseValue.toFixed(2)),
+        totalBuyAmount: parseFloat(totalBuyAmount.toFixed(2)),
         currentValue: parseFloat(convertedCurrentInvestmentValue.toFixed(2)),
         currentAssetCurrencyValue: isCurrencyConversionRequired
             ? parseFloat(currentInvestmentValue.toFixed(2))

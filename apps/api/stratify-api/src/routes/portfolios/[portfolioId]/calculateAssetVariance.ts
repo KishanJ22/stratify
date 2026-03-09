@@ -61,6 +61,7 @@ export const calculateAssetVariance = async (assetId: number) => {
             const monthlyReturn =
                 (parseFloat(endMonthPrice) - parseFloat(startMonthPrice)) /
                 parseFloat(startMonthPrice);
+
             monthlyReturns.push(monthlyReturn);
         }
     }
@@ -74,12 +75,15 @@ export const calculateAssetVariance = async (assetId: number) => {
     //? Go through the monthly returns and calculate the variance and downside variance
     const { variance, downsideVariance } = monthlyReturns.reduce(
         (acc, ret) => {
+            const isDownside = ret < minimumAcceptableReturn;
+
             return {
                 variance: acc.variance + Math.pow(ret - meanReturn, 2),
                 downsideVariance:
                     acc.downsideVariance +
-                    Math.pow(ret - minimumAcceptableReturn, 2) *
-                        (ret < minimumAcceptableReturn ? 1 : 0),
+                    (isDownside
+                        ? Math.pow(ret - minimumAcceptableReturn, 2)
+                        : 0),
             };
         },
         {
