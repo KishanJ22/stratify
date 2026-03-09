@@ -124,13 +124,17 @@ const AddTradeModal = ({
 
             addTrade(requestBody, {
                 onSuccess: () => {
-                    //? Invalidate the query for getting the investments in the portfolio so that the now updated list can be fetched
+                    //? Invalidate the queries related to the portfolio to automatically fetch updated data
                     queryClient.invalidateQueries({
                         queryKey: ["investments-list", portfolioId],
                     });
 
                     queryClient.invalidateQueries({
                         queryKey: ["portfolio-value-history", portfolioId],
+                    });
+
+                    queryClient.invalidateQueries({
+                        queryKey: ["portfolio-metrics", portfolioId],
                     });
 
                     toast.success(

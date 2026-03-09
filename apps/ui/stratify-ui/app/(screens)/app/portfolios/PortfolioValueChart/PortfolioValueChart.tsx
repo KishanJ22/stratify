@@ -58,7 +58,7 @@ const PortfolioValueChart = ({ portfolioId }: PortfolioValueChartProps) => {
 
     const filteredData =
         data?.filter((value) => {
-            const valueDate = new Date(value.date);
+            const valueDate = new Date(value.date).toISOString().split("T")[0];
             const startDate = new Date();
 
             switch (selectedDateRange) {
@@ -82,7 +82,7 @@ const PortfolioValueChart = ({ portfolioId }: PortfolioValueChartProps) => {
                     return true;
             }
 
-            return valueDate >= startDate;
+            return valueDate >= startDate.toISOString().split("T")[0];
         }) ?? [];
 
     return isLoading ? (
