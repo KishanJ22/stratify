@@ -166,7 +166,7 @@ describe("GET /portfolios/:portfolioId/metrics", () => {
             riskMetrics: {
                 volatility: 27.18,
                 sortinoRatio: 2.4,
-                riskLevel: "high",
+                riskLevel: "medium",
             },
         });
     });

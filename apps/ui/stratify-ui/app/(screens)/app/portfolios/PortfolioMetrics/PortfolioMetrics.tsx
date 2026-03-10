@@ -11,6 +11,8 @@ const riskLevelLabelMap = {
     low: "Low",
     medium: "Medium",
     high: "High",
+    veryHigh: "Very High",
+    unknown: "Unknown",
 } satisfies Record<
     PortfolioMetricsResponse["riskMetrics"]["riskLevel"],
     string
@@ -52,7 +54,7 @@ const PortfolioMetrics = ({ portfolioId }: PortfolioMetricsProps) => {
                                 <ChartColumnDecreasing size={22} />
                             )}
                             {data.overallReturn.percentage >= 0 ? "+" : ""}
-                            {data.overallReturn.percentage.toFixed(2)}%
+                            {data.overallReturn.percentage}%
                         </div>
                     </div>
                 ) : (
@@ -69,17 +71,16 @@ const PortfolioMetrics = ({ portfolioId }: PortfolioMetricsProps) => {
                         <div className="flex flex-row items-center justify-between w-full">
                             <span>Portfolio volatility</span>
                             <span>
-                                {data.riskMetrics.volatility > 0
-                                    ? data.riskMetrics.volatility.toFixed(2) +
-                                      "%"
+                                {data.riskMetrics.riskLevel !== "unknown"
+                                    ? `${data.riskMetrics.volatility}%`
                                     : "---"}
                             </span>
                         </div>
                         <div className="flex flex-row items-center justify-between w-full">
                             <span>Sortino ratio</span>
                             <span>
-                                {data.riskMetrics.sortinoRatio > 0
-                                    ? data.riskMetrics.sortinoRatio.toFixed(2)
+                                {data.riskMetrics.riskLevel !== "unknown"
+                                    ? data.riskMetrics.sortinoRatio
                                     : "---"}
                             </span>
                         </div>
@@ -88,20 +89,20 @@ const PortfolioMetrics = ({ portfolioId }: PortfolioMetricsProps) => {
                             className={cn(
                                 "flex flex-row items-center justify-between w-full",
                                 data.riskMetrics.riskLevel === "low" &&
-                                    "text-primary-base",
+                                    "text-positive-base",
                                 data.riskMetrics.riskLevel === "medium" &&
                                     "text-accent-dark",
                                 data.riskMetrics.riskLevel === "high" &&
                                     "text-negative-base",
-                                data.riskMetrics.sortinoRatio == 0 &&
-                                    data.riskMetrics.volatility == 0 &&
+                                data.riskMetrics.riskLevel === "veryHigh" &&
+                                    "text-negative-dark",
+                                data.riskMetrics.riskLevel === "unknown" &&
                                     "text-muted-dark",
                             )}
                         >
                             <span>Risk level</span>
                             <span>
-                                {data.riskMetrics.sortinoRatio > 0 &&
-                                data.riskMetrics.volatility > 0
+                                {data.riskMetrics.riskLevel !== "unknown"
                                     ? riskLevelLabelMap[
                                           data.riskMetrics.riskLevel
                                       ]

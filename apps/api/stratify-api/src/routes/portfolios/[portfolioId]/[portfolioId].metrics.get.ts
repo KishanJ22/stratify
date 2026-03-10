@@ -12,7 +12,13 @@ import { retrieveInvestments } from "./retrievePortfolioInvestments.js";
 import { calculateAssetVariance } from "./calculateAssetVariance.js";
 import logger from "../../../logger.js";
 
-const riskLevelValues = ["low", "medium", "high"] as const;
+const riskLevelValues = [
+    "low",
+    "medium",
+    "high",
+    "veryHigh",
+    "unknown",
+] as const;
 
 const riskLevelSchema = Type.Union(
     riskLevelValues.map((level) => Type.Literal(level)),
@@ -53,15 +59,33 @@ const determineRiskLevel = (
     volatility: number,
     sortinoRatio: number,
 ): RiskLevel => {
-    if (volatility < 10 && sortinoRatio > 2) {
-        return "low";
+    let baseLevel = 0;
+
+    //? Determine base risk level based on volatility
+    if (volatility < 15) {
+        baseLevel = 0;
+    } else if (volatility < 25) {
+        baseLevel = 1;
+    } else if (volatility < 45) {
+        baseLevel = 2;
+    } else {
+        baseLevel = 3;
     }
 
-    if (volatility < 20 && sortinoRatio > 1) {
-        return "medium";
+    //? If sortino is high, then decrease the risk level by 1 as the portfolio is performing well
+    //? Otherwise, increase the risk level by 1
+    if (sortinoRatio > 2) {
+        baseLevel = Math.max(0, baseLevel - 1);
+    } else if (sortinoRatio < 1) {
+        baseLevel = Math.min(3, baseLevel + 1);
     }
 
-    return "high";
+    //? Return unknown as the risk metrics have not been calculated for the asset
+    if (volatility === 0 && sortinoRatio === 0) {
+        return "unknown";
+    } else {
+        return riskLevelValues[baseLevel];
+    }
 };
 
 const retrievePortfolioMetrics = async (portfolioId: number) => {
@@ -89,10 +113,19 @@ const retrievePortfolioMetrics = async (portfolioId: number) => {
 
     const overallReturnPercentage = (overallReturnAbsolute / totalCost) * 100;
 
-    const assetWeights = investments.map((investment) => ({
-        id: investment.assetId,
-        weight: investment.currentValue / totalValue,
-    }));
+    const assetWeights = investments.map((investment) => {
+        if (investment.currentValue > 0) {
+            return {
+                id: investment.assetId,
+                weight: investment.currentValue / totalValue,
+            };
+        } else {
+            return {
+                id: investment.assetId,
+                weight: 0,
+            };
+        }
+    });
 
     const assetVariances = await Promise.all(
         assetWeights.map(async ({ id }) => await calculateAssetVariance(id)),
@@ -106,7 +139,7 @@ const retrievePortfolioMetrics = async (portfolioId: number) => {
                     (variance) => variance.assetId === asset.id,
                 );
 
-                if (assetVariance && asset.weight) {
+                if (assetVariance && asset.weight > 0) {
                     return {
                         portfolioVariance:
                             acc.portfolioVariance +
