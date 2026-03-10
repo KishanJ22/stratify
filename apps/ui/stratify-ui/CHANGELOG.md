@@ -1,5 +1,11 @@
 # @stratify/stratify-ui
 
+## 0.3.1
+
+### Patch Changes
+
+- a4a8990: Fix failing docker image build
+
 ## 0.3.0
 
 ### Minor Changes
