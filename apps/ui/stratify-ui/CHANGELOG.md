@@ -1,5 +1,20 @@
 # @stratify/stratify-ui
 
+## 0.3.0
+
+### Minor Changes
+
+- 4f62965: - Build components to display the overall return and risk for a portfolio
+    - Add unit tests for the portfolio metrics components
+    - Fix bug where fields in the modals for adding an investment and trade are not cleared after submitting or exiting the modal
+    - Fix bug where the modals for adding an investment and trade do not handle assets in GBX currency correctly
+    - Ensure that the return for each investment is displayed even if the investment has no current holdings as the return includes realised and unrealised returns
+
+### Patch Changes
+
+- Updated dependencies [4f62965]
+    - @stratify/stratify-api@0.4.0
+
 ## 0.2.1
 
 ### Patch Changes
