@@ -18,9 +18,9 @@ RUN apk update && apk add libc6-compat --no-cache
 WORKDIR /app
 
 # First install the dependencies (as they change less often)
-COPY --from=builder /app/out/json/ .
+COPY --from=builder /app/out/json/ . 
 
-RUN pnpm i
+RUN pnpm i --frozen-lockfile
 
 # Build the project
 COPY --from=builder /app/out/full/ .
