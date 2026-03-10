@@ -1,5 +1,11 @@
 # @stratify/stratify-api
 
+## 0.4.1
+
+### Patch Changes
+
+- a7b236a: Docker image build fixes
+
 ## 0.4.0
 
 ### Minor Changes

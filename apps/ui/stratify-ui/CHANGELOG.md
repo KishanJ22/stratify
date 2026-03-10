@@ -1,5 +1,13 @@
 # @stratify/stratify-ui
 
+## 0.3.2
+
+### Patch Changes
+
+- a7b236a: Docker image build fixes
+- Updated dependencies [a7b236a]
+    - @stratify/stratify-api@0.4.1
+
 ## 0.3.1
 
 ### Patch Changes
