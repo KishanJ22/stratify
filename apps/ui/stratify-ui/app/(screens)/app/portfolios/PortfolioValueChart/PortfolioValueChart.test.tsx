@@ -41,12 +41,12 @@ describe("PortfolioValueChart", () => {
         vi.clearAllMocks();
     });
 
-    const renderComponent = (portfolioId = 1) =>
+    const renderComponent = () =>
         renderWithContext({
             children: (
                 <MockSessionProvider>
                     <TooltipProvider>
-                        <PortfolioValueChart portfolioId={portfolioId} />
+                        <PortfolioValueChart portfolioId={1} />
                     </TooltipProvider>
                 </MockSessionProvider>
             ),

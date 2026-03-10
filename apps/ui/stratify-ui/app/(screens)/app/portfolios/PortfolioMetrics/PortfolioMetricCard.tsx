@@ -23,7 +23,14 @@ const PortfolioMetricCard = ({
         <div className="bg-secondary-lightest rounded-xl py-2.5 px-3 border border-primary-dark font-sans">
             <div className="flex items-center gap-1 mb-2">
                 <span className="text-xl font-medium text-primary-darker">
-                    {isLoading ? <Skeleton className="w-[100px] h-5" /> : title}
+                    {isLoading ? (
+                        <Skeleton
+                            className="w-25 h-5"
+                            data-testid="portfolio-metric-card-title-skeleton"
+                        />
+                    ) : (
+                        title
+                    )}
                 </span>
                 <Tooltip>
                     <TooltipTrigger data-testid="portfolio-metric-card-info-icon">
@@ -34,7 +41,14 @@ const PortfolioMetricCard = ({
                     </TooltipContent>
                 </Tooltip>
             </div>
-            {isLoading ? <Skeleton className="w-full h-10" /> : children}
+            {isLoading ? (
+                <Skeleton
+                    className="w-full h-10"
+                    data-testid="portfolio-metric-card-value-skeleton"
+                />
+            ) : (
+                children
+            )}
         </div>
     );
 };

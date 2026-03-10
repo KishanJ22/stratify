@@ -41,6 +41,7 @@ const PortfolioMetrics = ({ portfolioId }: PortfolioMetricsProps) => {
                                 ? "text-positive-base"
                                 : "text-negative-base"
                         }`}
+                        data-testid="overall-return"
                     >
                         <span>
                             {data.overallReturn.absolute >= 0 ? "+" : ""}
@@ -49,9 +50,15 @@ const PortfolioMetrics = ({ portfolioId }: PortfolioMetricsProps) => {
                         </span>
                         <div className="flex flex-row items-center gap-x-1">
                             {data.overallReturn.percentage >= 0 ? (
-                                <ChartColumnIncreasing size={22} />
+                                <ChartColumnIncreasing
+                                    size={22}
+                                    data-testid="chart-column-increasing"
+                                />
                             ) : (
-                                <ChartColumnDecreasing size={22} />
+                                <ChartColumnDecreasing
+                                    size={22}
+                                    data-testid="chart-column-decreasing"
+                                />
                             )}
                             {data.overallReturn.percentage >= 0 ? "+" : ""}
                             {data.overallReturn.percentage}%
