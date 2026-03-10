@@ -124,13 +124,17 @@ const AddTradeModal = ({
 
             addTrade(requestBody, {
                 onSuccess: () => {
-                    //? Invalidate the query for getting the investments in the portfolio so that the now updated list can be fetched
+                    //? Invalidate the queries related to the portfolio to automatically fetch updated data
                     queryClient.invalidateQueries({
                         queryKey: ["investments-list", portfolioId],
                     });
 
                     queryClient.invalidateQueries({
                         queryKey: ["portfolio-value-history", portfolioId],
+                    });
+
+                    queryClient.invalidateQueries({
+                        queryKey: ["portfolio-metrics", portfolioId],
                     });
 
                     toast.success(
@@ -194,13 +198,22 @@ const AddTradeModal = ({
             );
         }
 
+        if (assetCurrency === "GBX" && userCurrency === "GBP") {
+            form.setFieldValue("currencyConversionRate", "0.01");
+        }
+
         if (historicCurrencyPairPrice) {
+            const conversionRate =
+                assetCurrency === "GBX"
+                    ? parseFloat(historicCurrencyPairPrice.price) / 100
+                    : parseFloat(historicCurrencyPairPrice.price);
+
             form.setFieldValue(
                 "currencyConversionRate",
-                historicCurrencyPairPrice.price.toString(),
+                conversionRate.toString(),
             );
         }
-    }, [historicAssetPrice, historicCurrencyPairPrice, form]);
+    }, [historicAssetPrice, historicCurrencyPairPrice, form, assetCurrency]);
 
     const pricePerShare = formValues.pricePerShare
         ? parseFloat(formValues.pricePerShare)
@@ -237,8 +250,8 @@ const AddTradeModal = ({
         <Dialog
             open={isOpen}
             onOpenChange={() => {
-                handleClose();
                 form.reset();
+                handleClose();
             }}
         >
             <DialogContent className="bg-muted-lightest border border-primary-dark font-sans">
@@ -297,7 +310,7 @@ const AddTradeModal = ({
 
                                 if (isCurrencyConversionRequired) {
                                     fetchHistoricCurrencyPairPrice({
-                                        currencyPair: `${assetCurrency}${userCurrency}`,
+                                        currencyPair: `${assetCurrency === "GBX" ? "GBP" : assetCurrency}${userCurrency}`,
                                         tradeDate: value,
                                     });
                                 }

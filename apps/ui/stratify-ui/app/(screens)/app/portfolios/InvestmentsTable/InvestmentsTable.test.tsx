@@ -18,6 +18,7 @@ const mockInvestmentsData = [
         currentAssetCurrencyValue: 3040,
         currentReturn: 1489.2,
         currentReturnPercentage: 204,
+        totalBuyAmount: 730,
     },
 ] satisfies Investment[];
 

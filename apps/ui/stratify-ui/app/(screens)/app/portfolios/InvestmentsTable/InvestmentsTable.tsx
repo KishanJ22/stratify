@@ -27,6 +27,7 @@ const noPortfolioSelectedData: Investment[] = Array.from({ length: 5 }, () => ({
     currentReturn: 0,
     currentAssetCurrencyValue: null,
     currentReturnPercentage: 0,
+    totalBuyAmount: 0,
 }));
 
 const NoInvestmentsComponent = () => (

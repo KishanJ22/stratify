@@ -37,7 +37,9 @@ const assetsSearchQuery = (query: string) => {
             "assets.currency as currency",
             "assets.type as assetType",
             "assets.countryId as countryId",
-        ]);
+        ])
+        .orderBy("assets.name", "asc")
+        .limit(10);
 };
 
 export type DbSearchAsset = InferResult<

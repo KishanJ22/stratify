@@ -108,9 +108,9 @@ describe("GET /portfolios/:portfolioId/investments", () => {
                     portfolioId: portfolio.id,
                     assetId: 1,
                     quantity: 5,
-                    pricePerShare: 150,
-                    totalAmount: 750,
-                    assetCurrencyTotalAmount: 800,
+                    pricePerShare: 100,
+                    totalAmount: 500,
+                    assetCurrencyTotalAmount: 500,
                     tradeAction: "BUY",
                     tradeDate: new Date("2026-02-02"),
                 },
@@ -118,19 +118,19 @@ describe("GET /portfolios/:portfolioId/investments", () => {
                     portfolioId: portfolio.id,
                     assetId: 1,
                     quantity: 10,
-                    pricePerShare: 150,
-                    totalAmount: 1500,
-                    assetCurrencyTotalAmount: 1600,
+                    pricePerShare: 100,
+                    totalAmount: 1000,
+                    assetCurrencyTotalAmount: 1000,
                     tradeAction: "BUY",
                     tradeDate: new Date("2026-02-03"),
                 },
                 {
                     portfolioId: portfolio.id,
                     assetId: 2,
-                    quantity: 20,
-                    pricePerShare: 50,
-                    totalAmount: 1000,
-                    assetCurrencyTotalAmount: 1100,
+                    quantity: 10,
+                    pricePerShare: 75,
+                    totalAmount: 750,
+                    assetCurrencyTotalAmount: 825,
                     tradeAction: "BUY",
                     tradeDate: new Date("2026-02-04"),
                 },
@@ -153,19 +153,6 @@ describe("GET /portfolios/:portfolioId/investments", () => {
         expect(json).toEqual({
             data: [
                 {
-                    assetId: 2,
-                    symbol: "LEON",
-                    assetCountryId: 224,
-                    assetCurrency: "USD",
-                    name: "Leonida Inc.",
-                    shares: 20,
-                    type: "STOCK",
-                    currentValue: 2219.2,
-                    currentAssetCurrencyValue: 3040,
-                    currentReturn: 1489.2,
-                    currentReturnPercentage: 204,
-                },
-                {
                     assetId: 1,
                     symbol: "AAPL",
                     assetCountryId: 224,
@@ -175,8 +162,23 @@ describe("GET /portfolios/:portfolioId/investments", () => {
                     type: "STOCK",
                     currentValue: 1664.4,
                     currentAssetCurrencyValue: 2280,
-                    currentReturn: 21.9,
-                    currentReturnPercentage: 1.33,
+                    currentReturn: 164.4,
+                    currentReturnPercentage: 10.96,
+                    totalBuyAmount: 1500,
+                },
+                {
+                    assetId: 2,
+                    symbol: "LEON",
+                    assetCountryId: 224,
+                    assetCurrency: "USD",
+                    name: "Leonida Inc.",
+                    shares: 10,
+                    type: "STOCK",
+                    currentValue: 1109.6,
+                    currentAssetCurrencyValue: 1520,
+                    currentReturn: 359.6,
+                    currentReturnPercentage: 47.95,
+                    totalBuyAmount: 750,
                 },
             ],
         });
@@ -276,6 +278,7 @@ describe("GET /portfolios/:portfolioId/investments", () => {
                     currentAssetCurrencyValue: null,
                     currentReturn: 30,
                     currentReturnPercentage: 1.33,
+                    totalBuyAmount: 2250,
                 },
                 {
                     assetId: 2,
@@ -289,12 +292,13 @@ describe("GET /portfolios/:portfolioId/investments", () => {
                     currentAssetCurrencyValue: null,
                     currentReturn: 260,
                     currentReturnPercentage: 52,
+                    totalBuyAmount: 500,
                 },
             ],
         });
     });
 
-    it("should not count SELL trades towards the total shares and returns of an investment", async () => {
+    it("should not count SELL trades towards the total count of an investment", async () => {
         await createUser("test-user").execute();
 
         await db
@@ -378,7 +382,8 @@ describe("GET /portfolios/:portfolioId/investments", () => {
                     currentValue: 1520,
                     currentAssetCurrencyValue: null,
                     currentReturn: 120,
-                    currentReturnPercentage: 8.57,
+                    currentReturnPercentage: 5.33,
+                    totalBuyAmount: 2250,
                 },
             ],
         });

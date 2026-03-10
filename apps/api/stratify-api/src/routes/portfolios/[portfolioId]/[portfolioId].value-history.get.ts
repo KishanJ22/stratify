@@ -3,7 +3,6 @@ import {
     PortfolioIdParam,
     portfolioIdParamSchema,
 } from "./investments.schema.js";
-import { portfolioInvestmentsQuery } from "./[portfolioId].investments.get.js";
 import logger from "../../../logger.js";
 import { getFromStore } from "../../../plugins/localStorage.js";
 import { UserDetails } from "../../../utils/decodeToken.js";
@@ -12,7 +11,8 @@ import { createNotFound } from "../../../utils/createNotFoundSchema.js";
 import { fetchCurrentPrice } from "../../assets/fetch-current-price.js";
 import db from "../../../database/db.js";
 import { AssetType } from "../../../schemas/common-schemas.js";
-import { getCurrencyConversionRate } from "../../../utils/getCurrencyConversionRate.js";
+import { latestCurrencyConversionRateQuery } from "../../../utils/latestCurrencyRateQuery.js";
+import { portfolioInvestmentsQuery } from "./portfolioInvestmentsQuery.js";
 
 const valueHistorySchema = Type.Object({
     portfolioValue: Type.Number(),
@@ -111,11 +111,18 @@ const calculatePortfolioValueHistory = async (portfolioId: number) => {
 
     const currencyConversionsRequired = new Set<string>();
 
-    uniqueAssets.forEach((asset) => {
-        const key = `${asset.assetCurrency}${userCurrency}`;
+    uniqueAssets.forEach(({ assetCurrency }) => {
+        if (assetCurrency === "GBX" && userCurrency === "GBP") {
+            return;
+        }
 
-        if (asset?.assetCurrency && asset.assetCurrency !== userCurrency) {
-            if (!currencyConversionsRequired.has(key)) {
+        const key = `${assetCurrency === "GBX" ? "GBP" : assetCurrency}${userCurrency}`;
+
+        if (assetCurrency) {
+            if (
+                assetCurrency !== userCurrency &&
+                !currencyConversionsRequired.has(key)
+            ) {
                 currencyConversionsRequired.add(key);
             }
         }
@@ -134,7 +141,7 @@ const calculatePortfolioValueHistory = async (portfolioId: number) => {
         today,
     ).execute();
 
-    const historicCurrencyConversions =
+    const historicCurrencyRates =
         currencyPairs.length > 0
             ? await bulkHistoricCurrencyConversionQuery(
                   currencyPairs,
@@ -152,17 +159,31 @@ const calculatePortfolioValueHistory = async (portfolioId: number) => {
         assetPriceMap.set(key, parseFloat(price.price));
     });
 
-    const currencyConversionMap = new Map<string, number>();
+    const historicCurrencyRatesMap = new Map<string, number>();
+    const latestCurrencyRatesMap = new Map<string, number>();
 
-    historicCurrencyConversions.forEach((conversion) => {
-        const key = `${conversion.currencyPair}-${
-            conversion.priceDate.toISOString().split("T")[0]
+    historicCurrencyRates.forEach((rate) => {
+        const key = `${rate.currencyPair}-${
+            rate.priceDate.toISOString().split("T")[0]
         }`;
-        currencyConversionMap.set(key, parseFloat(conversion.price));
+        historicCurrencyRatesMap.set(key, parseFloat(rate.price));
     });
 
+    await Promise.all(
+        currencyPairs.map(async (currencyPair) => {
+            const { price } =
+                await latestCurrencyConversionRateQuery(
+                    currencyPair,
+                ).executeTakeFirstOrThrow();
+
+            if (price) {
+                latestCurrencyRatesMap.set(currencyPair, parseFloat(price));
+            }
+        }),
+    );
+
     //? Fetch the current prices for all assets in the portfolio and add them to a map similar to the historic prices above
-    const currentPricesMap = new Map<number, number>();
+    const currentAssetPricesMap = new Map<number, number>();
 
     await Promise.all(
         uniqueAssets.map(async (asset) => {
@@ -172,7 +193,7 @@ const calculatePortfolioValueHistory = async (portfolioId: number) => {
                 asset.assetType === "CRYPTOCURRENCY",
             ).then((price) => price?.currentPrice || 0);
 
-            currentPricesMap.set(asset.assetId, currentPrice ?? 0);
+            currentAssetPricesMap.set(asset.assetId, currentPrice ?? 0);
         }),
     );
 
@@ -228,48 +249,76 @@ const calculatePortfolioValueHistory = async (portfolioId: number) => {
         for (const [assetId, quantity] of netAssetQuantity) {
             if (quantity === 0) continue;
 
-            //? If the current date is today, then use the current price for the asset otherwise use the historic price on the current date
+            const asset = uniqueAssetsMap.get(assetId);
+
+            const fridayPricePerShare = assetPriceMap.get(
+                `${assetId}-${formattedFridayDate}`,
+            );
+
+            const historicPricePerShare =
+                isWeekend && asset?.assetType !== "CRYPTOCURRENCY"
+                    ? fridayPricePerShare
+                    : assetPriceMap.get(`${assetId}-${formattedDate}`);
+
+            const currentPricePerShare = currentAssetPricesMap.get(assetId);
+
             const pricePerShare =
-                (formattedDate === formattedToday
-                    ? currentPricesMap.get(assetId)
-                    : assetPriceMap.get(`${assetId}-${formattedDate}`)) || 0;
+                formattedDate === formattedToday
+                    ? currentPricePerShare
+                    : historicPricePerShare;
 
-            const fridayPricePerShare =
-                assetPriceMap.get(`${assetId}-${formattedFridayDate}`) || 0;
+            const investmentAmount = quantity * (pricePerShare || 0);
 
-            const investmentAmount = isWeekend
-                ? quantity * fridayPricePerShare
-                : quantity * pricePerShare;
+            const assetCurrency =
+                asset?.assetCurrency === "GBX"
+                    ? "GBP"
+                    : (asset?.assetCurrency as string);
 
-            const trade = trades.find((trade) => trade.assetId === assetId);
-            const currencyPair = `${trade?.assetCurrency}${userCurrency}`;
+            const currencyPair = `${assetCurrency}${userCurrency}`;
 
             //? If the asset currency is different from the user's currency, then convert the price per share to the user's currency
             if (currencyConversionsRequired.has(currencyPair)) {
-                const key = `${currencyPair}-${formattedDate}`;
+                const fridayConversionRate = historicCurrencyRatesMap.get(
+                    `${currencyPair}-${formattedFridayDate}`,
+                );
 
-                const conversionRate = isWeekend
-                    ? currencyConversionMap.get(
-                          `${currencyPair}-${formattedFridayDate}`,
-                      )
-                    : currencyConversionMap.get(key);
+                const historicConversionRate = isWeekend
+                    ? fridayConversionRate
+                    : historicCurrencyRatesMap.get(
+                          `${currencyPair}-${formattedDate}`,
+                      );
+
+                const latestConversionRate =
+                    latestCurrencyRatesMap.get(currencyPair);
+
+                const conversionRate =
+                    formattedDate === formattedToday
+                        ? latestConversionRate
+                        : historicConversionRate;
 
                 if (conversionRate) {
                     const convertedInvestmentAmount =
                         investmentAmount * conversionRate;
-                    totalValue += convertedInvestmentAmount;
+                    totalValue +=
+                        asset?.assetCurrency === "GBX"
+                            ? convertedInvestmentAmount * 0.01
+                            : convertedInvestmentAmount;
                 } else {
-                    const currentConversionRate =
-                        await getCurrencyConversionRate(
-                            trade?.assetCurrency || "",
-                            userCurrency,
-                            investmentAmount,
-                        );
+                    if (latestConversionRate) {
+                        const convertedAmount =
+                            investmentAmount * latestConversionRate;
 
-                    totalValue += currentConversionRate;
+                        totalValue +=
+                            asset?.assetCurrency === "GBX"
+                                ? convertedAmount * 0.01
+                                : convertedAmount;
+                    }
                 }
             } else {
-                totalValue += investmentAmount;
+                totalValue +=
+                    asset?.assetCurrency === "GBX"
+                        ? investmentAmount * 0.01
+                        : investmentAmount;
             }
         }
 

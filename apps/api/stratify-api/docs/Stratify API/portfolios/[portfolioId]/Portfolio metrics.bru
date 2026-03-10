@@ -1,0 +1,20 @@
+meta {
+  name: Portfolio metrics
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/portfolios/:portfolioId/metrics
+  body: none
+  auth: inherit
+}
+
+params:path {
+  portfolioId: 11
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

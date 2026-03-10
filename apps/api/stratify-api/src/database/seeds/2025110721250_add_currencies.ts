@@ -7,6 +7,13 @@ interface SeedCurrency {
     name: string;
 }
 
+const otherCurrencies = [
+    {
+        code: "GBX",
+        name: "British Pence",
+    },
+] satisfies SeedCurrency[];
+
 const insertCurrencies = (db: Kysely<DB>, currencies: SeedCurrency[]) =>
     db
         .insertInto("stratify.currencies")
@@ -14,7 +21,7 @@ const insertCurrencies = (db: Kysely<DB>, currencies: SeedCurrency[]) =>
         .onConflict((c) => c.column("code").doNothing());
 
 const getCurrencies = () =>
-    currencyCodes.codes().reduce((acc: SeedCurrency[], code: string) => {
+    currencyCodes.codes().reduce((acc, code) => {
         const currency = currencyCodes.code(code);
 
         if (currency?.code && currency?.currency) {
@@ -25,9 +32,9 @@ const getCurrencies = () =>
         }
 
         return acc;
-    }, []);
+    }, [] as SeedCurrency[]);
 
 export async function seed(db: Kysely<DB>) {
-    const currencies = getCurrencies();
+    const currencies = [...getCurrencies(), ...otherCurrencies];
     await insertCurrencies(db, currencies).execute();
 }

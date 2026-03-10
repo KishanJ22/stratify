@@ -8,15 +8,19 @@ import { TooltipProvider } from "@/app/components/ui/tooltip";
 
 const mockPortfolioValueHistoryData = [
     {
-        date: "2026-02-01",
+        date: new Date(new Date().setDate(new Date().getDate() - 2))
+            .toISOString()
+            .split("T")[0],
         portfolioValue: 10000,
     },
     {
-        date: "2026-02-02",
+        date: new Date(new Date().setDate(new Date().getDate() - 1))
+            .toISOString()
+            .split("T")[0],
         portfolioValue: 10500,
     },
     {
-        date: "2026-02-03",
+        date: new Date().toISOString().split("T")[0],
         portfolioValue: 11000,
     },
 ] satisfies PortfolioValueHistory[];
@@ -37,12 +41,12 @@ describe("PortfolioValueChart", () => {
         vi.clearAllMocks();
     });
 
-    const renderComponent = (portfolioId = 1) =>
+    const renderComponent = () =>
         renderWithContext({
             children: (
                 <MockSessionProvider>
                     <TooltipProvider>
-                        <PortfolioValueChart portfolioId={portfolioId} />
+                        <PortfolioValueChart portfolioId={1} />
                     </TooltipProvider>
                 </MockSessionProvider>
             ),
@@ -57,11 +61,11 @@ describe("PortfolioValueChart", () => {
 
         expect(screen.getByText("Portfolio value")).toBeInTheDocument();
         expect(selectedDateRange).toHaveTextContent("Last 30 days");
-
         expect(screen.getByText("11,000")).toBeInTheDocument();
+
         expect(screen.getByText("(GBP)")).toBeInTheDocument();
 
-        expect(screen.getByText("+4.76%")).toBeInTheDocument();
+        expect(screen.getByText("+10.00%")).toBeInTheDocument();
         expect(screen.getByText("in the past thirty days")).toBeInTheDocument();
     });
 

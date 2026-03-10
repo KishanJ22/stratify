@@ -7,6 +7,7 @@ import { usePortfolioList } from "./SelectedPortfolio/usePortfolioList";
 import InvestmentsTable from "./InvestmentsTable/InvestmentsTable";
 import AddInvestmentButton from "./AddInvestment/AddInvestmentButton";
 import PortfolioValueChart from "./PortfolioValueChart/PortfolioValueChart";
+import PortfolioMetrics from "./PortfolioMetrics/PortfolioMetrics";
 
 export default function PortfoliosPage() {
     const { data, isLoading } = usePortfolioList();
@@ -42,6 +43,9 @@ export default function PortfoliosPage() {
                         <PortfolioValueChart
                             portfolioId={selectedPortfolioId}
                         />
+                    </div>
+                    <div className="ml-13">
+                        <PortfolioMetrics portfolioId={selectedPortfolioId} />
                     </div>
                 </div>
             </div>

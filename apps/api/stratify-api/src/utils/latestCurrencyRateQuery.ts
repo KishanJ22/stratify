@@ -1,9 +1,6 @@
 import db from "../database/db.js";
 
-export const latestCurrencyConversionRateQuery = (
-    fromCurrency: string,
-    toCurrency: string,
-) =>
+export const latestCurrencyConversionRateQuery = (currencyPair: string) =>
     db
         .selectFrom("stratify.assetPrices as assetPrices")
         .innerJoin(
@@ -11,7 +8,7 @@ export const latestCurrencyConversionRateQuery = (
             "assets.id",
             "assetPrices.assetId",
         )
-        .where("assets.symbol", "=", `${fromCurrency}${toCurrency}`)
+        .where("assets.symbol", "=", currencyPair)
         .select("assetPrices.closePrice as price")
         .orderBy("assetPrices.priceDate", "desc")
         .limit(1);
