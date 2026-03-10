@@ -27,7 +27,7 @@ COPY apps/api/stratify-data-api/docs/openapi.json apps/api/stratify-data-api/doc
 # Install all dependencies for the app and build it for deployment
 RUN pnpm install --frozen-lockfile --filter=@stratify/stratify-api
 RUN pnpm build --filter=@stratify/stratify-api
-RUN pnpm --filter=@stratify/stratify-api --prod deploy builder
+RUN pnpm --filter=@stratify/stratify-api --prod deploy builder --legacy
 
 # Set permissions for node user to access the app files
 RUN chown -R node:root /app

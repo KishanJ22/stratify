@@ -19,7 +19,7 @@
     "keywords": [],
     "author": "Kishan Jethwa",
     "license": "ISC",
-    "packageManager": "pnpm@10.6.3",
+    "packageManager": "pnpm@10.32.0",
     "dependencies": {
         "@changesets/cli": "^2.29.8"
     },
@@ -31,7 +31,7 @@
         "eslint-plugin-react": "^7.37.5",
         "globals": "^16.5.0",
         "prettier": "^3.7.4",
-        "turbo": "^2.7.2",
+        "turbo": "2.8.15",
         "typescript-eslint": "^8.50.1",
         "vitest": "4.0.17"
     }
