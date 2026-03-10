@@ -87,7 +87,7 @@ const retrievePortfolioMetrics = async (portfolioId: number) => {
         },
     );
 
-    const overallReturnPercentage = overallReturnAbsolute / totalCost;
+    const overallReturnPercentage = (overallReturnAbsolute / totalCost) * 100;
 
     const assetWeights = investments.map((investment) => ({
         id: investment.assetId,
@@ -143,12 +143,12 @@ const retrievePortfolioMetrics = async (portfolioId: number) => {
     return {
         totalValue,
         overallReturn: {
-            percentage: overallReturnPercentage * 100,
+            percentage: parseFloat(overallReturnPercentage.toFixed(2)),
             absolute: overallReturnAbsolute,
         },
         riskMetrics: {
-            volatility,
-            sortinoRatio,
+            volatility: parseFloat(volatility.toFixed(2)),
+            sortinoRatio: parseFloat(sortinoRatio.toFixed(2)),
             riskLevel,
         },
     } satisfies PortfolioMetrics;
