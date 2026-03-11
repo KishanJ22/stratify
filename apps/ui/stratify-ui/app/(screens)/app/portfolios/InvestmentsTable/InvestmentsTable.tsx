@@ -11,10 +11,6 @@ import AddTradeModal from "../AddTrade/AddTradeModal";
 export type Investment =
     paths["/portfolios/{portfolioId}/investments"]["get"]["responses"]["200"]["content"]["application/json"]["data"][number];
 
-interface InvestmentsTableProps {
-    portfolioId: number | null;
-}
-
 const noPortfolioSelectedData: Investment[] = Array.from({ length: 5 }, () => ({
     assetId: 0,
     symbol: "",
@@ -35,6 +31,10 @@ const NoInvestmentsComponent = () => (
         No investments found for this portfolio.
     </div>
 );
+
+interface InvestmentsTableProps {
+    portfolioId: number | null;
+}
 
 const InvestmentsTable = ({ portfolioId }: InvestmentsTableProps) => {
     const { data, isLoading, refetch } = useInvestmentsList(portfolioId);

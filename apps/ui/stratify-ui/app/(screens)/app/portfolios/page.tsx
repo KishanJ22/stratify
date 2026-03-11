@@ -8,6 +8,7 @@ import InvestmentsTable from "./InvestmentsTable/InvestmentsTable";
 import AddInvestmentButton from "./AddInvestment/AddInvestmentButton";
 import PortfolioValueChart from "./PortfolioValueChart/PortfolioValueChart";
 import PortfolioMetrics from "./PortfolioMetrics/PortfolioMetrics";
+import AssetAllocationCard from "./AssetAllocationCard/AssetAllocationCard";
 
 export default function PortfoliosPage() {
     const { data, isLoading } = usePortfolioList();
@@ -50,13 +51,20 @@ export default function PortfoliosPage() {
                 </div>
             </div>
             <div className="mt-8">
-                <div className="flex flex-row items-center justify-between">
-                    <div className="font-sans text-3xl text-primary-base font-semibold">
-                        Investments
+                <div className="flex flex-row gap-x-10 items-center">
+                    <div>
+                        <div className="flex flex-row items-center justify-between">
+                            <div className="font-sans text-3xl text-primary-base font-semibold">
+                                Investments
+                            </div>
+                            <AddInvestmentButton
+                                portfolioId={selectedPortfolioId}
+                            />
+                        </div>
+                        <InvestmentsTable portfolioId={selectedPortfolioId} />
                     </div>
-                    <AddInvestmentButton portfolioId={selectedPortfolioId} />
+                    <AssetAllocationCard portfolioId={selectedPortfolioId} />
                 </div>
-                <InvestmentsTable portfolioId={selectedPortfolioId} />
             </div>
         </div>
     );
