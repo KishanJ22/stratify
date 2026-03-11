@@ -4,6 +4,9 @@ import { UserDetails } from "../../../../utils/decodeToken.js";
 import { fetchCurrentPrice } from "../../../assets/fetch-current-price.js";
 import { formatInvestmentDetails } from "./formatInvestmentDetails.js";
 import { portfolioInvestmentsQuery } from "../portfolioInvestmentsQuery.js";
+import { fetchStockDetails } from "./fetchStockDetails.js";
+import { fetchFundDetails } from "./fetchFundDetails.js";
+import { SectorDetails } from "./investments.schema.js";
 
 export interface GroupedInvestment {
     id: number;
@@ -17,6 +20,40 @@ export interface GroupedInvestment {
     totalBuyAmount: number;
     realisedReturn: number;
 }
+
+const retrieveSectorDetails = async (
+    symbol: string,
+    countryId: number,
+    type: AssetType,
+): Promise<SectorDetails[]> => {
+    if (type === "CRYPTOCURRENCY") {
+        return [
+            {
+                sector: "cryptocurrency",
+                weight: 1,
+            },
+        ];
+    } else if (type === "STOCK") {
+        const stockDetails = await fetchStockDetails(symbol, countryId);
+
+        if (stockDetails?.industryDetails.sector) {
+            return [
+                {
+                    sector: stockDetails.industryDetails.sector,
+                    weight: 1,
+                },
+            ];
+        }
+    } else {
+        const fundDetails = await fetchFundDetails(symbol, countryId);
+
+        if (fundDetails?.sectorWeights) {
+            return fundDetails.sectorWeights;
+        }
+    }
+
+    return [];
+};
 
 export const retrieveInvestments = async (portfolioId: number) => {
     const { userId, userCurrency } = getFromStore("user") as UserDetails;
@@ -122,11 +159,18 @@ export const retrieveInvestments = async (portfolioId: number) => {
                 return price * investment.shares;
             });
 
+            const sectorDetails = await retrieveSectorDetails(
+                symbol,
+                countryId,
+                type,
+            );
+
             //? Format the details of the investment, convert the monetary amounts by currency if needed and return it
             return await formatInvestmentDetails(
                 investment,
                 currentInvestmentValue,
                 userCurrency,
+                sectorDetails,
             );
         }),
     );

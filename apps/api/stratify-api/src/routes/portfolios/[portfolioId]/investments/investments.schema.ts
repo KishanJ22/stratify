@@ -7,6 +7,13 @@ export const portfolioIdParamSchema = Type.Object({
 });
 export type PortfolioIdParam = Static<typeof portfolioIdParamSchema>;
 
+const sectorDetails = Type.Object({
+    sector: Type.String(),
+    weight: Type.Number(),
+});
+
+export type SectorDetails = Static<typeof sectorDetails>;
+
 export const investmentSchema = Type.Object({
     assetId: Type.Number(),
     symbol: Type.String(),
@@ -20,6 +27,7 @@ export const investmentSchema = Type.Object({
     currentAssetCurrencyValue: Type.Union([Type.Number(), Type.Null()]),
     currentReturn: Type.Number(),
     currentReturnPercentage: Type.Number(),
+    sectorDetails: Type.Array(sectorDetails),
 });
 export type Investment = Static<typeof investmentSchema>;
 

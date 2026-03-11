@@ -1,4 +1,4 @@
-from src.routes.funds.funds_schema import FundItem
+from src.routes.funds.funds_schema import FundItem, SectorWeight
 from src.utils.clean_symbol import clean_symbol
 from fastapi import APIRouter, Query, HTTPException
 from yfinance import Tickers
@@ -6,12 +6,13 @@ from pydantic import BaseModel
 from typing import List
 
 def format_fund_info(ticker_info, sector_weights) -> FundItem:
-    formatted_sector_weights = dict[str, float]()
+    formatted_sector_weights = []
     
     for sector in sector_weights:
         weight = sector_weights[sector]
+        
         if (weight > 0):
-            formatted_sector_weights[sector] = weight
+            formatted_sector_weights.append(SectorWeight(sector=sector, weight=weight))
     
     return {
         "shortName": ticker_info.get("shortName"),
@@ -37,7 +38,7 @@ def format_fund_info(ticker_info, sector_weights) -> FundItem:
                 "changePercent": ticker_info.get("regularMarketChangePercent"),
             },
         },
-        "sectorWeights": formatted_sector_weights
+        "sectorWeights": sorted(formatted_sector_weights, key=lambda x: x.weight, reverse=True)
     }
     
 class FundsGetResponse(BaseModel):

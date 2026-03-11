@@ -1,5 +1,10 @@
 from src.utils.common_schemas import PriceDetails, ExchangeDetails
 from pydantic import BaseModel
+from typing import List
+
+class SectorWeight(BaseModel):
+    sector: str
+    weight: float
 
 class FundItem(BaseModel):
     shortName: str
@@ -11,4 +16,4 @@ class FundItem(BaseModel):
     currency: str
     exchange: ExchangeDetails
     priceDetails: PriceDetails
-    sectorWeights: dict[str, float]
+    sectorWeights: List[SectorWeight]

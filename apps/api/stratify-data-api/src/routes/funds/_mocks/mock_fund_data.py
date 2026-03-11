@@ -22,10 +22,22 @@ mock_fund_data = {
             "changePercent": 0.28,
         },
     },
-    "sectorWeights": {
-        "technology": 0.95,
-        "communication_services": 0.02,
-        "energy": 0.02,
-        "financial_services": 0.01,
-    }
+    "sectorWeights": [
+        {
+            "sector": "technology", 
+            "weight": 0.95
+        },
+        {
+            "sector": "communication_services", 
+            "weight": 0.02
+        },
+        {
+            "sector": "energy", 
+            "weight": 0.02
+        },
+        {
+            "sector": "financial_services", 
+            "weight": 0.01
+        }
+    ]
 }

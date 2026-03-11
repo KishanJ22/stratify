@@ -17,8 +17,30 @@ const mockAssetPriceResponse = {
 
 const mockGetCurrentPrice = vi.fn().mockResolvedValue(mockAssetPriceResponse);
 
+const mockSectorDetailsResponse = {
+    data: {
+        data: {
+            industryDetails: {
+                sector: "technology",
+            },
+        },
+    },
+};
+
+const mockFetchStockDetails = vi
+    .fn()
+    .mockResolvedValue(mockSectorDetailsResponse);
+
 const mockDataApiClient = {
-    GET: mockGetCurrentPrice,
+    GET: (url: string) => {
+        if (url.includes("/current-price")) {
+            return mockGetCurrentPrice();
+        }
+
+        if (url.includes("/stocks")) {
+            return mockFetchStockDetails();
+        }
+    },
 };
 
 vi.mock("../../../../lib/api/data-api-client", () => ({
