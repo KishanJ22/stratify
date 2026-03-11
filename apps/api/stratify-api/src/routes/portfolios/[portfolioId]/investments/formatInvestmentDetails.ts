@@ -1,5 +1,5 @@
-import { AssetType } from "../../../schemas/common-schemas.js";
-import { latestCurrencyConversionRateQuery } from "../../../utils/latestCurrencyRateQuery.js";
+import { AssetType } from "../../../../schemas/common-schemas.js";
+import { latestCurrencyConversionRateQuery } from "../../../../utils/latestCurrencyRateQuery.js";
 import type { Investment } from "./investments.schema.js";
 import { GroupedInvestment } from "./retrievePortfolioInvestments.js";
 

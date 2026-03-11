@@ -1,6 +1,6 @@
 import { Type, Static } from "@sinclair/typebox";
-import { createNotFound } from "../../../utils/createNotFoundSchema.js";
-import { assetTypeSchema } from "../../../schemas/common-schemas.js";
+import { createNotFound } from "../../../../utils/createNotFoundSchema.js";
+import { assetTypeSchema } from "../../../../schemas/common-schemas.js";
 
 export const portfolioIdParamSchema = Type.Object({
     portfolioId: Type.Number(),

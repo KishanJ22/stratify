@@ -1,9 +1,9 @@
-import { getFromStore } from "../../../plugins/localStorage.js";
-import { AssetType } from "../../../schemas/common-schemas.js";
-import { UserDetails } from "../../../utils/decodeToken.js";
-import { fetchCurrentPrice } from "../../assets/fetch-current-price.js";
+import { getFromStore } from "../../../../plugins/localStorage.js";
+import { AssetType } from "../../../../schemas/common-schemas.js";
+import { UserDetails } from "../../../../utils/decodeToken.js";
+import { fetchCurrentPrice } from "../../../assets/fetch-current-price.js";
 import { formatInvestmentDetails } from "./formatInvestmentDetails.js";
-import { portfolioInvestmentsQuery } from "./portfolioInvestmentsQuery.js";
+import { portfolioInvestmentsQuery } from "../portfolioInvestmentsQuery.js";
 
 export interface GroupedInvestment {
     id: number;

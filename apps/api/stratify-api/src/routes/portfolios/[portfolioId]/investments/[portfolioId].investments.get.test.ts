@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeAll, beforeEach } from "vitest";
-import loadMockApp from "../../../__mocks__/mockApp.js";
-import db from "../../../database/db.js";
-import { createUser } from "../../../tests/create-user.js";
-import { generateDevToken } from "../../../utils/generateDevToken.js";
+import loadMockApp from "../../../../__mocks__/mockApp.js";
+import db from "../../../../database/db.js";
+import { createUser } from "../../../../tests/create-user.js";
+import { generateDevToken } from "../../../../utils/generateDevToken.js";
 
 const mockAssetPriceResponse = {
     data: {

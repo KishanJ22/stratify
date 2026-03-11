@@ -2,17 +2,17 @@ import { FastifyInstance } from "fastify";
 import {
     PortfolioIdParam,
     portfolioIdParamSchema,
-} from "./investments.schema.js";
-import logger from "../../../logger.js";
-import { getFromStore } from "../../../plugins/localStorage.js";
-import { UserDetails } from "../../../utils/decodeToken.js";
+} from "../investments/investments.schema.js";
+import logger from "../../../../logger.js";
+import { getFromStore } from "../../../../plugins/localStorage.js";
+import { UserDetails } from "../../../../utils/decodeToken.js";
 import { Static, Type } from "@sinclair/typebox";
-import { createNotFound } from "../../../utils/createNotFoundSchema.js";
-import { fetchCurrentPrice } from "../../assets/fetch-current-price.js";
-import db from "../../../database/db.js";
-import { AssetType } from "../../../schemas/common-schemas.js";
-import { latestCurrencyConversionRateQuery } from "../../../utils/latestCurrencyRateQuery.js";
-import { portfolioInvestmentsQuery } from "./portfolioInvestmentsQuery.js";
+import { createNotFound } from "../../../../utils/createNotFoundSchema.js";
+import { fetchCurrentPrice } from "../../../assets/fetch-current-price.js";
+import db from "../../../../database/db.js";
+import { AssetType } from "../../../../schemas/common-schemas.js";
+import { latestCurrencyConversionRateQuery } from "../../../../utils/latestCurrencyRateQuery.js";
+import { portfolioInvestmentsQuery } from "../portfolioInvestmentsQuery.js";
 
 const valueHistorySchema = Type.Object({
     portfolioValue: Type.Number(),

@@ -1,16 +1,16 @@
 import { Static, Type } from "@sinclair/typebox";
-import { createNotFound } from "../../../utils/createNotFoundSchema.js";
+import { createNotFound } from "../../../../utils/createNotFoundSchema.js";
 import { FastifyInstance } from "fastify";
 import {
     PortfolioIdParam,
     portfolioIdParamSchema,
-} from "./investments.schema.js";
-import { getFromStore } from "../../../plugins/localStorage.js";
-import { UserDetails } from "../../../utils/decodeToken.js";
-import { portfolioExistsForUserCheck } from "./portfolioExistsQuery.js";
-import { retrieveInvestments } from "./retrievePortfolioInvestments.js";
+} from "../investments/investments.schema.js";
+import { getFromStore } from "../../../../plugins/localStorage.js";
+import { UserDetails } from "../../../../utils/decodeToken.js";
+import { portfolioExistsForUserCheck } from "../portfolioExistsQuery.js";
+import { retrieveInvestments } from "../investments/retrievePortfolioInvestments.js";
 import { calculateAssetVariance } from "./calculateAssetVariance.js";
-import logger from "../../../logger.js";
+import logger from "../../../../logger.js";
 
 const riskLevelValues = [
     "low",

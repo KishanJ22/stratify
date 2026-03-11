@@ -3,13 +3,13 @@ import { FastifyInstance } from "fastify";
 import {
     PortfolioIdParam,
     portfolioIdParamSchema,
-} from "./investments.schema.js";
-import { getFromStore } from "../../../plugins/localStorage.js";
-import { UserDetails } from "../../../utils/decodeToken.js";
-import logger from "../../../logger.js";
-import db from "../../../database/db.js";
-import { createNotFound } from "../../../utils/createNotFoundSchema.js";
-import { portfolioExistsForUserCheck } from "./portfolioExistsQuery.js";
+} from "../investments/investments.schema.js";
+import { getFromStore } from "../../../../plugins/localStorage.js";
+import { UserDetails } from "../../../../utils/decodeToken.js";
+import logger from "../../../../logger.js";
+import db from "../../../../database/db.js";
+import { createNotFound } from "../../../../utils/createNotFoundSchema.js";
+import { portfolioExistsForUserCheck } from "../portfolioExistsQuery.js";
 
 const requestBodySchema = Type.Object({
     assetId: Type.Number(),
