@@ -1,10 +1,11 @@
 from unittest.mock import MagicMock
 from src.tests.mock_app import mock_app
-from src.routes.funds._mocks.mock_yfinance_fund_data import mock_yfinance_fund_data
+from src.routes.funds._mocks.mock_yfinance_fund_info import mock_yfinance_fund_info
+from src.routes.funds._mocks.mock_yfinance_fund_sector_weightings import mock_fund_sector_weightings
 from src.routes.funds._mocks.mock_fund_data import mock_fund_data
 
 def test_get_fund_success(mock_app, mocker):
-    mock_ticker = MagicMock(info=mock_yfinance_fund_data)
+    mock_ticker = MagicMock(info=mock_yfinance_fund_info, funds_data=MagicMock(sector_weightings=mock_fund_sector_weightings))
     
     mocker.patch("src.routes.funds.symbol.fund_symbol_get.Ticker", return_value=mock_ticker)
 

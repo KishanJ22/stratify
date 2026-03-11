@@ -11,3 +11,4 @@ class FundItem(BaseModel):
     currency: str
     exchange: ExchangeDetails
     priceDetails: PriceDetails
+    sectorWeights: dict[str, float]

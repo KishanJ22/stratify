@@ -1,4 +1,4 @@
-mock_yfinance_fund_data = {
+mock_yfinance_fund_info = {
     "shortName": "S&P 500 ETF fund",
     "longName": "Standard & Poorer 500 ETF Fund",
     "symbol": "SP500",
