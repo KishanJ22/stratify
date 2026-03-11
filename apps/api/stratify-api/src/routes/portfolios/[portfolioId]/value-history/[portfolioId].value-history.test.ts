@@ -20,7 +20,7 @@ const mockDataApiClient = {
     GET: mockGetCurrentPrice,
 };
 
-vi.mock("../../../lib/api/data-api-client", () => ({
+vi.mock("../../../../lib/api/data-api-client", () => ({
     dataApiClient: () => mockDataApiClient,
 }));
 
