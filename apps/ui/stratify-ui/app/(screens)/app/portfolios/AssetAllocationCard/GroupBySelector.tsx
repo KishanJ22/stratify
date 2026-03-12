@@ -19,7 +19,7 @@ export type GroupByOption = (typeof groupByValues)[number];
 
 const groupByOptions = [
     {
-        label: "Asset class",
+        label: "Asset Class",
         value: "assetClass",
     },
     {
@@ -31,12 +31,12 @@ const groupByOptions = [
         value: "country",
     },
     {
-        label: "No grouping",
+        label: "No Grouping",
         value: "noGrouping",
     },
 ];
 
-interface GroupBySelectorProps {
+export interface GroupBySelectorProps {
     groupBy: GroupByOption;
     setGroupBy: Dispatch<SetStateAction<GroupByOption>>;
     disabled: boolean;
@@ -48,12 +48,19 @@ const GroupBySelector = ({
     disabled,
 }: GroupBySelectorProps) => {
     return (
-        <div className="mt-2">
+        <div
+            className="mt-2"
+            data-testid={
+                disabled
+                    ? "group-by-select-disabled"
+                    : "group-by-select-enabled"
+            }
+        >
             <div className="text-base leading-5 text-secondary-base mb-1">
                 Group by:
             </div>
             <Select
-                value={disabled ? undefined : groupBy}
+                value={disabled ? "" : groupBy}
                 onValueChange={(value) => setGroupBy(value as GroupByOption)}
                 disabled={disabled}
             >
@@ -68,7 +75,10 @@ const GroupBySelector = ({
                     side="bottom"
                     align="start"
                 >
-                    <SelectGroup className="flex flex-col gap-y-1">
+                    <SelectGroup
+                        className="flex flex-col gap-y-1"
+                        data-testid="group-by-options"
+                    >
                         {groupByOptions.map((option) => (
                             <SelectItem
                                 className="data-highlighted:bg-secondary-lighter data-[state=checked]:bg-secondary-light/70 data-[state=checked]:text-secondary-darkest text-secondary-dark cursor-pointer"

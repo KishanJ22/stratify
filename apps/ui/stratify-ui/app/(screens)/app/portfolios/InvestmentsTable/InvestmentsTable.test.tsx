@@ -4,23 +4,7 @@ import { renderWithContext } from "@/app/tests/utils";
 import { screen } from "@testing-library/react";
 import { TooltipProvider } from "@/app/components/ui/tooltip";
 import MockSessionProvider from "@/app/tests/_mocks/MockSessionProvider";
-
-const mockInvestmentsData = [
-    {
-        assetId: 1,
-        symbol: "LEON",
-        assetCountryId: 224,
-        assetCurrency: "USD",
-        name: "Leonida Inc.",
-        shares: 20,
-        type: "STOCK",
-        currentValue: 2219.2,
-        currentAssetCurrencyValue: 3040,
-        currentReturn: 1489.2,
-        currentReturnPercentage: 204,
-        totalBuyAmount: 730,
-    },
-] satisfies Investment[];
+import { mockInvestmentsData } from "./_mocks/mockInvestmentData";
 
 const mockUseInvestmentsList = vi.fn();
 

@@ -333,6 +333,7 @@ const AssetAllocationChart = ({
             <ChartContainer
                 config={chartConfig[groupBy]}
                 className={`mx-auto aspect-square min-h-62.5 max-w-62.5 mt-2 items-center ${isLegendVisible ? "hidden" : ""}`}
+                data-testid="asset-allocation-chart"
             >
                 <PieChart width={500} height={500} responsive>
                     {data.length > 0 ? (
