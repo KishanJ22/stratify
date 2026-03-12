@@ -105,7 +105,7 @@ export function DataTable<TData, TValue>({
                                         <TableHead
                                             key={header.id}
                                             className={cn(
-                                                "text-left", //? Default alignment
+                                                "text-left xl:text-nowrap",
                                                 shouldAlignRight &&
                                                     "text-right",
                                                 align === "center" &&
@@ -268,7 +268,10 @@ export function DataTable<TData, TValue>({
                     </div>
                     <div className="flex flex-row items-center">
                         <PaginationPrevious
-                            onClick={() => table.previousPage()}
+                            onClick={() =>
+                                table.getCanPreviousPage() &&
+                                table.previousPage()
+                            }
                             className={cn(
                                 !table.getCanPreviousPage() &&
                                     "opacity-50 cursor-default",
@@ -294,7 +297,9 @@ export function DataTable<TData, TValue>({
                             )}
                         </PaginationContent>
                         <PaginationNext
-                            onClick={() => table.nextPage()}
+                            onClick={() =>
+                                table.getCanNextPage() && table.nextPage()
+                            }
                             className={cn(
                                 !table.getCanNextPage() &&
                                     "opacity-50 cursor-default",
