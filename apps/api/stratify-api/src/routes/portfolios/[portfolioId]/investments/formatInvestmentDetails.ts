@@ -1,12 +1,13 @@
-import { AssetType } from "../../../schemas/common-schemas.js";
-import { latestCurrencyConversionRateQuery } from "../../../utils/latestCurrencyRateQuery.js";
-import type { Investment } from "./investments.schema.js";
-import { GroupedInvestment } from "./retrievePortfolioInvestments.js";
+import { AssetType } from "../../../../schemas/common-schemas.js";
+import { latestCurrencyConversionRateQuery } from "../../../../utils/latestCurrencyRateQuery.js";
+import type { Investment, SectorDetails } from "./investments.schema.js";
+import type { GroupedInvestment } from "./retrievePortfolioInvestments.js";
 
 export const formatInvestmentDetails = async (
     investment: GroupedInvestment,
     currentInvestmentValue: number,
     userCurrency: string | null,
+    sectorDetails: SectorDetails[],
 ) => {
     const {
         symbol,
@@ -70,5 +71,6 @@ export const formatInvestmentDetails = async (
             : null,
         currentReturn: parseFloat(currentReturn.toFixed(2)),
         currentReturnPercentage: parseFloat(currentReturnPercentage.toFixed(2)),
+        sectorDetails,
     } satisfies Investment;
 };

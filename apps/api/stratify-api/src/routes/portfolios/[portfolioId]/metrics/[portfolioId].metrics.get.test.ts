@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeAll, beforeEach } from "vitest";
-import loadMockApp from "../../../__mocks__/mockApp.js";
-import db from "../../../database/db.js";
-import { createUser } from "../../../tests/create-user.js";
-import { generateDevToken } from "../../../utils/generateDevToken.js";
-import { mockHistoricAssetPrices } from "./_mocks/mockHistoricAssetPrices.js";
+import loadMockApp from "../../../../__mocks__/mockApp.js";
+import db from "../../../../database/db.js";
+import { createUser } from "../../../../tests/create-user.js";
+import { generateDevToken } from "../../../../utils/generateDevToken.js";
+import { mockHistoricAssetPrices } from "../_mocks/mockHistoricAssetPrices.js";
 
 const mockAssetPriceResponse = {
     data: {
@@ -17,11 +17,33 @@ const mockAssetPriceResponse = {
 
 const mockGetCurrentPrice = vi.fn().mockResolvedValue(mockAssetPriceResponse);
 
-const mockDataApiClient = {
-    GET: mockGetCurrentPrice,
+const mockSectorDetailsResponse = {
+    data: {
+        data: {
+            industryDetails: {
+                sector: "technology",
+            },
+        },
+    },
 };
 
-vi.mock("../../../lib/api/data-api-client", () => ({
+const mockFetchStockDetails = vi
+    .fn()
+    .mockResolvedValue(mockSectorDetailsResponse);
+
+const mockDataApiClient = {
+    GET: (url: string) => {
+        if (url.includes("/current-price")) {
+            return mockGetCurrentPrice();
+        }
+
+        if (url.includes("/stocks")) {
+            return mockFetchStockDetails();
+        }
+    },
+};
+
+vi.mock("../../../../lib/api/data-api-client", () => ({
     dataApiClient: () => mockDataApiClient,
 }));
 

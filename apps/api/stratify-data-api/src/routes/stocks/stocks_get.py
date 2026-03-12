@@ -5,6 +5,20 @@ from yfinance import Tickers
 from pydantic import BaseModel
 from typing import List
 
+sector_mapping = {
+    "Basic Materials": "basicMaterials",
+    "Communication Services": "communications",
+    "Consumer Cyclical": "cyclical",
+    "Consumer Defensive": "defense",
+    "Energy": "energy",
+    "Financial Services": "financial",
+    "Healthcare": "healthcare",
+    "Technology": "technology",
+    "Industrials": "industrial",
+    "Utilities": "utilities",
+    "Real Estate": "realEstate",
+}
+
 class StocksGetResponse(BaseModel):
     data: List[StockItem]
 
@@ -18,7 +32,7 @@ def format_stock_info(ticker_info) -> StockItem:
         "marketCap": ticker_info.get("marketCap"),
         "industryDetails": {
             "industry": ticker_info.get("industry"),
-            "sector": ticker_info.get("sector"),
+            "sector": sector_mapping.get(ticker_info.get("sector"), "other")
         },
         "priceDetails": {
             "currentPrice": ticker_info.get("regularMarketPrice"),

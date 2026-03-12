@@ -1,5 +1,5 @@
 import { FastifyInstance } from "fastify";
-import logger from "../../../logger.js";
+import logger from "../../../../logger.js";
 import {
     InvestmentsNotFound,
     investmentsNotFoundSchema,

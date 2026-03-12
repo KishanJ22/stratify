@@ -1,4 +1,4 @@
-import db from "../../../database/db.js";
+import db from "../../../../database/db.js";
 
 export const calculateAssetVariance = async (assetId: number) => {
     //? Calculate the variance and downside variance based on monthly returns over the last 5 years

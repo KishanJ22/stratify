@@ -1,8 +1,9 @@
 import { describe, it, expect, vi, beforeAll, beforeEach } from "vitest";
-import loadMockApp from "../../../__mocks__/mockApp.js";
-import db from "../../../database/db.js";
-import { createUser } from "../../../tests/create-user.js";
-import { generateDevToken } from "../../../utils/generateDevToken.js";
+import loadMockApp from "../../../../__mocks__/mockApp.js";
+import db from "../../../../database/db.js";
+import { createUser } from "../../../../tests/create-user.js";
+import { generateDevToken } from "../../../../utils/generateDevToken.js";
+import { _null } from "better-auth";
 
 const mockAssetPriceResponse = {
     data: {
@@ -16,11 +17,58 @@ const mockAssetPriceResponse = {
 
 const mockGetCurrentPrice = vi.fn().mockResolvedValue(mockAssetPriceResponse);
 
-const mockDataApiClient = {
-    GET: mockGetCurrentPrice,
+const mockStockSectorDetailsResponse = {
+    data: {
+        data: {
+            industryDetails: {
+                sector: "technology",
+            },
+        },
+    },
 };
 
-vi.mock("../../../lib/api/data-api-client", () => ({
+const mockFetchStockDetails = vi
+    .fn()
+    .mockResolvedValue(mockStockSectorDetailsResponse);
+
+const mockFundSectorDetailsResponse = {
+    data: {
+        data: {
+            sectorWeights: [
+                {
+                    sector: "technology",
+                    weight: 0.6,
+                },
+                {
+                    sector: "financials",
+                    weight: 0.4,
+                },
+            ],
+        },
+    },
+};
+
+const mockFetchFundDetails = vi
+    .fn()
+    .mockResolvedValue(mockFundSectorDetailsResponse);
+
+const mockDataApiClient = {
+    GET: (url: string) => {
+        if (url.includes("/current-price")) {
+            return mockGetCurrentPrice();
+        }
+
+        if (url.includes("/stocks")) {
+            return mockFetchStockDetails();
+        }
+
+        if (url.includes("/funds")) {
+            return mockFetchFundDetails();
+        }
+    },
+};
+
+vi.mock("../../../../lib/api/data-api-client", () => ({
     dataApiClient: () => mockDataApiClient,
 }));
 
@@ -73,6 +121,14 @@ describe("GET /portfolios/:portfolioId/investments", () => {
                     currency: "USD",
                     type: "CURRENCY",
                     countryId: 224, // Country ID for united states
+                },
+                {
+                    id: 4,
+                    name: "A fund",
+                    symbol: "FUND",
+                    currency: "GBP",
+                    type: "ETF",
+                    countryId: 223, // Country ID for united kingdom
                 },
             ])
             .execute();
@@ -134,6 +190,16 @@ describe("GET /portfolios/:portfolioId/investments", () => {
                     tradeAction: "BUY",
                     tradeDate: new Date("2026-02-04"),
                 },
+                {
+                    portfolioId: portfolio.id,
+                    assetId: 4,
+                    quantity: 10,
+                    pricePerShare: 50,
+                    totalAmount: 500,
+                    assetCurrencyTotalAmount: 500,
+                    tradeAction: "BUY",
+                    tradeDate: new Date("2026-02-05"),
+                },
             ])
             .execute();
 
@@ -165,6 +231,36 @@ describe("GET /portfolios/:portfolioId/investments", () => {
                     currentReturn: 164.4,
                     currentReturnPercentage: 10.96,
                     totalBuyAmount: 1500,
+                    sectorDetails: [
+                        {
+                            sector: "technology",
+                            weight: 1,
+                        },
+                    ],
+                },
+                {
+                    assetId: 4,
+                    symbol: "FUND",
+                    assetCountryId: 223,
+                    assetCurrency: "GBP",
+                    name: "A fund",
+                    shares: 10,
+                    type: "ETF",
+                    currentValue: 1520,
+                    currentAssetCurrencyValue: null,
+                    currentReturn: 1020,
+                    currentReturnPercentage: 204,
+                    totalBuyAmount: 500,
+                    sectorDetails: [
+                        {
+                            sector: "technology",
+                            weight: 0.6,
+                        },
+                        {
+                            sector: "financials",
+                            weight: 0.4,
+                        },
+                    ],
                 },
                 {
                     assetId: 2,
@@ -179,6 +275,12 @@ describe("GET /portfolios/:portfolioId/investments", () => {
                     currentReturn: 359.6,
                     currentReturnPercentage: 47.95,
                     totalBuyAmount: 750,
+                    sectorDetails: [
+                        {
+                            sector: "technology",
+                            weight: 1,
+                        },
+                    ],
                 },
             ],
         });
@@ -279,6 +381,12 @@ describe("GET /portfolios/:portfolioId/investments", () => {
                     currentReturn: 30,
                     currentReturnPercentage: 1.33,
                     totalBuyAmount: 2250,
+                    sectorDetails: [
+                        {
+                            sector: "technology",
+                            weight: 1,
+                        },
+                    ],
                 },
                 {
                     assetId: 2,
@@ -293,6 +401,12 @@ describe("GET /portfolios/:portfolioId/investments", () => {
                     currentReturn: 260,
                     currentReturnPercentage: 52,
                     totalBuyAmount: 500,
+                    sectorDetails: [
+                        {
+                            sector: "technology",
+                            weight: 1,
+                        },
+                    ],
                 },
             ],
         });
@@ -384,6 +498,12 @@ describe("GET /portfolios/:portfolioId/investments", () => {
                     currentReturn: 120,
                     currentReturnPercentage: 5.33,
                     totalBuyAmount: 2250,
+                    sectorDetails: [
+                        {
+                            sector: "technology",
+                            weight: 1,
+                        },
+                    ],
                 },
             ],
         });

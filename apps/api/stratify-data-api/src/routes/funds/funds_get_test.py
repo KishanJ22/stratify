@@ -1,12 +1,13 @@
 from unittest.mock import MagicMock
 from src.tests.mock_app import mock_app
-from src.routes.funds._mocks.mock_yfinance_fund_data import mock_yfinance_fund_data
+from src.routes.funds._mocks.mock_yfinance_fund_info import mock_yfinance_fund_info
+from src.routes.funds._mocks.mock_yfinance_fund_sector_weightings import mock_fund_sector_weightings
 from src.routes.funds._mocks.mock_fund_data import mock_fund_data
 
 def test_get_funds_success(mock_app, mocker):
     mock_tickers = MagicMock(tickers={
-        "SP500": MagicMock(info=mock_yfinance_fund_data),
-        "FTSE100": MagicMock(info=mock_yfinance_fund_data)
+        "SP500": MagicMock(info=mock_yfinance_fund_info, funds_data=MagicMock(sector_weightings=mock_fund_sector_weightings)),
+        "FTSE100": MagicMock(info=mock_yfinance_fund_info, funds_data=MagicMock(sector_weightings=mock_fund_sector_weightings))
     })
     
     mocker.patch("src.routes.funds.funds_get.Tickers", return_value=mock_tickers)

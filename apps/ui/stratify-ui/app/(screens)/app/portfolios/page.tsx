@@ -8,6 +8,7 @@ import InvestmentsTable from "./InvestmentsTable/InvestmentsTable";
 import AddInvestmentButton from "./AddInvestment/AddInvestmentButton";
 import PortfolioValueChart from "./PortfolioValueChart/PortfolioValueChart";
 import PortfolioMetrics from "./PortfolioMetrics/PortfolioMetrics";
+import AssetAllocationCard from "./AssetAllocationCard/AssetAllocationCard";
 
 export default function PortfoliosPage() {
     const { data, isLoading } = usePortfolioList();
@@ -27,36 +28,40 @@ export default function PortfoliosPage() {
             <div className="font-sans text-5xl text-primary-base font-semibold">
                 Portfolios
             </div>
-
-            <div className="mt-4 w-full">
-                <div className="flex flex-row">
-                    <div>
-                        <CreatePortfolioButton />
-                        <PortfolioSelector
-                            portfolioList={data}
-                            isLoading={isLoading}
-                            selectedPortfolioId={selectedPortfolioId}
-                            setSelectedPortfolioId={setSelectedPortfolioId}
-                        />
+            <div className="flex flex-row w-full">
+                <div className="flex flex-col w-full">
+                    <div className="flex flex-row mt-4">
+                        <div className="flex flex-col">
+                            <CreatePortfolioButton />
+                            <PortfolioSelector
+                                portfolioList={data}
+                                isLoading={isLoading}
+                                selectedPortfolioId={selectedPortfolioId}
+                                setSelectedPortfolioId={setSelectedPortfolioId}
+                            />
+                        </div>
+                        <div className="ml-4 w-full">
+                            <PortfolioValueChart
+                                portfolioId={selectedPortfolioId}
+                            />
+                        </div>
                     </div>
-                    <div className="ml-4 w-full">
-                        <PortfolioValueChart
-                            portfolioId={selectedPortfolioId}
-                        />
-                    </div>
-                    <div className="ml-13">
-                        <PortfolioMetrics portfolioId={selectedPortfolioId} />
+                    <div className="flex flex-col mt-4">
+                        <div className="flex flex-row items-center justify-between">
+                            <div className="font-sans text-3xl text-primary-base font-semibold">
+                                Investments
+                            </div>
+                            <AddInvestmentButton
+                                portfolioId={selectedPortfolioId}
+                            />
+                        </div>
+                        <InvestmentsTable portfolioId={selectedPortfolioId} />
                     </div>
                 </div>
-            </div>
-            <div className="mt-8">
-                <div className="flex flex-row items-center justify-between">
-                    <div className="font-sans text-3xl text-primary-base font-semibold">
-                        Investments
-                    </div>
-                    <AddInvestmentButton portfolioId={selectedPortfolioId} />
+                <div className="flex flex-col ml-10 mt-4 gap-y-5">
+                    <PortfolioMetrics portfolioId={selectedPortfolioId} />
+                    <AssetAllocationCard portfolioId={selectedPortfolioId} />
                 </div>
-                <InvestmentsTable portfolioId={selectedPortfolioId} />
             </div>
         </div>
     );

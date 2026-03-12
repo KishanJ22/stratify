@@ -1,11 +1,18 @@
 import { Type, Static } from "@sinclair/typebox";
-import { createNotFound } from "../../../utils/createNotFoundSchema.js";
-import { assetTypeSchema } from "../../../schemas/common-schemas.js";
+import { createNotFound } from "../../../../utils/createNotFoundSchema.js";
+import { assetTypeSchema } from "../../../../schemas/common-schemas.js";
 
 export const portfolioIdParamSchema = Type.Object({
     portfolioId: Type.Number(),
 });
 export type PortfolioIdParam = Static<typeof portfolioIdParamSchema>;
+
+const sectorDetails = Type.Object({
+    sector: Type.String(),
+    weight: Type.Number(),
+});
+
+export type SectorDetails = Static<typeof sectorDetails>;
 
 export const investmentSchema = Type.Object({
     assetId: Type.Number(),
@@ -20,6 +27,7 @@ export const investmentSchema = Type.Object({
     currentAssetCurrencyValue: Type.Union([Type.Number(), Type.Null()]),
     currentReturn: Type.Number(),
     currentReturnPercentage: Type.Number(),
+    sectorDetails: Type.Array(sectorDetails),
 });
 export type Investment = Static<typeof investmentSchema>;
 

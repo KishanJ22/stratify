@@ -14,12 +14,15 @@ fund_symbol_get = APIRouter()
 async def get_fund(symbol: str) -> FundSymbolGetResponse:
     try:
         cleaned_symbol = clean_symbol(symbol)
-        fund_data = Ticker(cleaned_symbol).info
+        ticker = Ticker(cleaned_symbol)
+        fund_data = ticker.info
+        sector_weights = ticker.funds_data.sector_weightings
         
         if not fund_data or fund_data.get("quoteType") == "NONE":
             raise HTTPException(status_code=404, detail=f"No data found for symbol: {symbol}")
         
-        formatted_data = format_fund_info(fund_data)
+        formatted_data = format_fund_info(fund_data, sector_weights)
+        
         
         return FundSymbolGetResponse(data=formatted_data)
     except HTTPException:

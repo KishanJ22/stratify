@@ -106,7 +106,7 @@ export const columns = (
         header: `Return (${userCurrency})`,
         meta: {
             align: "right",
-            headerClassName: "w-[150px]",
+            headerClassName: "w-[175px]",
         },
         cell: ({ row }) => {
             const { currentReturn, currentReturnPercentage } = row.original;
@@ -114,13 +114,14 @@ export const columns = (
             const isPositive = currentReturn > 0;
             const sign = isPositive ? "+" : "";
 
-            const isPlaceholderRow = row.original.currentReturn === 0 && row.original.shares === 0;
+            const isPlaceholderRow =
+                row.original.currentReturn === 0 && row.original.shares === 0;
 
             return isPlaceholderRow ? (
                 "---"
             ) : (
                 <div
-                    className={`flex flex-col justify-end text-sm leading-4 font-sans ${isPositive ? "text-positive-base" : "text-negative-base"}`}
+                    className={`flex flex-col justify-end text-sm leading-4 text-nowrap font-sans ${isPositive ? "text-positive-base" : "text-negative-base"}`}
                 >
                     <span>
                         {sign} {currentReturn.toLocaleString()}
@@ -142,7 +143,10 @@ export const columns = (
         cell: ({ row }) => (
             <div className="flex flex-row gap-2">
                 <Button
-                    disabled={row.original.currentReturn === 0 && row.original.shares === 0}
+                    disabled={
+                        row.original.currentReturn === 0 &&
+                        row.original.shares === 0
+                    }
                     variant="link"
                     className="font-medium text-primary-darker hover:text-primary-dark transition-colors hover:underline hover:cursor-pointer"
                     onClick={() => {

@@ -11,11 +11,7 @@ import AddTradeModal from "../AddTrade/AddTradeModal";
 export type Investment =
     paths["/portfolios/{portfolioId}/investments"]["get"]["responses"]["200"]["content"]["application/json"]["data"][number];
 
-interface InvestmentsTableProps {
-    portfolioId: number | null;
-}
-
-const noPortfolioSelectedData: Investment[] = Array.from({ length: 5 }, () => ({
+const noPortfolioSelectedData = Array.from({ length: 5 }, () => ({
     assetId: 0,
     symbol: "",
     assetCountryId: 0,
@@ -27,7 +23,6 @@ const noPortfolioSelectedData: Investment[] = Array.from({ length: 5 }, () => ({
     currentReturn: 0,
     currentAssetCurrencyValue: null,
     currentReturnPercentage: 0,
-    totalBuyAmount: 0,
 }));
 
 const NoInvestmentsComponent = () => (
@@ -35,6 +30,10 @@ const NoInvestmentsComponent = () => (
         No investments found for this portfolio.
     </div>
 );
+
+interface InvestmentsTableProps {
+    portfolioId: number | null;
+}
 
 const InvestmentsTable = ({ portfolioId }: InvestmentsTableProps) => {
     const { data, isLoading, refetch } = useInvestmentsList(portfolioId);
@@ -60,10 +59,14 @@ const InvestmentsTable = ({ portfolioId }: InvestmentsTableProps) => {
                         setIsAddTradeModalOpen,
                         setInvestmentToAddTradeFor,
                     )}
-                    data={isPortfolioSelected ? data : noPortfolioSelectedData}
+                    data={
+                        isPortfolioSelected
+                            ? data
+                            : (noPortfolioSelectedData as Investment[])
+                    }
                     isLoading={isLoading}
                     noResultsComponent={
-                        isPortfolioSelected && <NoInvestmentsComponent />
+                        isPortfolioSelected ? <NoInvestmentsComponent /> : null
                     }
                 />
             </div>
