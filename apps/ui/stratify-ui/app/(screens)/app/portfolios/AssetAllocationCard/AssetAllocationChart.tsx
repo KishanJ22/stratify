@@ -2,16 +2,13 @@ import { useMemo, useState } from "react";
 import { AssetType } from "../../markets/MarketDataTable/MarketDataTable";
 import { Investment } from "../InvestmentsTable/InvestmentsTable";
 import { GroupByOption } from "./GroupBySelector";
-import { Label, Pie, PieChart } from "recharts";
-import {
-    ChartConfig,
-    ChartContainer,
-    ChartTooltip,
-} from "@/app/components/ui/chart";
+import { Label, Pie, PieChart, ResponsiveContainer } from "recharts";
+import { ChartTooltip } from "@/app/components/ui/chart";
 import { placeholderData } from "./placeholderChartData";
 import PieChartSkeleton from "./PieChartSkeleton";
 import { useSessionContext } from "../../SessionProvider";
 import { Button } from "@/app/components/ui/button";
+import { cn } from "@/lib/utils";
 
 const colourVars = [
     "var(--primary-base)",
@@ -63,13 +60,17 @@ export interface ChartDataItem {
 
 interface CustomLegendProps {
     data: ChartDataItem[];
-    isLegendVisible: boolean;
+    groupBy: GroupByOption;
 }
 
-const CustomLegend = ({ data, isLegendVisible }: CustomLegendProps) => {
+const CustomLegend = ({ data, groupBy }: CustomLegendProps) => {
     return (
         <div
-            className={`flex flex-col font-sans justify-items-start text-secondary-dark w-full mt-5 gap-y-1 ${isLegendVisible ? "" : "hidden"}`}
+            className={cn(
+                "flex flex-col font-sans justify-items-start text-secondary-dark w-full mt-5 gap-y-1",
+                groupBy !== "assetClass" && "grid grid-cols-2",
+            )}
+            data-testid="asset-allocation-legend"
         >
             {data.map((item) => (
                 <div
@@ -155,7 +156,7 @@ const CustomTooltip = ({
     );
 };
 
-interface AssetAllocationChartProps {
+export interface AssetAllocationChartProps {
     data: Investment[];
     groupBy: GroupByOption;
     isLoading: boolean;
@@ -281,44 +282,6 @@ const AssetAllocationChart = ({
         };
     }, [data]);
 
-    const chartConfig = {
-        assetClass: {
-            STOCK: {
-                label: assetClasses["STOCK"].label,
-                color: assetClasses["STOCK"].colour,
-            },
-            CRYPTOCURRENCY: {
-                label: assetClasses["CRYPTOCURRENCY"].label,
-                color: assetClasses["CRYPTOCURRENCY"].colour,
-            },
-            ETF: {
-                label: assetClasses["ETF"].label,
-                color: assetClasses["ETF"].colour,
-            },
-        },
-        country: groupedData.country.reduce((acc, { label }) => {
-            acc[label] = {
-                label: `Country ${label}`,
-                color: "var(--primary-base)",
-            };
-            return acc;
-        }, {} as ChartConfig),
-        sector: groupedData.sector.reduce((acc, { label }) => {
-            acc[label] = {
-                label,
-                color: "var(--primary-base)",
-            };
-            return acc;
-        }, {} as ChartConfig),
-        noGrouping: groupedData.noGrouping.reduce((acc, { label }) => {
-            acc[label] = {
-                label,
-                color: "var(--primary-base)",
-            };
-            return acc;
-        }, {} as ChartConfig),
-    };
-
     const selectedGroupData =
         data.length > 0 ? groupedData[groupBy] : placeholderData;
 
@@ -329,13 +292,16 @@ const AssetAllocationChart = ({
     return isLoading ? (
         <PieChartSkeleton />
     ) : (
-        <>
-            <ChartContainer
-                config={chartConfig[groupBy]}
-                className={`mx-auto aspect-square min-h-62.5 max-w-62.5 mt-2 items-center ${isLegendVisible ? "hidden" : ""}`}
-                data-testid="asset-allocation-chart"
+        <div
+            className="flex flex-col items-center w-full"
+            data-testid="asset-allocation-chart"
+        >
+            <ResponsiveContainer
+                width="100%"
+                height={250}
+                className={`${isLegendVisible ? "hidden" : ""}`}
             >
-                <PieChart width={500} height={500} responsive>
+                <PieChart>
                     {data.length > 0 ? (
                         <ChartTooltip
                             cursor={false}
@@ -412,7 +378,9 @@ const AssetAllocationChart = ({
                                                             32
                                                         }
                                                     >
-                                                        {"assets"}
+                                                        {data.length === 1
+                                                            ? "asset"
+                                                            : "assets"}
                                                     </tspan>
                                                 </>
                                             )}
@@ -423,23 +391,26 @@ const AssetAllocationChart = ({
                         />
                     </Pie>
                 </PieChart>
-            </ChartContainer>
+            </ResponsiveContainer>
             {data.length > 0 ? (
                 <>
-                    <CustomLegend
-                        data={selectedGroupData}
-                        isLegendVisible={isLegendVisible}
-                    />
+                    {isLegendVisible && (
+                        <CustomLegend
+                            data={selectedGroupData}
+                            groupBy={groupBy}
+                        />
+                    )}
                     <Button
                         variant="secondary"
-                        className="mt-5"
+                        className="mt-5 w-full"
                         onClick={() => setIsLegendVisible(!isLegendVisible)}
+                        data-testid="toggle-legend-button"
                     >
                         {isLegendVisible ? "View Pie Chart" : "View Legend"}
                     </Button>
                 </>
             ) : null}
-        </>
+        </div>
     );
 };
 
