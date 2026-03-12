@@ -3,7 +3,7 @@
   "info": {
     "title": "Stratify Data API",
     "description": "A REST API for accessing stock market data powered by Yahoo Finance and Stooq.",
-    "version": "0.3.10"
+    "version": "0.3.12"
   },
   "paths": {
     "/stocks": {
@@ -739,6 +739,13 @@
           },
           "priceDetails": {
             "$ref": "#/components/schemas/PriceDetails"
+          },
+          "sectorWeights": {
+            "items": {
+              "$ref": "#/components/schemas/SectorWeight"
+            },
+            "type": "array",
+            "title": "Sectorweights"
           }
         },
         "type": "object",
@@ -751,7 +758,8 @@
           "marketState",
           "currency",
           "exchange",
-          "priceDetails"
+          "priceDetails",
+          "sectorWeights"
         ],
         "title": "FundItem"
       },
@@ -967,6 +975,24 @@
           "data"
         ],
         "title": "QuoteListGetResponse"
+      },
+      "SectorWeight": {
+        "properties": {
+          "sector": {
+            "type": "string",
+            "title": "Sector"
+          },
+          "weight": {
+            "type": "number",
+            "title": "Weight"
+          }
+        },
+        "type": "object",
+        "required": [
+          "sector",
+          "weight"
+        ],
+        "title": "SectorWeight"
       },
       "StockItem": {
         "properties": {
