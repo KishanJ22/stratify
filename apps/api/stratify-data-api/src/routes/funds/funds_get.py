@@ -5,14 +5,29 @@ from yfinance import Tickers
 from pydantic import BaseModel
 from typing import List
 
+sector_mapping = {
+    "basic_materials": "basicMaterials",
+    "communication_services": "communications",
+    "consumer_cyclical": "cyclical",
+    "consumer_defensive": "defense",
+    "energy": "energy",
+    "financial_services": "financial",
+    "healthcare": "healthcare",
+    "technology": "technology",
+    "industrials": "industrial",
+    "utilities": "utilities",
+    "real_estate": "realEstate",
+}
+
 def format_fund_info(ticker_info, sector_weights) -> FundItem:
     formatted_sector_weights = []
     
     for sector in sector_weights:
         weight = sector_weights[sector]
+        sector_name = sector_mapping.get(sector, sector)
         
         if (weight > 0):
-            formatted_sector_weights.append(SectorWeight(sector=sector, weight=weight))
+            formatted_sector_weights.append(SectorWeight(sector=sector_name, weight=weight))
     
     return {
         "shortName": ticker_info.get("shortName"),

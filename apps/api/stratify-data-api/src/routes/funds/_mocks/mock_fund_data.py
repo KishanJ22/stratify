@@ -28,7 +28,7 @@ mock_fund_data = {
             "weight": 0.95
         },
         {
-            "sector": "communication_services", 
+            "sector": "communications", 
             "weight": 0.02
         },
         {
@@ -36,7 +36,7 @@ mock_fund_data = {
             "weight": 0.02
         },
         {
-            "sector": "financial_services", 
+            "sector": "financial", 
             "weight": 0.01
         }
     ]

@@ -7,7 +7,7 @@ mock_stock_data = {
     "marketCap": 3000000000000,
     "industryDetails": {
         "industry": "Consumer Electronics",
-        "sector": "Technology"
+        "sector": "technology"
     },
     "priceDetails": {
         "currentPrice": 150.25,
