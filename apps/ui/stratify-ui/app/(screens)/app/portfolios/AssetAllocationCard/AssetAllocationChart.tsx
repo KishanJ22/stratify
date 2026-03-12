@@ -324,6 +324,8 @@ const AssetAllocationChart = ({
                         innerRadius={85}
                         outerRadius={110}
                         paddingAngle={selectedGroupData.length > 1 ? 3 : 0}
+                        strokeWidth={selectedGroupData.length > 1 ? 0.5 : 0}
+                        stroke="var(--secondary-lightest)"
                         cx="50%"
                         cy="50%"
                     >
