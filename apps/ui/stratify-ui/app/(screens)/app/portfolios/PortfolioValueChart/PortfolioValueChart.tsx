@@ -106,7 +106,7 @@ const PortfolioValueChart = ({ portfolioId }: PortfolioValueChartProps) => {
                         color: "var(--muted-base)",
                     },
                 }}
-                className="aspect-auto w-full h-[250px]"
+                className="aspect-auto h-56"
             >
                 <AreaChart
                     data={
