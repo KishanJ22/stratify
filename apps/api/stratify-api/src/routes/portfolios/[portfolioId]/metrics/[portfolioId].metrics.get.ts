@@ -171,10 +171,10 @@ const retrievePortfolioMetrics = async (portfolioId: number) => {
     const riskLevel = determineRiskLevel(volatility, sortinoRatio);
 
     return {
-        totalValue,
+        totalValue: parseFloat(totalValue.toFixed(2)),
         overallReturn: {
             percentage: parseFloat(overallReturnPercentage.toFixed(2)),
-            absolute: overallReturn,
+            absolute: parseFloat(overallReturn.toFixed(2)),
         },
         riskMetrics: {
             volatility: parseFloat(volatility.toFixed(2)),

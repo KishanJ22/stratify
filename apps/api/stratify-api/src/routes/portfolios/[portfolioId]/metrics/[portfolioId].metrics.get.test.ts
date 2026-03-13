@@ -3,14 +3,14 @@ import loadMockApp from "../../../../__mocks__/mockApp.js";
 import db from "../../../../database/db.js";
 import { createUser } from "../../../../tests/create-user.js";
 import { generateDevToken } from "../../../../utils/generateDevToken.js";
+import { mockAssetData } from "../../_mocks/mockAssetData.js";
 import { mockHistoricAssetPrices } from "../_mocks/mockHistoricAssetPrices.js";
+import { mockTrades } from "../../_mocks/mockTrades.js";
 
 const mockAssetPriceResponse = {
     data: {
         data: {
-            currentPrice: 150,
-            change: 2.5,
-            changePercent: 1.69,
+            currentPrice: 30,
         },
     },
 };
@@ -49,12 +49,9 @@ vi.mock("../../../../lib/api/data-api-client", () => ({
 
 describe("GET /portfolios/:portfolioId/metrics", () => {
     let devToken = "";
-
     let secondDevToken = "";
 
     let app: any;
-
-    const now = new Date();
 
     beforeAll(async () => {
         devToken = await generateDevToken({ userId: "test-user" });
@@ -72,35 +69,7 @@ describe("GET /portfolios/:portfolioId/metrics", () => {
     it("should return the metrics for a portfolio successfully", async () => {
         await createUser("test-user").execute();
 
-        await db
-            .insertInto("stratify.assets")
-            .values([
-                {
-                    id: 1,
-                    name: "Apple Inc.",
-                    symbol: "AAPL",
-                    currency: "USD",
-                    type: "STOCK",
-                    countryId: 224, // Country ID for united states
-                },
-                {
-                    id: 2,
-                    name: "Leonida Inc.",
-                    symbol: "LEON",
-                    currency: "USD",
-                    type: "STOCK",
-                    countryId: 224, // Country ID for united states
-                },
-                {
-                    id: 3,
-                    name: "USD/GBP",
-                    symbol: "USDGBP",
-                    currency: "USD",
-                    type: "CURRENCY",
-                    countryId: 224, // Country ID for united states
-                },
-            ])
-            .execute();
+        await db.insertInto("stratify.assets").values(mockAssetData).execute();
 
         await db
             .insertInto("stratify.assetPrices")
@@ -118,38 +87,7 @@ describe("GET /portfolios/:portfolioId/metrics", () => {
 
         await db
             .insertInto("stratify.trades")
-            .values([
-                {
-                    portfolioId: portfolio.id,
-                    assetId: 1,
-                    quantity: 5,
-                    pricePerShare: 100,
-                    totalAmount: 500,
-                    assetCurrencyTotalAmount: 500,
-                    tradeAction: "BUY",
-                    tradeDate: new Date(new Date().setDate(now.getMonth() - 1)),
-                },
-                {
-                    portfolioId: portfolio.id,
-                    assetId: 1,
-                    quantity: 10,
-                    pricePerShare: 100,
-                    totalAmount: 1000,
-                    assetCurrencyTotalAmount: 1000,
-                    tradeAction: "BUY",
-                    tradeDate: new Date(new Date().setDate(now.getMonth() - 1)),
-                },
-                {
-                    portfolioId: portfolio.id,
-                    assetId: 2,
-                    quantity: 10,
-                    pricePerShare: 80,
-                    totalAmount: 800,
-                    assetCurrencyTotalAmount: 880,
-                    tradeAction: "BUY",
-                    tradeDate: new Date(new Date().setDate(now.getMonth() - 1)),
-                },
-            ])
+            .values(mockTrades(portfolio.id))
             .execute();
 
         const response = await app.inject({
@@ -166,15 +104,15 @@ describe("GET /portfolios/:portfolioId/metrics", () => {
         const json = await response.json().data;
 
         expect(json).toEqual({
-            totalValue: 2737.5,
+            totalValue: 847.5,
             overallReturn: {
-                absolute: 437.5,
-                percentage: 19.02,
+                absolute: 187.5,
+                percentage: 28.41,
             },
             riskMetrics: {
-                volatility: 27.18,
-                sortinoRatio: 2.4,
-                riskLevel: "medium",
+                volatility: 17.58,
+                sortinoRatio: 9.8,
+                riskLevel: "low",
             },
         });
     });
@@ -232,41 +170,6 @@ describe("GET /portfolios/:portfolioId/metrics", () => {
     it("should return a 404 not found error if the portfolio does not belong to the user", async () => {
         await createUser("test-user").execute();
 
-        await db
-            .insertInto("stratify.assets")
-            .values([
-                {
-                    id: 1,
-                    name: "Apple Inc.",
-                    symbol: "AAPL",
-                    currency: "USD",
-                    type: "STOCK",
-                    countryId: 224, // Country ID for united states
-                },
-                {
-                    id: 2,
-                    name: "Leonida Inc.",
-                    symbol: "LEON",
-                    currency: "USD",
-                    type: "STOCK",
-                    countryId: 224, // Country ID for united states
-                },
-                {
-                    id: 3,
-                    name: "USD/GBP",
-                    symbol: "USDGBP",
-                    currency: "USD",
-                    type: "CURRENCY",
-                    countryId: 224, // Country ID for united states
-                },
-            ])
-            .execute();
-
-        await db
-            .insertInto("stratify.assetPrices")
-            .values(mockHistoricAssetPrices)
-            .execute();
-
         const portfolio = await db
             .insertInto("stratify.portfolios")
             .values({
@@ -275,42 +178,6 @@ describe("GET /portfolios/:portfolioId/metrics", () => {
             })
             .returning("stratify.portfolios.id as id")
             .executeTakeFirstOrThrow();
-
-        await db
-            .insertInto("stratify.trades")
-            .values([
-                {
-                    portfolioId: portfolio.id,
-                    assetId: 1,
-                    quantity: 5,
-                    pricePerShare: 100,
-                    totalAmount: 500,
-                    assetCurrencyTotalAmount: 500,
-                    tradeAction: "BUY",
-                    tradeDate: new Date(new Date().setDate(now.getMonth() - 1)),
-                },
-                {
-                    portfolioId: portfolio.id,
-                    assetId: 1,
-                    quantity: 10,
-                    pricePerShare: 100,
-                    totalAmount: 1000,
-                    assetCurrencyTotalAmount: 1000,
-                    tradeAction: "BUY",
-                    tradeDate: new Date(new Date().setDate(now.getMonth() - 1)),
-                },
-                {
-                    portfolioId: portfolio.id,
-                    assetId: 2,
-                    quantity: 10,
-                    pricePerShare: 80,
-                    totalAmount: 800,
-                    assetCurrencyTotalAmount: 880,
-                    tradeAction: "BUY",
-                    tradeDate: new Date(new Date().setDate(now.getMonth() - 1)),
-                },
-            ])
-            .execute();
 
         const response = await app.inject({
             method: "GET",
