@@ -3,14 +3,14 @@ import loadMockApp from "../../../__mocks__/mockApp.js";
 import db from "../../../database/db.js";
 import { createUser } from "../../../tests/create-user.js";
 import { generateDevToken } from "../../../utils/generateDevToken.js";
-import { mockHistoricAssetPrices } from "../[portfolioId]/_mocks/mockHistoricAssetPrices.js";
+import { mockHistoricAssetPrices } from "../_mocks/mockHistoricAssetPrices.js";
+import { mockAssetData } from "../_mocks/mockAssetData.js";
+import { mockTrades } from "../_mocks/mockTrades.js";
 
 const mockAssetPriceResponse = {
     data: {
         data: {
-            currentPrice: 150,
-            change: 2.5,
-            changePercent: 1.69,
+            currentPrice: 30,
         },
     },
 };
@@ -31,6 +31,27 @@ const mockFetchStockDetails = vi
     .fn()
     .mockResolvedValue(mockSectorDetailsResponse);
 
+const mockFundSectorDetailsResponse = {
+    data: {
+        data: {
+            sectorWeights: [
+                {
+                    sector: "technology",
+                    weight: 0.6,
+                },
+                {
+                    sector: "financials",
+                    weight: 0.4,
+                },
+            ],
+        },
+    },
+};
+
+const mockFetchFundDetails = vi
+    .fn()
+    .mockResolvedValue(mockFundSectorDetailsResponse);
+
 const mockDataApiClient = {
     GET: (url: string) => {
         if (url.includes("/current-price")) {
@@ -40,18 +61,20 @@ const mockDataApiClient = {
         if (url.includes("/stocks")) {
             return mockFetchStockDetails();
         }
+
+        if (url.includes("/funds")) {
+            return mockFetchFundDetails();
+        }
     },
 };
 
-vi.mock("../../../../lib/api/data-api-client", () => ({
+vi.mock("../../../lib/api/data-api-client", () => ({
     dataApiClient: () => mockDataApiClient,
 }));
 
 describe("GET /portfolios/overview", () => {
     let devToken = "";
     let secondDevToken = "";
-
-    const now = new Date();
 
     let app: any;
 
@@ -71,35 +94,7 @@ describe("GET /portfolios/overview", () => {
     it("should return an overview of all portfolios successfully", async () => {
         await createUser("test-user").execute();
 
-        await db
-            .insertInto("stratify.assets")
-            .values([
-                {
-                    id: 1,
-                    name: "Apple Inc.",
-                    symbol: "AAPL",
-                    currency: "USD",
-                    type: "STOCK",
-                    countryId: 224, // Country ID for united states
-                },
-                {
-                    id: 2,
-                    name: "Leonida Inc.",
-                    symbol: "LEON",
-                    currency: "USD",
-                    type: "STOCK",
-                    countryId: 224, // Country ID for united states
-                },
-                {
-                    id: 3,
-                    name: "USD/GBP",
-                    symbol: "USDGBP",
-                    currency: "USD",
-                    type: "CURRENCY",
-                    countryId: 224, // Country ID for united states
-                },
-            ])
-            .execute();
+        await db.insertInto("stratify.assets").values(mockAssetData).execute();
 
         await db
             .insertInto("stratify.assetPrices")
@@ -117,38 +112,7 @@ describe("GET /portfolios/overview", () => {
 
         await db
             .insertInto("stratify.trades")
-            .values([
-                {
-                    portfolioId: portfolio.id,
-                    assetId: 1,
-                    quantity: 5,
-                    pricePerShare: 100,
-                    totalAmount: 500,
-                    assetCurrencyTotalAmount: 500,
-                    tradeAction: "BUY",
-                    tradeDate: new Date(new Date().setDate(now.getMonth() - 1)),
-                },
-                {
-                    portfolioId: portfolio.id,
-                    assetId: 1,
-                    quantity: 10,
-                    pricePerShare: 100,
-                    totalAmount: 1000,
-                    assetCurrencyTotalAmount: 1000,
-                    tradeAction: "BUY",
-                    tradeDate: new Date(new Date().setDate(now.getMonth() - 1)),
-                },
-                {
-                    portfolioId: portfolio.id,
-                    assetId: 2,
-                    quantity: 10,
-                    pricePerShare: 80,
-                    totalAmount: 800,
-                    assetCurrencyTotalAmount: 880,
-                    tradeAction: "BUY",
-                    tradeDate: new Date(new Date().setDate(now.getMonth() - 1)),
-                },
-            ])
+            .values(mockTrades(portfolio.id))
             .execute();
 
         const response = await app.inject({
@@ -161,5 +125,142 @@ describe("GET /portfolios/overview", () => {
         });
 
         expect(response.statusCode).toBe(200);
+
+        const data = await response.json().data;
+
+        expect(data).toEqual({
+            totalValue: 1425,
+            overallChange: {
+                allTime: {
+                    absolute: 765,
+                    percentage: 115.91,
+                },
+                lastSevenDays: {
+                    absolute: 475,
+                    percentage: 50,
+                },
+                lastSixMonths: {
+                    absolute: 1225,
+                    percentage: 612.5,
+                },
+                lastThirtyDays: {
+                    absolute: 1225,
+                    percentage: 612.5,
+                },
+            },
+            investments: [
+                {
+                    assetId: 1,
+                    symbol: "AAPL",
+                    assetCountryId: 224,
+                    assetCurrency: "USD",
+                    name: "Apple Inc.",
+                    shares: 15,
+                    type: "STOCK",
+                    currentValue: 675,
+                    currentAssetCurrencyValue: 450,
+                    currentReturn: 375,
+                    currentReturnPercentage: 125,
+                    totalBuyAmount: 300,
+                    sectorDetails: [
+                        {
+                            sector: "technology",
+                            weight: 1,
+                        },
+                    ],
+                    portfolioId: portfolio.id,
+                },
+                {
+                    assetId: 2,
+                    symbol: "LEON",
+                    assetCountryId: 224,
+                    assetCurrency: "USD",
+                    name: "Leonida Inc.",
+                    shares: 10,
+                    type: "STOCK",
+                    currentValue: 450,
+                    currentAssetCurrencyValue: 300,
+                    currentReturn: 300,
+                    currentReturnPercentage: 200,
+                    totalBuyAmount: 150,
+                    sectorDetails: [
+                        {
+                            sector: "technology",
+                            weight: 1,
+                        },
+                    ],
+                    portfolioId: portfolio.id,
+                },
+                {
+                    assetId: 4,
+                    symbol: "FUND",
+                    assetCountryId: 223,
+                    assetCurrency: "GBP",
+                    name: "A fund",
+                    shares: 10,
+                    type: "ETF",
+                    currentValue: 300,
+                    currentAssetCurrencyValue: null,
+                    currentReturn: 90,
+                    currentReturnPercentage: 42.86,
+                    totalBuyAmount: 210,
+                    sectorDetails: [
+                        {
+                            sector: "technology",
+                            weight: 0.6,
+                        },
+                        {
+                            sector: "financials",
+                            weight: 0.4,
+                        },
+                    ],
+                    portfolioId: portfolio.id,
+                },
+            ],
+        });
+    });
+
+    it("should return a 404 not found error if the user has no portfolios", async () => {
+        await createUser("test-user").execute();
+
+        const response = await app.inject({
+            method: "GET",
+            url: "/portfolios/overview",
+            headers: {
+                Authorization: devToken,
+                Accept: "application/json",
+            },
+        });
+
+        expect(response.statusCode).toBe(404);
+
+        const message = await response.json().message;
+        expect(message).toBe("noPortfoliosFound");
+    });
+
+    it("should return a 404 not found if the user has a portfolio but no investments", async () => {
+        await createUser("test-user").execute();
+
+        await db
+            .insertInto("stratify.portfolios")
+            .values({
+                name: "Test Portfolio",
+                userId: "test-user",
+            })
+            .execute();
+
+        const response = await app.inject({
+            method: "GET",
+            url: "/portfolios/overview",
+            headers: {
+                Authorization: devToken,
+                Accept: "application/json",
+            },
+        });
+
+        expect(response.statusCode).toBe(404);
+
+        const message = await response.json().message;
+        expect(message).toBe("noInvestmentsFound");
     });
 });

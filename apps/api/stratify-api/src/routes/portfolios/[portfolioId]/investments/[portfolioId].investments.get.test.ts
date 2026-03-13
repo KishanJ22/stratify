@@ -3,14 +3,11 @@ import loadMockApp from "../../../../__mocks__/mockApp.js";
 import db from "../../../../database/db.js";
 import { createUser } from "../../../../tests/create-user.js";
 import { generateDevToken } from "../../../../utils/generateDevToken.js";
-import { _null } from "better-auth";
 
 const mockAssetPriceResponse = {
     data: {
         data: {
             currentPrice: 152,
-            change: 2.5,
-            changePercent: 1.69,
         },
     },
 };

@@ -2,7 +2,7 @@ import { Static, Type } from "@sinclair/typebox";
 import { FastifyInstance } from "fastify";
 import { Return, returnSchema } from "../../../schemas/common-schemas.js";
 import {
-    fetchPortfolios,
+    portfolioListQuery,
     NotFoundResponse,
     notFoundSchema,
 } from "../portfolios.get.js";
@@ -13,6 +13,8 @@ import { calculatePortfolioValueHistory } from "../[portfolioId]/value-history/c
 import { ValueHistory } from "../[portfolioId]/value-history/[portfolioId].value-history.get.js";
 import { retrieveInvestments } from "../[portfolioId]/investments/retrievePortfolioInvestments.js";
 import { investmentSchema } from "../[portfolioId]/investments/investments.schema.js";
+import db from "../../../database/db.js";
+import { createNotFound } from "../../../utils/createNotFoundSchema.js";
 
 const overviewSchema = Type.Object({
     totalValue: Type.Number(),
@@ -32,6 +34,22 @@ const successResponseSchema = Type.Object({
 });
 
 type SuccessResponse = Static<typeof successResponseSchema>;
+
+const noInvestmentsFoundSchema = createNotFound("noInvestmentsFound");
+type NoInvestmentsFound = Static<typeof noInvestmentsFoundSchema>;
+
+const hasInvestmentsQuery = (portfolioIds: number[], userId: string) =>
+    db
+        .selectFrom("stratify.trades as trades")
+        .innerJoin(
+            "stratify.portfolios as portfolios",
+            "trades.portfolioId",
+            "portfolios.id",
+        )
+        .where("trades.portfolioId", "in", portfolioIds)
+        .where("portfolios.userId", "=", userId)
+        .selectAll()
+        .limit(1);
 
 const calculateChangeInTimePeriod = (
     data: ValueHistory[],
@@ -143,21 +161,21 @@ const retrieveOverviewDetails = async (portfolioIds: number[]) => {
 
 export default async function overviewGet(fastify: FastifyInstance) {
     fastify.route<{
-        Reply: SuccessResponse | NotFoundResponse;
+        Reply: SuccessResponse | NotFoundResponse | NoInvestmentsFound;
     }>({
         method: "GET",
         url: "/portfolios/overview",
         schema: {
             response: {
                 200: successResponseSchema,
-                404: notFoundSchema,
+                404: Type.Union([notFoundSchema, noInvestmentsFoundSchema]),
             },
         },
         handler: async (_request, reply) => {
             try {
                 const { userId } = getFromStore("user") as UserDetails;
 
-                const portfolios = await fetchPortfolios(userId).execute();
+                const portfolios = await portfolioListQuery(userId).execute();
 
                 if (portfolios.length === 0) {
                     return reply
@@ -165,9 +183,21 @@ export default async function overviewGet(fastify: FastifyInstance) {
                         .send({ message: "noPortfoliosFound" });
                 }
 
-                const overviewDetails = await retrieveOverviewDetails(
-                    portfolios.map((p) => p.id),
-                );
+                const portfolioIds = portfolios.map((p) => p.id);
+
+                const hasInvestments = await hasInvestmentsQuery(
+                    portfolioIds,
+                    userId,
+                ).execute();
+
+                if (hasInvestments.length === 0) {
+                    return reply
+                        .status(404)
+                        .send({ message: "noInvestmentsFound" });
+                }
+
+                const overviewDetails =
+                    await retrieveOverviewDetails(portfolioIds);
 
                 return reply.status(200).send({ data: overviewDetails });
             } catch (error) {
