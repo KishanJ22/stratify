@@ -152,20 +152,6 @@ describe("GET /portfolios/:portfolioId/metrics", () => {
             ])
             .execute();
 
-        await db
-            .insertInto("stratify.assetPrices")
-            .values([
-                {
-                    priceDate: new Date(),
-                    lowPrice: 0.75,
-                    highPrice: 0.77,
-                    openPrice: 0.76,
-                    closePrice: 0.73,
-                    volume: 0,
-                },
-            ])
-            .execute();
-
         const response = await app.inject({
             method: "GET",
             url: `/portfolios/${portfolio.id}/metrics`,
@@ -322,20 +308,6 @@ describe("GET /portfolios/:portfolioId/metrics", () => {
                     assetCurrencyTotalAmount: 880,
                     tradeAction: "BUY",
                     tradeDate: new Date(new Date().setDate(now.getMonth() - 1)),
-                },
-            ])
-            .execute();
-
-        await db
-            .insertInto("stratify.assetPrices")
-            .values([
-                {
-                    priceDate: new Date(),
-                    lowPrice: 0.75,
-                    highPrice: 0.77,
-                    openPrice: 0.76,
-                    closePrice: 0.73,
-                    volume: 0,
                 },
             ])
             .execute();

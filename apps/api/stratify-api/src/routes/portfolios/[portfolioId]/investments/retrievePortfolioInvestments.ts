@@ -171,6 +171,7 @@ export const retrieveInvestments = async (portfolioId: number) => {
                 currentInvestmentValue,
                 userCurrency,
                 sectorDetails,
+                portfolioId,
             );
         }),
     );

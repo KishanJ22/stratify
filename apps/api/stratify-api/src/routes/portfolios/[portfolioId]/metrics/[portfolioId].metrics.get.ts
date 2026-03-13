@@ -11,6 +11,7 @@ import { portfolioExistsForUserCheck } from "../portfolioExistsQuery.js";
 import { retrieveInvestments } from "../investments/retrievePortfolioInvestments.js";
 import { calculateAssetVariance } from "./calculateAssetVariance.js";
 import logger from "../../../../logger.js";
+import { returnSchema } from "../../../../schemas/common-schemas.js";
 
 const riskLevelValues = [
     "low",
@@ -28,10 +29,7 @@ type RiskLevel = Static<typeof riskLevelSchema>;
 
 const portfolioMetrics = Type.Object({
     totalValue: Type.Number(),
-    overallReturn: Type.Object({
-        percentage: Type.Number(),
-        absolute: Type.Number(),
-    }),
+    overallReturn: returnSchema,
     riskMetrics: Type.Object({
         volatility: Type.Number(),
         sortinoRatio: Type.Number(),
@@ -95,23 +93,22 @@ const retrievePortfolioMetrics = async (portfolioId: number) => {
         return null;
     }
 
-    const { totalValue, totalCost, overallReturnAbsolute } = investments.reduce(
+    const { totalValue, totalBuyAmount, overallReturn } = investments.reduce(
         (acc, investment) => {
             return {
                 totalValue: acc.totalValue + investment.currentValue,
-                totalCost: acc.totalCost + investment.totalBuyAmount,
-                overallReturnAbsolute:
-                    acc.overallReturnAbsolute + investment.currentReturn,
+                totalBuyAmount: acc.totalBuyAmount + investment.totalBuyAmount,
+                overallReturn: acc.overallReturn + investment.currentReturn,
             };
         },
         {
             totalValue: 0,
-            totalCost: 0,
-            overallReturnAbsolute: 0,
+            totalBuyAmount: 0,
+            overallReturn: 0,
         },
     );
 
-    const overallReturnPercentage = (overallReturnAbsolute / totalCost) * 100;
+    const overallReturnPercentage = (overallReturn / totalBuyAmount) * 100;
 
     const assetWeights = investments.map((investment) => {
         if (investment.currentValue > 0) {
@@ -177,7 +174,7 @@ const retrievePortfolioMetrics = async (portfolioId: number) => {
         totalValue,
         overallReturn: {
             percentage: parseFloat(overallReturnPercentage.toFixed(2)),
-            absolute: overallReturnAbsolute,
+            absolute: overallReturn,
         },
         riskMetrics: {
             volatility: parseFloat(volatility.toFixed(2)),

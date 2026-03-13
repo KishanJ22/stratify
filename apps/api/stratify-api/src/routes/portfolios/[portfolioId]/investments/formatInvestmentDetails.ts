@@ -8,6 +8,7 @@ export const formatInvestmentDetails = async (
     currentInvestmentValue: number,
     userCurrency: string | null,
     sectorDetails: SectorDetails[],
+    portfolioId: number,
 ) => {
     const {
         symbol,
@@ -72,5 +73,6 @@ export const formatInvestmentDetails = async (
         currentReturn: parseFloat(currentReturn.toFixed(2)),
         currentReturnPercentage: parseFloat(currentReturnPercentage.toFixed(2)),
         sectorDetails,
+        portfolioId,
     } satisfies Investment;
 };

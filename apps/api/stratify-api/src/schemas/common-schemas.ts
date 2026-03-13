@@ -21,3 +21,10 @@ export const assetTypeSchema = Type.Union(
 
 export type MarketState = Static<typeof marketStateSchema>;
 export type AssetType = Static<typeof assetTypeSchema>;
+
+export const returnSchema = Type.Object({
+    percentage: Type.Number(),
+    absolute: Type.Number(),
+});
+
+export type Return = Static<typeof returnSchema>;

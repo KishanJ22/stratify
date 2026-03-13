@@ -17,11 +17,10 @@ const successResponseSchema = Type.Object({
 
 type SuccessResponse = Static<typeof successResponseSchema>;
 
-const notFoundSchema = createNotFound("noPortfoliosFound");
+export const notFoundSchema = createNotFound("noPortfoliosFound");
+export type NotFoundResponse = Static<typeof notFoundSchema>;
 
-type NotFoundResponse = Static<typeof notFoundSchema>;
-
-const fetchPortfolios = (userId: string) => {
+export const fetchPortfolios = (userId: string) => {
     return db
         .selectFrom("stratify.portfolios")
         .where("userId", "=", userId)

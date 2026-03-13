@@ -237,6 +237,7 @@ describe("GET /portfolios/:portfolioId/investments", () => {
                             weight: 1,
                         },
                     ],
+                    portfolioId: portfolio.id,
                 },
                 {
                     assetId: 4,
@@ -261,6 +262,7 @@ describe("GET /portfolios/:portfolioId/investments", () => {
                             weight: 0.4,
                         },
                     ],
+                    portfolioId: portfolio.id,
                 },
                 {
                     assetId: 2,
@@ -281,6 +283,7 @@ describe("GET /portfolios/:portfolioId/investments", () => {
                             weight: 1,
                         },
                     ],
+                    portfolioId: portfolio.id,
                 },
             ],
         });
@@ -387,6 +390,7 @@ describe("GET /portfolios/:portfolioId/investments", () => {
                             weight: 1,
                         },
                     ],
+                    portfolioId: portfolio.id,
                 },
                 {
                     assetId: 2,
@@ -407,6 +411,7 @@ describe("GET /portfolios/:portfolioId/investments", () => {
                             weight: 1,
                         },
                     ],
+                    portfolioId: portfolio.id,
                 },
             ],
         });
@@ -504,6 +509,7 @@ describe("GET /portfolios/:portfolioId/investments", () => {
                             weight: 1,
                         },
                     ],
+                    portfolioId: portfolio.id,
                 },
             ],
         });
