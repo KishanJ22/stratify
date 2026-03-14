@@ -1,5 +1,15 @@
 # @stratify/stratify-api
 
+## 0.5.0
+
+### Minor Changes
+
+- eb6ce36: - Build an endpoint to retrieve an overview of all portfolios, including:
+    - Combined value of all portfolios
+    - Combined change in value over multiple time periods (7 days, 30 days, 6 months, all time)
+    - List of investments in each portfolio
+    - Add unit tests for the endpoint
+
 ## 0.4.2
 
 ### Patch Changes
