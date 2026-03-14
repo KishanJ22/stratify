@@ -7,10 +7,22 @@ import {
 } from "lucide-react";
 
 interface ValueChangeLabelProps {
-    valueChangePercent: number;
+    valueChangePercent?: number;
 }
 
 const ValueChangeLabel = ({ valueChangePercent }: ValueChangeLabelProps) => {
+    const baseClassName =
+        "flex flex-row font-sans items-center text-lg gap-x-1 mt-1.5 leading-5";
+
+    if (!valueChangePercent) {
+        return (
+            <div className={`${baseClassName} text-secondary-light`}>
+                <ChartColumn className="w-5 h-5" />
+                {"---"}
+            </div>
+        );
+    }
+
     const isPositive = valueChangePercent > 0.01;
     const isNegative = valueChangePercent < 0;
 
@@ -18,7 +30,7 @@ const ValueChangeLabel = ({ valueChangePercent }: ValueChangeLabelProps) => {
 
     if (isPositive) {
         return (
-            <div className="flex flex-row font-sans items-center text-lg gap-x-1 mt-1.5 leading-5 text-positive-base">
+            <div className={`${baseClassName} text-positive-base`}>
                 <ChartColumnIncreasing className="w-5 h-5" />
                 {`${sign}${valueChangePercent}%`}
             </div>
@@ -27,7 +39,7 @@ const ValueChangeLabel = ({ valueChangePercent }: ValueChangeLabelProps) => {
 
     if (isNegative) {
         return (
-            <div className="flex flex-row font-sans items-center text-lg gap-x-1 mt-1.5 leading-5 text-negative-base">
+            <div className={`${baseClassName} text-negative-base`}>
                 <ChartColumnDecreasing className="w-5 h-5" />
                 {`${valueChangePercent}%`}
             </div>
@@ -35,7 +47,7 @@ const ValueChangeLabel = ({ valueChangePercent }: ValueChangeLabelProps) => {
     }
 
     return (
-        <div className="flex flex-row font-sans items-center text-lg gap-x-1 mt-1.5 leading-5 text-muted-dark">
+        <div className={`${baseClassName} text-muted-dark`}>
             <ChartColumn className="w-5 h-5" />
             {"0%"}
         </div>

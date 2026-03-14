@@ -6,9 +6,35 @@ import { usePortfoliosOverview } from "./usePortfoliosOverview";
 import { useSessionContext } from "../SessionProvider";
 import ValueChangeLabel from "./ValueChangeLabel";
 import { Progress } from "@/app/components/ui/progress";
+import { Button } from "@/app/components/ui/button";
+import { useEffect } from "react";
+import Link from "next/link";
 
 export default function DashboardPage() {
-    const { data, isLoading } = usePortfoliosOverview();
+    const {
+        data,
+        isLoading,
+        isPortfoliosNotFoundError,
+        isInvestmentsNotFoundError,
+    } = usePortfoliosOverview();
+
+    useEffect(() => {
+        console.log("Portfolios overview data:", data);
+        console.log("Is loading:", isLoading);
+        console.log(
+            "Is portfolios not found error:",
+            isPortfoliosNotFoundError,
+        );
+        console.log(
+            "Is investments not found error:",
+            isInvestmentsNotFoundError,
+        );
+    }, [
+        data,
+        isLoading,
+        isPortfoliosNotFoundError,
+        isInvestmentsNotFoundError,
+    ]);
 
     const { session } = useSessionContext();
     const userCurrency = session?.userDetails.currency as string;
@@ -23,14 +49,25 @@ export default function DashboardPage() {
                     <KeyPerformanceCard title="Total value">
                         {isLoading ? (
                             <Skeleton className="h-8 w-1/2" />
+                        ) : isPortfoliosNotFoundError ? (
+                            <Link
+                                href="/app/portfolios?create=true"
+                                className="text-3xl leading-9 text-secondary-light hover:text-secondary-base transition-colors hover:underline"
+                            >
+                                {"Create a portfolio"}
+                            </Link>
+                        ) : isInvestmentsNotFoundError ? (
+                            <span className="text-3xl leading-9 text-secondary-light">
+                                {"---"}
+                            </span>
                         ) : (
-                            <span className="font-normal text-3xl leading-9 text-secondary-base">
+                            <span className="text-3xl leading-9 text-secondary-base">
                                 {`${data?.totalValue.toLocaleString()} (${userCurrency})`}
                             </span>
                         )}
                     </KeyPerformanceCard>
                     <KeyPerformanceCard title="Overall change">
-                        {isLoading && !data ? (
+                        {isLoading ? (
                             <div className="flex flex-row justify-between items-center">
                                 <div className="flex flex-col">
                                     <Skeleton className="h-4 w-24" />
@@ -54,7 +91,7 @@ export default function DashboardPage() {
                                     <ValueChangeLabel
                                         valueChangePercent={
                                             data?.overallChange.lastThirtyDays
-                                                .percentage || 0
+                                                .percentage
                                         }
                                     />
                                 </div>
@@ -65,7 +102,7 @@ export default function DashboardPage() {
                                     <ValueChangeLabel
                                         valueChangePercent={
                                             data?.overallChange.lastSixMonths
-                                                .percentage || 0
+                                                .percentage
                                         }
                                     />
                                 </div>
@@ -76,7 +113,7 @@ export default function DashboardPage() {
                                     <ValueChangeLabel
                                         valueChangePercent={
                                             data?.overallChange.allTime
-                                                .percentage || 0
+                                                .percentage
                                         }
                                     />
                                 </div>
