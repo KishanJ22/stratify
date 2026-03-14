@@ -5,13 +5,11 @@ import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { CreatePortfolioModalProps } from "./CreatePortfolioModal";
 
-vi.mock("./CreatePortfolioModal", () => ({
-    default: ({ isOpen }: CreatePortfolioModalProps) => {
-        if (isOpen) {
-            return <div>CreatePortfolioModal</div>;
-        }
-    },
-}));
+const mockSetIsCreatePortfolioModalOpen = vi.fn();
+
+const defaultProps = {
+    setIsCreatePortfolioModalOpen: mockSetIsCreatePortfolioModalOpen,
+};
 
 const user = userEvent.setup();
 
@@ -20,9 +18,9 @@ describe("CreatePortfolioButton", () => {
         vi.clearAllMocks();
     });
 
-    const renderComponent = () =>
+    const renderComponent = (props = defaultProps) =>
         renderWithContext({
-            children: <CreatePortfolioButton />,
+            children: <CreatePortfolioButton {...props} />,
         });
 
     it("should render the create portfolio button", () => {
@@ -41,10 +39,7 @@ describe("CreatePortfolioButton", () => {
 
         await user.click(button);
 
-        await waitFor(async () => {
-            expect(
-                screen.getByText("CreatePortfolioModal"),
-            ).toBeInTheDocument();
-        });
+        expect(mockSetIsCreatePortfolioModalOpen).toHaveBeenCalledTimes(1);
+        expect(mockSetIsCreatePortfolioModalOpen).toHaveBeenCalledWith(true);
     });
 });

@@ -9,13 +9,21 @@ import AddInvestmentButton from "./AddInvestment/AddInvestmentButton";
 import PortfolioValueChart from "./PortfolioValueChart/PortfolioValueChart";
 import PortfolioMetrics from "./PortfolioMetrics/PortfolioMetrics";
 import AssetAllocationCard from "./AssetAllocationCard/AssetAllocationCard";
+import CreatePortfolioModal from "./CreatePortfolio/CreatePortfolioModal";
+import { useSearchParams } from "next/navigation";
 
 export default function PortfoliosPage() {
-    const { data, isLoading } = usePortfolioList();
-
     const [selectedPortfolioId, setSelectedPortfolioId] = useState<
         number | null
     >(null);
+
+    const searchParams = useSearchParams();
+    const createPortfolio = searchParams.get("createPortfolio");
+
+    const [isCreatePortfolioModalOpen, setIsCreatePortfolioModalOpen] =
+        useState(createPortfolio === "true");
+
+    const { data, isLoading } = usePortfolioList();
 
     useEffect(() => {
         if (data && data.length > 0) {
@@ -32,7 +40,11 @@ export default function PortfoliosPage() {
                 <div className="flex flex-col w-full">
                     <div className="flex flex-row mt-4">
                         <div className="flex flex-col">
-                            <CreatePortfolioButton />
+                            <CreatePortfolioButton
+                                setIsCreatePortfolioModalOpen={
+                                    setIsCreatePortfolioModalOpen
+                                }
+                            />
                             <PortfolioSelector
                                 portfolioList={data}
                                 isLoading={isLoading}
@@ -62,6 +74,10 @@ export default function PortfoliosPage() {
                     <PortfolioMetrics portfolioId={selectedPortfolioId} />
                     <AssetAllocationCard portfolioId={selectedPortfolioId} />
                 </div>
+                <CreatePortfolioModal
+                    isOpen={isCreatePortfolioModalOpen}
+                    handleClose={() => setIsCreatePortfolioModalOpen(false)}
+                />
             </div>
         </div>
     );

@@ -51,7 +51,7 @@ export default function DashboardPage() {
                             <Skeleton className="h-8 w-1/2" />
                         ) : isPortfoliosNotFoundError ? (
                             <Link
-                                href="/app/portfolios?create=true"
+                                href="/app/portfolios?createPortfolio=true"
                                 className="text-3xl leading-9 text-secondary-light hover:text-secondary-base transition-colors hover:underline"
                             >
                                 {"Create a portfolio"}

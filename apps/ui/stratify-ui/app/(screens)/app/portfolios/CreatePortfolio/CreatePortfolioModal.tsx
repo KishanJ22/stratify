@@ -108,7 +108,7 @@ const CreatePortfolioModal = ({
             <DialogContent className="bg-muted-lightest border border-primary-dark font-sans">
                 <DialogHeader>
                     <div className="flex flex-row items-center justify-between">
-                        <DialogTitle className="font-medium text-lg leading-7 text-primary-darker">
+                        <DialogTitle className="font-medium text-lg leading-7 text-secondary-darker">
                             Create Portfolio
                         </DialogTitle>
                         <X
@@ -122,7 +122,7 @@ const CreatePortfolioModal = ({
                             data-testid="close-modal-icon"
                         />
                     </div>
-                    <DialogDescription className="text-muted-dark leading-5">
+                    <DialogDescription className="text-secondary-base leading-5">
                         Add and monitor your investments by creating a
                         portfolio.
                     </DialogDescription>
@@ -171,7 +171,6 @@ const CreatePortfolioModal = ({
                             <DialogFooter className="flex flex-col justify-end mt-8">
                                 <form.SubmitButton
                                     label="Create"
-                                    variant="default"
                                     isDisabled={
                                         !form.state.canSubmit ||
                                         isSubmitDisabled
