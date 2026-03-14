@@ -3,7 +3,7 @@ import { useSessionContext } from "../../SessionProvider";
 import KeyPerformanceCard from "./KeyPerformanceCard";
 import Link from "next/link";
 
-interface TotalValueCardProps {
+export interface TotalValueCardProps {
     isPortfoliosNotFoundError: boolean;
     isInvestmentsNotFoundError: boolean;
     isLoading: boolean;
@@ -30,13 +30,18 @@ const TotalValueCard = ({
                 <Link
                     href="/app/portfolios?createPortfolio=true"
                     className="text-3xl leading-9 text-secondary-light hover:text-secondary-base transition-colors hover:underline"
+                    data-testid="create-portfolio-link"
                 >
                     {"Create a portfolio"}
                 </Link>
             ) : isInvestmentsNotFoundError ? (
-                <span className="text-3xl leading-9 text-secondary-light">
-                    {"---"}
-                </span>
+                <Link
+                    href="/app/portfolios"
+                    className="text-3xl leading-9 text-secondary-light hover:text-secondary-base transition-colors hover:underline"
+                    data-testid="add-investment-link"
+                >
+                    {"Add an investment"}
+                </Link>
             ) : (
                 <span className="text-3xl leading-9 text-secondary-base">
                     {totalValue

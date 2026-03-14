@@ -103,7 +103,6 @@ const retrieveOverviewDetails = async (portfolioIds: number[]) => {
         [] as ValueHistory[],
     );
 
-    // Sort history from oldest to newest§11§§§
     const sortedValueHistory = groupedValueHistory.sort(
         (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
     );

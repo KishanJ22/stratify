@@ -88,6 +88,6 @@ describe("DashboardPage", () => {
         renderPage();
 
         const placeholderElements = await screen.findAllByText("---");
-        expect(placeholderElements).toHaveLength(4);
+        expect(placeholderElements).toHaveLength(3);
     });
 });

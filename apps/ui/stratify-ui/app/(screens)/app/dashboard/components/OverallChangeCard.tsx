@@ -3,7 +3,7 @@ import { Overview } from "../usePortfoliosOverview";
 import KeyPerformanceCard from "./KeyPerformanceCard";
 import ValueChangeLabel from "./ValueChangeLabel";
 
-interface OverallChangeCardProps {
+export interface OverallChangeCardProps {
     overallChange?: Overview["overallChange"];
     isLoading: boolean;
     isInvestmentsNotFoundError: boolean;
