@@ -26,6 +26,7 @@ export default defineConfig({
                 "app/tests/**/*",
                 "app/global/get-query-client.ts",
                 "*/**/layout.tsx",
+                "_mocks/**/*",
             ],
         },
         server: {

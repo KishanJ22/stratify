@@ -27,6 +27,7 @@ const mockIsNoResultsFound = vi.fn();
 const mockUseAssetSearch = () => ({
     searchResults: [
         {
+            id: 1,
             name: "Apple Inc.",
             symbol: "AAPL",
             assetType: "STOCK",

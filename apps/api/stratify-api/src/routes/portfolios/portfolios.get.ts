@@ -17,11 +17,10 @@ const successResponseSchema = Type.Object({
 
 type SuccessResponse = Static<typeof successResponseSchema>;
 
-const notFoundSchema = createNotFound("noPortfoliosFound");
+export const notFoundSchema = createNotFound("noPortfoliosFound");
+export type NotFoundResponse = Static<typeof notFoundSchema>;
 
-type NotFoundResponse = Static<typeof notFoundSchema>;
-
-const fetchPortfolios = (userId: string) => {
+export const portfolioListQuery = (userId: string) => {
     return db
         .selectFrom("stratify.portfolios")
         .where("userId", "=", userId)
@@ -44,7 +43,7 @@ export default async function portfolioListGet(fastify: FastifyInstance) {
             try {
                 const { userId } = getFromStore("user") as UserDetails;
 
-                const portfolios = await fetchPortfolios(userId).execute();
+                const portfolios = await portfolioListQuery(userId).execute();
 
                 if (portfolios.length === 0) {
                     return reply
