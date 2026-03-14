@@ -28,7 +28,6 @@ export const usePortfoliosOverview = () => {
 
     const {
         data: fetchedOverview,
-        error,
         isLoading,
         refetch,
     } = useQuery({
@@ -60,7 +59,6 @@ export const usePortfoliosOverview = () => {
     return {
         data: fetchedOverview || cachedOverview,
         isLoading,
-        error,
         isPortfoliosNotFoundError,
         isInvestmentsNotFoundError,
         refetchPortfoliosOverview: refetch,
