@@ -1,23 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { PortfolioMetricsResponse } from "./usePortfolioMetrics";
 import { renderWithContext } from "@/app/tests/utils";
 import { TooltipProvider } from "@/app/components/ui/tooltip";
 import MockSessionProvider from "@/app/tests/_mocks/MockSessionProvider";
 import PortfolioMetrics from "./PortfolioMetrics";
 import { screen } from "@testing-library/react";
-
-export const mockMetricsData = {
-    totalValue: 100000,
-    overallReturn: {
-        absolute: 5000,
-        percentage: 5,
-    },
-    riskMetrics: {
-        volatility: 10,
-        sortinoRatio: 1.5,
-        riskLevel: "low",
-    },
-} satisfies PortfolioMetricsResponse;
+import { mockMetricsData } from "./_mocks/mockMetricsData";
 
 const defaultHookReturnValues = {
     data: mockMetricsData,

@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { useSessionContext } from "../../SessionProvider";
+import { useSessionContext } from "../../../SessionProvider";
 import PortfolioMetricCard from "./PortfolioMetricCard";
 import {
     PortfolioMetricsResponse,

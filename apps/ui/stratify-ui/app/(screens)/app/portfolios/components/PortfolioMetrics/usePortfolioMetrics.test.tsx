@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { renderHook, waitFor } from "@testing-library/react";
 import MockEnvironmentProvider from "@/app/tests/_mocks/MockEnvironmentProvider";
 import { usePortfolioMetrics } from "./usePortfolioMetrics";
-import { mockMetricsData } from "./PortfolioMetrics.test";
+import { mockMetricsData } from "./_mocks/mockMetricsData";
 
 const mockGetPortfolioMetrics = vi.fn();
 

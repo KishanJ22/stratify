@@ -2,7 +2,7 @@
 
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
 import { ChartContainer, ChartTooltip } from "@/app/components/ui/chart";
-import { useSessionContext } from "../../SessionProvider";
+import { useSessionContext } from "../../../SessionProvider";
 import { usePortfolioValueHistory } from "./usePortfolioValueHistory";
 import { useState } from "react";
 import { DateRange } from "./HistoryDateRangeSelector";

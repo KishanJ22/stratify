@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import HistoryDateRangeSelector, {
-    DateRange,
+    HistoryDateRangeSelectorProps,
 } from "./HistoryDateRangeSelector";
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { MockPointerEvent } from "@/app/tests/_mocks/MockPointerEvent";
@@ -8,9 +8,10 @@ import { MockPointerEvent } from "@/app/tests/_mocks/MockPointerEvent";
 const mockSetSelectedDateRange = vi.fn();
 
 const defaultProps = {
-    selectedDateRange: "30d" as DateRange,
+    selectedDateRange: "30d",
     setSelectedDateRange: mockSetSelectedDateRange,
-};
+    disabled: false,
+} satisfies HistoryDateRangeSelectorProps;
 
 describe("HistoryDateRangeSelector", () => {
     beforeEach(() => {

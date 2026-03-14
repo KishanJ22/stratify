@@ -34,7 +34,7 @@ const dateRanges = [
     },
 ];
 
-interface HistoryDateRangeSelectorProps {
+export interface HistoryDateRangeSelectorProps {
     selectedDateRange: DateRange;
     setSelectedDateRange: Dispatch<SetStateAction<DateRange>>;
     disabled: boolean;

@@ -3,6 +3,7 @@ import type { Investment } from "../InvestmentsTable";
 export const mockInvestmentsData = [
     {
         assetId: 1,
+        portfolioId: 1,
         symbol: "LEON",
         assetCountryId: 224,
         assetCurrency: "USD",

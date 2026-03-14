@@ -12,38 +12,44 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useSessionContext } from "../../SessionProvider";
-import { useHistoricAssetPrice } from "../hooks/useHistoricAssetPrice";
-import { useHistoricCurrencyPairPrice } from "../hooks/useHistoricConversionRate";
+import {
+    AddInvestmentSchema,
+    addInvestmentSchema,
+} from "./add-investment-schema";
+import { Field, FieldLabel } from "@/app/components/ui/field";
+import { useDebouncedValue } from "@tanstack/react-pacer";
+import {
+    SearchAsset,
+    useAssetSearch,
+} from "../../../markets/AssetSearch/useAssetSearch";
+import {
+    Command,
+    CommandInput,
+    CommandList,
+} from "@/app/components/ui/command";
+import { Skeleton } from "@/app/components/ui/skeleton";
+import { cn } from "@/lib/utils";
+import AssetNameCard from "./AssetNameCard";
+import { useSessionContext } from "../../../SessionProvider";
+import { useHistoricAssetPrice } from "../../hooks/useHistoricAssetPrice";
+import { useHistoricCurrencyPairPrice } from "../../hooks/useHistoricConversionRate";
 import {
     AddTradeErrorResponse,
     AddTradeRequestSchema,
     useAddTrade,
-} from "../hooks/useAddTrade";
+} from "../../hooks/useAddTrade";
 import { HTTPError } from "ky";
 import { toast } from "sonner";
-import { addTradeSchema, AddTradeSchema } from "./add-trade-schema";
-import { Field, FieldLabel } from "@/app/components/ui/field";
-import { Tabs, TabsList, TabsTrigger } from "@/app/components/ui/tabs";
 
-interface InvestmentDetails {
-    assetId: number;
-    symbol: string;
-    name: string;
-    assetCurrency: string | null;
-}
-
-export interface AddTradeModalProps {
+export interface AddInvestmentModalProps {
     portfolioId: number;
-    investment: InvestmentDetails;
     isOpen: boolean;
     handleClose: () => void;
 }
 
-const defaultValues: AddTradeSchema = {
+const defaultValues: AddInvestmentSchema = {
     assetName: "",
     quantity: "",
-    tradeType: "BUY",
     tradeDate: "",
     pricePerShare: "",
     currencyConversionRate: "1",
@@ -52,39 +58,59 @@ const defaultValues: AddTradeSchema = {
     assetCurrencyTotal: 0,
 };
 
-const addTradeFormOptions = formOptions({
-    formId: "add-trade-form",
+const addInvestmentFormOptions = formOptions({
+    formId: "add-investment-form",
     defaultValues,
 });
 
-const AddTradeModal = ({
+const AddInvestmentModal = ({
     portfolioId,
-    investment,
     isOpen,
     handleClose,
-}: AddTradeModalProps) => {
-    const { assetId, name, symbol, assetCurrency } = investment;
+}: AddInvestmentModalProps) => {
     const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
     const queryClient = useQueryClient();
 
     const { session } = useSessionContext();
     const userCurrency = session?.userDetails.currency ?? "---";
 
+    const [searchValue, setSearchValue] = useState("");
+    const [selectedAsset, setSelectedAsset] = useState<SearchAsset | null>(
+        null,
+    );
+    const [isAssetListOpen, setIsAssetListOpen] = useState(false);
+
+    const debouncedSearchValue = useDebouncedValue(searchValue, {
+        wait: 500,
+    })[0];
+
+    const {
+        searchResults,
+        isSearching,
+        search,
+        isNoResultsFound,
+        searchStatus,
+        resetSearch,
+    } = useAssetSearch(debouncedSearchValue);
+
     const { mutate: addTrade, isPending: isAddingTrade } =
         useAddTrade(portfolioId);
 
-    const [isAttemptingToSellMoreThanHeld, setIsAttemptingToSellMoreThanHeld] =
-        useState(false);
+    useEffect(() => {
+        if (debouncedSearchValue.length > 0) {
+            search();
+        }
+    }, [debouncedSearchValue, search]);
 
     const form = useAppForm({
-        ...addTradeFormOptions,
+        ...addInvestmentFormOptions,
         validators: {
-            onChange: addTradeSchema,
+            onChange: addInvestmentSchema,
             onBlurAsync: async ({ value }) => {
-                const result = addTradeSchema.safeParse(value);
+                const result = addInvestmentSchema.safeParse(value);
 
                 //? If currency conversion is required but the conversion rate isn't set, then the submit button should be disabled
-                if (assetCurrency !== userCurrency) {
+                if (selectedAsset?.currency !== userCurrency) {
                     const currencyConversionRateValue =
                         value.currencyConversionRate
                             ? parseFloat(value.currencyConversionRate)
@@ -104,19 +130,17 @@ const AddTradeModal = ({
             },
         },
         onSubmit: async ({ value }) => {
-            if (!value.tradeType) {
-                return toast.error("Please select a trade type.");
-            }
+            if (!selectedAsset) return;
 
             const requestBody = {
-                assetId,
+                assetId: selectedAsset.id,
                 quantity: parseFloat(value.quantity),
                 pricePerShare: parseFloat(value.pricePerShare),
                 currencyConversionRate: parseFloat(
                     value.currencyConversionRate,
                 ),
                 fee: parseFloat(value.fee || "0"),
-                tradeAction: value.tradeType,
+                tradeAction: "BUY",
                 totalAmount: value.total,
                 assetCurrencyTotalAmount: value.assetCurrencyTotal || 0,
                 tradeDate: value.tradeDate,
@@ -138,11 +162,10 @@ const AddTradeModal = ({
                     });
 
                     toast.success(
-                        "Trade added to your portfolio successfully.",
+                        "Investment added to your portfolio successfully.",
                     );
 
-                    handleClose();
-                    form.reset();
+                    closeModal();
                 },
                 onError: async (error) => {
                     const httpError = error as HTTPError;
@@ -159,18 +182,13 @@ const AddTradeModal = ({
                             );
                             setIsSubmitDisabled(true);
                         }
-
-                        if (errorMessage === "cannotSellMoreThanHeld") {
-                            setIsAttemptingToSellMoreThanHeld(true);
-                            setIsSubmitDisabled(true);
-                        }
                     }
                 },
             });
         },
         onSubmitInvalid: () => {
             toast.error(
-                "Trade could not be added to your portfolio. Please check the form for errors.",
+                "Investment could not be added to your portfolio. Please check the form for errors.",
             );
             setIsSubmitDisabled(true);
         },
@@ -182,12 +200,14 @@ const AddTradeModal = ({
         data: historicAssetPrice,
         mutate: fetchHistoricAssetPrice,
         isPending: isFetchingHistoricPrice,
+        reset: resetHistoricAssetPrice,
     } = useHistoricAssetPrice();
 
     const {
         data: historicCurrencyPairPrice,
         mutate: fetchHistoricCurrencyPairPrice,
         isPending: isFetchingHistoricCurrencyPairPrice,
+        reset: resetHistoricCurrencyPairPrice,
     } = useHistoricCurrencyPairPrice();
 
     useEffect(() => {
@@ -198,13 +218,13 @@ const AddTradeModal = ({
             );
         }
 
-        if (assetCurrency === "GBX" && userCurrency === "GBP") {
+        if (selectedAsset?.currency === "GBX" && userCurrency === "GBP") {
             form.setFieldValue("currencyConversionRate", "0.01");
         }
 
         if (historicCurrencyPairPrice) {
             const conversionRate =
-                assetCurrency === "GBX"
+                selectedAsset?.currency === "GBX"
                     ? parseFloat(historicCurrencyPairPrice.price) / 100
                     : parseFloat(historicCurrencyPairPrice.price);
 
@@ -213,21 +233,26 @@ const AddTradeModal = ({
                 conversionRate.toString(),
             );
         }
-    }, [historicAssetPrice, historicCurrencyPairPrice, form, assetCurrency]);
+    }, [
+        historicAssetPrice,
+        historicCurrencyPairPrice,
+        form,
+        selectedAsset?.currency,
+    ]);
 
     const pricePerShare = formValues.pricePerShare
         ? parseFloat(formValues.pricePerShare)
         : 0;
     const quantity = formValues.quantity ? parseFloat(formValues.quantity) : 0;
-
-    const tradeType = formValues.tradeType;
     const currencyConversionRate = formValues.currencyConversionRate
         ? parseFloat(formValues.currencyConversionRate)
         : 1;
 
     const fee = formValues.fee ? parseFloat(formValues.fee) : 0;
+    const assetCurrency = selectedAsset?.currency ?? "---";
 
-    const isCurrencyConversionRequired = assetCurrency !== userCurrency;
+    const isCurrencyConversionRequired =
+        selectedAsset && assetCurrency !== userCurrency;
 
     const assetCurrencySubtotal =
         pricePerShare > 0 && quantity > 0 ? pricePerShare * quantity : 0;
@@ -246,14 +271,18 @@ const AddTradeModal = ({
         }
     }, [total, assetCurrencySubtotal, isCurrencyConversionRequired]);
 
+    const closeModal = () => {
+        setSearchValue("");
+        setSelectedAsset(null);
+        setIsSubmitDisabled(true);
+        form.reset();
+        resetHistoricAssetPrice();
+        resetHistoricCurrencyPairPrice();
+        handleClose();
+    };
+
     return (
-        <Dialog
-            open={isOpen}
-            onOpenChange={() => {
-                form.reset();
-                handleClose();
-            }}
-        >
+        <Dialog open={isOpen} onOpenChange={() => closeModal()}>
             <DialogContent className="bg-muted-lightest border border-primary-dark font-sans">
                 <DialogHeader>
                     <div className="flex flex-row items-center justify-between">
@@ -261,15 +290,12 @@ const AddTradeModal = ({
                             className="font-medium text-lg leading-7 text-secondary-darker"
                             data-testid="modal-title"
                         >
-                            Add Trade
+                            Add Investment
                         </DialogTitle>
                         <X
                             size={20}
                             className="cursor-pointer text-muted-dark hover:text-primary-darker transition-colors"
-                            onClick={() => {
-                                handleClose();
-                                form.reset();
-                            }}
+                            onClick={() => closeModal()}
                             data-testid="close-modal-icon"
                         />
                     </div>
@@ -277,8 +303,9 @@ const AddTradeModal = ({
                         className="text-secondary-darker leading-5"
                         data-testid="modal-description"
                     >
-                        Add a transaction to keep your portfolio up to date and
-                        monitor it with more accuracy.
+                        Add a new investment to monitor its performance and see
+                        how it impacts your portfolio alongside other
+                        investments.
                     </DialogDescription>
                 </DialogHeader>
                 <form
@@ -289,30 +316,137 @@ const AddTradeModal = ({
                     className="flex flex-col gap-y-2.5"
                 >
                     <form.AppField name="assetName">
-                        {({ TextInput }) => (
-                            <TextInput
-                                id="assetName"
-                                label="Asset Name"
-                                dataTestId="asset-name-field"
-                                defaultValue={`${name} (${symbol})`}
-                                disabled
-                            />
-                        )}
+                        {(field) => {
+                            return (
+                                <Field
+                                    className="flex flex-col gap-y-1.5"
+                                    data-testid="asset-name-field"
+                                >
+                                    <FieldLabel htmlFor="assetName">
+                                        <span className="flex flex-row w-full items-center justify-between">
+                                            Asset Name
+                                            {field.state.value && (
+                                                <span
+                                                    className="p-1 rounded-lg bg-secondary-lighter font-sans font-semibold text-secondary-darker cursor-pointer hover:bg-secondary-base hover:text-secondary-lightest transition-colors"
+                                                    onClick={() => {
+                                                        setSearchValue("");
+                                                        setSelectedAsset(null);
+                                                        setIsAssetListOpen(
+                                                            false,
+                                                        );
+                                                        setIsSubmitDisabled(
+                                                            true,
+                                                        );
+                                                        resetHistoricAssetPrice();
+                                                        resetHistoricCurrencyPairPrice();
+                                                        form.reset();
+                                                    }}
+                                                >
+                                                    Clear
+                                                </span>
+                                            )}
+                                        </span>
+                                    </FieldLabel>
+                                    <Command>
+                                        <CommandInput
+                                            id="assetName"
+                                            placeholder="Search for an asset by name or symbol"
+                                            className="bg-white border border-secondary-dark rounded-md focus-visible:ring-secondary-dark"
+                                            inputClassName="placeholder:text-secondary-light text-secondary-dark"
+                                            showIcon={false}
+                                            iconClassName="text-secondary-dark"
+                                            disabled={field.state.value !== ""}
+                                            value={
+                                                field.state.value
+                                                    ? `${selectedAsset?.name} (${selectedAsset?.symbol})`
+                                                    : searchValue
+                                            }
+                                            onValueChange={(searchValue) =>
+                                                setSearchValue(searchValue)
+                                            }
+                                            onFocus={() =>
+                                                setIsAssetListOpen(true)
+                                            }
+                                        />
+                                        {searchStatus != "idle" && (
+                                            <CommandList
+                                                className={cn(
+                                                    "p-1 gap-y-1.5 bg-white border border-secondary-dark rounded-md mt-1",
+                                                    isAssetListOpen
+                                                        ? ""
+                                                        : "hidden",
+                                                )}
+                                                asChild
+                                            >
+                                                {isSearching ? (
+                                                    <div className="flex flex-col gap-2">
+                                                        {Array.from({
+                                                            length: 3,
+                                                        }).map((_, index) => (
+                                                            <Skeleton
+                                                                key={index}
+                                                                className="w-full h-10 rounded-xl bg-secondary-lighter"
+                                                            />
+                                                        ))}
+                                                    </div>
+                                                ) : (
+                                                    <div className="flex flex-col gap-y-1">
+                                                        {searchResults?.map(
+                                                            (asset) => (
+                                                                <AssetNameCard
+                                                                    key={`${asset.symbol}-${asset.name}`}
+                                                                    asset={
+                                                                        asset
+                                                                    }
+                                                                    onSelect={() => {
+                                                                        field.handleChange(
+                                                                            asset.name,
+                                                                        );
+                                                                        setSelectedAsset(
+                                                                            asset,
+                                                                        );
+                                                                        setIsAssetListOpen(
+                                                                            false,
+                                                                        );
+
+                                                                        resetSearch();
+                                                                    }}
+                                                                />
+                                                            ),
+                                                        )}
+                                                    </div>
+                                                )}
+                                                {isNoResultsFound &&
+                                                    !searchResults &&
+                                                    searchStatus ===
+                                                        "success" && (
+                                                        <div className="p-2 text-center text-base font-sans text-secondary-dark">
+                                                            No assets found.
+                                                        </div>
+                                                    )}
+                                            </CommandList>
+                                        )}
+                                    </Command>
+                                </Field>
+                            );
+                        }}
                     </form.AppField>
                     <form.AppField
                         name="tradeDate"
                         listeners={{
                             onChange: ({ value }) => {
-                                fetchHistoricAssetPrice({
-                                    assetId,
-                                    tradeDate: value,
-                                });
-
-                                if (isCurrencyConversionRequired) {
-                                    fetchHistoricCurrencyPairPrice({
-                                        currencyPair: `${assetCurrency === "GBX" ? "GBP" : assetCurrency}${userCurrency}`,
+                                if (selectedAsset) {
+                                    fetchHistoricAssetPrice({
+                                        assetId: selectedAsset.id,
                                         tradeDate: value,
                                     });
+
+                                    if (isCurrencyConversionRequired) {
+                                        fetchHistoricCurrencyPairPrice({
+                                            currencyPair: `${selectedAsset.currency === "GBX" ? "GBP" : selectedAsset.currency}${userCurrency}`,
+                                            tradeDate: value,
+                                        });
+                                    }
                                 }
                             },
                         }}
@@ -342,7 +476,9 @@ const AddTradeModal = ({
                                     dataTestId="price-per-share-field"
                                     label="Price per Share"
                                     isLoading={isFetchingHistoricPrice}
-                                    currencyCode={assetCurrency ?? "---"}
+                                    currencyCode={
+                                        selectedAsset?.currency ?? "---"
+                                    }
                                     placeholder="Enter price per share"
                                     inputClassName=""
                                     error={
@@ -354,71 +490,24 @@ const AddTradeModal = ({
                             );
                         }}
                     </form.AppField>
-                    <div className="flex flex-row gap-x-4">
-                        <form.AppField
-                            name="quantity"
-                            validators={{
-                                onChange: () =>
-                                    setIsAttemptingToSellMoreThanHeld(false),
-                            }}
-                        >
-                            {({ state: { meta }, TextInput }) => {
-                                const validationError = meta.isTouched
-                                    ? meta.errors?.[0]?.message
-                                    : undefined;
-
-                                const quantityError =
-                                    isAttemptingToSellMoreThanHeld
-                                        ? "You cannot sell more shares than what you currently hold. Please adjust the quantity or change the trade type to Buy."
-                                        : validationError;
-                                return (
-                                    <TextInput
-                                        id="quantity"
-                                        dataTestId="quantity-field"
-                                        label="Number of Shares"
-                                        placeholder="Enter number of shares"
-                                        inputClassName="bg-white text-secondary-dark"
-                                        error={quantityError}
-                                    />
-                                );
-                            }}
-                        </form.AppField>
-                        <form.AppField name="tradeType">
-                            {(field) => (
-                                <Field
-                                    className="flex flex-col gap-y-1.5"
-                                    data-testid="trade-type-field"
-                                >
-                                    <FieldLabel htmlFor="tradeType">
-                                        Trade Type
-                                    </FieldLabel>
-                                    <Tabs
-                                        defaultValue="BUY"
-                                        onValueChange={(value) =>
-                                            field.setValue(
-                                                value as "BUY" | "SELL",
-                                            )
-                                        }
-                                    >
-                                        <TabsList className="bg-white border border-secondary-dark rounded-md w-full">
-                                            <TabsTrigger
-                                                value="BUY"
-                                                className="rounded-md p-1 text-sm font-normal text-muted-dark hover:bg-positive-lighter hover:text-positive-dark hover:font-medium data-[state=active]:bg-positive-light data-[state=active]:text-positive-darker data-[state=active]:font-semibold"
-                                            >
-                                                Buy
-                                            </TabsTrigger>
-                                            <TabsTrigger
-                                                value="SELL"
-                                                className="rounded-md p-1 text-sm font-normal text-muted-dark hover:bg-negative-lighter hover:text-negative-dark hover:font-medium data-[state=active]:bg-negative-light data-[state=active]:text-negative-darker data-[state=active]:font-semibold"
-                                            >
-                                                Sell
-                                            </TabsTrigger>
-                                        </TabsList>
-                                    </Tabs>
-                                </Field>
-                            )}
-                        </form.AppField>
-                    </div>
+                    <form.AppField name="quantity">
+                        {({ state: { meta }, TextInput }) => {
+                            return (
+                                <TextInput
+                                    id="quantity"
+                                    dataTestId="quantity-field"
+                                    label="Number of Shares"
+                                    placeholder="Enter number of shares"
+                                    inputClassName="bg-white text-secondary-dark"
+                                    error={
+                                        meta.isTouched
+                                            ? meta.errors?.[0]?.message
+                                            : undefined
+                                    }
+                                />
+                            );
+                        }}
+                    </form.AppField>
                     {isCurrencyConversionRequired ? (
                         <form.AppField name="currencyConversionRate">
                             {({ state: { meta }, CurrencyInput }) => {
@@ -429,7 +518,7 @@ const AddTradeModal = ({
                                         isLoading={
                                             isFetchingHistoricCurrencyPairPrice
                                         }
-                                        currencyCode={`${assetCurrency ?? "---"}/${userCurrency}`}
+                                        currencyCode={`${selectedAsset?.currency}/${userCurrency}`}
                                         placeholder="Enter currency conversion rate"
                                         error={
                                             meta.isTouched
@@ -499,8 +588,7 @@ const AddTradeModal = ({
                         </div>
                         <div className="flex flex-row items-center justify-between mt-2">
                             <span className="text-secondary-dark font-semibold">
-                                Total {tradeType === "BUY" && "Bought"}
-                                {tradeType === "SELL" && "Sold"}
+                                Total
                             </span>
                             <span className="font-medium text-muted-darker">
                                 {total > 0 && userCurrency
@@ -516,7 +604,7 @@ const AddTradeModal = ({
                                 ]}
                             >
                                 <form.SubmitButton
-                                    label={`Add Trade for ${symbol}`}
+                                    label="Add Investment"
                                     className="w-full"
                                     isDisabled={
                                         !form.state.canSubmit ||
@@ -535,4 +623,4 @@ const AddTradeModal = ({
     );
 };
 
-export default AddTradeModal;
+export default AddInvestmentModal;

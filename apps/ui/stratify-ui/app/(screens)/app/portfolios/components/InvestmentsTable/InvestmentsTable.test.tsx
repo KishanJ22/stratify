@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import InvestmentsTable, { Investment } from "./InvestmentsTable";
+import InvestmentsTable from "./InvestmentsTable";
 import { renderWithContext } from "@/app/tests/utils";
 import { screen } from "@testing-library/react";
 import { TooltipProvider } from "@/app/components/ui/tooltip";

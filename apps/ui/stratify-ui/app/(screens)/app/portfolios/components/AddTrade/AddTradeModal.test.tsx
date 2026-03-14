@@ -4,7 +4,6 @@ import AddTradeModal, { AddTradeModalProps } from "./AddTradeModal";
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import MockSessionProvider from "@/app/tests/_mocks/MockSessionProvider";
-import { Investment } from "../InvestmentsTable/InvestmentsTable";
 
 const mockHandleClose = vi.fn();
 

@@ -1,15 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import CreatePortfolioButton from "./CreatePortfolio/CreatePortfolioButton";
-import PortfolioSelector from "./SelectedPortfolio/PortfolioSelector";
-import { usePortfolioList } from "./SelectedPortfolio/usePortfolioList";
-import InvestmentsTable from "./InvestmentsTable/InvestmentsTable";
-import AddInvestmentButton from "./AddInvestment/AddInvestmentButton";
-import PortfolioValueChart from "./PortfolioValueChart/PortfolioValueChart";
-import PortfolioMetrics from "./PortfolioMetrics/PortfolioMetrics";
-import AssetAllocationCard from "./AssetAllocationCard/AssetAllocationCard";
-import CreatePortfolioModal from "./CreatePortfolio/CreatePortfolioModal";
+import CreatePortfolioButton from "./components/CreatePortfolio/CreatePortfolioButton";
+import PortfolioSelector from "./components/SelectedPortfolio/PortfolioSelector";
+import { usePortfolioList } from "./components/SelectedPortfolio/usePortfolioList";
+import InvestmentsTable from "./components/InvestmentsTable/InvestmentsTable";
+import AddInvestmentButton from "./components/AddInvestment/AddInvestmentButton";
+import PortfolioValueChart from "./components/PortfolioValueChart/PortfolioValueChart";
+import PortfolioMetrics from "./components/PortfolioMetrics/PortfolioMetrics";
+import AssetAllocationCard from "./components/AssetAllocationCard/AssetAllocationCard";
+import CreatePortfolioModal from "./components/CreatePortfolio/CreatePortfolioModal";
 import { useSearchParams } from "next/navigation";
 
 export default function PortfoliosPage() {

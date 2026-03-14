@@ -4,7 +4,7 @@ import PortfoliosPage from "./page";
 import { renderWithContext } from "@/app/tests/utils";
 import MockSessionProvider from "@/app/tests/_mocks/MockSessionProvider";
 import { TooltipProvider } from "@/app/components/ui/tooltip";
-import { CreatePortfolioModalProps } from "./CreatePortfolio/CreatePortfolioModal";
+import { CreatePortfolioModalProps } from "./components/CreatePortfolio/CreatePortfolioModal";
 
 const mockGetSearchParam = vi.fn();
 
@@ -16,7 +16,7 @@ vi.mock("next/navigation", () => ({
     useSearchParams: () => mockUseSearchParams,
 }));
 
-vi.mock("./CreatePortfolio/CreatePortfolioModal", () => ({
+vi.mock("./components/CreatePortfolio/CreatePortfolioModal", () => ({
     default: ({ isOpen }: CreatePortfolioModalProps) => {
         if (isOpen) {
             return <div>CreatePortfolioModal</div>;

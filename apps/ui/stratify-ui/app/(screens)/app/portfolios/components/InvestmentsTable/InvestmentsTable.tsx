@@ -1,11 +1,11 @@
 import { paths } from "@/openapi/types/stratify-api";
-import { useInvestmentsList } from "./useInvestmentsList";
 import { useAutoRefetch } from "@/app/utils/auto-refetch";
 import { DataTable } from "@/app/components/ui/data-table";
-import { columns } from "./investmentsTableColumns";
-import { AssetType } from "../../markets/MarketDataTable/MarketDataTable";
-import { useSessionContext } from "../../SessionProvider";
+import { AssetType } from "../../../markets/MarketDataTable/MarketDataTable";
+import { useSessionContext } from "../../../SessionProvider";
 import { useState } from "react";
+import { useInvestmentsList } from "./useInvestmentsList";
+import { columns } from "./investmentsTableColumns";
 import AddTradeModal from "../AddTrade/AddTradeModal";
 
 export type Investment =

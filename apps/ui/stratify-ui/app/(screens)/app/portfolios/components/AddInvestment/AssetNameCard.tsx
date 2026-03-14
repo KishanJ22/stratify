@@ -1,7 +1,7 @@
 "use client";
 
 import AssetBadge, { assetTypeMap } from "@/app/components/(app)/AssetBadge";
-import { SearchAsset } from "../../markets/AssetSearch/useAssetSearch";
+import { SearchAsset } from "../../../markets/AssetSearch/useAssetSearch";
 
 export interface AssetNameCardProps {
     asset: SearchAsset;

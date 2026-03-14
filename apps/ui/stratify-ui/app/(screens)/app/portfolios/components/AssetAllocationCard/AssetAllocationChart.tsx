@@ -1,12 +1,12 @@
 import { useMemo, useState } from "react";
-import { AssetType } from "../../markets/MarketDataTable/MarketDataTable";
+import { AssetType } from "../../../markets/MarketDataTable/MarketDataTable";
 import { Investment } from "../InvestmentsTable/InvestmentsTable";
 import { GroupByOption } from "./GroupBySelector";
 import { Label, Pie, PieChart, ResponsiveContainer } from "recharts";
 import { ChartTooltip } from "@/app/components/ui/chart";
 import { placeholderData } from "./placeholderChartData";
 import PieChartSkeleton from "./PieChartSkeleton";
-import { useSessionContext } from "../../SessionProvider";
+import { useSessionContext } from "../../../SessionProvider";
 import { Button } from "@/app/components/ui/button";
 import { cn } from "@/lib/utils";
 

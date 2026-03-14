@@ -1,9 +1,8 @@
 import { renderWithContext } from "@/app/tests/utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import CreatePortfolioButton from "./CreatePortfolioButton";
-import { screen, waitFor } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { CreatePortfolioModalProps } from "./CreatePortfolioModal";
 
 const mockSetIsCreatePortfolioModalOpen = vi.fn();
 
