@@ -49,18 +49,31 @@ describe("InvestmentsTable", () => {
             expect(screen.getByText(header)).toBeInTheDocument();
         });
 
-        const assetRow = [
+        const firstAssetRow = [
             "Leonida Inc. (LEON)",
             "20",
-            "Stock",
             "2,219.2",
             "+ 1,489.2",
             "+ 204%",
         ];
 
-        assetRow.forEach((cell) => {
+        firstAssetRow.forEach((cell) => {
             expect(screen.getByText(cell)).toBeInTheDocument();
         });
+
+        const secondAssetRow = [
+            "Apple Inc. (AAPL)",
+            "10",
+            "1,500",
+            "-500",
+            "-25%",
+        ];
+
+        secondAssetRow.forEach((cell) => {
+            expect(screen.getByText(cell)).toBeInTheDocument();
+        });
+
+        expect(screen.getAllByText("Stock")).toHaveLength(2);
     });
 
     it("should render the no results component when there are no investments", () => {
@@ -107,8 +120,8 @@ describe("InvestmentsTable", () => {
 
         renderComponent();
 
-        const tooltipIcon = screen.getByTestId("asset-currency-info-icon");
+        const tooltipIcons = screen.getAllByTestId("asset-currency-info-icon");
 
-        expect(tooltipIcon).toBeInTheDocument();
+        expect(tooltipIcons).toHaveLength(2);
     });
 });
