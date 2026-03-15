@@ -20,6 +20,7 @@ export const formatInvestmentDetails = async (
         currentAverageCost,
         totalBuyAmount,
         realisedReturn,
+        portfolioName,
     } = investment;
 
     const isCurrencyConversionRequired =
@@ -74,5 +75,6 @@ export const formatInvestmentDetails = async (
         currentReturnPercentage: parseFloat(currentReturnPercentage.toFixed(2)),
         sectorDetails,
         portfolioId,
+        portfolioName,
     } satisfies Investment;
 };

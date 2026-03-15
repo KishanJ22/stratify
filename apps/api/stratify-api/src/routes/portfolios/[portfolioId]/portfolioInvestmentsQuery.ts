@@ -28,5 +28,6 @@ export const portfolioInvestmentsQuery = (
             "assets.type as assetType",
             "assets.countryId as assetCountryId",
             "assets.currency as assetCurrency",
+            "portfolios.name as portfolioName",
         ])
         .orderBy("trades.tradeDate", "asc");
