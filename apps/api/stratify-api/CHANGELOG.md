@@ -1,5 +1,11 @@
 # @stratify/stratify-api
 
+## 0.6.0
+
+### Minor Changes
+
+- beda630: Add portfolio name to the details returned for each investment to display it in the top performers table
+
 ## 0.5.0
 
 ### Minor Changes
