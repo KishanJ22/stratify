@@ -129,7 +129,7 @@ export const columns = (userCurrency: string): ColumnDef<Investment>[] => [
         },
         cell: ({ row }) => (
             <Link
-                href={`/portfolios?portfolioId=${row.original.portfolioId}`}
+                href={`/app/portfolios?portfolioId=${row.original.portfolioId}`}
                 className="font-medium text-nowrap text-primary-darker hover:text-primary-dark transition-colors hover:underline hover:cursor-pointer"
             >
                 View Portfolio
