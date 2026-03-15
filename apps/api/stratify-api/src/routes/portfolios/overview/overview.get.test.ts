@@ -150,27 +150,6 @@ describe("GET /portfolios/overview", () => {
             },
             investments: [
                 {
-                    assetId: 1,
-                    symbol: "AAPL",
-                    assetCountryId: 224,
-                    assetCurrency: "USD",
-                    name: "Apple Inc.",
-                    shares: 15,
-                    type: "STOCK",
-                    currentValue: 675,
-                    currentAssetCurrencyValue: 450,
-                    currentReturn: 375,
-                    currentReturnPercentage: 125,
-                    totalBuyAmount: 300,
-                    sectorDetails: [
-                        {
-                            sector: "technology",
-                            weight: 1,
-                        },
-                    ],
-                    portfolioId: portfolio.id,
-                },
-                {
                     assetId: 2,
                     symbol: "LEON",
                     assetCountryId: 224,
@@ -190,6 +169,29 @@ describe("GET /portfolios/overview", () => {
                         },
                     ],
                     portfolioId: portfolio.id,
+                    portfolioName: "Test Portfolio",
+                },
+                {
+                    assetId: 1,
+                    symbol: "AAPL",
+                    assetCountryId: 224,
+                    assetCurrency: "USD",
+                    name: "Apple Inc.",
+                    shares: 15,
+                    type: "STOCK",
+                    currentValue: 675,
+                    currentAssetCurrencyValue: 450,
+                    currentReturn: 375,
+                    currentReturnPercentage: 125,
+                    totalBuyAmount: 300,
+                    sectorDetails: [
+                        {
+                            sector: "technology",
+                            weight: 1,
+                        },
+                    ],
+                    portfolioId: portfolio.id,
+                    portfolioName: "Test Portfolio",
                 },
                 {
                     assetId: 4,
@@ -215,6 +217,7 @@ describe("GET /portfolios/overview", () => {
                         },
                     ],
                     portfolioId: portfolio.id,
+                    portfolioName: "Test Portfolio",
                 },
             ],
         });

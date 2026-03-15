@@ -132,6 +132,10 @@ const retrieveOverviewDetails = async (portfolioIds: number[]) => {
         ),
     } satisfies Return;
 
+    const currentInvestments = investments.filter(
+        (investment) => investment.currentValue > 0,
+    );
+
     return {
         totalValue,
         overallChange: {
@@ -152,8 +156,8 @@ const retrieveOverviewDetails = async (portfolioIds: number[]) => {
             ),
             allTime: allTimeReturn,
         },
-        investments: investments.sort(
-            (a, b) => b.currentReturn - a.currentReturn,
+        investments: currentInvestments.sort(
+            (a, b) => b.currentReturnPercentage - a.currentReturnPercentage,
         ),
     } satisfies Overview;
 };

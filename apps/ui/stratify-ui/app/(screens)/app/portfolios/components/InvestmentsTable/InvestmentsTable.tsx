@@ -43,7 +43,11 @@ const InvestmentsTable = ({ portfolioId }: InvestmentsTableProps) => {
 
     const intervalMs = 60 * 1000; // 1 minute
 
-    useAutoRefetch(() => refetch(), intervalMs);
+    useAutoRefetch(() => {
+        if (data.length > 0) {
+            refetch();
+        }
+    }, intervalMs);
 
     const isPortfolioSelected = portfolioId !== null;
 

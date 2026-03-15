@@ -65,7 +65,7 @@ const GroupBySelector = ({
                 disabled={disabled}
             >
                 <SelectTrigger
-                    className="max-w-36 border-secondary-dark bg-secondary-lighter text-secondary-dark ring-secondary-dark"
+                    className="max-w-36 border-secondary-dark bg-secondary-lightest text-secondary-dark ring-secondary-dark"
                     iconClassName="text-secondary-dark"
                 >
                     <SelectValue data-testid="group-by-select-value" />

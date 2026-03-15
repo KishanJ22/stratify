@@ -4,6 +4,7 @@ import { renderWithContext } from "@/app/tests/utils";
 import DashboardPage from "./page";
 import MockSessionProvider from "@/app/tests/_mocks/MockSessionProvider";
 import { mockPortfoliosOverviewData } from "./_mocks/mockPortfoliosOverviewData";
+import { TooltipProvider } from "@/app/components/ui/tooltip";
 
 const defaultHookReturnValues = {
     data: mockPortfoliosOverviewData,
@@ -27,7 +28,9 @@ describe("DashboardPage", () => {
         renderWithContext({
             children: (
                 <MockSessionProvider>
-                    <DashboardPage />
+                    <TooltipProvider>
+                        <DashboardPage />
+                    </TooltipProvider>
                 </MockSessionProvider>
             ),
         });

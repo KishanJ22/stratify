@@ -18,10 +18,11 @@ export default function PortfoliosPage() {
     >(null);
 
     const searchParams = useSearchParams();
-    const createPortfolio = searchParams.get("createPortfolio");
+    const createPortfolioParam = searchParams.get("createPortfolio");
+    const portfolioIdParam = searchParams.get("portfolioId");
 
     const [isCreatePortfolioModalOpen, setIsCreatePortfolioModalOpen] =
-        useState(createPortfolio === "true");
+        useState(createPortfolioParam === "true");
 
     const { data, isLoading } = usePortfolioList();
 
@@ -30,6 +31,12 @@ export default function PortfoliosPage() {
             setSelectedPortfolioId(data[0].id);
         }
     }, [data]);
+
+    useEffect(() => {
+        if (portfolioIdParam) {
+            setSelectedPortfolioId(parseInt(portfolioIdParam));
+        }
+    }, [portfolioIdParam]);
 
     return (
         <div className="items-center justify-items-center min-h-screen px-10">

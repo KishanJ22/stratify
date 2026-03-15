@@ -29,6 +29,7 @@ export const investmentSchema = Type.Object({
     currentReturnPercentage: Type.Number(),
     sectorDetails: Type.Array(sectorDetails),
     portfolioId: Type.Number(),
+    portfolioName: Type.String(),
 });
 export type Investment = Static<typeof investmentSchema>;
 

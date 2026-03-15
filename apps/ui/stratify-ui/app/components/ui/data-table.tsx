@@ -44,6 +44,10 @@ interface DataTableProps<TData, TValue> {
     noResultsComponent?: ReactNode;
     initialPaginationState?: PaginationState;
     isPaginationEnabled?: boolean;
+    className?: string;
+    headerClassName?: string;
+    rowClassName?: string;
+    loadingSkeletonClassName?: string;
 }
 
 export function DataTable<TData, TValue>({
@@ -57,30 +61,50 @@ export function DataTable<TData, TValue>({
         pageSize: 5,
     },
     isPaginationEnabled = true,
+    className,
+    headerClassName,
+    rowClassName,
+    loadingSkeletonClassName,
 }: DataTableProps<TData, TValue>) {
     const [pagination, setPagination] = useState<PaginationState>(
         initialPaginationState,
     );
 
-    const table = useReactTable({
+    const paginationConfig = {
+        getPaginationRowModel: getPaginationRowModel(),
+        state: {
+            pagination,
+        },
+        onPaginationChange: setPagination,
+    };
+
+    const tableConfig = {
         data,
         columns,
         getCoreRowModel: getCoreRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
-        state: {
-            pagination: isPaginationEnabled ? pagination : undefined,
-        },
-        onPaginationChange: setPagination,
         autoResetPageIndex: false,
-    });
+        ...(isPaginationEnabled && paginationConfig),
+    };
+
+    const table = useReactTable(tableConfig);
 
     return (
         <>
-            <div className="overflow-hidden rounded-xl border border-primary-dark">
+            <div
+                className={cn(
+                    "overflow-hidden rounded-xl border border-primary-dark",
+                    className,
+                )}
+            >
                 <Table>
-                    <TableHeader className="bg-primary-lighter">
+                    <TableHeader
+                        className={cn("bg-primary-lighter", headerClassName)}
+                    >
                         {table.getHeaderGroups().map((headerGroup) => (
-                            <TableRow key={headerGroup.id}>
+                            <TableRow
+                                key={headerGroup.id}
+                                className={headerClassName}
+                            >
                                 {headerGroup.headers.map((header) => {
                                     const align =
                                         header.column.columnDef.meta?.align;
@@ -136,6 +160,10 @@ export function DataTable<TData, TValue>({
                                     <TableRow
                                         key={index}
                                         data-testid="skeleton-row"
+                                        className={cn(
+                                            "bg-muted-lightest",
+                                            loadingSkeletonClassName,
+                                        )}
                                     >
                                         {columns.map((column) => {
                                             const key = `${column.header}-${index}`;
@@ -155,7 +183,10 @@ export function DataTable<TData, TValue>({
                             table.getRowModel().rows.map((row) => (
                                 <TableRow
                                     key={row.id}
-                                    className="bg-muted-lightest"
+                                    className={cn(
+                                        "bg-muted-lightest",
+                                        rowClassName,
+                                    )}
                                     data-state={
                                         row.getIsSelected() && "selected"
                                     }

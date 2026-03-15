@@ -20,12 +20,11 @@ type SuccessResponse = Static<typeof successResponseSchema>;
 export const notFoundSchema = createNotFound("noPortfoliosFound");
 export type NotFoundResponse = Static<typeof notFoundSchema>;
 
-export const portfolioListQuery = (userId: string) => {
-    return db
+export const portfolioListQuery = (userId: string) =>
+    db
         .selectFrom("stratify.portfolios")
         .where("userId", "=", userId)
         .select(["id", "name"]);
-};
 
 export default async function portfolioListGet(fastify: FastifyInstance) {
     fastify.route<{

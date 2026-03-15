@@ -235,6 +235,7 @@ describe("GET /portfolios/:portfolioId/investments", () => {
                         },
                     ],
                     portfolioId: portfolio.id,
+                    portfolioName: "Test Portfolio",
                 },
                 {
                     assetId: 4,
@@ -260,6 +261,7 @@ describe("GET /portfolios/:portfolioId/investments", () => {
                         },
                     ],
                     portfolioId: portfolio.id,
+                    portfolioName: "Test Portfolio",
                 },
                 {
                     assetId: 2,
@@ -281,6 +283,7 @@ describe("GET /portfolios/:portfolioId/investments", () => {
                         },
                     ],
                     portfolioId: portfolio.id,
+                    portfolioName: "Test Portfolio",
                 },
             ],
         });
@@ -388,6 +391,7 @@ describe("GET /portfolios/:portfolioId/investments", () => {
                         },
                     ],
                     portfolioId: portfolio.id,
+                    portfolioName: "British Stocks",
                 },
                 {
                     assetId: 2,
@@ -409,6 +413,7 @@ describe("GET /portfolios/:portfolioId/investments", () => {
                         },
                     ],
                     portfolioId: portfolio.id,
+                    portfolioName: "British Stocks",
                 },
             ],
         });
@@ -507,6 +512,7 @@ describe("GET /portfolios/:portfolioId/investments", () => {
                         },
                     ],
                     portfolioId: portfolio.id,
+                    portfolioName: "British Stocks",
                 },
             ],
         });

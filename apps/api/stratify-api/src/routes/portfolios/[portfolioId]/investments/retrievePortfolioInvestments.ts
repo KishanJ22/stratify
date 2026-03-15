@@ -19,6 +19,7 @@ export interface GroupedInvestment {
     currentAverageCost: number;
     totalBuyAmount: number;
     realisedReturn: number;
+    portfolioName: string;
 }
 
 const retrieveSectorDetails = async (
@@ -136,6 +137,7 @@ export const retrieveInvestments = async (portfolioId: number) => {
                 currentAverageCost,
                 totalBuyAmount: parseFloat(totalBuyAmount.toFixed(2)),
                 realisedReturn: parseFloat(realisedReturn.toFixed(2)),
+                portfolioName: trade.portfolioName,
             });
         }
 
