@@ -1,7 +1,7 @@
 import { Overview } from "../../usePortfoliosOverview";
 import TopPerformersTable from "./TopPerformersTable";
 
-interface TopPerformersCardProps {
+export interface TopPerformersCardProps {
     investments?: Overview["investments"];
     isLoading: boolean;
 }

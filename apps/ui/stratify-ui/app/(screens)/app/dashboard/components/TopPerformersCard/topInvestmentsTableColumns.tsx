@@ -36,7 +36,7 @@ export const columns = (userCurrency: string): ColumnDef<Investment>[] => [
     },
     {
         accessorKey: "type",
-        header: "Asset Type",
+        header: "Type",
         meta: {
             headerClassName: "w-[120px]",
         },

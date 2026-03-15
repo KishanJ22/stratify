@@ -1,9 +1,9 @@
 import { DataTable } from "@/app/components/ui/data-table";
 import { AssetType } from "../../../markets/MarketDataTable/MarketDataTable";
 import { useSessionContext } from "../../../SessionProvider";
-import { Overview } from "../../usePortfoliosOverview";
 import { columns } from "./topInvestmentsTableColumns";
 import { Investment } from "../../../portfolios/components/InvestmentsTable/InvestmentsTable";
+import { TopPerformersCardProps } from "./TopPerformersCard";
 
 const noInvestmentsData = Array.from({ length: 5 }, () => ({
     assetId: 0,
@@ -19,15 +19,10 @@ const noInvestmentsData = Array.from({ length: 5 }, () => ({
     currentReturnPercentage: 0,
 })) as Investment[];
 
-interface TopPerformersTableProps {
-    investments?: Overview["investments"];
-    isLoading: boolean;
-}
-
 const TopPerformersTable = ({
     investments,
     isLoading,
-}: TopPerformersTableProps) => {
+}: TopPerformersCardProps) => {
     const filteredInvestments =
         investments?.filter((investment) => investment.currentReturn > 0) ?? [];
 
