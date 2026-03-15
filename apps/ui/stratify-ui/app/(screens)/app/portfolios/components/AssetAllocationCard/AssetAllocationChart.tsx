@@ -59,7 +59,7 @@ export interface ChartDataItem {
 }
 
 interface CustomLegendProps {
-    data: ChartDataItem[];
+    data?: ChartDataItem[];
     groupBy: GroupByOption;
 }
 
@@ -72,7 +72,7 @@ const CustomLegend = ({ data, groupBy }: CustomLegendProps) => {
             )}
             data-testid="asset-allocation-legend"
         >
-            {data.map((item) => (
+            {data?.map((item) => (
                 <div
                     key={item.label}
                     className="flex items-center gap-2 text-base"
@@ -126,7 +126,7 @@ const CustomTooltip = ({
                         <div>{data?.sector}</div>
                     </div>
                     <div className="flex flex-row justify-between gap-x-2">
-                        {"Portfolio allocation"}
+                        {"Allocation"}
                         <div>{`${portfolioAllocationPercentage}%`}</div>
                     </div>
                 </div>
@@ -137,7 +137,7 @@ const CustomTooltip = ({
                         <div>{data.assetCount}</div>
                     </div>
                     <div className="flex flex-row justify-between gap-x-2">
-                        {"Portfolio allocation"}
+                        {"Allocation"}
                         <div>{`${portfolioAllocationPercentage}%`}</div>
                     </div>
                     <div className="flex flex-row justify-between gap-x-2">
@@ -157,7 +157,7 @@ const CustomTooltip = ({
 };
 
 export interface AssetAllocationChartProps {
-    data: Investment[];
+    data?: Investment[];
     groupBy: GroupByOption;
     isLoading: boolean;
 }
@@ -173,7 +173,7 @@ const AssetAllocationChart = ({
     const [isLegendVisible, setIsLegendVisible] = useState<boolean>(false);
 
     const groupedData = useMemo(() => {
-        const assetClass = data.reduce((acc, investment) => {
+        const assetClass = data?.reduce((acc, investment) => {
             const assetTypeConfig = assetClasses[investment.type];
 
             const existingItem = acc.find(
@@ -200,7 +200,7 @@ const AssetAllocationChart = ({
             return acc;
         }, [] as ChartDataItem[]);
 
-        const country = data.reduce((acc, investment) => {
+        const country = data?.reduce((acc, investment) => {
             const countryId = investment.assetCountryId;
 
             const existingItem = acc.find((item) => item.label === countryId);
@@ -227,7 +227,7 @@ const AssetAllocationChart = ({
             return acc;
         }, [] as ChartDataItem[]);
 
-        const sector = data.reduce((acc, investment) => {
+        const sector = data?.reduce((acc, investment) => {
             investment.sectorDetails.forEach(({ sector, weight }) => {
                 const existingItem = acc.find((item) => item.label === sector);
 
@@ -255,39 +255,54 @@ const AssetAllocationChart = ({
             return acc;
         }, [] as ChartDataItem[]);
 
-        const noGrouping = data.reduce((acc, investment) => {
-            acc.push({
-                label: investment.name,
-                countryId: investment.assetCountryId,
-                sector: investment.sectorDetails[0].sector,
-                currentValue: investment.currentValue,
-                fill: colourVars[Object.keys(acc).length % colourVars.length],
-                absoluteReturn: investment.currentReturn,
-                percentageReturn: investment.currentReturnPercentage,
-                assetCount: 1,
-            });
+        const noGrouping = data?.reduce((acc, investment) => {
+            const existingItem = acc.find(
+                (item) => item.label === investment.name,
+            );
+
+            if (existingItem) {
+                existingItem.currentValue += investment.currentValue;
+                existingItem.absoluteReturn += investment.currentReturn;
+                existingItem.percentageReturn +=
+                    investment.currentReturnPercentage;
+                existingItem.assetCount += 1;
+            } else {
+                acc.push({
+                    label: investment.name,
+                    countryId: investment.assetCountryId,
+                    sector: investment.sectorDetails[0].sector,
+                    currentValue: investment.currentValue,
+                    fill: colourVars[
+                        Object.keys(acc).length % colourVars.length
+                    ],
+                    absoluteReturn: investment.currentReturn,
+                    percentageReturn: investment.currentReturnPercentage,
+                    assetCount: 1,
+                });
+            }
 
             return acc;
         }, [] as ChartDataItem[]);
 
         return {
-            assetClass: assetClass.sort(
+            assetClass: assetClass?.sort(
                 (a, b) => b.currentValue - a.currentValue,
             ),
-            country: country.sort((a, b) => b.currentValue - a.currentValue),
-            sector: sector.sort((a, b) => b.currentValue - a.currentValue),
-            noGrouping: noGrouping.sort(
+            country: country?.sort((a, b) => b.currentValue - a.currentValue),
+            sector: sector?.sort((a, b) => b.currentValue - a.currentValue),
+            noGrouping: noGrouping?.sort(
                 (a, b) => b.currentValue - a.currentValue,
             ),
         };
     }, [data]);
 
     const selectedGroupData =
-        data.length > 0 ? groupedData[groupBy] : placeholderData;
+        data && data.length > 0 ? groupedData[groupBy] : placeholderData;
 
-    const totalPortfolioValue = data.reduce((sum, investment) => {
-        return sum + investment.currentValue;
-    }, 0);
+    const totalPortfolioValue =
+        data?.reduce((sum, investment) => {
+            return sum + investment.currentValue;
+        }, 0) || 0;
 
     return isLoading ? (
         <PieChartSkeleton />
@@ -302,7 +317,7 @@ const AssetAllocationChart = ({
                 className={`${isLegendVisible ? "hidden" : ""}`}
             >
                 <PieChart>
-                    {data.length > 0 ? (
+                    {data && data.length > 0 ? (
                         <ChartTooltip
                             cursor={false}
                             animationEasing="ease"
@@ -323,8 +338,16 @@ const AssetAllocationChart = ({
                         data={selectedGroupData}
                         innerRadius={85}
                         outerRadius={110}
-                        paddingAngle={selectedGroupData.length > 1 ? 3 : 0}
-                        strokeWidth={selectedGroupData.length > 1 ? 0.5 : 0}
+                        paddingAngle={
+                            selectedGroupData && selectedGroupData.length > 1
+                                ? 3
+                                : 0
+                        }
+                        strokeWidth={
+                            selectedGroupData && selectedGroupData.length > 1
+                                ? 0.5
+                                : 0
+                        }
                         stroke="var(--secondary-lightest)"
                         cx="50%"
                         cy="50%"
@@ -343,7 +366,8 @@ const AssetAllocationChart = ({
                                             textAnchor="middle"
                                             dominantBaseline="middle"
                                         >
-                                            {!isLoading && data.length === 0 ? (
+                                            {!isLoading &&
+                                            (!data || data.length === 0) ? (
                                                 <>
                                                     <tspan
                                                         className="font-sans font-medium text-lg fill-secondary-light"
@@ -370,7 +394,7 @@ const AssetAllocationChart = ({
                                                         x={viewBox.cx}
                                                         y={viewBox.cy}
                                                     >
-                                                        {data.length}
+                                                        {data?.length}
                                                     </tspan>
                                                     <tspan
                                                         className="font-sans text-xl fill-secondary-base"
@@ -380,7 +404,7 @@ const AssetAllocationChart = ({
                                                             32
                                                         }
                                                     >
-                                                        {data.length === 1
+                                                        {data?.length === 1
                                                             ? "asset"
                                                             : "assets"}
                                                     </tspan>
@@ -394,7 +418,7 @@ const AssetAllocationChart = ({
                     </Pie>
                 </PieChart>
             </ResponsiveContainer>
-            {data.length > 0 ? (
+            {data && data.length > 0 ? (
                 <>
                     {isLegendVisible && (
                         <CustomLegend
@@ -403,8 +427,8 @@ const AssetAllocationChart = ({
                         />
                     )}
                     <Button
-                        variant="secondary"
-                        className="mt-5 w-full"
+                        variant="ghost"
+                        className={`w-full border-secondary-light text-secondary-base hover:bg-secondary-lighter hover:text-secondary-dark ${isLegendVisible ? "mt-2 content-end" : "mt-3"}`}
                         onClick={() => setIsLegendVisible(!isLegendVisible)}
                         data-testid="toggle-legend-button"
                     >

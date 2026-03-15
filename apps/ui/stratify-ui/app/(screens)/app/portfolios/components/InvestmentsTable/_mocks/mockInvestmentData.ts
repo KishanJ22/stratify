@@ -4,6 +4,7 @@ export const mockInvestmentsData = [
     {
         assetId: 1,
         portfolioId: 1,
+        portfolioName: "Test Portfolio",
         symbol: "LEON",
         assetCountryId: 224,
         assetCurrency: "USD",
