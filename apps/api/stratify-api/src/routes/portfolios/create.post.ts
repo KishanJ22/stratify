@@ -22,7 +22,7 @@ type PortfolioNameAlreadyExistsResponse = Static<
 
 const successResponseSchema = Type.Object({
     data: Type.Object({
-        success: Type.Boolean(),
+        portfolioId: Type.Number(),
     }),
 });
 
@@ -30,10 +30,13 @@ type SuccessResponse = Static<typeof successResponseSchema>;
 
 // Create a new portfolio for the user
 const createPortfolio = (userId: string, name: string) => {
-    return db.insertInto("stratify.portfolios").values({
-        name: name.toLowerCase(),
-        userId,
-    });
+    return db
+        .insertInto("stratify.portfolios")
+        .values({
+            name: name.toLowerCase(),
+            userId,
+        })
+        .returning("id as portfolioId");
 };
 
 // Check if the user already has a portfolio with the same name
@@ -77,11 +80,14 @@ export default async function portfolioCreatePost(fastify: FastifyInstance) {
                     });
                 }
 
-                await createPortfolio(userId, name).execute();
+                const { portfolioId } = await createPortfolio(
+                    userId,
+                    name,
+                ).executeTakeFirstOrThrow();
 
                 return reply.status(201).send({
                     data: {
-                        success: true,
+                        portfolioId,
                     },
                 });
             } catch (error) {
