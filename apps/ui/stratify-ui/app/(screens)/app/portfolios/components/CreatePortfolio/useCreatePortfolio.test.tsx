@@ -29,7 +29,7 @@ describe("useCreatePortfolio", () => {
     it("should call POST /portfolios successfully", async () => {
         mockPostCreatePortfolio.mockResolvedValue({
             data: {
-                success: true,
+                portfolioId: 1,
             },
         });
 

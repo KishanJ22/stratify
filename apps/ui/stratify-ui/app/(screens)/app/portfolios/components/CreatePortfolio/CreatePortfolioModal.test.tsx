@@ -7,6 +7,13 @@ import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 const mockHandleClose = vi.fn();
+const mockSetSelectedPortfolioId = vi.fn();
+
+const defaultProps = {
+    isOpen: true,
+    handleClose: mockHandleClose,
+    setSelectedPortfolioId: mockSetSelectedPortfolioId,
+} satisfies CreatePortfolioModalProps;
 
 const user = userEvent.setup();
 
@@ -19,18 +26,13 @@ describe("CreatePortfolioModal", () => {
         vi.clearAllMocks();
     });
 
-    const renderModal = ({ isOpen, handleClose }: CreatePortfolioModalProps) =>
+    const renderModal = (props?: Partial<CreatePortfolioModalProps>) =>
         renderWithContext({
-            children: (
-                <CreatePortfolioModal
-                    isOpen={isOpen}
-                    handleClose={handleClose}
-                />
-            ),
+            children: <CreatePortfolioModal {...defaultProps} {...props} />,
         });
 
     it("Should render the modal when isOpen is true", () => {
-        renderModal({ isOpen: true, handleClose: mockHandleClose });
+        renderModal();
 
         expect(screen.getByText("Create Portfolio")).toBeInTheDocument();
         expect(
@@ -46,13 +48,13 @@ describe("CreatePortfolioModal", () => {
     });
 
     it("Should not render the modal when isOpen is false", () => {
-        renderModal({ isOpen: false, handleClose: mockHandleClose });
+        renderModal({ isOpen: false });
 
         expect(screen.queryByText("Create Portfolio")).not.toBeInTheDocument();
     });
 
     it("Should call handleClose when the close icon is clicked", async () => {
-        renderModal({ isOpen: true, handleClose: mockHandleClose });
+        renderModal();
 
         const closeIcon = screen.getByTestId("close-modal-icon");
         await user.click(closeIcon);

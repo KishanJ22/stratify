@@ -10,7 +10,7 @@ import {
     DialogTitle,
 } from "@/app/components/ui/dialog";
 import { X } from "lucide-react";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { toast } from "sonner";
 import {
     PortfolioNameAlreadyExistsResponse,
@@ -27,11 +27,13 @@ const createPortfolioSchema = zod.object({
 export interface CreatePortfolioModalProps {
     isOpen: boolean;
     handleClose: () => void;
+    setSelectedPortfolioId: Dispatch<SetStateAction<number | null>>;
 }
 
 const CreatePortfolioModal = ({
     isOpen,
     handleClose,
+    setSelectedPortfolioId,
 }: CreatePortfolioModalProps) => {
     const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
     const [isPortfolioNameAlreadyExists, setIsPortfolioNameAlreadyExists] =
@@ -60,7 +62,7 @@ const CreatePortfolioModal = ({
         },
         onSubmit: async ({ value }) => {
             createPortfolio(value, {
-                onSuccess: () => {
+                onSuccess: ({ data }) => {
                     toast.success("Portfolio created successfully!");
                     setIsPortfolioNameAlreadyExists(false);
 
@@ -68,6 +70,12 @@ const CreatePortfolioModal = ({
                     queryClient.invalidateQueries({
                         queryKey: ["portfolio-list"],
                     });
+
+                    const portfolioId = data?.data.portfolioId;
+
+                    if (portfolioId) {
+                        setSelectedPortfolioId(portfolioId);
+                    }
 
                     handleClose();
                     form.reset();
