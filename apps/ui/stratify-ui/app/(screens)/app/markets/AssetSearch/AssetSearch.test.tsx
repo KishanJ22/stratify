@@ -4,7 +4,7 @@ import { describe, expect, it, vi, beforeEach } from "vitest";
 import AssetSearch from "./AssetSearch";
 import { screen } from "@testing-library/react";
 import type { AssetSearchItemProps } from "./AssetSearchItem";
-import { SearchAsset } from "./useAssetSearch";
+import { mockSearchAsset } from "./_mocks/mockAssetSearch";
 
 const user = userEvent.setup();
 
@@ -25,18 +25,7 @@ const mockSearchStatus = vi.fn();
 const mockIsNoResultsFound = vi.fn();
 
 const mockUseAssetSearch = () => ({
-    searchResults: [
-        {
-            id: 1,
-            name: "Apple Inc.",
-            symbol: "AAPL",
-            assetType: "STOCK",
-            currentPrice: 150.25,
-            priceChangePercent: 1.5,
-            priceChange: 2.25,
-            currency: "USD",
-        },
-    ] satisfies SearchAsset[],
+    searchResults: [mockSearchAsset],
     isSearching: mockIsSearching(),
     search: mockSearch,
     resetSearch: mockResetSearch,
