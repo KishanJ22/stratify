@@ -13,6 +13,7 @@ const AssetNameCard = ({ asset, onSelect }: AssetNameCardProps) => {
         <div
             className="w-full flex flex-row justify-between items-center py-1.5 px-2 font-sans transition-colors rounded-md hover:bg-secondary-lighter text-secondary-darker hover:cursor-pointer"
             onClick={() => onSelect()}
+            data-testid="asset-name-card"
         >
             {asset.name} ({asset.symbol})
             <AssetBadge {...assetTypeMap[asset.assetType]} />
