@@ -1,0 +1,26 @@
+meta {
+  name: Simulate compounding
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/simulate/compounding
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "assetId": 29135,
+    "initialInvestment": 1000,
+    "monthlyContribution": 50,
+    "timePeriodYears": 2,
+    "dividendYield": 0.41
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
