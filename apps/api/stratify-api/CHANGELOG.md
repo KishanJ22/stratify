@@ -1,5 +1,11 @@
 # @stratify/stratify-api
 
+## 0.6.1
+
+### Patch Changes
+
+- e1e53b9: Return ID of newly created portfolio instead of a success boolean flag
+
 ## 0.6.0
 
 ### Minor Changes

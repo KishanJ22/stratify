@@ -1,5 +1,14 @@
 # @stratify/stratify-ui
 
+## 0.6.2
+
+### Patch Changes
+
+- e1e53b9: - Fix bug where selected portfolio id is overridden when navigating to the portfolios page from the top performers table for the first time
+    - Change functionality on successfully creating a portfolio to set the selected portfolio id to the newly created portfolio
+- Updated dependencies [e1e53b9]
+    - @stratify/stratify-api@0.6.1
+
 ## 0.6.1
 
 ### Patch Changes
