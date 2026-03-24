@@ -100,7 +100,7 @@ export const calculateAssetVariance = async (assetId: number) => {
     };
 };
 
-const assetPricesQuery = (assetId: number, startDate: Date) =>
+export const assetPricesQuery = (assetId: number, startDate: Date) =>
     db
         .selectFrom("stratify.assetPrices as assetPrices")
         .where("assetPrices.assetId", "=", assetId)
