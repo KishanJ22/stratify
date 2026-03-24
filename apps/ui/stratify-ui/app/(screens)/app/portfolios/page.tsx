@@ -13,10 +13,6 @@ import CreatePortfolioModal from "./components/CreatePortfolio/CreatePortfolioMo
 import { useSearchParams } from "next/navigation";
 
 export default function PortfoliosPage() {
-    const [selectedPortfolioId, setSelectedPortfolioId] = useState<
-        number | null
-    >(null);
-
     const searchParams = useSearchParams();
     const createPortfolioParam = searchParams.get("createPortfolio");
     const portfolioIdParam = searchParams.get("portfolioId");
@@ -24,19 +20,17 @@ export default function PortfoliosPage() {
     const [isCreatePortfolioModalOpen, setIsCreatePortfolioModalOpen] =
         useState(createPortfolioParam === "true");
 
+    const [selectedPortfolioId, setSelectedPortfolioId] = useState<
+        number | null
+    >(portfolioIdParam ? parseInt(portfolioIdParam) : null);
+
     const { data, isLoading } = usePortfolioList();
 
     useEffect(() => {
-        if (data && data.length > 0) {
+        if (data && data.length > 0 && !selectedPortfolioId) {
             setSelectedPortfolioId(data[0].id);
         }
-    }, [data]);
-
-    useEffect(() => {
-        if (portfolioIdParam) {
-            setSelectedPortfolioId(parseInt(portfolioIdParam));
-        }
-    }, [portfolioIdParam]);
+    }, [data, selectedPortfolioId]);
 
     return (
         <div className="items-center justify-items-center min-h-screen px-10">
@@ -84,6 +78,7 @@ export default function PortfoliosPage() {
                 <CreatePortfolioModal
                     isOpen={isCreatePortfolioModalOpen}
                     handleClose={() => setIsCreatePortfolioModalOpen(false)}
+                    setSelectedPortfolioId={setSelectedPortfolioId}
                 />
             </div>
         </div>

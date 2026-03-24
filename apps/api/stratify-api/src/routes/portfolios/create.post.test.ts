@@ -40,7 +40,7 @@ describe("POST /portfolios", () => {
 
         expect(json).toEqual({
             data: {
-                success: true,
+                portfolioId: expect.any(Number),
             },
         });
     });
@@ -96,7 +96,7 @@ describe("POST /portfolios", () => {
 
         expect(firstPortfolioJson).toEqual({
             data: {
-                success: true,
+                portfolioId: expect.any(Number),
             },
         });
 
@@ -115,7 +115,7 @@ describe("POST /portfolios", () => {
         expect(secondPortfolioResponse.statusCode).toBe(201);
         expect(secondPortfolioJson).toEqual({
             data: {
-                success: true,
+                portfolioId: expect.any(Number),
             },
         });
     });
@@ -139,7 +139,7 @@ describe("POST /portfolios", () => {
 
         expect(firstPortfolioJson).toEqual({
             data: {
-                success: true,
+                portfolioId: expect.any(Number),
             },
         });
 
@@ -181,7 +181,7 @@ describe("POST /portfolios", () => {
 
         expect(firstPortfolioJson).toEqual({
             data: {
-                success: true,
+                portfolioId: expect.any(Number),
             },
         });
 
@@ -200,7 +200,7 @@ describe("POST /portfolios", () => {
         expect(secondPortfolioResponse.statusCode).toBe(201);
         expect(secondPortfolioJson).toEqual({
             data: {
-                success: true,
+                portfolioId: expect.any(Number),
             },
         });
     });
