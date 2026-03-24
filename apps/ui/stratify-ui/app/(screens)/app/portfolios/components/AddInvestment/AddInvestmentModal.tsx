@@ -480,7 +480,6 @@ const AddInvestmentModal = ({
                                         selectedAsset?.currency ?? "---"
                                     }
                                     placeholder="Enter price per share"
-                                    inputClassName=""
                                     error={
                                         meta.isTouched
                                             ? meta.errors?.[0]?.message
