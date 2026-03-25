@@ -39,7 +39,7 @@ const compoundingSimulatorFormOptions = formOptions({
     defaultValues,
 });
 
-interface CompoundingSimulatorFormProps {
+export interface CompoundingSimulatorFormProps {
     executeSimulation: MutateCompoundingSimulator;
     resetSimulation: () => void;
     isPending: boolean;
@@ -287,7 +287,7 @@ const CompoundingSimulatorForm = ({
                         return (
                             <TextInput
                                 id="dividendYield"
-                                dataTestId="dividend-yield-field"
+                                dataTestId="annual-dividend-yield-field"
                                 label="Annual Dividend Yield"
                                 placeholder="Optional"
                                 error={
@@ -314,7 +314,11 @@ const CompoundingSimulatorForm = ({
                     <form.SubmitButton
                         label="Simulate"
                         className="w-full"
-                        isDisabled={!form.state.canSubmit || isSubmitDisabled}
+                        isDisabled={
+                            !form.state.canSubmit ||
+                            isSubmitDisabled ||
+                            isPending
+                        }
                         isLoading={form.state.isSubmitting || isPending}
                     />
                 </form.Subscribe>

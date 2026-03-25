@@ -23,6 +23,9 @@ const SubmitButton = ({
             type="submit"
             variant={variant}
             disabled={isDisabled}
+            data-testid={
+                isDisabled ? "submit-button-disabled" : "submit-button-enabled"
+            }
             className={cn(
                 className,
                 "cursor-pointer hover:border hover:border-secondary-light",
