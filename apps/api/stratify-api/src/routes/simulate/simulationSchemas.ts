@@ -1,7 +1,7 @@
 import { Static, Type } from "@sinclair/typebox";
 import { createNotFound } from "../../utils/createNotFoundSchema.js";
 
-export const notFoundSchema = createNotFound("assetNotFound");
+export const notFoundSchema = createNotFound("noDataFound");
 export type NotFoundResponse = Static<typeof notFoundSchema>;
 
 export const cannotSimulateSchema = Type.Object({

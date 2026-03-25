@@ -30,15 +30,19 @@ const simulationResult = Type.Object({
 
 type SimulationResult = Static<typeof simulationResult>;
 
-const successResponseSchema = Type.Object({
-    data: Type.Object({
-        results: Type.Array(simulationResult),
-        returns: Type.Object({
-            noCompounding: returnSchema,
-            compounding: returnSchema,
-            compoundingWithDividends: Type.Union([returnSchema, Type.Null()]),
-        }),
+const simulationResponseSchema = Type.Object({
+    results: Type.Array(simulationResult),
+    returns: Type.Object({
+        noCompounding: returnSchema,
+        compounding: returnSchema,
+        compoundingWithDividends: Type.Union([returnSchema, Type.Null()]),
     }),
+});
+
+export type SimulationResponse = Static<typeof simulationResponseSchema>;
+
+const successResponseSchema = Type.Object({
+    data: simulationResponseSchema,
 });
 
 type SuccessResponse = Static<typeof successResponseSchema>;
@@ -72,7 +76,7 @@ const executeCompoundingSimulation = async (body: RequestBody) => {
     ).execute();
 
     if (historicAssetPrices.length === 0) {
-        return "assetNotFound";
+        return "noDataFound";
     }
 
     const assetPriceMap = new Map<string, number>();
@@ -159,7 +163,7 @@ const executeCompoundingSimulation = async (body: RequestBody) => {
     }
 
     if (results.length === 0) {
-        return "noDataFound";
+        return "cannotSimulate";
     }
 
     const totalCost =
@@ -229,14 +233,14 @@ export default async function compoundingSimulationPost(
                     await executeCompoundingSimulation(body);
 
                 if (simulationResults === "noDataFound") {
-                    return reply.status(400).send({
-                        message: "cannotSimulate",
+                    return reply.status(404).send({
+                        message: "noDataFound",
                     });
                 }
 
-                if (simulationResults === "assetNotFound") {
-                    return reply.status(404).send({
-                        message: "assetNotFound",
+                if (simulationResults === "cannotSimulate") {
+                    return reply.status(400).send({
+                        message: "cannotSimulate",
                     });
                 }
 
