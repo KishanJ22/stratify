@@ -24,9 +24,8 @@ const NumberInput = ({
             <FieldLabel htmlFor={id}>{label}</FieldLabel>
             <Input
                 id={id}
-                type="number"
                 placeholder={placeholder}
-                value={defaultValue ? defaultValue : field.state.value}
+                value={defaultValue ? defaultValue : (field.state.value ?? "")}
                 onChange={(e) => field.handleChange(Number(e.target.value))}
                 onBlur={field.handleBlur}
                 disabled={disabled}

@@ -22,17 +22,7 @@ export const useAddTrade = (portfolioId: number) => {
                         portfolioId,
                     },
                 },
-                body: {
-                    assetId: value.assetId,
-                    quantity: value.quantity,
-                    pricePerShare: value.pricePerShare,
-                    currencyConversionRate: value.currencyConversionRate,
-                    fee: value.fee,
-                    tradeAction: value.tradeAction,
-                    totalAmount: value.totalAmount,
-                    assetCurrencyTotalAmount: value.assetCurrencyTotalAmount,
-                    tradeDate: value.tradeDate,
-                },
+                body: value,
             }),
     });
 

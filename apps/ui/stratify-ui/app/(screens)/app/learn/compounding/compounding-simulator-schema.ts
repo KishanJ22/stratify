@@ -19,15 +19,24 @@ export const compoundingSimulatorSchema = zod.object({
             error: "Time period should be a number",
         })
         .min(1, { error: "Time period should be at least 1 year" }),
-    dividendYield: zod.optional(
-        zod
-            .number({
-                error: "Dividend yield should be a number",
-            })
-            .min(0, {
-                error: "Dividend yield should be greater than or equal to 0",
-            }),
-    ),
+    dividendYield: zod
+        .string()
+        .optional()
+        .refine(
+            (value) => {
+                if (value === undefined || value === "") return true;
+
+                const numberValue = parseFloat(value);
+                return (
+                    !isNaN(numberValue) &&
+                    numberValue >= 0 &&
+                    numberValue <= 100
+                );
+            },
+            {
+                error: "Dividend yield should be a number between 0 and 100",
+            },
+        ),
 });
 
 export type CompoundingSimulatorSchema = zod.input<
