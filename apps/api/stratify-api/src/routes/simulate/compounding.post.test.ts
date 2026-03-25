@@ -6,7 +6,7 @@ import { generateDevToken } from "../../utils/generateDevToken.js";
 import { mockHistoricAssetPrices } from "./_mocks/mockHistoricAssetPrices.js";
 import type { SimulationResponse } from "./compounding.post.js";
 
-describe("POST /smulate/compounding", () => {
+describe("POST /simulate/compounding", () => {
     let devToken = "";
 
     let app: any;
