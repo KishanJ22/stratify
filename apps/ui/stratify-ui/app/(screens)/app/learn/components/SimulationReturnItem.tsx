@@ -41,7 +41,10 @@ const SimulationReturnItem = ({
                 </div>
             </div>
             {isLoading ? (
-                <div className="flex flex-col gap-y-1">
+                <div
+                    className="flex flex-col gap-y-1"
+                    data-testid="simulation-return-loading-skeleton"
+                >
                     <Skeleton className="w-20 h-4" />
                     <Skeleton className="w-20 h-4" />
                 </div>

@@ -1,7 +1,7 @@
 import SimulationReturnItem from "../components/SimulationReturnItem";
 import { CompoundingSimulatorSuccessResponse } from "./useCompoundingSimulator";
 
-interface CompoundingReturnsCardProps {
+export interface CompoundingReturnsCardProps {
     returns?: CompoundingSimulatorSuccessResponse["data"]["returns"];
     isLoading: boolean;
 }
