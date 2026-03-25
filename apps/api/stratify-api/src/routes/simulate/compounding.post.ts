@@ -25,7 +25,7 @@ const simulationResult = Type.Object({
     date: Type.String(),
     noCompoundingValue: Type.Number(),
     compoundingValue: Type.Number(),
-    compoundingWithDividendsValue: Type.Number(),
+    compoundingWithDividendsValue: Type.Union([Type.Number(), Type.Null()]),
 });
 
 type SimulationResult = Static<typeof simulationResult>;
@@ -36,7 +36,7 @@ const successResponseSchema = Type.Object({
         returns: Type.Object({
             noCompounding: returnSchema,
             compounding: returnSchema,
-            compoundingWithDividends: returnSchema,
+            compoundingWithDividends: Type.Union([returnSchema, Type.Null()]),
         }),
     }),
 });
@@ -52,9 +52,19 @@ const executeCompoundingSimulation = async (body: RequestBody) => {
         dividendYield,
     } = body;
 
-    const startDate = new Date(
-        new Date().setFullYear(new Date().getFullYear() - timePeriodYears),
+    const startDate = new Date();
+    startDate.setFullYear(new Date().getFullYear() - timePeriodYears);
+    startDate.setDate(1);
+
+    logger.info(
+        {
+            startDate: startDate.toISOString(),
+        },
+        "Executing compounding simulation",
     );
+
+    const startOfMonth = new Date();
+    startOfMonth.setDate(1);
 
     const historicAssetPrices = await assetPricesQuery(
         assetId,
@@ -79,7 +89,7 @@ const executeCompoundingSimulation = async (body: RequestBody) => {
 
     for (
         let date = new Date(startDate);
-        date <= new Date();
+        date <= startOfMonth;
         date.setMonth(date.getMonth() + 1)
     ) {
         const formattedDate = date.toISOString().split("T")[0];
@@ -113,7 +123,9 @@ const executeCompoundingSimulation = async (body: RequestBody) => {
                     date: formattedDate,
                     noCompoundingValue: initialInvestment,
                     compoundingValue: initialInvestment,
-                    compoundingWithDividendsValue: initialInvestment,
+                    compoundingWithDividendsValue: dividendYield
+                        ? initialInvestment
+                        : null,
                 });
 
                 continue;
@@ -137,9 +149,11 @@ const executeCompoundingSimulation = async (body: RequestBody) => {
                     previousResult.noCompoundingValue + monthlyContribution,
                 ),
                 compoundingValue: toTwoDecimalPoints(compoundingValue),
-                compoundingWithDividendsValue: toTwoDecimalPoints(
-                    totalSharesWithDividends * pricePerShare,
-                ),
+                compoundingWithDividendsValue: dividendYield
+                    ? toTwoDecimalPoints(
+                          totalSharesWithDividends * pricePerShare,
+                      )
+                    : null,
             });
         }
     }
@@ -170,16 +184,18 @@ const executeCompoundingSimulation = async (body: RequestBody) => {
                 ((lastResult.compoundingValue - totalCost) / totalCost) * 100,
             ),
         },
-        compoundingWithDividends: {
-            absolute: toTwoDecimalPoints(
-                lastResult.compoundingWithDividendsValue - totalCost,
-            ),
-            percentage: toTwoDecimalPoints(
-                ((lastResult.compoundingWithDividendsValue - totalCost) /
-                    totalCost) *
-                    100,
-            ),
-        },
+        compoundingWithDividends: lastResult.compoundingWithDividendsValue
+            ? {
+                  absolute: toTwoDecimalPoints(
+                      lastResult.compoundingWithDividendsValue - totalCost,
+                  ),
+                  percentage: toTwoDecimalPoints(
+                      ((lastResult.compoundingWithDividendsValue - totalCost) /
+                          totalCost) *
+                          100,
+                  ),
+              }
+            : null,
     };
 
     return {
