@@ -10,7 +10,7 @@ import PortfolioValueDetails from "./PortfolioValueDetails";
 import PortfolioValueChartSkeleton from "./PortfolioValueChartSkeleton";
 import { placeholderChartData } from "./placeholderChartData";
 
-interface ChartTooltip {
+interface ChartTooltipProps {
     active?: boolean;
     date: string;
     portfolioValue: number;
@@ -22,7 +22,7 @@ const CustomChartTooltip = ({
     date,
     portfolioValue,
     currency,
-}: ChartTooltip) => {
+}: ChartTooltipProps) => {
     if (!active) return null;
 
     const formattedDate = new Date(date).toLocaleDateString("en-US", {
@@ -100,10 +100,6 @@ const PortfolioValueChart = ({ portfolioId }: PortfolioValueChartProps) => {
                     portfolioValue: {
                         label: "Portfolio value",
                         color: "var(--primary-base)",
-                    },
-                    noData: {
-                        label: "No data available",
-                        color: "var(--muted-base)",
                     },
                 }}
                 className="aspect-auto h-56"

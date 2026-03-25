@@ -1,22 +1,9 @@
-import { Input } from "@/app/components/ui/input";
-import { HTMLInputTypeAttribute } from "react";
-import { useFieldContext } from "./useForm";
 import { Field, FieldError, FieldLabel } from "../ui/field";
+import { Input } from "../ui/input";
+import { FormInputProps } from "./TextInput";
+import { useFieldContext } from "./useForm";
 
-export interface FormInputProps {
-    label: string;
-    id: string;
-    placeholder?: string;
-    type?: HTMLInputTypeAttribute;
-    error?: string;
-    className?: string;
-    inputClassName?: string;
-    dataTestId?: string;
-    disabled?: boolean;
-    defaultValue?: string;
-}
-
-const TextInput = ({
+const NumberInput = ({
     label,
     id,
     placeholder,
@@ -27,7 +14,7 @@ const TextInput = ({
     disabled = false,
     defaultValue,
 }: FormInputProps) => {
-    const field = useFieldContext<string>();
+    const field = useFieldContext<number>();
 
     return (
         <Field
@@ -38,8 +25,8 @@ const TextInput = ({
             <Input
                 id={id}
                 placeholder={placeholder}
-                value={defaultValue ? defaultValue : field.state.value}
-                onChange={(e) => field.handleChange(e.target.value)}
+                value={defaultValue ? defaultValue : (field.state.value ?? "")}
+                onChange={(e) => field.handleChange(Number(e.target.value))}
                 onBlur={field.handleBlur}
                 disabled={disabled}
                 className={
@@ -53,4 +40,4 @@ const TextInput = ({
     );
 };
 
-export default TextInput;
+export default NumberInput;
