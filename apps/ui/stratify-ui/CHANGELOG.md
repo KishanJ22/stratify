@@ -1,5 +1,17 @@
 # @stratify/stratify-ui
 
+## 0.7.1
+
+### Patch Changes
+
+- efc59e2: - Build page for learning about cost averaging
+    - Add simulator to compare cost averaging and lump sum investing strategies
+    - Display the portfolio values for both strategies over the investment duration
+    - Add unit tests for compounding simulator and cost averaging page
+    - Display card beneath the chart, similar to how it is done on the compounding page, to show the return for the entire period for both strategies
+- Updated dependencies [efc59e2]
+    - @stratify/stratify-api@0.7.1
+
 ## 0.7.0
 
 ### Minor Changes
