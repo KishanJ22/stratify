@@ -15,11 +15,11 @@ import { retrieveInvestments } from "../[portfolioId]/investments/retrievePortfo
 import { investmentSchema } from "../[portfolioId]/investments/investments.schema.js";
 import db from "../../../database/db.js";
 import { createNotFound } from "../../../utils/createNotFoundSchema.js";
+import { toTwoDecimalPoints } from "../../../utils/toTwoDecimalPoints.js";
 
 const overviewSchema = Type.Object({
     totalValue: Type.Number(),
     overallChange: Type.Object({
-        lastSevenDays: returnSchema,
         lastThirtyDays: returnSchema,
         lastSixMonths: returnSchema,
         allTime: returnSchema,
@@ -57,7 +57,7 @@ const calculateChangeInTimePeriod = (
     startDate: Date,
 ) => {
     const startValueEntry = data.find(
-        (entry) => new Date(entry.date) >= startDate,
+        (entry) => new Date(entry.date).getTime() >= startDate.getTime(),
     );
 
     if (!startValueEntry) {
@@ -70,11 +70,9 @@ const calculateChangeInTimePeriod = (
     const valueDifference = latestValue - startValueEntry.portfolioValue;
 
     return {
-        absolute: parseFloat(valueDifference.toFixed(2)),
-        percentage: parseFloat(
-            ((valueDifference / startValueEntry.portfolioValue) * 100).toFixed(
-                2,
-            ),
+        absolute: toTwoDecimalPoints(valueDifference),
+        percentage: toTwoDecimalPoints(
+            (valueDifference / startValueEntry.portfolioValue) * 100,
         ),
     };
 };
@@ -126,10 +124,8 @@ const retrieveOverviewDetails = async (portfolioIds: number[]) => {
     );
 
     const allTimeReturn = {
-        absolute: parseFloat(overallReturn.toFixed(2)),
-        percentage: parseFloat(
-            ((overallReturn / totalBuyAmount) * 100).toFixed(2),
-        ),
+        absolute: toTwoDecimalPoints(overallReturn),
+        percentage: toTwoDecimalPoints((overallReturn / totalBuyAmount) * 100),
     } satisfies Return;
 
     const currentInvestments = investments.filter(
@@ -139,11 +135,6 @@ const retrieveOverviewDetails = async (portfolioIds: number[]) => {
     return {
         totalValue,
         overallChange: {
-            lastSevenDays: calculateChangeInTimePeriod(
-                sortedValueHistory,
-                totalValue,
-                new Date(new Date().setDate(new Date().getDate() - 7)),
-            ),
             lastThirtyDays: calculateChangeInTimePeriod(
                 sortedValueHistory,
                 totalValue,
