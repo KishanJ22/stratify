@@ -2,7 +2,7 @@ import { formOptions } from "@tanstack/react-form";
 import {
     compoundingSimulatorSchema,
     CompoundingSimulatorSchema,
-} from "./compounding-simulator-schema";
+} from "./compoundingSimulatorSchema";
 import { useEffect, useState } from "react";
 import {
     SearchAsset,
