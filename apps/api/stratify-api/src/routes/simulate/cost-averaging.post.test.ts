@@ -4,9 +4,9 @@ import db from "../../database/db.js";
 import { createUser } from "../../tests/create-user.js";
 import { generateDevToken } from "../../utils/generateDevToken.js";
 import { mockHistoricAssetPrices } from "./_mocks/mockHistoricAssetPrices.js";
-import type { SimulationResponse } from "./compounding.post.js";
+import type { SimulationResponse } from "./cost-averaging.post.js";
 
-describe("POST /simulate/compounding", () => {
+describe("POST /simulate/cost-averaging", () => {
     let devToken = "";
 
     let app: any;
@@ -21,7 +21,7 @@ describe("POST /simulate/compounding", () => {
         vi.clearAllMocks();
     });
 
-    it("should execute compounding simulation successfully", async () => {
+    it("should execute cost averaging simulation successfully", async () => {
         await createUser("test-user").execute();
 
         await db
@@ -43,16 +43,16 @@ describe("POST /simulate/compounding", () => {
 
         const response = await app.inject({
             method: "POST",
-            url: "/simulate/compounding",
+            url: "/simulate/cost-averaging",
             headers: {
                 Authorization: devToken,
             },
             payload: {
                 assetId: 1,
-                initialInvestment: 10000,
-                monthlyContribution: 500,
+                totalInvestment: 10000,
+                contributionFrequency: "monthly",
                 timePeriodYears: 3,
-                dividendYield: null,
+                amountPerContribution: 277.78,
             },
         });
 
@@ -60,78 +60,16 @@ describe("POST /simulate/compounding", () => {
 
         const data = (await response.json().data) as SimulationResponse;
 
-        expect(data).toBeDefined();
-
         expect(data.results.length).toBeGreaterThan(0);
 
         expect(data.returns).toEqual({
-            noCompounding: {
+            lumpSum: {
                 absolute: 26904.76,
                 percentage: 269.05,
             },
-            compounding: {
-                absolute: 42829.14,
-                percentage: 155.74,
-            },
-            compoundingWithDividends: null,
-        });
-    });
-
-    it("should include compounding with dividends when a dividend yield is provided", async () => {
-        await createUser("test-user").execute();
-
-        await db
-            .insertInto("stratify.assets")
-            .values({
-                id: 1,
-                name: "Apple Inc.",
-                symbol: "AAPL",
-                currency: "USD",
-                type: "STOCK",
-                countryId: 224, // Country ID for united states
-            })
-            .execute();
-
-        await db
-            .insertInto("stratify.assetPrices")
-            .values(mockHistoricAssetPrices)
-            .execute();
-
-        const response = await app.inject({
-            method: "POST",
-            url: "/simulate/compounding",
-            headers: {
-                Authorization: devToken,
-            },
-            payload: {
-                assetId: 1,
-                initialInvestment: 10000,
-                monthlyContribution: 500,
-                timePeriodYears: 3,
-                dividendYield: 1.5,
-            },
-        });
-
-        expect(response.statusCode).toBe(200);
-
-        const data = (await response.json().data) as SimulationResponse;
-
-        expect(data).toBeDefined();
-
-        expect(data.results.length).toBeGreaterThan(0);
-
-        expect(data.returns).toEqual({
-            noCompounding: {
-                absolute: 26904.76,
-                percentage: 269.05,
-            },
-            compounding: {
-                absolute: 42829.14,
-                percentage: 155.74,
-            },
-            compoundingWithDividends: {
-                absolute: 45654.04,
-                percentage: 166.01,
+            costAveraging: {
+                absolute: 8569.25,
+                percentage: 85.69,
             },
         });
     });
@@ -153,16 +91,16 @@ describe("POST /simulate/compounding", () => {
 
         const response = await app.inject({
             method: "POST",
-            url: "/simulate/compounding",
+            url: "/simulate/cost-averaging",
             headers: {
                 Authorization: devToken,
             },
             payload: {
                 assetId: 1,
-                initialInvestment: 10000,
-                monthlyContribution: 500,
+                totalInvestment: 10000,
+                contributionFrequency: "monthly",
                 timePeriodYears: 3,
-                dividendYield: null,
+                amountPerContribution: 277.78,
             },
         });
 
@@ -205,16 +143,16 @@ describe("POST /simulate/compounding", () => {
 
         const response = await app.inject({
             method: "POST",
-            url: "/simulate/compounding",
+            url: "/simulate/cost-averaging",
             headers: {
                 Authorization: devToken,
             },
             payload: {
                 assetId: 1,
-                initialInvestment: 10000,
-                monthlyContribution: 500,
+                totalInvestment: 10000,
+                contributionFrequency: "monthly",
                 timePeriodYears: 3,
-                dividendYield: null,
+                amountPerContribution: 277.78,
             },
         });
 

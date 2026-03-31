@@ -1,22 +1,21 @@
-import { formOptions } from "@tanstack/react-form";
+import { formOptions, useStore } from "@tanstack/react-form";
 import {
-    compoundingSimulatorSchema,
-    CompoundingSimulatorSchema,
-} from "./compoundingSimulatorSchema";
-import { useEffect, useState } from "react";
+    costAveragingSimulatorSchema,
+    CostAveragingSimulatorSchema,
+} from "./costAveragingSimulatorSchema";
 import {
     SearchAsset,
     useAssetSearch,
 } from "../../markets/AssetSearch/useAssetSearch";
 import { useDebouncedValue } from "@tanstack/react-pacer";
-import type {
-    CompoundingSimulatorRequestSchema,
-    MutateCompoundingSimulator,
-} from "./useCompoundingSimulator";
 import { useAppForm } from "@/app/components/Form/useForm";
 import { HTTPError } from "ky";
 import { AddTradeErrorResponse } from "../../portfolios/hooks/useAddTrade";
 import { Field, FieldLabel } from "@/app/components/ui/field";
+import type {
+    CostAveragingSimulatorRequestSchema,
+    MutateCostAveragingSimulator,
+} from "./useCostAveragingSimulator";
 import {
     Command,
     CommandInput,
@@ -25,31 +24,73 @@ import {
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/app/components/ui/skeleton";
 import AssetNameCard from "../../portfolios/components/AddInvestment/AssetNameCard";
+import { useEffect, useState } from "react";
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/app/components/ui/select";
 
-const defaultValues: CompoundingSimulatorSchema = {
+const defaultValues: CostAveragingSimulatorSchema = {
     assetName: "",
-    initialInvestment: 0,
-    monthlyContribution: 0,
+    totalInvestment: 0,
+    contributionFrequency: "monthly",
     timePeriodYears: 0,
-    dividendYield: "",
+    amountPerContribution: 0,
 };
 
-const compoundingSimulatorFormOptions = formOptions({
-    formId: "compounding-simulator-form",
+const costAveragingSimulatorFormOptions = formOptions({
+    formId: "cost-averaging-simulator-form",
     defaultValues,
 });
 
-export interface CompoundingSimulatorFormProps {
-    executeSimulation: MutateCompoundingSimulator;
+const contributionFrequencyOptions = [
+    {
+        label: "Weekly",
+        value: "weekly",
+    },
+    {
+        label: "Monthly",
+        value: "monthly",
+    },
+    {
+        label: "Quarterly",
+        value: "quarterly",
+    },
+    {
+        label: "Annually",
+        value: "annually",
+    },
+];
+
+const contributionFrequencyToAmountLabelMap = {
+    weekly: "Amount per Week",
+    monthly: "Amount per Month",
+    quarterly: "Amount per Quarter",
+    annually: "Amount per Year",
+} as const;
+
+const contributionFrequencyToContributionsPerYearMap = {
+    weekly: 52,
+    monthly: 12,
+    quarterly: 4,
+    annually: 1,
+} as const;
+
+export interface CostAveragingSimulatorFormProps {
+    executeSimulation: MutateCostAveragingSimulator;
     resetSimulation: () => void;
     isPending: boolean;
 }
 
-const CompoundingSimulatorForm = ({
+const CostAveragingSimulatorForm = ({
     executeSimulation,
     resetSimulation,
     isPending,
-}: CompoundingSimulatorFormProps) => {
+}: CostAveragingSimulatorFormProps) => {
     const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
     const [searchValue, setSearchValue] = useState("");
     const [selectedAsset, setSelectedAsset] = useState<SearchAsset | null>(
@@ -78,11 +119,11 @@ const CompoundingSimulatorForm = ({
     }, [debouncedSearchValue, search]);
 
     const form = useAppForm({
-        ...compoundingSimulatorFormOptions,
+        ...costAveragingSimulatorFormOptions,
         validators: {
-            onChange: compoundingSimulatorSchema,
+            onChange: costAveragingSimulatorSchema,
             onBlurAsync: async ({ value }) => {
-                const result = compoundingSimulatorSchema.safeParse(value);
+                const result = costAveragingSimulatorSchema.safeParse(value);
 
                 return result.success
                     ? setIsSubmitDisabled(false)
@@ -94,13 +135,11 @@ const CompoundingSimulatorForm = ({
 
             const requestBody = {
                 assetId: selectedAsset.id,
-                initialInvestment: value.initialInvestment,
-                monthlyContribution: value.monthlyContribution,
+                totalInvestment: value.totalInvestment,
+                contributionFrequency: value.contributionFrequency,
+                amountPerContribution: value.amountPerContribution,
                 timePeriodYears: value.timePeriodYears,
-                dividendYield: value.dividendYield
-                    ? parseFloat(value.dividendYield)
-                    : null,
-            } satisfies CompoundingSimulatorRequestSchema;
+            } satisfies CostAveragingSimulatorRequestSchema;
 
             executeSimulation(requestBody, {
                 onError: async (error) => {
@@ -115,6 +154,31 @@ const CompoundingSimulatorForm = ({
             });
         },
     });
+
+    const formValues = useStore(form.store, (state) => state.values);
+
+    useEffect(() => {
+        if (formValues.totalInvestment && formValues.timePeriodYears) {
+            const totalContributions =
+                formValues.timePeriodYears *
+                contributionFrequencyToContributionsPerYearMap[
+                    formValues.contributionFrequency
+                ];
+
+            form.setFieldValue(
+                "amountPerContribution",
+                parseFloat(
+                    (formValues.totalInvestment / totalContributions).toFixed(
+                        2,
+                    ),
+                ),
+            );
+        }
+    }, [
+        formValues.totalInvestment,
+        formValues.timePeriodYears,
+        formValues.contributionFrequency,
+    ]);
 
     return (
         <form
@@ -228,14 +292,14 @@ const CompoundingSimulatorForm = ({
                 }}
             </form.AppField>
             <div className="flex flex-row justify-between gap-x-5">
-                <form.AppField name="initialInvestment">
+                <form.AppField name="totalInvestment">
                     {({ state: { meta }, NumberInput }) => {
                         return (
                             <NumberInput
-                                id="initialInvestment"
-                                dataTestId="initial-investment-field"
-                                label="Initial Investment"
-                                placeholder="Enter initial investment"
+                                id="totalInvestment"
+                                dataTestId="total-investment-field"
+                                label="Total Investment"
+                                placeholder="Enter total investment"
                                 type="number"
                                 error={
                                     meta.isTouched
@@ -246,20 +310,55 @@ const CompoundingSimulatorForm = ({
                         );
                     }}
                 </form.AppField>
-                <form.AppField name="monthlyContribution">
-                    {({ state: { meta }, NumberInput }) => {
+                <form.AppField name="contributionFrequency">
+                    {(field) => {
                         return (
-                            <NumberInput
-                                id="monthlyContribution"
-                                dataTestId="monthly-contribution-field"
-                                label="Monthly Contribution"
-                                placeholder="Enter monthly contribution"
-                                error={
-                                    meta.isTouched
-                                        ? meta.errors?.[0]?.message
-                                        : undefined
-                                }
-                            />
+                            <Field
+                                className="flex flex-col gap-y-1.5"
+                                data-testid="contribution-frequency-field"
+                            >
+                                <FieldLabel htmlFor="contributionFrequency">
+                                    Contribution Frequency
+                                </FieldLabel>
+                                <Select
+                                    value={field.state.value}
+                                    onValueChange={(value) =>
+                                        field.handleChange(
+                                            value as CostAveragingSimulatorSchema["contributionFrequency"],
+                                        )
+                                    }
+                                >
+                                    <SelectTrigger
+                                        iconClassName="text-secondary-dark"
+                                        className="border-secondary-dark bg-white text-secondary-dark ring-secondary-dark shadow-none"
+                                    >
+                                        <SelectValue data-testid="contribution-frequency-select-value" />
+                                    </SelectTrigger>
+                                    <SelectContent
+                                        className="border-secondary-base bg-white text-secondary-dark"
+                                        side="bottom"
+                                        align="start"
+                                    >
+                                        <SelectGroup
+                                            className="flex flex-col gap-y-1"
+                                            data-testid="contribution-frequency-select-options"
+                                        >
+                                            {contributionFrequencyOptions.map(
+                                                (option) => (
+                                                    <SelectItem
+                                                        className="data-highlighted:bg-secondary-lighter data-[state=checked]:bg-secondary-light/70 data-[state=checked]:text-secondary-darkest text-secondary-dark cursor-pointer"
+                                                        iconClassName="text-secondary-dark"
+                                                        key={option.value}
+                                                        value={option.value}
+                                                    >
+                                                        {option.label}
+                                                    </SelectItem>
+                                                ),
+                                            )}
+                                        </SelectGroup>
+                                    </SelectContent>
+                                </Select>
+                            </Field>
                         );
                     }}
                 </form.AppField>
@@ -282,19 +381,18 @@ const CompoundingSimulatorForm = ({
                         );
                     }}
                 </form.AppField>
-                <form.AppField name="dividendYield">
-                    {({ state: { meta }, TextInput }) => {
+                <form.AppField name="amountPerContribution">
+                    {({ NumberInput }) => {
                         return (
-                            <TextInput
-                                id="dividendYield"
-                                dataTestId="annual-dividend-yield-field"
-                                label="Annual Dividend Yield"
-                                placeholder="Optional"
-                                error={
-                                    meta.isTouched
-                                        ? meta.errors?.[0]?.message
-                                        : undefined
+                            <NumberInput
+                                id="amountPerContribution"
+                                dataTestId="amount-per-contribution-field"
+                                label={
+                                    contributionFrequencyToAmountLabelMap[
+                                        formValues.contributionFrequency
+                                    ]
                                 }
+                                disabled
                             />
                         );
                     }}
@@ -327,4 +425,4 @@ const CompoundingSimulatorForm = ({
     );
 };
 
-export default CompoundingSimulatorForm;
+export default CostAveragingSimulatorForm;

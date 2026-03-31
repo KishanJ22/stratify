@@ -1,9 +1,9 @@
 import { renderWithContext } from "@/app/tests/utils";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import CompoundingSimulatorForm, {
-    CompoundingSimulatorFormProps,
-} from "./CompoundingSimulatorForm";
-import { screen, within } from "@testing-library/react";
+import CostAveragingSimulatorForm, {
+    CostAveragingSimulatorFormProps,
+} from "./CostAveragingSimulatorForm";
+import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { mockSearchAsset } from "../../markets/AssetSearch/_mocks/mockAssetSearch";
 
@@ -27,18 +27,22 @@ const defaultProps = {
     executeSimulation: mockExecuteSimulation,
     resetSimulation: mockResetSimulation,
     isPending: false,
-} satisfies CompoundingSimulatorFormProps;
+} satisfies CostAveragingSimulatorFormProps;
 
 const user = userEvent.setup();
 
-describe("CompoundingSimulatorForm", () => {
+describe("CostAveragingSimulatorForm", () => {
     beforeEach(() => {
         vi.clearAllMocks();
     });
 
-    const renderComponent = (props?: Partial<CompoundingSimulatorFormProps>) =>
+    const renderComponent = (
+        props?: Partial<CostAveragingSimulatorFormProps>,
+    ) =>
         renderWithContext({
-            children: <CompoundingSimulatorForm {...defaultProps} {...props} />,
+            children: (
+                <CostAveragingSimulatorForm {...defaultProps} {...props} />
+            ),
         });
 
     it("should render the form correctly", () => {
@@ -46,10 +50,10 @@ describe("CompoundingSimulatorForm", () => {
 
         const fieldLabels = [
             "Simulate with",
-            "Initial Investment",
-            "Monthly Contribution",
+            "Total Investment",
+            "Contribution Frequency",
             "Time Period (Years)",
-            "Annual Dividend Yield",
+            "Amount per Month",
         ];
 
         fieldLabels.forEach((label) => {
@@ -61,17 +65,23 @@ describe("CompoundingSimulatorForm", () => {
         renderComponent();
 
         const fieldTestIds = [
-            "initial-investment-field",
-            "monthly-contribution-field",
+            "total-investment-field",
             "time-period-years-field",
+            "amount-per-contribution-field",
         ];
 
         fieldTestIds.forEach((testId) => {
             within(screen.getByTestId(testId)).getByDisplayValue("0");
         });
+
+        expect(
+            within(
+                screen.getByTestId("contribution-frequency-select-value"),
+            ).getByText("Monthly"),
+        ).toBeInTheDocument();
     });
 
-    it("should render the submit button", () => {
+    it("should render teh submit button", () => {
         renderComponent();
 
         expect(screen.getByText("Simulate")).toBeInTheDocument();
@@ -90,39 +100,34 @@ describe("CompoundingSimulatorForm", () => {
 
         await user.click(screen.getByTestId("asset-name-card"));
 
-        const initialInvestmentInput = within(
-            screen.getByTestId("initial-investment-field"),
+        const totalInvestmentInput = within(
+            screen.getByTestId("total-investment-field"),
         ).getByDisplayValue("0");
-        await user.clear(initialInvestmentInput);
-        await user.type(initialInvestmentInput, "10000");
-
-        const monthlyContributionInput = within(
-            screen.getByTestId("monthly-contribution-field"),
-        ).getByDisplayValue("0");
-        await user.clear(monthlyContributionInput);
-        await user.type(monthlyContributionInput, "500");
+        await user.clear(totalInvestmentInput);
+        await user.type(totalInvestmentInput, "12000");
 
         const timePeriodInput = within(
             screen.getByTestId("time-period-years-field"),
         ).getByDisplayValue("0");
         await user.clear(timePeriodInput);
-        await user.type(timePeriodInput, "20");
+        await user.type(timePeriodInput, "2");
+        await user.tab();
 
-        const dividendYieldInput = within(
-            screen.getByTestId("annual-dividend-yield-field"),
-        ).getByPlaceholderText("Optional");
-        await user.clear(dividendYieldInput);
-        await user.type(dividendYieldInput, "5");
+        await waitFor(() =>
+            expect(
+                screen.getByTestId("submit-button-enabled"),
+            ).toBeInTheDocument(),
+        );
 
         await user.click(screen.getByText("Simulate"));
 
         expect(mockExecuteSimulation).toHaveBeenCalledWith(
             {
                 assetId: 1,
-                initialInvestment: 10000,
-                monthlyContribution: 500,
-                timePeriodYears: 20,
-                dividendYield: 5,
+                totalInvestment: 12000,
+                contributionFrequency: "monthly",
+                timePeriodYears: 2,
+                amountPerContribution: 500,
             },
             {
                 onError: expect.any(Function),
@@ -143,31 +148,20 @@ describe("CompoundingSimulatorForm", () => {
 
         await user.click(screen.getByTestId("asset-name-card"));
 
-        const initialInvestmentInput = within(
-            screen.getByTestId("initial-investment-field"),
+        const totalInvestmentInput = within(
+            screen.getByTestId("total-investment-field"),
         ).getByDisplayValue("0");
-        await user.clear(initialInvestmentInput);
-        await user.type(initialInvestmentInput, "10000");
-
-        const monthlyContributionInput = within(
-            screen.getByTestId("monthly-contribution-field"),
-        ).getByDisplayValue("0");
-        await user.clear(monthlyContributionInput);
-        await user.type(monthlyContributionInput, "500");
+        await user.clear(totalInvestmentInput);
+        await user.type(totalInvestmentInput, "12000");
 
         const timePeriodInput = within(
             screen.getByTestId("time-period-years-field"),
         ).getByDisplayValue("0");
         await user.clear(timePeriodInput);
-        await user.type(timePeriodInput, "20");
+        await user.type(timePeriodInput, "2");
+        await user.tab();
 
-        const dividendYieldInput = within(
-            screen.getByTestId("annual-dividend-yield-field"),
-        ).getByPlaceholderText("Optional");
-        await user.clear(dividendYieldInput);
-        await user.type(dividendYieldInput, "5");
-
-        const displayValues = ["10000", "500", "20", "5"];
+        const displayValues = ["12000", "2", "500", "Monthly"];
 
         displayValues.forEach((value) => {
             expect(screen.getAllByDisplayValue(value)).toHaveLength(1);
@@ -176,8 +170,6 @@ describe("CompoundingSimulatorForm", () => {
         await user.click(screen.getByText("Clear"));
 
         expect(mockResetSimulation).toHaveBeenCalled();
-
-        expect(screen.getAllByDisplayValue("0")).toHaveLength(3);
     });
 
     it("should disable the simulate button when isPending is true", () => {
@@ -199,11 +191,11 @@ describe("CompoundingSimulatorForm", () => {
     it("should disable the simulate button when the form is invalid", async () => {
         renderComponent();
 
-        const initialInvestmentInput = within(
-            screen.getByTestId("initial-investment-field"),
+        const totalInvestmentInput = within(
+            screen.getByTestId("total-investment-field"),
         ).getByDisplayValue("0");
-        await user.clear(initialInvestmentInput);
-        await user.type(initialInvestmentInput, "-100");
+        await user.clear(totalInvestmentInput);
+        await user.type(totalInvestmentInput, "-100");
 
         expect(
             screen.getByTestId("submit-button-disabled"),

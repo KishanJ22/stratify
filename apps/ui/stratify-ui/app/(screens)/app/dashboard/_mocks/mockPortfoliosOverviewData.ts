@@ -4,10 +4,6 @@ import type { Overview } from "../usePortfoliosOverview";
 export const mockPortfoliosOverviewData = {
     totalValue: 100000,
     overallChange: {
-        lastSevenDays: {
-            absolute: 5000,
-            percentage: 5,
-        },
         lastThirtyDays: {
             absolute: 10000,
             percentage: 10,

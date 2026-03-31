@@ -1,31 +1,41 @@
 import { Static, Type } from "@sinclair/typebox";
+import { returnSchema } from "../../schemas/common-schemas.js";
+import { assetPricesQuery } from "../portfolios/[portfolioId]/metrics/calculateAssetVariance.js";
+import { toTwoDecimalPoints } from "../../utils/toTwoDecimalPoints.js";
 import { FastifyInstance } from "fastify";
-import logger from "../../logger.js";
 import {
     CannotSimulateResponse,
     cannotSimulateSchema,
     NotFoundResponse,
     notFoundSchema,
 } from "./simulationSchemas.js";
-import { assetPricesQuery } from "../portfolios/[portfolioId]/metrics/calculateAssetVariance.js";
-import { returnSchema } from "../../schemas/common-schemas.js";
-import { toTwoDecimalPoints } from "../../utils/toTwoDecimalPoints.js";
+import logger from "../../logger.js";
+
+const contributionFrequencies = [
+    "weekly",
+    "monthly",
+    "quarterly",
+    "annually",
+] as const;
+
+const contributionFrequencySchema = Type.Union(
+    contributionFrequencies.map((freq) => Type.Literal(freq)),
+);
 
 const requestBodySchema = Type.Object({
     assetId: Type.Number(),
-    initialInvestment: Type.Number(),
-    monthlyContribution: Type.Number(),
+    totalInvestment: Type.Number(),
+    contributionFrequency: contributionFrequencySchema,
     timePeriodYears: Type.Number(),
-    dividendYield: Type.Union([Type.Number(), Type.Null()]),
+    amountPerContribution: Type.Number(),
 });
 
 type RequestBody = Static<typeof requestBodySchema>;
 
 const simulationResult = Type.Object({
     date: Type.String(),
-    noCompoundingValue: Type.Number(),
-    compoundingValue: Type.Number(),
-    compoundingWithDividendsValue: Type.Union([Type.Number(), Type.Null()]),
+    lumpSumValue: Type.Number(),
+    costAveragingValue: Type.Number(),
 });
 
 type SimulationResult = Static<typeof simulationResult>;
@@ -33,9 +43,8 @@ type SimulationResult = Static<typeof simulationResult>;
 const simulationResponseSchema = Type.Object({
     results: Type.Array(simulationResult),
     returns: Type.Object({
-        noCompounding: returnSchema,
-        compounding: returnSchema,
-        compoundingWithDividends: Type.Union([returnSchema, Type.Null()]),
+        lumpSum: returnSchema,
+        costAveraging: returnSchema,
     }),
 });
 
@@ -47,13 +56,13 @@ const successResponseSchema = Type.Object({
 
 type SuccessResponse = Static<typeof successResponseSchema>;
 
-const executeCompoundingSimulation = async (body: RequestBody) => {
+const executeCostAveragingSimulation = async (body: RequestBody) => {
     const {
         assetId,
         timePeriodYears,
-        monthlyContribution,
-        initialInvestment,
-        dividendYield,
+        contributionFrequency,
+        amountPerContribution,
+        totalInvestment,
     } = body;
 
     //? Set start date to first day of the month and timePeriodYears ago
@@ -82,15 +91,12 @@ const executeCompoundingSimulation = async (body: RequestBody) => {
 
     const results: SimulationResult[] = [];
 
-    let initialShares = 0;
+    let lumpSumShares = 0;
     let totalShares = 0;
-    let totalSharesWithDividends = 0;
 
-    for (
-        let date = new Date(startDate);
-        date <= startOfMonth;
-        date.setMonth(date.getMonth() + 1)
-    ) {
+    const date = new Date(startDate);
+
+    while (date <= startOfMonth) {
         const formattedDate = date.toISOString().split("T")[0];
 
         //? If the current date is a weekend, then the asset price from Friday should be used as markets are closed on weekends
@@ -110,48 +116,42 @@ const executeCompoundingSimulation = async (body: RequestBody) => {
 
         if (pricePerShare) {
             if (results.length === 0) {
-                initialShares = initialInvestment / pricePerShare;
-                totalShares = initialInvestment / pricePerShare;
-                totalSharesWithDividends = initialInvestment / pricePerShare;
+                lumpSumShares = totalInvestment / pricePerShare;
 
                 results.push({
                     date: formattedDate,
-                    noCompoundingValue: initialInvestment,
-                    compoundingValue: initialInvestment,
-                    compoundingWithDividendsValue: dividendYield
-                        ? initialInvestment
-                        : null,
+                    lumpSumValue: totalInvestment,
+                    costAveragingValue: amountPerContribution,
                 });
+            } else {
+                totalShares += amountPerContribution / pricePerShare;
 
-                continue;
+                results.push({
+                    date: formattedDate,
+                    lumpSumValue: toTwoDecimalPoints(
+                        lumpSumShares * pricePerShare,
+                    ),
+                    costAveragingValue: toTwoDecimalPoints(
+                        totalShares * pricePerShare,
+                    ),
+                });
             }
+        }
 
-            totalShares += monthlyContribution / pricePerShare;
-            totalSharesWithDividends += monthlyContribution / pricePerShare;
+        if (contributionFrequency === "weekly") {
+            date.setDate(date.getDate() + 7);
+        }
 
-            const compoundingValue = totalShares * pricePerShare;
+        if (contributionFrequency === "monthly") {
+            date.setMonth(date.getMonth() + 1);
+        }
 
-            const isFullYear =
-                date.getMonth() === startDate.getMonth() &&
-                date.getFullYear() !== startDate.getFullYear();
+        if (contributionFrequency === "quarterly") {
+            date.setMonth(date.getMonth() + 3);
+        }
 
-            if (isFullYear && dividendYield) {
-                totalSharesWithDividends +=
-                    (totalSharesWithDividends * dividendYield) / 100;
-            }
-
-            results.push({
-                date: formattedDate,
-                noCompoundingValue: toTwoDecimalPoints(
-                    initialShares * pricePerShare,
-                ),
-                compoundingValue: toTwoDecimalPoints(compoundingValue),
-                compoundingWithDividendsValue: dividendYield
-                    ? toTwoDecimalPoints(
-                          totalSharesWithDividends * pricePerShare,
-                      )
-                    : null,
-            });
+        if (contributionFrequency === "annually") {
+            date.setFullYear(date.getFullYear() + 1);
         }
     }
 
@@ -159,42 +159,29 @@ const executeCompoundingSimulation = async (body: RequestBody) => {
         return "cannotSimulate";
     }
 
-    const totalCost =
-        initialInvestment + monthlyContribution * (results.length - 1);
-
     const lastResult = results[results.length - 1];
 
     const returns = {
-        noCompounding: {
+        lumpSum: {
             absolute: toTwoDecimalPoints(
-                lastResult.noCompoundingValue - initialInvestment,
+                lastResult.lumpSumValue - totalInvestment,
             ),
             percentage: toTwoDecimalPoints(
-                ((lastResult.noCompoundingValue - initialInvestment) /
-                    initialInvestment) *
+                ((lastResult.lumpSumValue - totalInvestment) /
+                    totalInvestment) *
                     100,
             ),
         },
-        compounding: {
+        costAveraging: {
             absolute: toTwoDecimalPoints(
-                lastResult.compoundingValue - totalCost,
+                lastResult.costAveragingValue - totalInvestment,
             ),
             percentage: toTwoDecimalPoints(
-                ((lastResult.compoundingValue - totalCost) / totalCost) * 100,
+                ((lastResult.costAveragingValue - totalInvestment) /
+                    totalInvestment) *
+                    100,
             ),
         },
-        compoundingWithDividends: lastResult.compoundingWithDividendsValue
-            ? {
-                  absolute: toTwoDecimalPoints(
-                      lastResult.compoundingWithDividendsValue - totalCost,
-                  ),
-                  percentage: toTwoDecimalPoints(
-                      ((lastResult.compoundingWithDividendsValue - totalCost) /
-                          totalCost) *
-                          100,
-                  ),
-              }
-            : null,
     };
 
     return {
@@ -203,7 +190,7 @@ const executeCompoundingSimulation = async (body: RequestBody) => {
     };
 };
 
-export default async function compoundingSimulationPost(
+export default async function costAveragingSimulationPost(
     fastify: FastifyInstance,
 ) {
     fastify.route<{
@@ -211,7 +198,7 @@ export default async function compoundingSimulationPost(
         Reply: SuccessResponse | NotFoundResponse | CannotSimulateResponse;
     }>({
         method: "POST",
-        url: "/simulate/compounding",
+        url: "/simulate/cost-averaging",
         schema: {
             body: requestBodySchema,
             response: {
@@ -225,7 +212,7 @@ export default async function compoundingSimulationPost(
 
             try {
                 const simulationResults =
-                    await executeCompoundingSimulation(body);
+                    await executeCostAveragingSimulation(body);
 
                 if (simulationResults === "noDataFound") {
                     return reply.status(404).send({
@@ -243,7 +230,10 @@ export default async function compoundingSimulationPost(
                     data: simulationResults,
                 });
             } catch (error) {
-                logger.error({ error }, "Error during compounding simulation");
+                logger.error(
+                    { error },
+                    "Error during cost averaging simulation",
+                );
                 throw error;
             }
         },

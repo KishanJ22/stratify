@@ -1,23 +1,18 @@
 import { ChartTooltip } from "@/app/components/ui/chart";
 import { Area, AreaChart, ResponsiveContainer, XAxis } from "recharts";
 import { Skeleton } from "@/app/components/ui/skeleton";
-import { CompoundingSimulatorSuccessResponse } from "./useCompoundingSimulator";
+import type { CostAveragingSimulatorSuccessResponse } from "./useCostAveragingSimulator";
 import { placeholderChartData } from "./placeholderChartData";
 
 interface ChartTooltipProps {
     active?: boolean;
-    payload: CompoundingSimulatorSuccessResponse["data"]["results"][number];
+    payload: CostAveragingSimulatorSuccessResponse["data"]["results"][number];
 }
 
 const CustomChartTooltip = ({ active, payload }: ChartTooltipProps) => {
     if (!active) return null;
 
-    const {
-        date,
-        noCompoundingValue,
-        compoundingValue,
-        compoundingWithDividendsValue,
-    } = payload;
+    const { date, lumpSumValue, costAveragingValue } = payload;
 
     const formattedDate = new Date(date).toLocaleDateString("en", {
         month: "short",
@@ -30,86 +25,52 @@ const CustomChartTooltip = ({ active, payload }: ChartTooltipProps) => {
                 {formattedDate}
             </div>
             <div className="flex flex-col text-sm w-full">
-                {compoundingWithDividendsValue ? (
-                    <div className="flex flex-row justify-between gap-x-2">
-                        <div className="flex flex-row items-center justify-items-center gap-x-1">
-                            <div
-                                className="w-1 h-3 py-1 rounded-sm"
-                                style={{
-                                    backgroundColor: "var(--primary-base)",
-                                }}
-                            />
-                            {"Compounding with dividends"}
-                        </div>
-                        <div>
-                            {compoundingWithDividendsValue.toLocaleString()}
-                        </div>
-                    </div>
-                ) : null}
                 <div className="flex flex-row justify-between gap-x-2">
                     <div className="flex flex-row items-center justify-items-center gap-x-1">
                         <div
                             className="w-1 h-3 py-1 rounded-sm"
                             style={{ backgroundColor: "var(--secondary-base)" }}
                         />
-                        {"Compounding"}
+                        {"Cost averaging"}
                     </div>
-                    <div>{compoundingValue.toLocaleString()}</div>
+                    <div>{costAveragingValue.toLocaleString()}</div>
                 </div>
                 <div className="flex flex-row justify-between gap-x-2">
                     <div className="flex flex-row items-center justify-items-center gap-x-1">
                         <div
                             className="w-1 h-3 py-1 rounded-sm"
-                            style={{ backgroundColor: "var(--accent-base)" }}
+                            style={{ backgroundColor: "var(--primary-base)" }}
                         />
-                        {"No Compounding"}
+                        {"Lump Sum"}
                     </div>
-                    <div>{noCompoundingValue.toLocaleString()}</div>
+                    <div>{lumpSumValue.toLocaleString()}</div>
                 </div>
             </div>
         </div>
     );
 };
 
-export interface CompoundingSimulatorChartProps {
-    data: CompoundingSimulatorSuccessResponse["data"]["results"];
+export interface CostAveragingSimulatorChartProps {
+    data: CostAveragingSimulatorSuccessResponse["data"]["results"];
     isLoading: boolean;
 }
 
-const CompoundingSimulatorChart = ({
+const CostAveragingSimulatorChart = ({
     data,
     isLoading,
-}: CompoundingSimulatorChartProps) => {
+}: CostAveragingSimulatorChartProps) => {
     return isLoading ? (
         <Skeleton
             className="w-full h-62.5 mt-2"
-            data-testid="compounding-simulator-chart-skeleton"
+            data-testid="cost-averaging-simulator-chart-skeleton"
         />
     ) : (
-        <div data-testid="compounding-simulator-chart">
+        <div data-testid="cost-averaging-simulator-chart">
             <ResponsiveContainer width="100%" height={250}>
                 <AreaChart data={data.length > 0 ? data : placeholderChartData}>
                     <defs>
                         <linearGradient
-                            id="fillNoCompounding"
-                            x1="0"
-                            y1="0"
-                            x2="0"
-                            y2="1"
-                        >
-                            <stop
-                                offset="5%"
-                                stopColor="var(--accent-base)"
-                                stopOpacity={0.8}
-                            />
-                            <stop
-                                offset="95%"
-                                stopColor="var(--accent-base)"
-                                stopOpacity={0.1}
-                            />
-                        </linearGradient>
-                        <linearGradient
-                            id="fillCompounding"
+                            id="fillCostAveraging"
                             x1="0"
                             y1="0"
                             x2="0"
@@ -127,7 +88,7 @@ const CompoundingSimulatorChart = ({
                             />
                         </linearGradient>
                         <linearGradient
-                            id="fillCompoundingWithDividends"
+                            id="fillLumpSum"
                             x1="0"
                             y1="0"
                             x2="0"
@@ -174,28 +135,20 @@ const CompoundingSimulatorChart = ({
                     ) : null}
 
                     <Area
-                        dataKey="noCompoundingValue"
+                        dataKey="costAveragingValue"
                         type="natural"
-                        fill="url(#fillNoCompounding)"
-                        stroke="var(--accent-base)"
-                        stackId="a"
-                        data-testid="no-compounding-area"
-                    />
-                    <Area
-                        dataKey="compoundingValue"
-                        type="natural"
-                        fill="url(#fillCompounding)"
+                        fill="url(#fillCostAveraging)"
                         stroke="var(--secondary-base)"
                         stackId="a"
-                        data-testid="compounding-area"
+                        data-testid="cost-averaging-area"
                     />
                     <Area
-                        dataKey="compoundingWithDividendsValue"
+                        dataKey="lumpSumValue"
                         type="natural"
-                        fill="url(#fillCompoundingWithDividends)"
+                        fill="url(#fillLumpSum)"
                         stroke="var(--primary-base)"
                         stackId="a"
-                        data-testid="compounding-with-dividends-area"
+                        data-testid="lump-sum-area"
                     />
                 </AreaChart>
             </ResponsiveContainer>
@@ -203,4 +156,4 @@ const CompoundingSimulatorChart = ({
     );
 };
 
-export default CompoundingSimulatorChart;
+export default CostAveragingSimulatorChart;

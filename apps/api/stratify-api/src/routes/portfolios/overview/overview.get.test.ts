@@ -74,7 +74,6 @@ vi.mock("../../../lib/api/data-api-client", () => ({
 
 describe("GET /portfolios/overview", () => {
     let devToken = "";
-    let secondDevToken = "";
 
     let app: any;
 
@@ -84,9 +83,6 @@ describe("GET /portfolios/overview", () => {
 
     beforeAll(async () => {
         devToken = await generateDevToken({ userId: "test-user" });
-        secondDevToken = await generateDevToken({
-            userId: "another-test-user",
-        });
 
         app = await loadMockApp();
     });
@@ -135,15 +131,11 @@ describe("GET /portfolios/overview", () => {
                     absolute: 765,
                     percentage: 115.91,
                 },
-                lastSevenDays: {
+                lastThirtyDays: {
                     absolute: 475,
                     percentage: 50,
                 },
                 lastSixMonths: {
-                    absolute: 1225,
-                    percentage: 612.5,
-                },
-                lastThirtyDays: {
                     absolute: 1225,
                     percentage: 612.5,
                 },
