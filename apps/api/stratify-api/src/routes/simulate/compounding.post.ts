@@ -56,16 +56,10 @@ const executeCompoundingSimulation = async (body: RequestBody) => {
         dividendYield,
     } = body;
 
+    //? Set start date to first day of the month and timePeriodYears ago
     const startDate = new Date();
     startDate.setFullYear(new Date().getFullYear() - timePeriodYears);
     startDate.setDate(1);
-
-    logger.info(
-        {
-            startDate: startDate.toISOString(),
-        },
-        "Executing compounding simulation",
-    );
 
     const startOfMonth = new Date();
     startOfMonth.setDate(1);
@@ -88,6 +82,7 @@ const executeCompoundingSimulation = async (body: RequestBody) => {
 
     const results: SimulationResult[] = [];
 
+    let initialShares = 0;
     let totalShares = 0;
     let totalSharesWithDividends = 0;
 
@@ -98,19 +93,14 @@ const executeCompoundingSimulation = async (body: RequestBody) => {
     ) {
         const formattedDate = date.toISOString().split("T")[0];
 
-        //? If the current date is a weekend, then the conversion rate and/or asset price from Friday should be used as markets are closed on weekends (except for cryptocurrencies)
-        const isWeekend =
-            new Date(date).getDay() === 0 || new Date(date).getDay() === 6;
+        //? If the current date is a weekend, then the asset price from Friday should be used as markets are closed on weekends
+        const isWeekend = date.getDay() === 0 || date.getDay() === 6;
 
         const fridayDate = new Date(
             new Date(date).setDate(
                 date.getDate() - (date.getDay() === 0 ? 2 : 1),
             ),
         );
-
-        const isFullYear =
-            date.getMonth() === startDate.getMonth() &&
-            date.getFullYear() !== startDate.getFullYear();
 
         const formattedFridayDate = fridayDate.toISOString().split("T")[0];
 
@@ -120,6 +110,7 @@ const executeCompoundingSimulation = async (body: RequestBody) => {
 
         if (pricePerShare) {
             if (results.length === 0) {
+                initialShares = initialInvestment / pricePerShare;
                 totalShares = initialInvestment / pricePerShare;
                 totalSharesWithDividends = initialInvestment / pricePerShare;
 
@@ -135,12 +126,14 @@ const executeCompoundingSimulation = async (body: RequestBody) => {
                 continue;
             }
 
-            const previousResult = results[results.length - 1];
-
             totalShares += monthlyContribution / pricePerShare;
             totalSharesWithDividends += monthlyContribution / pricePerShare;
 
             const compoundingValue = totalShares * pricePerShare;
+
+            const isFullYear =
+                date.getMonth() === startDate.getMonth() &&
+                date.getFullYear() !== startDate.getFullYear();
 
             if (isFullYear && dividendYield) {
                 totalSharesWithDividends +=
@@ -150,7 +143,7 @@ const executeCompoundingSimulation = async (body: RequestBody) => {
             results.push({
                 date: formattedDate,
                 noCompoundingValue: toTwoDecimalPoints(
-                    previousResult.noCompoundingValue + monthlyContribution,
+                    initialShares * pricePerShare,
                 ),
                 compoundingValue: toTwoDecimalPoints(compoundingValue),
                 compoundingWithDividendsValue: dividendYield
@@ -174,10 +167,12 @@ const executeCompoundingSimulation = async (body: RequestBody) => {
     const returns = {
         noCompounding: {
             absolute: toTwoDecimalPoints(
-                lastResult.noCompoundingValue - totalCost,
+                lastResult.noCompoundingValue - initialInvestment,
             ),
             percentage: toTwoDecimalPoints(
-                ((lastResult.noCompoundingValue - totalCost) / totalCost) * 100,
+                ((lastResult.noCompoundingValue - initialInvestment) /
+                    initialInvestment) *
+                    100,
             ),
         },
         compounding: {

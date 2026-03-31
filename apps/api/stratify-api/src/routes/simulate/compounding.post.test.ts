@@ -66,8 +66,8 @@ describe("POST /simulate/compounding", () => {
 
         expect(data.returns).toEqual({
             noCompounding: {
-                absolute: 0,
-                percentage: 0,
+                absolute: 26904.76,
+                percentage: 269.05,
             },
             compounding: {
                 absolute: 42829.14,
@@ -122,8 +122,8 @@ describe("POST /simulate/compounding", () => {
 
         expect(data.returns).toEqual({
             noCompounding: {
-                absolute: 0,
-                percentage: 0,
+                absolute: 26904.76,
+                percentage: 269.05,
             },
             compounding: {
                 absolute: 42829.14,
