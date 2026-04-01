@@ -23,7 +23,7 @@ def query_cryptocurrencies_by_percentage_change(
                 if change_percent < minimumPercentageChange:
                     filtered_assets.append(asset)
         
-        formatted_assets = [format_quote_info(asset) for asset in filtered_assets]
+        formatted_assets = [format_quote_info(asset, "CRYPTOCURRENCY") for asset in filtered_assets]
 
         return sorted(formatted_assets, key=lambda x: x['priceDetails']['dayTradingActivity']['changePercent'], reverse=not sortAscending)[:limit]
     except Exception as e:

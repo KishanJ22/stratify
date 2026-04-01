@@ -19,7 +19,7 @@ def query_stocks_by_percent_change(
         results = screen(query, size=limit, sortField='percentchange', sortAsc=sortAscending)
         assets = results.get("quotes")
         
-        formatted_assets = [format_quote_info(asset) for asset in assets]
+        formatted_assets = [format_quote_info(asset, "STOCK") for asset in assets]
         return formatted_assets
     except Exception as e:
         print("Error querying stocks by percent change:", e)

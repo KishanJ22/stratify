@@ -17,7 +17,7 @@ def query_stocks_by_activity(
         results = screen(query, size=limit, sortField='dayvolume', sortAsc=False)
         stock_assets = results.get("quotes", [])
         
-        formatted_assets = [format_quote_info(asset) for asset in stock_assets]
+        formatted_assets = [format_quote_info(asset, "STOCK") for asset in stock_assets]
         
         return formatted_assets
     except Exception as e:

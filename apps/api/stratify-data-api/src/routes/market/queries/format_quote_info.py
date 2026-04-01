@@ -1,20 +1,20 @@
 from src.routes.market.queries.quote_schema import QuoteItem
 
-def format_quote_info(quote_info) -> QuoteItem:
+def format_quote_info(quoteInfo, assetType: str) -> QuoteItem:
     return {
-        "symbol": quote_info.get("symbol"),
-        "marketState": quote_info.get("marketState"),
-        "assetType": quote_info.get("quoteType"),
+        "symbol": quoteInfo.get("symbol"),
+        "marketState": quoteInfo.get("marketState"),
+        "assetType": assetType,
         "priceDetails": {
-            "currentPrice": quote_info.get("regularMarketPrice"),
+            "currentPrice": quoteInfo.get("regularMarketPrice"),
             "dayTradingActivity": {
-                "open": quote_info.get("regularMarketOpen"),
-                "high": quote_info.get("regularMarketDayHigh"),
-                "low": quote_info.get("regularMarketDayLow"),
-                "close": quote_info.get("regularMarketPreviousClose"),
-                "volume": quote_info.get("regularMarketVolume"),
-                "change": quote_info.get("regularMarketChange"),
-                "changePercent": quote_info.get("regularMarketChangePercent"),
+                "open": quoteInfo.get("regularMarketOpen"),
+                "high": quoteInfo.get("regularMarketDayHigh"),
+                "low": quoteInfo.get("regularMarketDayLow"),
+                "close": quoteInfo.get("regularMarketPreviousClose"),
+                "volume": quoteInfo.get("regularMarketVolume"),
+                "change": quoteInfo.get("regularMarketChange"),
+                "changePercent": quoteInfo.get("regularMarketChangePercent"),
             },
         },
     }
