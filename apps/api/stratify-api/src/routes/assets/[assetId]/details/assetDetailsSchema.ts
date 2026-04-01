@@ -38,5 +38,5 @@ export const successResponseSchema = Type.Object({
 });
 export type AssetDetailsSuccessResponse = Static<typeof successResponseSchema>;
 
-export const notFoundSchema = createNotFound("assetNotFound");
-export type NotFoundResponse = Static<typeof notFoundSchema>;
+export const assetNotFoundSchema = createNotFound("assetNotFound");
+export type AssetNotFoundResponse = Static<typeof assetNotFoundSchema>;

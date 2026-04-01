@@ -5,8 +5,8 @@ import {
     AssetDetailsSuccessResponse,
     AssetIdParam,
     assetIdParamSchema,
-    NotFoundResponse,
-    notFoundSchema,
+    AssetNotFoundResponse,
+    assetNotFoundSchema,
     successResponseSchema,
 } from "./assetDetailsSchema.js";
 import db from "../../../../database/db.js";
@@ -171,7 +171,7 @@ const retrieveAssetDetails = async (assetId: number) => {
 export default async function assetDetailsGet(fastify: FastifyInstance) {
     fastify.route<{
         Params: AssetIdParam;
-        Reply: AssetDetailsSuccessResponse | NotFoundResponse;
+        Reply: AssetDetailsSuccessResponse | AssetNotFoundResponse;
     }>({
         method: "GET",
         url: "/assets/:assetId/details",
@@ -179,7 +179,7 @@ export default async function assetDetailsGet(fastify: FastifyInstance) {
             params: assetIdParamSchema,
             response: {
                 200: successResponseSchema,
-                404: notFoundSchema,
+                404: assetNotFoundSchema,
             },
         },
         handler: async (request, reply) => {

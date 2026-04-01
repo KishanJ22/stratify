@@ -3,12 +3,10 @@ import { FastifyInstance } from "fastify";
 import { createNotFound } from "../../../../utils/createNotFoundSchema.js";
 import logger from "../../../../logger.js";
 import db from "../../../../database/db.js";
-
-const historicPriceParams = Type.Object({
-    assetId: Type.Number(),
-});
-
-type HistoricPriceParams = Static<typeof historicPriceParams>;
+import {
+    AssetIdParam,
+    assetIdParamSchema,
+} from "../details/assetDetailsSchema.js";
 
 export const historicPriceQuery = Type.Object({
     tradeDate: Type.String(),
@@ -37,14 +35,14 @@ const historicPriceDbQuery = (assetId: number, tradeDate: Date) =>
 
 export default async function historicAssetPriceGet(fastify: FastifyInstance) {
     fastify.route<{
-        Params: HistoricPriceParams;
+        Params: AssetIdParam;
         Reply: HistoricPriceResponse | HistoricPriceErrorResponse;
         Querystring: HistoricPriceQuery;
     }>({
         method: "GET",
         url: "assets/:assetId/historic-price",
         schema: {
-            params: historicPriceParams,
+            params: assetIdParamSchema,
             querystring: historicPriceQuery,
             response: {
                 200: HistoricPriceResponse,

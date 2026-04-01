@@ -5,7 +5,7 @@ import { UserDetails } from "../../../../utils/decodeToken.js";
 import { latestCurrencyConversionRateQuery } from "../../../../utils/latestCurrencyRateQuery.js";
 import { fetchCurrentPrice } from "../../../assets/fetch-current-price.js";
 import { portfolioInvestmentsQuery } from "../portfolioInvestmentsQuery.js";
-import { ValueHistory } from "./[portfolioId].value-history.get.js";
+import type { ValueHistory } from "./[portfolioId].value-history.get.js";
 
 const bulkHistoricAssetPriceQuery = (
     assetIds: number[],
