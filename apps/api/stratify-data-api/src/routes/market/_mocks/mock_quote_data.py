@@ -33,3 +33,21 @@ mock_cryptocurrency_quote_data = {
         }
     }
 }
+
+mock_fund_quote_data = {
+    "symbol": "SMH",
+    "marketState": "REGULAR",
+    "assetType": "ETF",
+    "priceDetails": {
+        "currentPrice": 394.465,
+        "dayTradingActivity": {
+            "open": 388.255,
+            "high": 394.81,
+            "low": 386.4,
+            "close": 383.4,
+            "volume": 3781063,
+            "change": 11.065002,
+            "changePercent": 2.8860204
+        }
+    }
+}

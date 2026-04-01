@@ -1,20 +1,18 @@
 from yahooquery import Screener
 from src.routes.market.queries.format_quote_info import format_quote_info
 
-def query_cryptocurrencies_by_percentage_change(
+def query_funds_by_percentage_change(
     percentageOperation: str, 
     minimumPercentageChange: float, 
-    limit: int = 20, 
+    limit: int = 10, 
     sortAscending: bool = False
     ):
     try:
         screener = Screener()
-        #? Assets are sorted by trading volume by default
-        #? So more assets are retrieved to ensure there are enough for filtering by percentage change
-        crypto_assets = screener.get_screeners('all_cryptocurrencies_us', 50).get('all_cryptocurrencies_us').get('quotes', [])
+        fund_assets = screener.get_screeners('top_etfs_us', 50).get('top_etfs_us').get('quotes', [])
         
         filtered_assets = []
-        for asset in crypto_assets:
+        for asset in fund_assets:
             change_percent = asset.get('regularMarketChangePercent')
             if percentageOperation == 'GT':
                 if change_percent > minimumPercentageChange:
@@ -27,5 +25,5 @@ def query_cryptocurrencies_by_percentage_change(
 
         return sorted(formatted_assets, key=lambda x: x['priceDetails']['dayTradingActivity']['changePercent'], reverse=not sortAscending)[:limit]
     except Exception as e:
-        print("Error querying cryptocurrencies by percentage change:", e)
+        print("Error querying funds by percentage change:", e)
         return []

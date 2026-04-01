@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from src.routes.market.queries.query_stocks_by_percent_change import query_stocks_by_percent_change
 from src.routes.market.queries.query_cryptocurrencies_by_percentage_change import query_cryptocurrencies_by_percentage_change
+from src.routes.market.queries.query_funds_by_percentage_change import query_funds_by_percentage_change
 from src.routes.market.queries.quote_schema import QuoteListGetResponse
 
 top_gainers_get = APIRouter()
@@ -9,7 +10,7 @@ top_gainers_get = APIRouter()
 async def get_top_gainers(
     minimumPercentageChange: float = 3.0, # default to 3 percent gain
     minimumVolume: int = 1000000, # default to 1 million volume
-    limit: int = 10, # default to top 10 gainers
+    limit: int = 20, # default to top 20 gainers
 ) -> QuoteListGetResponse:
     try:
         top_gainers_stocks = query_stocks_by_percent_change(
@@ -25,7 +26,13 @@ async def get_top_gainers(
             limit,
         )
         
-        top_gainers_assets = top_gainers_stocks + top_gainers_cryptocurrencies
+        top_gainers_funds = query_funds_by_percentage_change(
+            'GT',
+            minimumPercentageChange,
+            limit
+        )
+        
+        top_gainers_assets = top_gainers_stocks + top_gainers_cryptocurrencies + top_gainers_funds
         top_gainers_assets = sorted(top_gainers_assets, key=lambda x: x['priceDetails']['dayTradingActivity']['changePercent'], reverse=True)[:limit]
         
         if not top_gainers_assets or len(top_gainers_assets) == 0:
