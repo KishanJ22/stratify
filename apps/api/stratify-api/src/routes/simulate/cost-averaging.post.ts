@@ -203,8 +203,8 @@ export default async function costAveragingSimulationPost(
             body: requestBodySchema,
             response: {
                 200: successResponseSchema,
-                404: notFoundSchema,
                 400: cannotSimulateSchema,
+                404: notFoundSchema,
             },
         },
         handler: async (request, reply) => {

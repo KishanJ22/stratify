@@ -22,15 +22,18 @@ const generateAssetPriceHistory = (
     const now = new Date();
 
     while (currentDate <= now) {
-        prices.push({
-            assetId,
-            priceDate: new Date(currentDate),
-            lowPrice: 10,
-            highPrice: 20,
-            openPrice: 15,
-            closePrice: isCurrency ? 1.5 : 20,
-            volume: 1000,
-        });
+        const day = currentDate.getDay();
+        if (day !== 0 && day !== 6) {
+            prices.push({
+                assetId,
+                priceDate: new Date(currentDate).toISOString().split("T")[0],
+                lowPrice: 10,
+                highPrice: 20,
+                openPrice: 15,
+                closePrice: isCurrency ? 1.5 : 20,
+                volume: 1000,
+            });
+        }
 
         currentDate.setDate(currentDate.getDate() + 1);
     }
