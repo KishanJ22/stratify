@@ -948,6 +948,10 @@
             "type": "string",
             "title": "Marketstate"
           },
+          "assetType": {
+            "type": "string",
+            "title": "Assettype"
+          },
           "priceDetails": {
             "$ref": "#/components/schemas/PriceDetails"
           }
@@ -956,6 +960,7 @@
         "required": [
           "symbol",
           "marketState",
+          "assetType",
           "priceDetails"
         ],
         "title": "QuoteItem"

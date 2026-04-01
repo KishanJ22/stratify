@@ -1,9 +1,10 @@
-from src.routes.market.quote_schema import QuoteItem
+from src.routes.market.queries.quote_schema import QuoteItem
 
 def format_quote_info(quote_info) -> QuoteItem:
     return {
         "symbol": quote_info.get("symbol"),
         "marketState": quote_info.get("marketState"),
+        "assetType": quote_info.get("quoteType"),
         "priceDetails": {
             "currentPrice": quote_info.get("regularMarketPrice"),
             "dayTradingActivity": {

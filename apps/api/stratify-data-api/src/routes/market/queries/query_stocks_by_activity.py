@@ -1,7 +1,7 @@
 from yfinance import EquityQuery, screen
-from src.routes.market.format_quote_info import format_quote_info
+from src.routes.market.queries.format_quote_info import format_quote_info
 
-def query_by_trading_activity(
+def query_stocks_by_activity(
     minimumMarketCap: int = 2000000000,
     minimumVolume: int = 5000000,
     limit: int = 10,
@@ -15,9 +15,10 @@ def query_by_trading_activity(
         ])
         
         results = screen(query, size=limit, sortField='dayvolume', sortAsc=False)
-        assets = results.get("quotes")
+        stock_assets = results.get("quotes", [])
         
-        formatted_assets = [format_quote_info(asset) for asset in assets]
+        formatted_assets = [format_quote_info(asset) for asset in stock_assets]
+        
         return formatted_assets
     except Exception as e:
         print("Error querying stocks by activity:", e)

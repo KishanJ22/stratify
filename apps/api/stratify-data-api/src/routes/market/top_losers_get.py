@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException
-from src.routes.market.query_stocks_by_percent_change import query_by_percent_change
-from src.routes.market.quote_schema import QuoteListGetResponse
+from src.routes.market.queries.query_stocks_by_percent_change import query_stocks_by_percent_change
+from src.routes.market.queries.query_cryptocurrencies_by_percentage_change import query_cryptocurrencies_by_percentage_change
+from src.routes.market.queries.quote_schema import QuoteListGetResponse
 
 top_losers_get = APIRouter()
 
@@ -11,7 +12,7 @@ async def get_top_losers(
     limit: int = 10, # default to top 10 losers
 ) -> QuoteListGetResponse:
     try:
-        top_losers = query_by_percent_change(
+        top_losers_stocks = query_stocks_by_percent_change(
             'LT',
             minimumPercentageChange,
             minimumVolume,
@@ -19,10 +20,20 @@ async def get_top_losers(
             True
         )
         
-        if not top_losers or len(top_losers) == 0:
+        top_losers_cryptocurrencies = query_cryptocurrencies_by_percentage_change(
+            'LT',
+            minimumPercentageChange,
+            limit,
+            True
+        )
+        
+        top_losers_assets = top_losers_stocks + top_losers_cryptocurrencies
+        top_losers_assets = sorted(top_losers_assets, key=lambda x: x['priceDetails']['dayTradingActivity']['changePercent'])[:limit]
+
+        if not top_losers_assets or len(top_losers_assets) == 0:
             raise HTTPException(status_code=404, detail="No assets found with the specified criteria.")
         
-        return QuoteListGetResponse(data=top_losers)
+        return QuoteListGetResponse(data=top_losers_assets)
     except HTTPException:
         raise
     except Exception as e:

@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException
-from src.routes.market.query_stocks_by_activity import query_by_trading_activity
-from src.routes.market.quote_schema import QuoteListGetResponse
+from src.routes.market.queries.query_stocks_by_activity import query_stocks_by_activity
+from src.routes.market.queries.query_cryptocurrencies_by_activity import query_cryptocurrencies_by_activity
+from src.routes.market.queries.quote_schema import QuoteListGetResponse
 
 most_active_get = APIRouter()
 
@@ -11,11 +12,18 @@ async def get_most_active(
     limit: int = 10, # default to top 10 most active stocks
 ) -> QuoteListGetResponse:
     try:
-        most_active_assets = query_by_trading_activity(
+        most_active_stocks = query_stocks_by_activity(
             minimumMarketCap,
             minimumVolume,
             limit,
         )
+        
+        most_active_cryptocurrencies = query_cryptocurrencies_by_activity(
+            limit
+        )
+        
+        most_active_assets = most_active_stocks + most_active_cryptocurrencies
+        most_active_assets = sorted(most_active_assets, key=lambda x: x['priceDetails']['dayTradingActivity']['volume'], reverse=True)[:limit]
         
         if not most_active_assets or len(most_active_assets) == 0:
             raise HTTPException(status_code=404, detail="No assets found with the specified criteria.")

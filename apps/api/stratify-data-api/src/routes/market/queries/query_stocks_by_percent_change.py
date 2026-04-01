@@ -1,7 +1,7 @@
 from yfinance import EquityQuery, screen
-from src.routes.market.format_quote_info import format_quote_info
+from src.routes.market.queries.format_quote_info import format_quote_info
 
-def query_by_percent_change(
+def query_stocks_by_percent_change(
         percentageOperation: str, 
         minimumPercentageChange: float,
         minimumVolume: int,
