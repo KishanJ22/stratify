@@ -37,7 +37,7 @@ export default function topLosersGet(fastify: FastifyInstance) {
                     .GET("/market/top-losers", {
                         params: {
                             query: {
-                                limit: 10,
+                                limit: 20,
                                 minimumVolume: 2000000, // 2 million volume
                             },
                         },
@@ -47,6 +47,7 @@ export default function topLosersGet(fastify: FastifyInstance) {
                 const assetDetails = topLosersData?.map(async (asset) => {
                     const assetDetails = await fetchAssetDetailsQuery(
                         asset.symbol,
+                        asset.assetType,
                     ).executeTakeFirst();
 
                     //? If asset details are not found, then return null so that it can be filtered out

@@ -50,6 +50,7 @@ export default function topGainersGet(fastify: FastifyInstance) {
                 const assetDetails = topGainersData?.map(async (asset) => {
                     const assetDetails = await fetchAssetDetailsQuery(
                         asset.symbol,
+                        asset.assetType,
                     ).executeTakeFirst();
 
                     //? If asset details are not found, then return null so that it can be filtered out
