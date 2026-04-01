@@ -12,7 +12,7 @@ import { UserDetails } from "../../../utils/decodeToken.js";
 import { calculatePortfolioValueHistory } from "../[portfolioId]/value-history/calculateValueHistory.js";
 import { ValueHistory } from "../[portfolioId]/value-history/[portfolioId].value-history.get.js";
 import { retrieveInvestments } from "../[portfolioId]/investments/retrievePortfolioInvestments.js";
-import { investmentSchema } from "../[portfolioId]/investments/investments.schema.js";
+import { investmentSchema } from "../[portfolioId]/investments/investmentSchema.js";
 import db from "../../../database/db.js";
 import { createNotFound } from "../../../utils/createNotFoundSchema.js";
 import { toTwoDecimalPoints } from "../../../utils/toTwoDecimalPoints.js";

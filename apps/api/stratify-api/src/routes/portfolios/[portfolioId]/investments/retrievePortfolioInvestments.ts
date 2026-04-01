@@ -4,9 +4,8 @@ import { UserDetails } from "../../../../utils/decodeToken.js";
 import { fetchCurrentPrice } from "../../../assets/fetch-current-price.js";
 import { formatInvestmentDetails } from "./formatInvestmentDetails.js";
 import { portfolioInvestmentsQuery } from "../portfolioInvestmentsQuery.js";
-import { fetchStockDetails } from "./fetchStockDetails.js";
-import { fetchFundDetails } from "./fetchFundDetails.js";
-import { SectorDetails } from "./investments.schema.js";
+import { fetchStockDetails } from "../../../assets/[assetId]/details/yahoo-asset-details/fetchStockDetails.js";
+import { fetchFundDetails } from "../../../assets/[assetId]/details/yahoo-asset-details/fetchFundDetails.js";
 
 export interface GroupedInvestment {
     id: number;
@@ -26,7 +25,7 @@ const retrieveSectorDetails = async (
     symbol: string,
     countryId: number,
     type: AssetType,
-): Promise<SectorDetails[]> => {
+) => {
     if (type === "CRYPTOCURRENCY") {
         return [
             {

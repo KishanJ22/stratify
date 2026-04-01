@@ -1,5 +1,5 @@
-import { dataApiClient } from "../../../../lib/api/data-api-client.js";
-import logger from "../../../../logger.js";
+import { dataApiClient } from "../../../../../lib/api/data-api-client.js";
+import logger from "../../../../../logger.js";
 
 export const fetchStockDetails = async (
     assetSymbol: string,

@@ -1,8 +1,8 @@
 import { Static, Type } from "@sinclair/typebox";
 import { FastifyInstance } from "fastify";
-import { createNotFound } from "../../../utils/createNotFoundSchema.js";
-import logger from "../../../logger.js";
-import db from "../../../database/db.js";
+import { createNotFound } from "../../../../utils/createNotFoundSchema.js";
+import logger from "../../../../logger.js";
+import db from "../../../../database/db.js";
 
 const historicPriceParams = Type.Object({
     assetId: Type.Number(),

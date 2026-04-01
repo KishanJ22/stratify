@@ -2,7 +2,7 @@ import { FastifyInstance } from "fastify";
 import {
     PortfolioIdParam,
     portfolioIdParamSchema,
-} from "../investments/investments.schema.js";
+} from "../investments/investmentSchema.js";
 import logger from "../../../../logger.js";
 import { Static, Type } from "@sinclair/typebox";
 import { createNotFound } from "../../../../utils/createNotFoundSchema.js";

@@ -5,7 +5,7 @@ import {
     HistoricPriceQuery,
     HistoricPriceResponse,
     HistoricPriceErrorResponse,
-} from "../../assets/[assetId]/[assetId].historic-price.get.js";
+} from "../../assets/[assetId]/historic-price/[assetId].historic-price.get.js";
 import { FastifyInstance } from "fastify";
 import logger from "../../../logger.js";
 import db from "../../../database/db.js";

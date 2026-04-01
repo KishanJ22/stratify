@@ -1,6 +1,6 @@
 import { Static, Type } from "@sinclair/typebox";
-import { assetTypeSchema } from "../../schemas/common-schemas.js";
-import { createNotFound } from "../../utils/createNotFoundSchema.js";
+import { assetTypeSchema } from "../../../schemas/common-schemas.js";
+import { createNotFound } from "../../../utils/createNotFoundSchema.js";
 
 export const searchAssetsRequestBody = Type.Object({
     query: Type.String(),

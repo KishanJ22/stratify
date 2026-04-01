@@ -7,7 +7,7 @@ export const fetchAssetDetailsQuery = (symbol: string, assetType: string) => {
     const symbolName = symbolParts[0];
     const suffix = symbolParts[1] || "";
 
-    // Country ID for United Kingdom is 223, for United States is 224
+    // Country ID for London Stock Exchange assets (UK assets) is 223, United States is 224
     const countryId = suffix === "L" ? 223 : 224;
 
     return db

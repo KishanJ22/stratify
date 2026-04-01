@@ -1,6 +1,6 @@
 import { AssetType } from "../../../../schemas/common-schemas.js";
 import { latestCurrencyConversionRateQuery } from "../../../../utils/latestCurrencyRateQuery.js";
-import type { Investment, SectorDetails } from "./investments.schema.js";
+import type { Investment, SectorDetails } from "./investmentSchema.js";
 import type { GroupedInvestment } from "./retrievePortfolioInvestments.js";
 
 export const formatInvestmentDetails = async (

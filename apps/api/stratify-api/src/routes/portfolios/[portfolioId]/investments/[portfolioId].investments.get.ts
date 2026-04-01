@@ -7,7 +7,7 @@ import {
     investmentsResponseSchema,
     PortfolioIdParam,
     portfolioIdParamSchema,
-} from "./investments.schema.js";
+} from "./investmentSchema.js";
 import { retrieveInvestments } from "./retrievePortfolioInvestments.js";
 
 export default async function portfolioInvestmentsGet(

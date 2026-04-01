@@ -1,6 +1,6 @@
 import { FastifyInstance } from "fastify";
-import logger from "../../logger.js";
-import db from "../../database/db.js";
+import logger from "../../../logger.js";
+import db from "../../../database/db.js";
 import { InferResult, sql } from "kysely";
 import {
     BadRequestResponse,
@@ -13,7 +13,7 @@ import {
     SearchAssetsSuccessResponse,
 } from "./search-schema.js";
 import { formatSearchAsset } from "./formatSearchAsset.js";
-import { fetchCurrentPrice } from "./fetch-current-price.js";
+import { fetchCurrentPrice } from "../fetch-current-price.js";
 
 const assetsSearchQuery = (query: string) => {
     return db
@@ -99,7 +99,7 @@ export default async function searchAssetsPost(fastify: FastifyInstance) {
 
                 const assets = await searchAssets(query.toLowerCase());
 
-                if (assets?.length === 0 || assets === undefined) {
+                if (assets?.length === 0 || !assets) {
                     return reply.status(404).send({ message: "noAssetsFound" });
                 }
 

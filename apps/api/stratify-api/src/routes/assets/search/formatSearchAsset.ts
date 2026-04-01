@@ -1,5 +1,5 @@
-import { paths } from "../../lib/api/stratify-data-api.js";
-import { AssetType } from "../../schemas/common-schemas.js";
+import { paths } from "../../../lib/api/stratify-data-api.js";
+import { AssetType } from "../../../schemas/common-schemas.js";
 import { SearchAsset } from "./search-schema.js";
 import type { DbSearchAsset } from "./search.post.js";
 
