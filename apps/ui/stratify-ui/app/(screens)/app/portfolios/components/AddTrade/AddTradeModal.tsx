@@ -205,8 +205,8 @@ const AddTradeModal = ({
         if (historicCurrencyPairPrice) {
             const conversionRate =
                 assetCurrency === "GBX"
-                    ? parseFloat(historicCurrencyPairPrice.price) / 100
-                    : parseFloat(historicCurrencyPairPrice.price);
+                    ? historicCurrencyPairPrice.price / 100
+                    : historicCurrencyPairPrice.price;
 
             form.setFieldValue(
                 "currencyConversionRate",
