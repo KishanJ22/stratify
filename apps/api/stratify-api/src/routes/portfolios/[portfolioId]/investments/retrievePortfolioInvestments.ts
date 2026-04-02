@@ -1,7 +1,7 @@
 import { getFromStore } from "../../../../plugins/localStorage.js";
 import { AssetType } from "../../../../schemas/common-schemas.js";
 import { UserDetails } from "../../../../utils/decodeToken.js";
-import { fetchCurrentPrice } from "../../../assets/fetch-current-price.js";
+import { fetchCurrentPrice } from "../../../assets/fetchCurrentPrice.js";
 import { formatInvestmentDetails } from "./formatInvestmentDetails.js";
 import { portfolioInvestmentsQuery } from "../portfolioInvestmentsQuery.js";
 import { fetchStockDetails } from "../../../assets/[assetId]/details/yahoo-asset-details/fetchStockDetails.js";

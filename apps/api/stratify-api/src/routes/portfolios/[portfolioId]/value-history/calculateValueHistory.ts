@@ -3,7 +3,7 @@ import { getFromStore } from "../../../../plugins/localStorage.js";
 import { AssetType } from "../../../../schemas/common-schemas.js";
 import { UserDetails } from "../../../../utils/decodeToken.js";
 import { latestCurrencyConversionRateQuery } from "../../../../utils/latestCurrencyRateQuery.js";
-import { fetchCurrentPrice } from "../../../assets/fetch-current-price.js";
+import { fetchCurrentPrice } from "../../../assets/fetchCurrentPrice.js";
 import { portfolioInvestmentsQuery } from "../portfolioInvestmentsQuery.js";
 import type { ValueHistory } from "./[portfolioId].value-history.get.js";
 

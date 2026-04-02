@@ -13,7 +13,7 @@ import {
     SearchAssetsSuccessResponse,
 } from "./search-schema.js";
 import { formatSearchAsset } from "./formatSearchAsset.js";
-import { fetchCurrentPrice } from "../fetch-current-price.js";
+import { fetchCurrentPrice } from "../fetchCurrentPrice.js";
 
 const assetsSearchQuery = (query: string) => {
     return db
