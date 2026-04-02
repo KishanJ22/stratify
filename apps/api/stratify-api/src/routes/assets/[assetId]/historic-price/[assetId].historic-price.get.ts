@@ -7,24 +7,27 @@ import {
     AssetIdParam,
     assetIdParamSchema,
 } from "../details/assetDetailsSchema.js";
+import { toTwoDecimalPoints } from "../../../../utils/toTwoDecimalPoints.js";
 
 export const historicPriceQuery = Type.Object({
     tradeDate: Type.String(),
 });
-
 export type HistoricPriceQuery = Static<typeof historicPriceQuery>;
 
-export const HistoricPriceResponse = Type.Object({
+export const priceResponse = Type.Object({
     data: Type.Object({
-        price: Type.String(),
+        price: Type.Number(),
     }),
 });
+export type PriceResponse = Static<typeof priceResponse>;
 
-export type HistoricPriceResponse = Static<typeof HistoricPriceResponse>;
+export const invalidTradeDateSchema = Type.Object({
+    message: Type.Literal("invalidTradeDate"),
+});
+export type InvalidTradeDateResponse = Static<typeof invalidTradeDateSchema>;
 
-export const notFoundSchema = createNotFound("priceNotFound");
-
-export type HistoricPriceErrorResponse = Static<typeof notFoundSchema>;
+export const priceNotFoundSchema = createNotFound("priceNotFound");
+export type PriceNotFoundResponse = Static<typeof priceNotFoundSchema>;
 
 const historicPriceDbQuery = (assetId: number, tradeDate: Date) =>
     db
@@ -36,7 +39,7 @@ const historicPriceDbQuery = (assetId: number, tradeDate: Date) =>
 export default async function historicAssetPriceGet(fastify: FastifyInstance) {
     fastify.route<{
         Params: AssetIdParam;
-        Reply: HistoricPriceResponse | HistoricPriceErrorResponse;
+        Reply: PriceResponse | PriceNotFoundResponse | InvalidTradeDateResponse;
         Querystring: HistoricPriceQuery;
     }>({
         method: "GET",
@@ -45,15 +48,23 @@ export default async function historicAssetPriceGet(fastify: FastifyInstance) {
             params: assetIdParamSchema,
             querystring: historicPriceQuery,
             response: {
-                200: HistoricPriceResponse,
-                404: notFoundSchema,
+                200: priceResponse,
+                400: invalidTradeDateSchema,
+                404: priceNotFoundSchema,
             },
         },
         handler: async (request, reply) => {
             const { assetId } = request.params;
             const { tradeDate } = request.query;
+            const now = new Date();
 
             try {
+                if (isNaN(Date.parse(tradeDate)) || new Date(tradeDate) > now) {
+                    return reply.status(400).send({
+                        message: "invalidTradeDate",
+                    });
+                }
+
                 const historicPrice = await historicPriceDbQuery(
                     assetId,
                     new Date(tradeDate),
@@ -67,7 +78,9 @@ export default async function historicAssetPriceGet(fastify: FastifyInstance) {
 
                 return reply.status(200).send({
                     data: {
-                        price: historicPrice.price,
+                        price: toTwoDecimalPoints(
+                            parseFloat(historicPrice.price),
+                        ),
                     },
                 });
             } catch (error) {

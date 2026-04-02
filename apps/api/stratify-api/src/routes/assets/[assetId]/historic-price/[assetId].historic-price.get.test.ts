@@ -57,7 +57,7 @@ describe("GET /assets/:assetId/historic-price", () => {
 
         expect(json).toEqual({
             data: {
-                price: "115.00",
+                price: 115.0,
             },
         });
     });
