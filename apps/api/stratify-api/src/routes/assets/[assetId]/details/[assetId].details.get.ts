@@ -16,7 +16,7 @@ import { fetchCryptocurrencyDetails } from "./yahoo-asset-details/fetchCryptocur
 import { fetchStockDetails } from "./yahoo-asset-details/fetchStockDetails.js";
 import { fetchFundDetails } from "./yahoo-asset-details/fetchFundDetails.js";
 
-const assetDetailsQuery = (assetId: number) =>
+export const assetDetailsByIdQuery = (assetId: number) =>
     db
         .selectFrom("stratify.assets")
         .where("id", "=", assetId)
@@ -30,12 +30,12 @@ const assetDetailsQuery = (assetId: number) =>
         ]);
 
 export type DbAssetDetails = InferResult<
-    ReturnType<typeof assetDetailsQuery>
+    ReturnType<typeof assetDetailsByIdQuery>
 >[number];
 
 const retrieveAssetDetails = async (assetId: number) => {
     const assetDetailsDb =
-        await assetDetailsQuery(assetId).executeTakeFirstOrThrow();
+        await assetDetailsByIdQuery(assetId).executeTakeFirstOrThrow();
 
     if (assetDetailsDb.assetType === "CRYPTOCURRENCY") {
         const cryptocurrencyDetailsYahoo = await fetchCryptocurrencyDetails(
