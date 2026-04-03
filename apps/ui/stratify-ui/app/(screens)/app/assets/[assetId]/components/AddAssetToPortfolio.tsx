@@ -10,11 +10,9 @@ import { formatNumericValue } from "@/app/utils/formatNumericValue";
 
 interface AddAssetToPortfolioProps {
     assetHoldings: AssetHolding[];
-    isAssetHoldingsLoading: boolean;
     portfolioList: PortfolioList;
-    isPortfolioListLoading: boolean;
     assetCurrency: string;
-    isAssetDetailsLoading: boolean;
+    isLoading: boolean;
     selectedPortfolioId: number | null;
     setSelectedPortfolioId: Dispatch<SetStateAction<number | null>>;
     setIsAddInvestmentModalOpen: Dispatch<SetStateAction<boolean>>;
@@ -23,11 +21,9 @@ interface AddAssetToPortfolioProps {
 
 const AddAssetToPortfolio = ({
     assetHoldings,
-    isAssetHoldingsLoading,
     portfolioList,
-    isPortfolioListLoading,
     assetCurrency,
-    isAssetDetailsLoading,
+    isLoading,
     selectedPortfolioId,
     setSelectedPortfolioId,
     setIsAddInvestmentModalOpen,
@@ -35,11 +31,6 @@ const AddAssetToPortfolio = ({
 }: AddAssetToPortfolioProps) => {
     const { session } = useSessionContext();
     const userCurrency = session?.userDetails.currency || "---";
-
-    const isLoading =
-        isAssetHoldingsLoading ||
-        isPortfolioListLoading ||
-        isAssetDetailsLoading;
 
     const assetHoldingForPortfolio = assetHoldings.find(
         (holding) => holding.portfolioId === selectedPortfolioId,
@@ -86,7 +77,7 @@ const AddAssetToPortfolio = ({
                                 <PortfolioSelector
                                     variant="secondary"
                                     portfolioList={portfolioList}
-                                    isLoading={isPortfolioListLoading}
+                                    isLoading={isLoading}
                                     selectedPortfolioId={selectedPortfolioId}
                                     setSelectedPortfolioId={
                                         setSelectedPortfolioId

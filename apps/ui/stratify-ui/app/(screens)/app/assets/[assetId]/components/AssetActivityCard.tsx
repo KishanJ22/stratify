@@ -20,7 +20,7 @@ const AssetActivityCard = ({ asset, isLoading }: AssetActivityCardProps) => {
             ? "+"
             : "";
 
-    const assetCurrency = asset?.currency ?? "---";
+    const assetCurrency = asset?.assetCurrency ?? "---";
 
     return (
         <div className="flex-1 py-2.5 px-3 bg-primary-lightest rounded-xl border border-primary-base font-sans">

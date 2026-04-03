@@ -1,6 +1,8 @@
 import { useKyClient } from "@/lib/api/ky-client";
 import { paths } from "@/openapi/types/stratify-api";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { HTTPError } from "ky";
+import { useState } from "react";
 
 export type AssetHolding =
     paths["/assets/{assetId}/holdings"]["get"]["responses"]["200"]["content"]["application/json"]["data"][number];
@@ -14,28 +16,41 @@ export const useAssetHoldings = (assetId: number | null) => {
         assetId,
     ]);
 
-    const {
-        data: fetchedAssetHoldings,
-        isLoading,
-        error,
-    } = useQuery({
+    const [isHoldingsNotFoundError, setIsHoldingsNotFoundError] =
+        useState(false);
+
+    const { data: fetchedAssetHoldings, isLoading } = useQuery({
         queryKey: ["asset-holdings", assetId],
-        queryFn: async () =>
-            client
-                .GET("/assets/{assetId}/holdings", {
-                    params: {
-                        path: {
-                            assetId: assetId!,
+        queryFn: async () => {
+            try {
+                const response = await client.GET(
+                    "/assets/{assetId}/holdings",
+                    {
+                        params: {
+                            path: {
+                                assetId: assetId!,
+                            },
                         },
                     },
-                })
-                .then((res) => res.data?.data),
+                );
+
+                return response.data?.data;
+            } catch (error) {
+                if (
+                    error instanceof HTTPError &&
+                    error.response.status === 404
+                ) {
+                    setIsHoldingsNotFoundError(true);
+                    return [];
+                }
+            }
+        },
         enabled: assetId !== null,
     });
 
     return {
         data: fetchedAssetHoldings || cachedAssetHoldings,
         isLoading,
-        error,
+        isHoldingsNotFoundError,
     };
 };

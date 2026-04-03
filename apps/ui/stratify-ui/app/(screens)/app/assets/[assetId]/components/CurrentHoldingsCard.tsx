@@ -8,12 +8,14 @@ interface CurrentHoldingsCardProps {
     assetHoldings: AssetHolding[];
     assetCurrency: string;
     isLoading: boolean;
+    isHoldingsNotFoundError: boolean;
 }
 
 const CurrentHoldingsCard = ({
     assetHoldings,
     assetCurrency,
     isLoading,
+    isHoldingsNotFoundError,
 }: CurrentHoldingsCardProps) => {
     const { session } = useSessionContext();
     const userCurrency = session?.userDetails.currency || "---";
@@ -63,7 +65,7 @@ const CurrentHoldingsCard = ({
     const overallReturnSign = overallReturn > 0 ? "+" : "";
 
     return (
-        <div className="py-2.5 px-3 bg-primary-lightest rounded-xl border border-primary-base font-sans">
+        <div className="flex flex-col py-2.5 px-3 bg-primary-lightest rounded-xl border border-primary-base font-sans min-h-60">
             <div className="font-semibold text-2xl leading-6 text-secondary-dark">
                 {"Current holdings"}
             </div>
@@ -94,6 +96,10 @@ const CurrentHoldingsCard = ({
                         <Skeleton className="h-4 w-25" />
                         <Skeleton className="h-4 w-25" />
                     </div>
+                </div>
+            ) : isHoldingsNotFoundError ? (
+                <div className="flex flex-1 items-center justify-center font-semibold text-secondary-light text-center text-lg leading-6">
+                    {"Asset currently not held in any portfolios"}
                 </div>
             ) : (
                 <div className="flex flex-col gap-y-2 mt-2">

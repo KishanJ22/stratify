@@ -18,14 +18,14 @@ import AddTradeModal from "../../portfolios/components/AddTrade/AddTradeModal";
 export default function AssetPage() {
     const { assetId } = useParams<{ assetId: string }>();
 
-    const {
-        data: assetDetails,
-        isLoading: isAssetDetailsLoading,
-        error: assetDetailsError,
-    } = useAssetDetails(parseInt(assetId));
+    const { data: assetDetails, isLoading: isAssetDetailsLoading } =
+        useAssetDetails(parseInt(assetId));
 
-    const { data: assetHoldings, isLoading: isAssetHoldingsLoading } =
-        useAssetHoldings(parseInt(assetId));
+    const {
+        data: assetHoldings,
+        isLoading: isAssetHoldingsLoading,
+        isHoldingsNotFoundError,
+    } = useAssetHoldings(parseInt(assetId));
 
     const { data: portfolioList, isLoading: isPortfolioListLoading } =
         usePortfolioList();
@@ -38,6 +38,11 @@ export default function AssetPage() {
     const [selectedPortfolioId, setSelectedPortfolioId] = useState<
         number | null
     >(null);
+
+    const isLoading =
+        isAssetDetailsLoading ||
+        isAssetHoldingsLoading ||
+        isPortfolioListLoading;
 
     useEffect(() => {
         if (portfolioList && portfolioList.length > 0 && !selectedPortfolioId) {
@@ -72,13 +77,12 @@ export default function AssetPage() {
                     <div className="flex flex-row mt-5 w-full gap-x-5">
                         <AssetDetailsCard
                             asset={assetDetails}
-                            isLoading={isAssetDetailsLoading}
+                            isLoading={isLoading}
                             setIsSectorsModalOpen={setIsSectorsModalOpen}
                         />
                         <AssetActivityCard
                             asset={assetDetails}
-                            isLoading={isAssetDetailsLoading}
-                            assetDetailsError={assetDetailsError}
+                            isLoading={isLoading}
                         />
                     </div>
                 </div>
@@ -86,15 +90,14 @@ export default function AssetPage() {
                     <CurrentHoldingsCard
                         assetHoldings={assetHoldings ?? []}
                         assetCurrency={assetDetails?.assetCurrency ?? ""}
-                        isLoading={isAssetHoldingsLoading}
+                        isLoading={isLoading}
+                        isHoldingsNotFoundError={isHoldingsNotFoundError}
                     />
                     <AddAssetToPortfolio
                         assetHoldings={assetHoldings ?? []}
-                        isAssetHoldingsLoading={isAssetHoldingsLoading}
                         portfolioList={portfolioList ?? []}
-                        isPortfolioListLoading={isPortfolioListLoading}
                         assetCurrency={assetDetails?.assetCurrency ?? ""}
-                        isAssetDetailsLoading={isAssetDetailsLoading}
+                        isLoading={isLoading}
                         selectedPortfolioId={selectedPortfolioId}
                         setSelectedPortfolioId={setSelectedPortfolioId}
                         setIsAddInvestmentModalOpen={
