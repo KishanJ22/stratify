@@ -8,7 +8,7 @@ import { fetchStockDetails } from "../../../assets/[assetId]/details/yahoo-asset
 import { fetchFundDetails } from "../../../assets/[assetId]/details/yahoo-asset-details/fetchFundDetails.js";
 
 export interface GroupedInvestment {
-    id: number;
+    assetId: number;
     symbol: string;
     name: string;
     assetCurrency: string | null;
@@ -126,7 +126,7 @@ export const retrieveInvestments = async (portfolioId: number) => {
 
         if (currentHoldingQuantity > 0 || realisedReturn !== 0) {
             acc.set(key, {
-                id: key,
+                assetId: key,
                 shares: currentHoldingQuantity,
                 name: trade.assetName,
                 type: trade.assetType as AssetType,
@@ -134,8 +134,8 @@ export const retrieveInvestments = async (portfolioId: number) => {
                 symbol: trade.assetSymbol,
                 countryId: trade.assetCountryId,
                 currentAverageCost,
-                totalBuyAmount: parseFloat(totalBuyAmount.toFixed(2)),
-                realisedReturn: parseFloat(realisedReturn.toFixed(2)),
+                totalBuyAmount,
+                realisedReturn,
                 portfolioName: trade.portfolioName,
             });
         }
@@ -151,20 +151,19 @@ export const retrieveInvestments = async (portfolioId: number) => {
 
             //? Get the current value of the asset and multiply it by the number of shares held to get the overall investment value
             //? The current price of the asset is in the asset's currency so it needs to be converted to the user's currency if they are different
-            const currentInvestmentValue = await fetchCurrentPrice(
+            const currentPrice = await fetchCurrentPrice(
                 symbol,
                 countryId,
                 type === "CRYPTOCURRENCY",
-            ).then((priceDetails) => {
-                const price = priceDetails?.currentPrice ?? 0;
-                return price * investment.shares;
-            });
+            ).then((priceDetails) => priceDetails?.currentPrice ?? 0);
 
             const sectorDetails = await retrieveSectorDetails(
                 symbol,
                 countryId,
                 type,
             );
+
+            const currentInvestmentValue = currentPrice * investment.shares;
 
             //? Format the details of the investment, convert the monetary amounts by currency if needed and return it
             return await formatInvestmentDetails(

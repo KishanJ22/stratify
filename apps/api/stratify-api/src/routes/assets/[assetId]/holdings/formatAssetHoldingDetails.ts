@@ -1,27 +1,21 @@
 import { latestCurrencyConversionRateQuery } from "../../../../utils/latestCurrencyRateQuery.js";
-import type { AssetType } from "../../../../schemas/common-schemas.js";
-import type { Investment, SectorDetails } from "./investmentSchema.js";
-import type { GroupedInvestment } from "./retrievePortfolioInvestments.js";
 import { toTwoDecimalPoints } from "../../../../utils/toTwoDecimalPoints.js";
+import type { AssetHolding } from "./assetHoldingsSchema.js";
+import { GroupedAssetInvestment } from "./retrieveAssetHoldings.js";
 
-export const formatInvestmentDetails = async (
-    investment: GroupedInvestment,
+export const formatAssetHoldingDetails = async (
+    investment: GroupedAssetInvestment,
     currentInvestmentValue: number,
     userCurrency: string | null,
-    sectorDetails: SectorDetails[],
-    portfolioId: number,
 ) => {
     const {
-        symbol,
-        name,
-        type,
         assetCurrency,
-        countryId,
         shares,
         currentAverageCost,
+        currentAverageCostAssetCurrency,
         totalBuyAmount,
+        totalBuyAmountAssetCurrency,
         realisedReturn,
-        portfolioName,
     } = investment;
 
     const isCurrencyConversionRequired =
@@ -29,7 +23,7 @@ export const formatInvestmentDetails = async (
 
     let conversionRate = 1;
 
-    //? If the asset currency is different to the user's currency, then the current value and investment return need to be converted
+    //? If the asset currency is different to the user's currency, then the current value needs to be converted
     if (isCurrencyConversionRequired && assetCurrency && userCurrency) {
         if (assetCurrency === "GBX" && userCurrency === "GBP") {
             conversionRate = 0.01;
@@ -60,22 +54,21 @@ export const formatInvestmentDetails = async (
         totalBuyAmount > 0 ? (currentReturn / totalBuyAmount) * 100 : 0;
 
     return {
-        assetId: investment.assetId,
-        symbol,
-        assetCountryId: countryId,
-        name,
-        type: type as AssetType,
-        assetCurrency,
+        portfolioId: investment.portfolioId,
         shares,
         totalBuyAmount: toTwoDecimalPoints(totalBuyAmount),
+        totalBuyAmountAssetCurrency: totalBuyAmountAssetCurrency
+            ? toTwoDecimalPoints(totalBuyAmountAssetCurrency)
+            : null,
+        averagePricePerShare: toTwoDecimalPoints(currentAverageCost),
+        averagePricePerShareAssetCurrency: currentAverageCostAssetCurrency
+            ? toTwoDecimalPoints(currentAverageCostAssetCurrency)
+            : null,
         currentValue: toTwoDecimalPoints(convertedCurrentInvestmentValue),
-        currentAssetCurrencyValue: isCurrencyConversionRequired
+        currentValueAssetCurrency: isCurrencyConversionRequired
             ? toTwoDecimalPoints(currentInvestmentValue)
             : null,
         currentReturn: toTwoDecimalPoints(currentReturn),
         currentReturnPercentage: toTwoDecimalPoints(currentReturnPercentage),
-        sectorDetails,
-        portfolioId,
-        portfolioName,
-    } satisfies Investment;
+    } satisfies AssetHolding;
 };
