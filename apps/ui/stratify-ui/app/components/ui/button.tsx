@@ -14,7 +14,7 @@ const buttonVariants = cva(
                 destructive:
                     "bg-negative-base text-negative-lightest hover:bg-negative-dark",
                 outline:
-                    "border border-primary-darker text-primary-darker bg-white shadow-sm hover:text-primary-base hover:border-primary-base",
+                    "border border-primary-darker text-primary-darker shadow-sm hover:text-primary-base hover:border-primary-base",
                 primaryLighter:
                     "bg-primary-lightest text-primary-dark border border-primary-base hover:bg-primary-lighter",
                 secondary:

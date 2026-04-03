@@ -4,12 +4,18 @@ import { useParams } from "next/navigation";
 import { useAssetDetails } from "./hooks/useAssetDetails";
 import { Skeleton } from "@/app/components/ui/skeleton";
 import AssetPriceHistoryChart from "./components/AssetPriceHistoryChart";
+import AssetDetailsCard from "./components/AssetDetailsCard";
+import AssetActivityCard from "./components/AssetActivityCard";
+import { useState } from "react";
+import FundSectorsModal from "./components/FundSectorsModal";
 
 export default function AssetPage() {
     const { assetId } = useParams<{ assetId: string }>();
 
     const { data: assetDetails, isLoading: isAssetDetailsLoading } =
         useAssetDetails(parseInt(assetId));
+
+    const [isSectorsModalOpen, setIsSectorsModalOpen] = useState(false);
 
     return (
         <div className="items-center justify-items-center min-h-screen px-10 font-sans">
@@ -34,6 +40,22 @@ export default function AssetPage() {
                     assetCurrency={assetDetails?.currency ?? ""}
                     isAssetDetailsLoading={isAssetDetailsLoading}
                 />
+                <div className="flex flex-row mt-5 w-full gap-x-5">
+                    <AssetDetailsCard
+                        asset={assetDetails}
+                        isLoading={isAssetDetailsLoading}
+                        setIsSectorsModalOpen={setIsSectorsModalOpen}
+                    />
+                    <AssetActivityCard
+                        asset={assetDetails}
+                        isLoading={isAssetDetailsLoading}
+                    />
+                    <FundSectorsModal
+                        sectors={assetDetails?.sector ?? []}
+                        isOpen={isSectorsModalOpen}
+                        handleClose={() => setIsSectorsModalOpen(false)}
+                    />
+                </div>
             </div>
         </div>
     );
