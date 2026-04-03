@@ -22,7 +22,7 @@ export const columns = (userCurrency: string): ColumnDef<Investment>[] => [
             return (
                 <div className="flex flex-col leading-5 max-w-62.5">
                     <Link
-                        href={`/assets/${row.original.assetId}`}
+                        href={`/app/assets/${row.original.assetId}`}
                         className="text-sm whitespace-nowrap text-ellipsis overflow-hidden text-primary-darker hover:underline hover:text-primary-dark transition-colors"
                     >
                         {name}
