@@ -9,6 +9,7 @@ import { DateRange } from "./HistoryDateRangeSelector";
 import PortfolioValueDetails from "./PortfolioValueDetails";
 import PortfolioValueChartSkeleton from "./PortfolioValueChartSkeleton";
 import { placeholderChartData } from "./placeholderChartData";
+import { formatNumericValue } from "@/app/utils/formatNumericValue";
 
 interface ChartTooltipProps {
     active?: boolean;
@@ -37,7 +38,7 @@ const CustomChartTooltip = ({
                 {formattedDate}
             </div>
             <div className="font-medium text-primary-dark">
-                {portfolioValue?.toLocaleString()} ({currency})
+                {formatNumericValue(portfolioValue, currency)}
             </div>
         </div>
     );
