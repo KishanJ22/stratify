@@ -18,8 +18,11 @@ import AddTradeModal from "../../portfolios/components/AddTrade/AddTradeModal";
 export default function AssetPage() {
     const { assetId } = useParams<{ assetId: string }>();
 
-    const { data: assetDetails, isLoading: isAssetDetailsLoading } =
-        useAssetDetails(parseInt(assetId));
+    const {
+        data: assetDetails,
+        isLoading: isAssetDetailsLoading,
+        error: assetDetailsError,
+    } = useAssetDetails(parseInt(assetId));
 
     const { data: assetHoldings, isLoading: isAssetHoldingsLoading } =
         useAssetHoldings(parseInt(assetId));
@@ -63,7 +66,7 @@ export default function AssetPage() {
                 <div className="flex flex-col w-3/4">
                     <AssetPriceHistoryChart
                         assetId={parseInt(assetId)}
-                        assetCurrency={assetDetails?.currency ?? ""}
+                        assetCurrency={assetDetails?.assetCurrency ?? ""}
                         isAssetDetailsLoading={isAssetDetailsLoading}
                     />
                     <div className="flex flex-row mt-5 w-full gap-x-5">
@@ -75,13 +78,14 @@ export default function AssetPage() {
                         <AssetActivityCard
                             asset={assetDetails}
                             isLoading={isAssetDetailsLoading}
+                            assetDetailsError={assetDetailsError}
                         />
                     </div>
                 </div>
                 <div className="flex flex-col justify-between ml-10 w-1/4">
                     <CurrentHoldingsCard
                         assetHoldings={assetHoldings ?? []}
-                        assetCurrency={assetDetails?.currency ?? ""}
+                        assetCurrency={assetDetails?.assetCurrency ?? ""}
                         isLoading={isAssetHoldingsLoading}
                     />
                     <AddAssetToPortfolio
@@ -89,7 +93,7 @@ export default function AssetPage() {
                         isAssetHoldingsLoading={isAssetHoldingsLoading}
                         portfolioList={portfolioList ?? []}
                         isPortfolioListLoading={isPortfolioListLoading}
-                        assetCurrency={assetDetails?.currency ?? ""}
+                        assetCurrency={assetDetails?.assetCurrency ?? ""}
                         isAssetDetailsLoading={isAssetDetailsLoading}
                         selectedPortfolioId={selectedPortfolioId}
                         setSelectedPortfolioId={setSelectedPortfolioId}
@@ -108,22 +112,17 @@ export default function AssetPage() {
             {assetDetails ? (
                 <>
                     <AddInvestmentModal
-                        preselectedAsset={{
-                            assetCurrency: assetDetails.currency,
-                            ...assetDetails,
-                        }}
+                        preselectedAsset={assetDetails}
                         portfolioId={selectedPortfolioId!}
                         isOpen={isAddInvestmentModalOpen}
                         handleClose={() => setIsAddInvestmentModalOpen(false)}
                     />
                     <AddTradeModal
-                        asset={{
-                            assetCurrency: assetDetails.currency,
-                            ...assetDetails,
-                        }}
+                        asset={assetDetails}
                         portfolioId={selectedPortfolioId!}
                         isOpen={isAddTradeModalOpen}
                         handleClose={() => setIsAddTradeModalOpen(false)}
+                        navigateToPortfolioPage
                     />
                 </>
             ) : null}

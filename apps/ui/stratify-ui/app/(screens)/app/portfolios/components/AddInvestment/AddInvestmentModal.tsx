@@ -38,6 +38,7 @@ import {
 import { HTTPError } from "ky";
 import { toast } from "sonner";
 import { SelectedAsset } from "../AddTrade/AddTradeModal";
+import { useRouter } from "next/navigation";
 
 const defaultValues: AddInvestmentSchema = {
     assetName: "",
@@ -60,6 +61,7 @@ export interface AddInvestmentModalProps {
     isOpen: boolean;
     handleClose: () => void;
     preselectedAsset?: SelectedAsset;
+    isClearButtonVisible?: boolean;
 }
 
 const AddInvestmentModal = ({
@@ -71,12 +73,14 @@ const AddInvestmentModal = ({
     const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
     const queryClient = useQueryClient();
 
+    const { push } = useRouter();
+
     const { session } = useSessionContext();
     const userCurrency = session?.userDetails.currency ?? "---";
 
     const [searchValue, setSearchValue] = useState("");
     const [selectedAsset, setSelectedAsset] = useState<SelectedAsset | null>(
-        preselectedAsset || null,
+        preselectedAsset ?? null,
     );
     const [isAssetListOpen, setIsAssetListOpen] = useState(false);
 
@@ -109,6 +113,8 @@ const AddInvestmentModal = ({
             onBlurAsync: async ({ value }) => {
                 const result = addInvestmentSchema.safeParse(value);
 
+                console.log("Validation result:", result);
+
                 //? If currency conversion is required but the conversion rate isn't set, then the submit button should be disabled
                 if (selectedAsset?.assetCurrency !== userCurrency) {
                     const currencyConversionRateValue =
@@ -133,7 +139,7 @@ const AddInvestmentModal = ({
             if (!selectedAsset) return;
 
             const requestBody = {
-                assetId: selectedAsset.assetId,
+                assetId: selectedAsset.id,
                 quantity: parseFloat(value.quantity),
                 pricePerShare: parseFloat(value.pricePerShare),
                 currencyConversionRate: parseFloat(
@@ -160,6 +166,10 @@ const AddInvestmentModal = ({
                     queryClient.invalidateQueries({
                         queryKey: ["portfolio-metrics", portfolioId],
                     });
+
+                    if (preselectedAsset) {
+                        push(`/app/portfolios?portfolioId=${portfolioId}`);
+                    }
 
                     toast.success(
                         "Investment added to your portfolio successfully.",
@@ -211,6 +221,10 @@ const AddInvestmentModal = ({
     } = useHistoricCurrencyPairPrice();
 
     useEffect(() => {
+        if (preselectedAsset) {
+            form.setFieldValue("assetName", preselectedAsset.name);
+        }
+
         if (historicAssetPrice) {
             form.setFieldValue(
                 "pricePerShare",
@@ -238,6 +252,7 @@ const AddInvestmentModal = ({
         historicCurrencyPairPrice,
         form,
         selectedAsset?.assetCurrency,
+        preselectedAsset,
     ]);
 
     const pricePerShare = formValues.pricePerShare
@@ -273,7 +288,7 @@ const AddInvestmentModal = ({
 
     const closeModal = () => {
         setSearchValue("");
-        setSelectedAsset(null);
+        setSelectedAsset(preselectedAsset ?? null);
         setIsSubmitDisabled(true);
         form.reset();
         resetHistoricAssetPrice();
@@ -330,7 +345,10 @@ const AddInvestmentModal = ({
                                                     className="p-1 rounded-lg bg-secondary-lighter font-sans font-semibold text-secondary-darker cursor-pointer hover:bg-secondary-base hover:text-secondary-lightest transition-colors"
                                                     onClick={() => {
                                                         setSearchValue("");
-                                                        setSelectedAsset(null);
+                                                        setSelectedAsset(
+                                                            preselectedAsset ??
+                                                                null,
+                                                        );
                                                         setIsAssetListOpen(
                                                             false,
                                                         );
@@ -403,20 +421,15 @@ const AddInvestmentModal = ({
                                                                         asset
                                                                     }
                                                                     onSelect={() => {
-                                                                        const assetDetails =
-                                                                            {
-                                                                                assetId:
-                                                                                    asset.id,
-                                                                                assetCurrency:
-                                                                                    asset.currency,
-                                                                                ...asset,
-                                                                            };
-
                                                                         field.handleChange(
                                                                             asset.name,
                                                                         );
                                                                         setSelectedAsset(
-                                                                            assetDetails,
+                                                                            {
+                                                                                assetCurrency:
+                                                                                    asset.currency,
+                                                                                ...asset,
+                                                                            },
                                                                         );
                                                                         setIsAssetListOpen(
                                                                             false,
@@ -450,7 +463,7 @@ const AddInvestmentModal = ({
                             onChange: ({ value }) => {
                                 if (selectedAsset) {
                                     fetchHistoricAssetPrice({
-                                        assetId: selectedAsset.assetId,
+                                        assetId: selectedAsset.id,
                                         tradeDate: value,
                                     });
 
@@ -618,10 +631,7 @@ const AddInvestmentModal = ({
                                 <form.SubmitButton
                                     label="Add Investment"
                                     className="w-full"
-                                    isDisabled={
-                                        !form.state.canSubmit ||
-                                        isSubmitDisabled
-                                    }
+                                    isDisabled={isSubmitDisabled}
                                     isLoading={
                                         isAddingTrade || form.state.isSubmitting
                                     }
