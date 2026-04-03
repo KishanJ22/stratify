@@ -10,6 +10,7 @@ import { AssetPriceHistory } from "../hooks/useAssetPriceHistory";
 import HistoryDateRangeSelector, {
     DateRange,
 } from "../../../portfolios/components/PortfolioValueChart/HistoryDateRangeSelector";
+import { formatNumericValue } from "@/app/utils/formatNumericValue";
 
 const changeInDateRangeLabel = {
     "7d": "in the past seven days",
@@ -62,15 +63,14 @@ const AssetPriceDetails = ({
                 <HistoryDateRangeSelector
                     selectedDateRange={selectedDateRange}
                     setSelectedDateRange={setSelectedDateRange}
-                    disabled={filteredData.length === 0}
                 />
             </div>
             <div className="flex flex-row text-muted-base text-3xl font-semibold">
                 {currentPrice !== null ? (
                     <>
-                        <div>{currentPrice.toLocaleString()}</div>
+                        <div>{formatNumericValue(currentPrice)}</div>
                         <div className="text-base ml-1 mt-2 content-end">
-                            {`(${assetCurrency})`}
+                            ({assetCurrency})
                         </div>
                     </>
                 ) : (

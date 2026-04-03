@@ -2,27 +2,27 @@ import { useKyClient } from "@/lib/api/ky-client";
 import { paths } from "@/openapi/types/stratify-api";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
-export type AssetDetails =
-    paths["/assets/{assetId}/details"]["get"]["responses"]["200"]["content"]["application/json"]["data"];
+export type AssetHolding =
+    paths["/assets/{assetId}/holdings"]["get"]["responses"]["200"]["content"]["application/json"]["data"][number];
 
-export const useAssetDetails = (assetId: number | null) => {
+export const useAssetHoldings = (assetId: number | null) => {
     const client = useKyClient();
     const queryClient = useQueryClient();
 
-    const cachedAssetDetails = queryClient.getQueryData<AssetDetails>([
-        "asset-details",
+    const cachedAssetHoldings = queryClient.getQueryData<AssetHolding[]>([
+        "asset-holdings",
         assetId,
     ]);
 
     const {
-        data: fetchedAssetDetails,
+        data: fetchedAssetHoldings,
         isLoading,
         error,
     } = useQuery({
-        queryKey: ["asset-details", assetId],
+        queryKey: ["asset-holdings", assetId],
         queryFn: async () =>
             client
-                .GET("/assets/{assetId}/details", {
+                .GET("/assets/{assetId}/holdings", {
                     params: {
                         path: {
                             assetId: assetId!,
@@ -34,7 +34,7 @@ export const useAssetDetails = (assetId: number | null) => {
     });
 
     return {
-        data: fetchedAssetDetails || cachedAssetDetails,
+        data: fetchedAssetHoldings || cachedAssetHoldings,
         isLoading,
         error,
     };

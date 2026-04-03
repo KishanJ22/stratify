@@ -101,4 +101,4 @@ export const placeholderChartData = [
             low: 200,
         },
     },
-] satisfies AssetPriceHistory;
+] satisfies AssetPriceHistory[];

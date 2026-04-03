@@ -1,8 +1,7 @@
 "use client";
 
-import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
+import { Area, AreaChart, XAxis, YAxis } from "recharts";
 import { ChartContainer, ChartTooltip } from "@/app/components/ui/chart";
-import { useSessionContext } from "../../../SessionProvider";
 import { useState } from "react";
 import { DateRange } from "../../../portfolios/components/PortfolioValueChart/HistoryDateRangeSelector";
 import PortfolioValueChartSkeleton from "../../../portfolios/components/PortfolioValueChart/PortfolioValueChartSkeleton";
@@ -13,6 +12,7 @@ import {
 } from "../hooks/useAssetPriceHistory";
 import AssetPriceDetails from "./AssetPriceDetails";
 import { useAssetCurrentPrice } from "../hooks/useAssetCurrentPrice";
+import { formatNumericValue } from "@/app/utils/formatNumericValue";
 
 interface ChartTooltipProps {
     active?: boolean;
@@ -41,7 +41,7 @@ const CustomChartTooltip = ({
                 {formattedDate}
             </div>
             <div className="font-medium text-primary-dark">
-                {priceDetails.close?.toLocaleString()} ({currency})
+                {formatNumericValue(priceDetails.close, currency)}
             </div>
         </div>
     );
@@ -58,9 +58,6 @@ const AssetPriceHistoryChart = ({
     assetCurrency,
     isAssetDetailsLoading,
 }: AssetPriceHistoryChartProps) => {
-    const { session } = useSessionContext();
-    const currency = session?.userDetails.currency;
-
     const [selectedDateRange, setSelectedDateRange] =
         useState<DateRange>("30d");
 
@@ -121,7 +118,7 @@ const AssetPriceHistoryChart = ({
                         color: "var(--primary-base)",
                     },
                 }}
-                className="aspect-auto h-56"
+                className="aspect-auto h-72"
             >
                 <AreaChart
                     data={
@@ -174,6 +171,18 @@ const AssetPriceHistoryChart = ({
                             });
                         }}
                     />
+                    <YAxis
+                        dataKey="priceDetails.close"
+                        hide={filteredData.length === 0}
+                        tickLine={false}
+                        axisLine={false}
+                        tickMargin={8}
+                        minTickGap={40}
+                        tickFormatter={(value) => {
+                            return value.toLocaleString();
+                        }}
+                    />
+
                     {filteredData.length > 0 ? (
                         <ChartTooltip
                             cursor={false}
@@ -184,7 +193,7 @@ const AssetPriceHistoryChart = ({
                                     priceDetails={
                                         payload?.[0]?.payload?.priceDetails
                                     }
-                                    currency={currency!}
+                                    currency={assetCurrency}
                                 />
                             )}
                         />

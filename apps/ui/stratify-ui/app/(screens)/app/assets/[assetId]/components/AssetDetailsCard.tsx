@@ -70,7 +70,7 @@ const AssetDetailsCard = ({
                                 {"Country"}
                             </div>
                             <div className="font-medium text-secondary-base text-lg leading-6">
-                                {asset?.countryId}
+                                {asset?.countryId ?? "---"}
                             </div>
                         </div>
                     ) : null}

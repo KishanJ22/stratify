@@ -6,6 +6,7 @@ import {
     ChartColumnDecreasing,
     ChartColumnIncreasing,
 } from "lucide-react";
+import { formatNumericValue } from "@/app/utils/formatNumericValue";
 
 interface AssetActivityCardProps {
     asset?: AssetDetails;
@@ -18,6 +19,8 @@ const AssetActivityCard = ({ asset, isLoading }: AssetActivityCardProps) => {
         asset.dayTradingActivity.priceChangePercent > 0
             ? "+"
             : "";
+
+    const assetCurrency = asset?.currency ?? "---";
 
     return (
         <div className="flex-1 py-2.5 px-3 bg-primary-lightest rounded-xl border border-primary-base font-sans">
@@ -41,38 +44,59 @@ const AssetActivityCard = ({ asset, isLoading }: AssetActivityCardProps) => {
                 </div>
             ) : (
                 <div className="flex flex-col gap-y-1 mt-2">
-                    <div className="flex flex-row justify-between">
-                        <div className="font-medium text-secondary-base text-lg leading-6">
-                            {"Open"}
+                    {asset?.dayTradingActivity.open ? (
+                        <div className="flex flex-row justify-between">
+                            <div className="font-medium text-secondary-base text-lg leading-6">
+                                {"Open"}
+                            </div>
+                            <div className="font-medium text-secondary-base text-lg leading-6">
+                                {formatNumericValue(
+                                    asset?.dayTradingActivity.open,
+                                    assetCurrency,
+                                )}
+                            </div>
                         </div>
-                        <div className="font-medium text-secondary-base text-lg leading-6">
-                            {`${asset?.dayTradingActivity.open?.toLocaleString()} (${asset?.currency})`}
+                    ) : null}
+                    {asset?.dayTradingActivity.close ? (
+                        <div className="flex flex-row justify-between">
+                            <div className="font-medium text-secondary-base text-lg leading-6">
+                                {"Close"}
+                            </div>
+                            <div className="font-medium text-secondary-base text-lg leading-6">
+                                {formatNumericValue(
+                                    asset.dayTradingActivity.close,
+                                    assetCurrency,
+                                )}
+                            </div>
                         </div>
-                    </div>
-                    <div className="flex flex-row justify-between">
-                        <div className="font-medium text-secondary-base text-lg leading-6">
-                            {"Close"}
+                    ) : null}
+                    {asset?.dayTradingActivity.high ? (
+                        <div className="flex flex-row justify-between">
+                            <div className="font-medium text-secondary-base text-lg leading-6">
+                                {"High"}
+                            </div>
+                            <div className="font-medium text-secondary-base text-lg leading-6">
+                                {formatNumericValue(
+                                    asset.dayTradingActivity.high,
+                                    assetCurrency,
+                                )}
+                            </div>
                         </div>
-                        <div className="font-medium text-secondary-base text-lg leading-6">
-                            {`${asset?.dayTradingActivity.close?.toLocaleString()} (${asset?.currency})`}
+                    ) : null}
+
+                    {asset?.dayTradingActivity.low ? (
+                        <div className="flex flex-row justify-between">
+                            <div className="font-medium text-secondary-base text-lg leading-6">
+                                {"Low"}
+                            </div>
+                            <div className="font-medium text-secondary-base text-lg leading-6">
+                                {formatNumericValue(
+                                    asset.dayTradingActivity.low,
+                                    assetCurrency,
+                                )}
+                            </div>
                         </div>
-                    </div>
-                    <div className="flex flex-row justify-between">
-                        <div className="font-medium text-secondary-base text-lg leading-6">
-                            {"High"}
-                        </div>
-                        <div className="font-medium text-secondary-base text-lg leading-6">
-                            {`${asset?.dayTradingActivity.high?.toLocaleString()} (${asset?.currency})`}
-                        </div>
-                    </div>
-                    <div className="flex flex-row justify-between">
-                        <div className="font-medium text-secondary-base text-lg leading-6">
-                            {"Low"}
-                        </div>
-                        <div className="font-medium text-secondary-base text-lg leading-6">
-                            {`${asset?.dayTradingActivity.low?.toLocaleString()} (${asset?.currency})`}
-                        </div>
-                    </div>
+                    ) : null}
                     <div className="flex flex-row justify-between">
                         <div className="font-medium text-secondary-base text-lg leading-6">
                             {"Change"}
@@ -108,9 +132,7 @@ const AssetActivityCard = ({ asset, isLoading }: AssetActivityCardProps) => {
                                 ) : null}
 
                                 <span>
-                                    {priceChangeSign +
-                                        asset?.dayTradingActivity.priceChangePercent.toLocaleString() +
-                                        "%"}
+                                    {`${priceChangeSign}${asset.dayTradingActivity.priceChangePercent.toFixed(2)}%`}
                                 </span>
                             </div>
                         ) : (
@@ -120,14 +142,16 @@ const AssetActivityCard = ({ asset, isLoading }: AssetActivityCardProps) => {
                         )}
                     </div>
                     <div className="border-t border-t-secondary-light my-0.5" />
-                    <div className="flex flex-row justify-between">
-                        <div className="font-medium text-secondary-base text-lg leading-6">
-                            {"Trading volume"}
+                    {asset?.dayTradingActivity.tradingVolume ? (
+                        <div className="flex flex-row justify-between">
+                            <div className="font-medium text-secondary-base text-lg leading-6">
+                                {"Trading volume"}
+                            </div>
+                            <div className="font-medium text-secondary-base text-lg leading-6">
+                                {asset.dayTradingActivity.tradingVolume.toLocaleString()}
+                            </div>
                         </div>
-                        <div className="font-medium text-secondary-base text-lg leading-6">
-                            {asset?.dayTradingActivity.tradingVolume?.toLocaleString()}
-                        </div>
-                    </div>
+                    ) : null}
                 </div>
             )}
         </div>
