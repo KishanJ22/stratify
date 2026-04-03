@@ -11,8 +11,8 @@ export const formatAssetHoldingDetails = async (
     const {
         assetCurrency,
         shares,
-        currentAverageCost,
-        currentAverageCostAssetCurrency,
+        averageCost,
+        averageCostAssetCurrency,
         totalBuyAmount,
         totalBuyAmountAssetCurrency,
         realisedReturn,
@@ -48,7 +48,7 @@ export const formatAssetHoldingDetails = async (
         : currentInvestmentValue;
 
     const currentReturn =
-        convertedCurrentInvestmentValue - currentAverageCost + realisedReturn;
+        convertedCurrentInvestmentValue - averageCost * shares + realisedReturn;
 
     const currentReturnPercentage =
         totalBuyAmount > 0 ? (currentReturn / totalBuyAmount) * 100 : 0;
@@ -60,9 +60,9 @@ export const formatAssetHoldingDetails = async (
         totalBuyAmountAssetCurrency: totalBuyAmountAssetCurrency
             ? toTwoDecimalPoints(totalBuyAmountAssetCurrency)
             : null,
-        averagePricePerShare: toTwoDecimalPoints(currentAverageCost),
-        averagePricePerShareAssetCurrency: currentAverageCostAssetCurrency
-            ? toTwoDecimalPoints(currentAverageCostAssetCurrency)
+        averagePricePerShare: toTwoDecimalPoints(averageCost),
+        averagePricePerShareAssetCurrency: averageCostAssetCurrency
+            ? toTwoDecimalPoints(averageCostAssetCurrency)
             : null,
         currentValue: toTwoDecimalPoints(convertedCurrentInvestmentValue),
         currentValueAssetCurrency: isCurrencyConversionRequired

@@ -18,7 +18,7 @@ import { fetchFundDetails } from "./yahoo-asset-details/fetchFundDetails.js";
 import {
     formatBaseAssetDetails,
     formatPriceDetails,
-} from "./fornatAssetDetails.js";
+} from "./formatAssetDetails.js";
 
 export const assetDetailsByIdQuery = (assetId: number) =>
     db

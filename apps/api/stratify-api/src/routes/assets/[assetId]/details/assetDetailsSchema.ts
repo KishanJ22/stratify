@@ -7,11 +7,11 @@ import { createNotFound } from "../../../../utils/createNotFoundSchema.js";
 import { sectorDetailsSchema } from "../../../portfolios/[portfolioId]/investments/investmentSchema.js";
 
 export const assetDetailsSchema = Type.Object({
-    assetId: Type.Number(),
+    id: Type.Number(),
     name: Type.String(),
     symbol: Type.String(),
     countryId: Type.Number(),
-    currency: Type.Union([Type.String(), Type.Null()]),
+    assetCurrency: Type.Union([Type.String(), Type.Null()]),
     assetType: assetTypeSchema,
     marketState: marketStateSchema,
     industry: Type.Union([Type.String(), Type.Null()]),

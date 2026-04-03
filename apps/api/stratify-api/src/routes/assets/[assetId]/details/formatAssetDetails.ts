@@ -4,11 +4,11 @@ import { DbAssetDetails } from "./[assetId].details.get.js";
 import { YahooStockAssetDetails } from "./yahoo-asset-details/fetchStockDetails.js";
 
 export const formatBaseAssetDetails = (assetDetails: DbAssetDetails) => ({
-    assetId: assetDetails.assetId,
+    id: assetDetails.assetId,
     name: assetDetails.name,
     symbol: assetDetails.symbol,
     countryId: assetDetails.countryId,
-    currency: assetDetails.currency,
+    assetCurrency: assetDetails.currency,
     assetType: assetDetails.assetType as AssetType,
 });
 

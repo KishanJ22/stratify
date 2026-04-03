@@ -39,8 +39,8 @@ export interface GroupedAssetInvestment {
     type: AssetType;
     countryId: number;
     shares: number;
-    currentAverageCost: number;
-    currentAverageCostAssetCurrency: number;
+    averageCost: number;
+    averageCostAssetCurrency: number;
     totalBuyAmount: number;
     totalBuyAmountAssetCurrency: number | null;
     realisedReturn: number;
@@ -122,10 +122,6 @@ export const retrieveAssetHoldings = async (assetId: number) => {
                 ? totalBuyAmountAssetCurrency / totalBuyQuantity
                 : 0;
 
-        const currentAverageCost = averageCost * currentHoldingQuantity;
-        const currentAverageCostAssetCurrency =
-            averageCostAssetCurrency * currentHoldingQuantity;
-
         const realisedReturn =
             totalSellAmount - averageCost * totalSellQuantity;
 
@@ -137,8 +133,8 @@ export const retrieveAssetHoldings = async (assetId: number) => {
                 type: trade.assetType as AssetType,
                 assetCurrency: trade.assetCurrency,
                 countryId: trade.assetCountryId,
-                currentAverageCost,
-                currentAverageCostAssetCurrency,
+                averageCost,
+                averageCostAssetCurrency,
                 totalBuyAmount,
                 totalBuyAmountAssetCurrency,
                 realisedReturn,
