@@ -27,6 +27,7 @@ const CurrentHoldingsCard = ({
         averagePricePerShareAssetCurrency,
         currentValue,
         currentValueAssetCurrency,
+        overallReturn,
     } = assetHoldings.reduce(
         (acc, holding) => {
             acc.portfoliosHeldIn += 1;
@@ -40,6 +41,8 @@ const CurrentHoldingsCard = ({
             acc.currentValue += holding.currentValue;
             acc.currentValueAssetCurrency +=
                 holding.currentValueAssetCurrency || 0;
+            acc.overallReturn += holding.currentReturn;
+
             return acc;
         },
         {
@@ -51,10 +54,10 @@ const CurrentHoldingsCard = ({
             averagePricePerShareAssetCurrency: 0,
             currentValue: 0,
             currentValueAssetCurrency: 0,
+            overallReturn: 0,
         },
     );
 
-    const overallReturn = currentValue - amountBought;
     const overallReturnPercent =
         amountBought > 0 ? (overallReturn / amountBought) * 100 : 0;
     const overallReturnSign = overallReturn > 0 ? "+" : "";
