@@ -1,8 +1,8 @@
 import { Skeleton } from "@/app/components/ui/skeleton";
-import { usePortfolioList } from "../../../portfolios/components/SelectedPortfolio/usePortfolioList";
+import type { PortfolioList } from "../../../portfolios/components/SelectedPortfolio/usePortfolioList";
 import type { AssetHolding } from "../hooks/useAssetHoldings";
 import PortfolioSelector from "../../../portfolios/components/SelectedPortfolio/PortfolioSelector";
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction } from "react";
 import { useSessionContext } from "../../../SessionProvider";
 import { cn } from "@/lib/utils";
 import { Button } from "@/app/components/ui/button";
@@ -11,36 +11,35 @@ import { formatNumericValue } from "@/app/utils/formatNumericValue";
 interface AddAssetToPortfolioProps {
     assetHoldings: AssetHolding[];
     isAssetHoldingsLoading: boolean;
+    portfolioList: PortfolioList;
+    isPortfolioListLoading: boolean;
     assetCurrency: string;
     isAssetDetailsLoading: boolean;
+    selectedPortfolioId: number | null;
+    setSelectedPortfolioId: Dispatch<SetStateAction<number | null>>;
+    setIsAddInvestmentModalOpen: Dispatch<SetStateAction<boolean>>;
+    setIsAddTradeModalOpen: Dispatch<SetStateAction<boolean>>;
 }
 
 const AddAssetToPortfolio = ({
     assetHoldings,
     isAssetHoldingsLoading,
+    portfolioList,
+    isPortfolioListLoading,
     assetCurrency,
     isAssetDetailsLoading,
+    selectedPortfolioId,
+    setSelectedPortfolioId,
+    setIsAddInvestmentModalOpen,
+    setIsAddTradeModalOpen,
 }: AddAssetToPortfolioProps) => {
     const { session } = useSessionContext();
     const userCurrency = session?.userDetails.currency || "---";
-
-    const { data: portfolioList, isLoading: isPortfolioListLoading } =
-        usePortfolioList();
 
     const isLoading =
         isAssetHoldingsLoading ||
         isPortfolioListLoading ||
         isAssetDetailsLoading;
-
-    const [selectedPortfolioId, setSelectedPortfolioId] = useState<
-        number | null
-    >(null);
-
-    useEffect(() => {
-        if (portfolioList && portfolioList.length > 0 && !selectedPortfolioId) {
-            setSelectedPortfolioId(portfolioList[0].id);
-        }
-    }, [portfolioList, selectedPortfolioId]);
 
     const assetHoldingForPortfolio = assetHoldings.find(
         (holding) => holding.portfolioId === selectedPortfolioId,
@@ -171,7 +170,15 @@ const AddAssetToPortfolio = ({
                                 {"Asset currently not in portfolio"}
                             </div>
                         )}
-                        <Button variant="secondary" className="mt-2.5 w-full">
+                        <Button
+                            variant="secondary"
+                            className="mt-2.5 w-full"
+                            onClick={() => {
+                                return assetHoldingForPortfolio
+                                    ? setIsAddTradeModalOpen(true)
+                                    : setIsAddInvestmentModalOpen(true);
+                            }}
+                        >
                             {assetHoldingForPortfolio
                                 ? "Add trade to portfolio"
                                 : "Add investment to portfolio"}

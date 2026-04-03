@@ -6,11 +6,14 @@ import { Skeleton } from "@/app/components/ui/skeleton";
 import AssetPriceHistoryChart from "./components/AssetPriceHistoryChart";
 import AssetDetailsCard from "./components/AssetDetailsCard";
 import AssetActivityCard from "./components/AssetActivityCard";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import FundSectorsModal from "./components/FundSectorsModal";
 import CurrentHoldingsCard from "./components/CurrentHoldingsCard";
 import { useAssetHoldings } from "./hooks/useAssetHoldings";
 import AddAssetToPortfolio from "./components/AddAssetToPortfolio";
+import AddInvestmentModal from "../../portfolios/components/AddInvestment/AddInvestmentModal";
+import { usePortfolioList } from "../../portfolios/components/SelectedPortfolio/usePortfolioList";
+import AddTradeModal from "../../portfolios/components/AddTrade/AddTradeModal";
 
 export default function AssetPage() {
     const { assetId } = useParams<{ assetId: string }>();
@@ -21,7 +24,23 @@ export default function AssetPage() {
     const { data: assetHoldings, isLoading: isAssetHoldingsLoading } =
         useAssetHoldings(parseInt(assetId));
 
+    const { data: portfolioList, isLoading: isPortfolioListLoading } =
+        usePortfolioList();
+
     const [isSectorsModalOpen, setIsSectorsModalOpen] = useState(false);
+    const [isAddInvestmentModalOpen, setIsAddInvestmentModalOpen] =
+        useState(false);
+    const [isAddTradeModalOpen, setIsAddTradeModalOpen] = useState(false);
+
+    const [selectedPortfolioId, setSelectedPortfolioId] = useState<
+        number | null
+    >(null);
+
+    useEffect(() => {
+        if (portfolioList && portfolioList.length > 0 && !selectedPortfolioId) {
+            setSelectedPortfolioId(portfolioList[0].id);
+        }
+    }, [portfolioList, selectedPortfolioId]);
 
     return (
         <div className="min-h-screen px-10 font-sans">
@@ -68,8 +87,16 @@ export default function AssetPage() {
                     <AddAssetToPortfolio
                         assetHoldings={assetHoldings ?? []}
                         isAssetHoldingsLoading={isAssetHoldingsLoading}
+                        portfolioList={portfolioList ?? []}
+                        isPortfolioListLoading={isPortfolioListLoading}
                         assetCurrency={assetDetails?.currency ?? ""}
                         isAssetDetailsLoading={isAssetDetailsLoading}
+                        selectedPortfolioId={selectedPortfolioId}
+                        setSelectedPortfolioId={setSelectedPortfolioId}
+                        setIsAddInvestmentModalOpen={
+                            setIsAddInvestmentModalOpen
+                        }
+                        setIsAddTradeModalOpen={setIsAddTradeModalOpen}
                     />
                 </div>
             </div>
@@ -78,6 +105,28 @@ export default function AssetPage() {
                 isOpen={isSectorsModalOpen}
                 handleClose={() => setIsSectorsModalOpen(false)}
             />
+            {assetDetails ? (
+                <>
+                    <AddInvestmentModal
+                        preselectedAsset={{
+                            assetCurrency: assetDetails.currency,
+                            ...assetDetails,
+                        }}
+                        portfolioId={selectedPortfolioId!}
+                        isOpen={isAddInvestmentModalOpen}
+                        handleClose={() => setIsAddInvestmentModalOpen(false)}
+                    />
+                    <AddTradeModal
+                        asset={{
+                            assetCurrency: assetDetails.currency,
+                            ...assetDetails,
+                        }}
+                        portfolioId={selectedPortfolioId!}
+                        isOpen={isAddTradeModalOpen}
+                        handleClose={() => setIsAddTradeModalOpen(false)}
+                    />
+                </>
+            ) : null}
         </div>
     );
 }
