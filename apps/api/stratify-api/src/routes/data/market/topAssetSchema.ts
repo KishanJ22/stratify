@@ -5,8 +5,9 @@ import {
 } from "../../../schemas/common-schemas.js";
 
 export const topAssetSchema = Type.Object({
+    assetId: Type.Number(),
+    assetName: Type.String(),
     symbol: Type.String(),
-    name: Type.String(),
     currency: Type.Union([Type.String(), Type.Null()]),
     assetType: assetTypeSchema,
     marketState: marketStateSchema,

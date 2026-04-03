@@ -2,12 +2,12 @@ import { FastifyInstance } from "fastify";
 import logger from "../../../logger.js";
 import { getFromStore } from "../../../plugins/localStorage.js";
 
-import { fetchAssetDetailsQuery } from "./fetch-asset-details.js";
+import { assetDetailsBySymbolQuery } from "./assetDetailsBySymbolQuery.js";
 import {
     topAssetsResponseSchema,
     TopAssetsSuccessResponse,
-} from "./top-assets-schema.js";
-import { formatTopAssetDetails } from "./format-top-assets.js";
+} from "./topAssetSchema.js";
+import { formatTopAssetDetails } from "./formatTopAsset.js";
 import { dataApiClient } from "../../../lib/api/data-api-client.js";
 import { createNotFound } from "../../../utils/createNotFoundSchema.js";
 import type { Static } from "@sinclair/typebox";
@@ -45,7 +45,7 @@ export default function topLosersGet(fastify: FastifyInstance) {
                     .then((res) => res.data?.data);
 
                 const assetDetails = topLosersData?.map(async (asset) => {
-                    const assetDetails = await fetchAssetDetailsQuery(
+                    const assetDetails = await assetDetailsBySymbolQuery(
                         asset.symbol,
                         asset.assetType,
                     ).executeTakeFirst();
