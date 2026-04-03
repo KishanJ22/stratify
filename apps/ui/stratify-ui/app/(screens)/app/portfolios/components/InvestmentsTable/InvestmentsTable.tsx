@@ -76,12 +76,7 @@ const InvestmentsTable = ({ portfolioId }: InvestmentsTableProps) => {
             </div>
             {investmentToAddTradeFor && portfolioId ? (
                 <AddTradeModal
-                    investment={{
-                        assetId: investmentToAddTradeFor.assetId,
-                        symbol: investmentToAddTradeFor.symbol,
-                        name: investmentToAddTradeFor.name,
-                        assetCurrency: investmentToAddTradeFor.assetCurrency,
-                    }}
+                    asset={investmentToAddTradeFor}
                     portfolioId={portfolioId}
                     isOpen={isAddTradeModalOpen}
                     handleClose={() => {

@@ -26,7 +26,7 @@ import { addTradeSchema, AddTradeSchema } from "./add-trade-schema";
 import { Field, FieldLabel } from "@/app/components/ui/field";
 import { Tabs, TabsList, TabsTrigger } from "@/app/components/ui/tabs";
 
-interface InvestmentDetails {
+export interface SelectedAsset {
     assetId: number;
     symbol: string;
     name: string;
@@ -35,7 +35,7 @@ interface InvestmentDetails {
 
 export interface AddTradeModalProps {
     portfolioId: number;
-    investment: InvestmentDetails;
+    asset: SelectedAsset;
     isOpen: boolean;
     handleClose: () => void;
 }
@@ -59,11 +59,11 @@ const addTradeFormOptions = formOptions({
 
 const AddTradeModal = ({
     portfolioId,
-    investment,
+    asset,
     isOpen,
     handleClose,
 }: AddTradeModalProps) => {
-    const { assetId, name, symbol, assetCurrency } = investment;
+    const { assetId, name, symbol, assetCurrency } = asset;
     const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
     const queryClient = useQueryClient();
 

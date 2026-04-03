@@ -18,10 +18,7 @@ import {
 } from "./add-investment-schema";
 import { Field, FieldLabel } from "@/app/components/ui/field";
 import { useDebouncedValue } from "@tanstack/react-pacer";
-import {
-    SearchAsset,
-    useAssetSearch,
-} from "../../../markets/AssetSearch/useAssetSearch";
+import { useAssetSearch } from "../../../markets/AssetSearch/useAssetSearch";
 import {
     Command,
     CommandInput,
@@ -40,12 +37,7 @@ import {
 } from "../../hooks/useAddTrade";
 import { HTTPError } from "ky";
 import { toast } from "sonner";
-
-export interface AddInvestmentModalProps {
-    portfolioId: number;
-    isOpen: boolean;
-    handleClose: () => void;
-}
+import { SelectedAsset } from "../AddTrade/AddTradeModal";
 
 const defaultValues: AddInvestmentSchema = {
     assetName: "",
@@ -63,10 +55,18 @@ const addInvestmentFormOptions = formOptions({
     defaultValues,
 });
 
+export interface AddInvestmentModalProps {
+    portfolioId: number;
+    isOpen: boolean;
+    handleClose: () => void;
+    preselectedAsset?: SelectedAsset;
+}
+
 const AddInvestmentModal = ({
     portfolioId,
     isOpen,
     handleClose,
+    preselectedAsset,
 }: AddInvestmentModalProps) => {
     const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
     const queryClient = useQueryClient();
@@ -75,8 +75,8 @@ const AddInvestmentModal = ({
     const userCurrency = session?.userDetails.currency ?? "---";
 
     const [searchValue, setSearchValue] = useState("");
-    const [selectedAsset, setSelectedAsset] = useState<SearchAsset | null>(
-        null,
+    const [selectedAsset, setSelectedAsset] = useState<SelectedAsset | null>(
+        preselectedAsset || null,
     );
     const [isAssetListOpen, setIsAssetListOpen] = useState(false);
 
@@ -110,7 +110,7 @@ const AddInvestmentModal = ({
                 const result = addInvestmentSchema.safeParse(value);
 
                 //? If currency conversion is required but the conversion rate isn't set, then the submit button should be disabled
-                if (selectedAsset?.currency !== userCurrency) {
+                if (selectedAsset?.assetCurrency !== userCurrency) {
                     const currencyConversionRateValue =
                         value.currencyConversionRate
                             ? parseFloat(value.currencyConversionRate)
@@ -133,7 +133,7 @@ const AddInvestmentModal = ({
             if (!selectedAsset) return;
 
             const requestBody = {
-                assetId: selectedAsset.id,
+                assetId: selectedAsset.assetId,
                 quantity: parseFloat(value.quantity),
                 pricePerShare: parseFloat(value.pricePerShare),
                 currencyConversionRate: parseFloat(
@@ -218,13 +218,13 @@ const AddInvestmentModal = ({
             );
         }
 
-        if (selectedAsset?.currency === "GBX" && userCurrency === "GBP") {
+        if (selectedAsset?.assetCurrency === "GBX" && userCurrency === "GBP") {
             form.setFieldValue("currencyConversionRate", "0.01");
         }
 
         if (historicCurrencyPairPrice) {
             const conversionRate =
-                selectedAsset?.currency === "GBX"
+                selectedAsset?.assetCurrency === "GBX"
                     ? historicCurrencyPairPrice.price / 100
                     : historicCurrencyPairPrice.price;
 
@@ -237,7 +237,7 @@ const AddInvestmentModal = ({
         historicAssetPrice,
         historicCurrencyPairPrice,
         form,
-        selectedAsset?.currency,
+        selectedAsset?.assetCurrency,
     ]);
 
     const pricePerShare = formValues.pricePerShare
@@ -249,7 +249,7 @@ const AddInvestmentModal = ({
         : 1;
 
     const fee = formValues.fee ? parseFloat(formValues.fee) : 0;
-    const assetCurrency = selectedAsset?.currency ?? "---";
+    const assetCurrency = selectedAsset?.assetCurrency ?? "---";
 
     const isCurrencyConversionRequired =
         selectedAsset && assetCurrency !== userCurrency;
@@ -355,10 +355,14 @@ const AddInvestmentModal = ({
                                             inputClassName="placeholder:text-secondary-light text-secondary-dark"
                                             showIcon={false}
                                             iconClassName="text-secondary-dark"
-                                            disabled={field.state.value !== ""}
+                                            disabled={
+                                                field.state.value !== "" ||
+                                                preselectedAsset !== undefined
+                                            }
                                             value={
-                                                field.state.value
-                                                    ? `${selectedAsset?.name} (${selectedAsset?.symbol})`
+                                                field.state.value ||
+                                                preselectedAsset
+                                                    ? `${preselectedAsset?.name} (${preselectedAsset?.symbol})`
                                                     : searchValue
                                             }
                                             onValueChange={(searchValue) =>
@@ -399,11 +403,20 @@ const AddInvestmentModal = ({
                                                                         asset
                                                                     }
                                                                     onSelect={() => {
+                                                                        const assetDetails =
+                                                                            {
+                                                                                assetId:
+                                                                                    asset.id,
+                                                                                assetCurrency:
+                                                                                    asset.currency,
+                                                                                ...asset,
+                                                                            };
+
                                                                         field.handleChange(
                                                                             asset.name,
                                                                         );
                                                                         setSelectedAsset(
-                                                                            asset,
+                                                                            assetDetails,
                                                                         );
                                                                         setIsAssetListOpen(
                                                                             false,
@@ -437,13 +450,13 @@ const AddInvestmentModal = ({
                             onChange: ({ value }) => {
                                 if (selectedAsset) {
                                     fetchHistoricAssetPrice({
-                                        assetId: selectedAsset.id,
+                                        assetId: selectedAsset.assetId,
                                         tradeDate: value,
                                     });
 
                                     if (isCurrencyConversionRequired) {
                                         fetchHistoricCurrencyPairPrice({
-                                            currencyPair: `${selectedAsset.currency === "GBX" ? "GBP" : selectedAsset.currency}${userCurrency}`,
+                                            currencyPair: `${selectedAsset.assetCurrency === "GBX" ? "GBP" : selectedAsset.assetCurrency}${userCurrency}`,
                                             tradeDate: value,
                                         });
                                     }
@@ -477,7 +490,7 @@ const AddInvestmentModal = ({
                                     label="Price per Share"
                                     isLoading={isFetchingHistoricPrice}
                                     currencyCode={
-                                        selectedAsset?.currency ?? "---"
+                                        selectedAsset?.assetCurrency ?? "---"
                                     }
                                     placeholder="Enter price per share"
                                     error={
@@ -517,7 +530,7 @@ const AddInvestmentModal = ({
                                         isLoading={
                                             isFetchingHistoricCurrencyPairPrice
                                         }
-                                        currencyCode={`${selectedAsset?.currency}/${userCurrency}`}
+                                        currencyCode={`${selectedAsset?.assetCurrency}/${userCurrency}`}
                                         placeholder="Enter currency conversion rate"
                                         error={
                                             meta.isTouched
