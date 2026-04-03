@@ -23,6 +23,7 @@ export const assetDetailsSchema = Type.Object({
         low: Type.Union([Type.Number(), Type.Null()]),
         priceChange: Type.Union([Type.Number(), Type.Null()]),
         priceChangePercent: Type.Union([Type.Number(), Type.Null()]),
+        tradingVolume: Type.Union([Type.Number(), Type.Null()]),
     }),
 });
 
