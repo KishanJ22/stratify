@@ -4,7 +4,7 @@ import { paths } from "@/openapi/types/stratify-api";
 import { useTopGainers } from "../hooks/useTopGainers";
 import { DataTable } from "@/app/components/ui/data-table";
 import { columns } from "./marketDataTableColumns";
-import { MarketDataTab } from "../MarketDataTabs";
+import { MarketDataTab } from "../MarketDataTabs/MarketDataTabs";
 import { useTopLosers } from "../hooks/useTopLosers";
 import { useMostActiveAssets } from "../hooks/useMostActiveAssets";
 import { useAutoRefetch } from "@/app/utils/auto-refetch";

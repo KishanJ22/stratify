@@ -1,8 +1,8 @@
 import { Tabs, TabsList, TabsTrigger } from "@/app/components/ui/tabs";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { useTopGainers } from "./hooks/useTopGainers";
-import { useTopLosers } from "./hooks/useTopLosers";
-import { useMostActiveAssets } from "./hooks/useMostActiveAssets";
+import { useTopGainers } from "../hooks/useTopGainers";
+import { useTopLosers } from "../hooks/useTopLosers";
+import { useMostActiveAssets } from "../hooks/useMostActiveAssets";
 
 export type MarketDataTab = "topGainers" | "topLosers" | "mostActive";
 

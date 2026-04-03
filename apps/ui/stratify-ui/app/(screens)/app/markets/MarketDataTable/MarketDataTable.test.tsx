@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { MarketDataTab } from "../MarketDataTabs";
+import { MarketDataTab } from "../MarketDataTabs/MarketDataTabs";
 import { renderWithContext } from "@/app/tests/utils";
 import MarketDataTable from "./MarketDataTable";
 import { screen } from "@testing-library/react";
