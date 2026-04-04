@@ -33,25 +33,32 @@ export default function PortfoliosPage() {
     }, [data, selectedPortfolioId]);
 
     return (
-        <div className="items-center justify-items-center h-full px-10">
+        <div className="h-full px-10">
             <div className="font-sans text-5xl text-primary-base font-semibold">
                 Portfolios
             </div>
-            <div className="flex flex-row w-full">
+            <div className="flex flex-row w-full mt-4">
                 <div className="flex flex-col w-full">
-                    <div className="flex flex-row mt-4">
+                    <div className="flex flex-row">
                         <div className="flex flex-col">
                             <CreatePortfolioButton
                                 setIsCreatePortfolioModalOpen={
                                     setIsCreatePortfolioModalOpen
                                 }
                             />
-                            <PortfolioSelector
-                                portfolioList={data}
-                                isLoading={isLoading}
-                                selectedPortfolioId={selectedPortfolioId}
-                                setSelectedPortfolioId={setSelectedPortfolioId}
-                            />
+                            <div className="mt-7 flex flex-col gap-y-2">
+                                <div className="font-sans text-primary-base text-xl">
+                                    Selected Portfolio
+                                </div>
+                                <PortfolioSelector
+                                    portfolioList={data}
+                                    isLoading={isLoading}
+                                    selectedPortfolioId={selectedPortfolioId}
+                                    setSelectedPortfolioId={
+                                        setSelectedPortfolioId
+                                    }
+                                />
+                            </div>
                         </div>
                         <div className="ml-4 w-full">
                             <PortfolioValueChart
@@ -59,7 +66,7 @@ export default function PortfoliosPage() {
                             />
                         </div>
                     </div>
-                    <div className="flex flex-col mt-4">
+                    <div className="flex flex-col">
                         <div className="flex flex-row items-center justify-between">
                             <div className="font-sans text-3xl text-primary-base font-semibold">
                                 Investments

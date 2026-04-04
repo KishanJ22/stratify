@@ -3,7 +3,7 @@ import loadMockApp from "../../../__mocks__/mockApp.js";
 import { mockDataResponse } from "./_mocks/mock-data-response.js";
 import db from "../../../database/db.js";
 import { createUser } from "../../../tests/create-user.js";
-import type { TopAsset } from "./top-assets-schema.js";
+import type { TopAsset } from "./topAssetSchema.js";
 import { generateDevToken } from "../../../utils/generateDevToken.js";
 
 const mockTopGainersDataGet = vi.fn();
@@ -40,6 +40,7 @@ describe("GET /data/market/top-gainers", () => {
             .insertInto("stratify.assets")
             .values([
                 {
+                    id: 1,
                     symbol: "ABC",
                     name: "ABC company",
                     type: "STOCK",
@@ -47,6 +48,7 @@ describe("GET /data/market/top-gainers", () => {
                     currency: "GBP",
                 },
                 {
+                    id: 2,
                     symbol: "DEF",
                     name: "DEF company",
                     type: "STOCK",
@@ -54,6 +56,7 @@ describe("GET /data/market/top-gainers", () => {
                     currency: "GBP",
                 },
                 {
+                    id: 3,
                     symbol: "ABCD",
                     name: "ABCD company",
                     type: "STOCK",
@@ -79,8 +82,9 @@ describe("GET /data/market/top-gainers", () => {
 
         expect(data).toHaveLength(3);
         expect(data[0]).toMatchObject({
+            assetId: 1,
+            assetName: "ABC company",
             symbol: "ABC",
-            name: "ABC company",
             currency: "GBP",
             assetType: "STOCK",
             marketState: "POSTPOST",
@@ -122,6 +126,7 @@ describe("GET /data/market/top-gainers", () => {
             .insertInto("stratify.assets")
             .values([
                 {
+                    id: 1,
                     symbol: "ABC",
                     name: "ABC company",
                     type: "STOCK",
@@ -129,6 +134,7 @@ describe("GET /data/market/top-gainers", () => {
                     currency: "GBP",
                 },
                 {
+                    id: 2,
                     symbol: "DEF",
                     name: "DEF company",
                     type: "STOCK",

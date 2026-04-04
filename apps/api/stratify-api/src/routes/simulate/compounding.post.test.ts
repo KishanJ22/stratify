@@ -66,12 +66,12 @@ describe("POST /simulate/compounding", () => {
 
         expect(data.returns).toEqual({
             noCompounding: {
-                absolute: 26904.76,
-                percentage: 269.05,
+                absolute: 26046.51,
+                percentage: 260.47,
             },
             compounding: {
-                absolute: 42829.14,
-                percentage: 155.74,
+                absolute: 41988.11,
+                percentage: 152.68,
             },
             compoundingWithDividends: null,
         });
@@ -122,16 +122,16 @@ describe("POST /simulate/compounding", () => {
 
         expect(data.returns).toEqual({
             noCompounding: {
-                absolute: 26904.76,
-                percentage: 269.05,
+                absolute: 26046.51,
+                percentage: 260.47,
             },
             compounding: {
-                absolute: 42829.14,
-                percentage: 155.74,
+                absolute: 41988.11,
+                percentage: 152.68,
             },
             compoundingWithDividends: {
-                absolute: 45654.04,
-                percentage: 166.01,
+                absolute: 44774.16,
+                percentage: 162.82,
             },
         });
     });
@@ -194,7 +194,7 @@ describe("POST /simulate/compounding", () => {
             .insertInto("stratify.assetPrices")
             .values({
                 assetId: 1,
-                priceDate: new Date(),
+                priceDate: new Date("2026-01-05"),
                 closePrice: 150,
                 openPrice: 150,
                 lowPrice: 150,

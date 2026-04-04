@@ -1,5 +1,15 @@
 # @stratify/stratify-api
 
+## 0.8.0
+
+### Minor Changes
+
+- 4dd1f4d: - Build endpoint for getting the details for an asset
+    - Build endpoint to get the current price for an asset
+    - Build endpoint to get the price history for an asset
+    - Build endpoint to get all of the investments or holdings for an asset across all of the portfolios a user has
+    - Write unit tests for all asset endpoints
+
 ## 0.7.1
 
 ### Patch Changes

@@ -3,6 +3,7 @@ export const mockDataResponse = {
         data: [
             {
                 symbol: "ABC.L",
+                assetType: "STOCK",
                 marketState: "POSTPOST",
                 priceDetails: {
                     currentPrice: 46.55,
@@ -19,6 +20,7 @@ export const mockDataResponse = {
             },
             {
                 symbol: "DEF.L",
+                assetType: "STOCK",
                 marketState: "POSTPOST",
                 priceDetails: {
                     currentPrice: 11.76,
@@ -35,6 +37,7 @@ export const mockDataResponse = {
             },
             {
                 symbol: "ABCD",
+                assetType: "STOCK",
                 marketState: "POSTPOST",
                 priceDetails: {
                     currentPrice: 0.45,

@@ -25,9 +25,10 @@ import { toast } from "sonner";
 import { addTradeSchema, AddTradeSchema } from "./add-trade-schema";
 import { Field, FieldLabel } from "@/app/components/ui/field";
 import { Tabs, TabsList, TabsTrigger } from "@/app/components/ui/tabs";
+import { useRouter } from "next/navigation";
 
-interface InvestmentDetails {
-    assetId: number;
+export interface SelectedAsset {
+    id: number;
     symbol: string;
     name: string;
     assetCurrency: string | null;
@@ -35,9 +36,10 @@ interface InvestmentDetails {
 
 export interface AddTradeModalProps {
     portfolioId: number;
-    investment: InvestmentDetails;
+    asset: SelectedAsset;
     isOpen: boolean;
     handleClose: () => void;
+    navigateToPortfolioPage?: boolean;
 }
 
 const defaultValues: AddTradeSchema = {
@@ -59,13 +61,16 @@ const addTradeFormOptions = formOptions({
 
 const AddTradeModal = ({
     portfolioId,
-    investment,
+    asset,
     isOpen,
     handleClose,
+    navigateToPortfolioPage,
 }: AddTradeModalProps) => {
-    const { assetId, name, symbol, assetCurrency } = investment;
+    const { id, name, symbol, assetCurrency } = asset;
     const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
+
     const queryClient = useQueryClient();
+    const { push } = useRouter();
 
     const { session } = useSessionContext();
     const userCurrency = session?.userDetails.currency ?? "---";
@@ -109,7 +114,7 @@ const AddTradeModal = ({
             }
 
             const requestBody = {
-                assetId,
+                assetId: id,
                 quantity: parseFloat(value.quantity),
                 pricePerShare: parseFloat(value.pricePerShare),
                 currencyConversionRate: parseFloat(
@@ -136,6 +141,10 @@ const AddTradeModal = ({
                     queryClient.invalidateQueries({
                         queryKey: ["portfolio-metrics", portfolioId],
                     });
+
+                    if (navigateToPortfolioPage) {
+                        push(`/app/portfolios?portfolioId=${portfolioId}`);
+                    }
 
                     toast.success(
                         "Trade added to your portfolio successfully.",
@@ -182,12 +191,14 @@ const AddTradeModal = ({
         data: historicAssetPrice,
         mutate: fetchHistoricAssetPrice,
         isPending: isFetchingHistoricPrice,
+        reset: resetHistoricAssetPrice,
     } = useHistoricAssetPrice();
 
     const {
         data: historicCurrencyPairPrice,
         mutate: fetchHistoricCurrencyPairPrice,
         isPending: isFetchingHistoricCurrencyPairPrice,
+        reset: resetHistoricCurrencyPairPrice,
     } = useHistoricCurrencyPairPrice();
 
     useEffect(() => {
@@ -205,8 +216,8 @@ const AddTradeModal = ({
         if (historicCurrencyPairPrice) {
             const conversionRate =
                 assetCurrency === "GBX"
-                    ? parseFloat(historicCurrencyPairPrice.price) / 100
-                    : parseFloat(historicCurrencyPairPrice.price);
+                    ? historicCurrencyPairPrice.price / 100
+                    : historicCurrencyPairPrice.price;
 
             form.setFieldValue(
                 "currencyConversionRate",
@@ -246,14 +257,15 @@ const AddTradeModal = ({
         }
     }, [total, assetCurrencySubtotal, isCurrencyConversionRequired]);
 
+    const closeModal = () => {
+        form.reset();
+        resetHistoricAssetPrice();
+        resetHistoricCurrencyPairPrice();
+        handleClose();
+    };
+
     return (
-        <Dialog
-            open={isOpen}
-            onOpenChange={() => {
-                form.reset();
-                handleClose();
-            }}
-        >
+        <Dialog open={isOpen} onOpenChange={() => closeModal()}>
             <DialogContent className="bg-muted-lightest border border-primary-dark font-sans">
                 <DialogHeader>
                     <div className="flex flex-row items-center justify-between">
@@ -304,7 +316,7 @@ const AddTradeModal = ({
                         listeners={{
                             onChange: ({ value }) => {
                                 fetchHistoricAssetPrice({
-                                    assetId,
+                                    assetId: id,
                                     tradeDate: value,
                                 });
 
@@ -518,10 +530,7 @@ const AddTradeModal = ({
                                 <form.SubmitButton
                                     label={`Add Trade for ${symbol}`}
                                     className="w-full"
-                                    isDisabled={
-                                        !form.state.canSubmit ||
-                                        isSubmitDisabled
-                                    }
+                                    isDisabled={isSubmitDisabled}
                                     isLoading={
                                         isAddingTrade || form.state.isSubmitting
                                     }

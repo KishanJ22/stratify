@@ -1,6 +1,6 @@
 const startOfMonthDate = (monthsAgo: number) => {
-    const date = new Date();
-    date.setMonth(date.getMonth() - monthsAgo, 1);
+    const now = new Date();
+    const date = new Date(new Date().setMonth(now.getMonth() - monthsAgo, 1));
 
     const isWeekend = date.getDay() === 0 || date.getDay() === 6;
 
@@ -25,6 +25,15 @@ const endOfMonthDate = (monthsAgo: number) => {
 };
 
 export const mockHistoricAssetPrices = [
+    {
+        assetId: 1,
+        priceDate: startOfMonthDate(0),
+        lowPrice: 150,
+        highPrice: 158,
+        openPrice: 152,
+        closePrice: 155,
+        volume: 1000,
+    },
     {
         assetId: 1,
         priceDate: startOfMonthDate(1),

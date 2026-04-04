@@ -11,7 +11,7 @@ const PortfolioValueChartSkeleton = () => (
         </div>
         <Skeleton className="w-32 h-10 self-start mt-1" />
         <Skeleton className="w-44 h-5 self-start mt-1" />
-        <Skeleton className="w-full h-[250px] mt-2" />
+        <Skeleton className="w-full h-62.5 mt-2" />
     </div>
 );
 

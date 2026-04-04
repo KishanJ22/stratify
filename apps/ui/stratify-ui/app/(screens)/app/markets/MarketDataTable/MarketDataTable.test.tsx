@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { MarketDataTab } from "../MarketDataTabs";
+import { MarketDataTab } from "../MarketDataTabs/MarketDataTabs";
 import { renderWithContext } from "@/app/tests/utils";
 import MarketDataTable from "./MarketDataTable";
 import { screen } from "@testing-library/react";
@@ -10,7 +10,8 @@ type Asset =
 
 const mockTopGainersData = [
     {
-        name: "Apple Inc.",
+        assetId: 1,
+        assetName: "Apple Inc.",
         symbol: "AAPL",
         assetType: "STOCK",
         marketState: "REGULAR",
@@ -26,7 +27,8 @@ const mockTopGainersData = [
 
 const mockTopLosersData = [
     {
-        name: "Nvidia Corporation",
+        assetId: 2,
+        assetName: "Nvidia Corporation",
         symbol: "NVDA",
         assetType: "STOCK",
         marketState: "REGULAR",
@@ -54,6 +56,14 @@ vi.mock("../hooks/useTopLosers", () => ({
 
 vi.mock("../hooks/useMostActiveAssets", () => ({
     useMostActiveAssets: () => mockUseMostActiveAssets(),
+}));
+
+const mockRouterPush = vi.fn();
+
+vi.mock("next/navigation", () => ({
+    useRouter: () => ({
+        push: mockRouterPush,
+    }),
 }));
 
 describe("MarketDataTable", () => {

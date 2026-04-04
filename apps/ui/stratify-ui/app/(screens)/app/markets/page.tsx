@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import MarketDataTabs, { MarketDataTab } from "./MarketDataTabs";
+import MarketDataTabs, {
+    type MarketDataTab,
+} from "./MarketDataTabs/MarketDataTabs";
 import MarketDataTable from "./MarketDataTable/MarketDataTable";
 import AssetSearch from "./AssetSearch/AssetSearch";
 

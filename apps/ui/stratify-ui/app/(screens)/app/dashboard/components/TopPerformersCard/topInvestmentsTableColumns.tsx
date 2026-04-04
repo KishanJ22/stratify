@@ -17,12 +17,12 @@ export const columns = (userCurrency: string): ColumnDef<Investment>[] => [
             headerClassName: "w-62.5",
         },
         cell: ({ row }) => {
-            const { name, portfolioName } = row.original;
+            const { name, portfolioName, assetId } = row.original;
 
             return (
                 <div className="flex flex-col leading-5 max-w-62.5">
                     <Link
-                        href={`/assets/${row.original.assetId}`}
+                        href={`/app/assets/${assetId}`}
                         className="text-sm whitespace-nowrap text-ellipsis overflow-hidden text-primary-darker hover:underline hover:text-primary-dark transition-colors"
                     >
                         {name}

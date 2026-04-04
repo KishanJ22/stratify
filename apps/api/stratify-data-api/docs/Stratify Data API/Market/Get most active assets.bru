@@ -5,9 +5,13 @@ meta {
 }
 
 get {
-  url: {{baseUrl}}/market/most-active
+  url: {{baseUrl}}/market/most-active?limit=30
   body: none
   auth: inherit
+}
+
+params:query {
+  limit: 30
 }
 
 settings {

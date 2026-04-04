@@ -1,25 +1,25 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { Asset } from "./MarketDataTable";
-import { Button } from "@/app/components/ui/button";
+import { TopAsset } from "./MarketDataTable";
 import AssetBadge, {
     assetTypeMap,
     marketStateMap,
 } from "@/app/components/(app)/AssetBadge";
+import Link from "next/link";
 
-export const columns: ColumnDef<Asset>[] = [
+export const columns: ColumnDef<TopAsset>[] = [
     {
-        accessorKey: "name",
+        accessorKey: "assetName",
         header: "Asset Name",
         cell: ({ row }) => {
-            const assetName = row.original.name;
+            const { assetId, assetName, symbol } = row.original;
 
             return (
-                <Button
-                    variant="link"
+                <Link
+                    href={`/app/assets/${assetId}`}
                     className="font-medium text-primary-darker hover:underline hover:text-primary-dark transition-colors"
                 >
-                    {assetName} {`(${row.original.symbol})`}
-                </Button>
+                    {assetName} {`(${symbol})`}
+                </Link>
             );
         },
     },
@@ -36,23 +36,22 @@ export const columns: ColumnDef<Asset>[] = [
     {
         accessorKey: "marketState",
         header: "Market State",
-        cell: ({ row }) => {
-            return (
-                <AssetBadge
-                    {...marketStateMap[row.original.marketState]}
-                    data-testid="market-state-badge"
-                />
-            );
-        },
+        cell: ({ row }) => (
+            <AssetBadge
+                {...marketStateMap[row.original.marketState]}
+                data-testid="market-state-badge"
+            />
+        ),
     },
     {
-        accessorKey: "currentPrice",
+        accessorKey: "priceDetails.currentPrice",
         header: "Current Price",
         meta: {
             type: "currency",
         },
         cell: ({ row }) => {
-            const currentPrice = row.original.currentPrice ?? "---";
+            const currentPrice =
+                row.original.priceDetails.currentPrice ?? "---";
             const currency = row.original.currency ?? "---";
 
             const formattedPrice =
@@ -68,22 +67,22 @@ export const columns: ColumnDef<Asset>[] = [
         },
     },
     {
-        accessorKey: "volume",
+        accessorKey: "priceDetails.volume",
         header: "Volume (24 hours)",
         meta: {
             type: "number",
         },
     },
     {
-        accessorKey: "priceChange",
+        accessorKey: "priceDetails.priceChange",
         header: "Change (24 hours)",
         meta: {
             align: "right",
         },
         cell: ({ row }) => {
-            const originalPriceChange = row.original.priceChange;
+            const originalPriceChange = row.original.priceDetails.priceChange;
             const originalPriceChangePercentage =
-                row.original.priceChangePercentage;
+                row.original.priceDetails.priceChangePercent;
 
             if (originalPriceChange && originalPriceChangePercentage) {
                 const priceChange = parseFloat(originalPriceChange.toFixed(2));

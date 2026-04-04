@@ -1,0 +1,20 @@
+meta {
+  name: Get asset details
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/assets/:assetId/details
+  body: none
+  auth: inherit
+}
+
+params:path {
+  assetId: 25656
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
