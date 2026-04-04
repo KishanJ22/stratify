@@ -12,7 +12,7 @@ import { UserDetails } from "../../../utils/decodeToken.js";
 import { calculatePortfolioValueHistory } from "../[portfolioId]/value-history/calculateValueHistory.js";
 import { ValueHistory } from "../[portfolioId]/value-history/[portfolioId].value-history.get.js";
 import { retrieveInvestments } from "../[portfolioId]/investments/retrievePortfolioInvestments.js";
-import { investmentSchema } from "../[portfolioId]/investments/investments.schema.js";
+import { investmentSchema } from "../[portfolioId]/investments/investmentSchema.js";
 import db from "../../../database/db.js";
 import { createNotFound } from "../../../utils/createNotFoundSchema.js";
 import { toTwoDecimalPoints } from "../../../utils/toTwoDecimalPoints.js";
@@ -132,18 +132,24 @@ const retrieveOverviewDetails = async (portfolioIds: number[]) => {
         (investment) => investment.currentValue > 0,
     );
 
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    const sixMonthsAgo = new Date();
+    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+
     return {
         totalValue,
         overallChange: {
             lastThirtyDays: calculateChangeInTimePeriod(
                 sortedValueHistory,
                 totalValue,
-                new Date(new Date().setDate(new Date().getDate() - 30)),
+                thirtyDaysAgo,
             ),
             lastSixMonths: calculateChangeInTimePeriod(
                 sortedValueHistory,
                 totalValue,
-                new Date(new Date().setMonth(new Date().getMonth() - 6)),
+                sixMonthsAgo,
             ),
             allTime: allTimeReturn,
         },

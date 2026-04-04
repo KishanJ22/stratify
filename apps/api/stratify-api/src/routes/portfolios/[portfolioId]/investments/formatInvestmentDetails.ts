@@ -1,7 +1,8 @@
-import { AssetType } from "../../../../schemas/common-schemas.js";
 import { latestCurrencyConversionRateQuery } from "../../../../utils/latestCurrencyRateQuery.js";
-import type { Investment, SectorDetails } from "./investments.schema.js";
+import type { AssetType } from "../../../../schemas/common-schemas.js";
+import type { Investment, SectorDetails } from "./investmentSchema.js";
 import type { GroupedInvestment } from "./retrievePortfolioInvestments.js";
+import { toTwoDecimalPoints } from "../../../../utils/toTwoDecimalPoints.js";
 
 export const formatInvestmentDetails = async (
     investment: GroupedInvestment,
@@ -59,20 +60,20 @@ export const formatInvestmentDetails = async (
         totalBuyAmount > 0 ? (currentReturn / totalBuyAmount) * 100 : 0;
 
     return {
-        assetId: investment.id,
+        assetId: investment.assetId,
         symbol,
         assetCountryId: countryId,
         name,
         type: type as AssetType,
         assetCurrency,
         shares,
-        totalBuyAmount: parseFloat(totalBuyAmount.toFixed(2)),
-        currentValue: parseFloat(convertedCurrentInvestmentValue.toFixed(2)),
+        totalBuyAmount: toTwoDecimalPoints(totalBuyAmount),
+        currentValue: toTwoDecimalPoints(convertedCurrentInvestmentValue),
         currentAssetCurrencyValue: isCurrencyConversionRequired
-            ? parseFloat(currentInvestmentValue.toFixed(2))
+            ? toTwoDecimalPoints(currentInvestmentValue)
             : null,
-        currentReturn: parseFloat(currentReturn.toFixed(2)),
-        currentReturnPercentage: parseFloat(currentReturnPercentage.toFixed(2)),
+        currentReturn: toTwoDecimalPoints(currentReturn),
+        currentReturnPercentage: toTwoDecimalPoints(currentReturnPercentage),
         sectorDetails,
         portfolioId,
         portfolioName,

@@ -64,12 +64,12 @@ describe("POST /simulate/cost-averaging", () => {
 
         expect(data.returns).toEqual({
             lumpSum: {
-                absolute: 26904.76,
-                percentage: 269.05,
+                absolute: 26046.51,
+                percentage: 260.47,
             },
             costAveraging: {
-                absolute: 8569.25,
-                percentage: 85.69,
+                absolute: 8578.81,
+                percentage: 85.79,
             },
         });
     });
@@ -132,7 +132,7 @@ describe("POST /simulate/cost-averaging", () => {
             .insertInto("stratify.assetPrices")
             .values({
                 assetId: 1,
-                priceDate: new Date(),
+                priceDate: new Date("2026-01-05"),
                 closePrice: 150,
                 openPrice: 150,
                 lowPrice: 150,

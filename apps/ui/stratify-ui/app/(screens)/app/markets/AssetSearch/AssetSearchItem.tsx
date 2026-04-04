@@ -2,6 +2,7 @@ import { cn } from "@/lib/utils";
 import { ChartColumnIncreasing, ChartColumnDecreasing } from "lucide-react";
 import { SearchAsset } from "./useAssetSearch";
 import AssetBadge, { assetTypeMap } from "@/app/components/(app)/AssetBadge";
+import Link from "next/link";
 
 export interface AssetSearchItemProps {
     asset: SearchAsset;
@@ -9,7 +10,10 @@ export interface AssetSearchItemProps {
 
 const AssetSearchItem = ({ asset }: AssetSearchItemProps) => {
     return (
-        <div className="w-full flex flex-row justify-between p-1.5 font-sans transition-colors rounded-lg hover:bg-primary-lighter/70 hover:cursor-pointer">
+        <Link
+            href={`/app/assets/${asset.id}`}
+            className="w-full flex flex-row justify-between p-1.5 font-sans transition-colors rounded-lg hover:bg-primary-lighter/70 hover:cursor-pointer"
+        >
             <div className="flex flex-col items-start gap-1">
                 <span className="text-base font-semibold text-primary-dark">
                     {asset.name}
@@ -45,7 +49,7 @@ const AssetSearchItem = ({ asset }: AssetSearchItemProps) => {
                     </div>
                 ) : null}
             </div>
-        </div>
+        </Link>
     );
 };
 

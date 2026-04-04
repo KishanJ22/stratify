@@ -3,7 +3,7 @@ import loadMockApp from "../../../__mocks__/mockApp.js";
 import { mockDataResponse } from "./_mocks/mock-data-response.js";
 import db from "../../../database/db.js";
 import { createUser } from "../../../tests/create-user.js";
-import type { TopAsset } from "./top-assets-schema.js";
+import type { TopAsset } from "./topAssetSchema.js";
 import { generateDevToken } from "../../../utils/generateDevToken.js";
 
 const mockTopLosersDataGet = vi.fn();
@@ -79,8 +79,9 @@ describe("GET /data/market/top-losers", () => {
 
         expect(data).toHaveLength(3);
         expect(data[0]).toMatchObject({
+            assetId: 1,
+            assetName: "ABC company",
             symbol: "ABC",
-            name: "ABC company",
             currency: "GBP",
             assetType: "STOCK",
             marketState: "POSTPOST",

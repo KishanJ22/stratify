@@ -127,7 +127,7 @@
             "required": false,
             "schema": {
               "type": "integer",
-              "default": 10,
+              "default": 20,
               "title": "Limit"
             }
           }
@@ -190,7 +190,7 @@
             "required": false,
             "schema": {
               "type": "integer",
-              "default": 10,
+              "default": 20,
               "title": "Limit"
             }
           }
@@ -253,7 +253,7 @@
             "required": false,
             "schema": {
               "type": "integer",
-              "default": 10,
+              "default": 20,
               "title": "Limit"
             }
           }
@@ -948,6 +948,10 @@
             "type": "string",
             "title": "Marketstate"
           },
+          "assetType": {
+            "type": "string",
+            "title": "Assettype"
+          },
           "priceDetails": {
             "$ref": "#/components/schemas/PriceDetails"
           }
@@ -956,6 +960,7 @@
         "required": [
           "symbol",
           "marketState",
+          "assetType",
           "priceDetails"
         ],
         "title": "QuoteItem"

@@ -54,7 +54,9 @@ export const marketStateMap: BadgeConfigurationMap<MarketState> = {
 };
 
 const AssetBadge = ({ className, label }: BadgeProps) => (
-    <Badge className={`text-nowrap ${className}`}>{label}</Badge>
+    <Badge className={`text-nowrap text-sm leading-5 shadow-xs ${className}`}>
+        {label}
+    </Badge>
 );
 
 export default AssetBadge;

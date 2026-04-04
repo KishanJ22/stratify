@@ -7,13 +7,19 @@ import { TooltipProvider } from "@/app/components/ui/tooltip";
 import { CreatePortfolioModalProps } from "./components/CreatePortfolio/CreatePortfolioModal";
 
 const mockGetSearchParam = vi.fn();
+const mockRouterPush = vi.fn();
 
 const mockUseSearchParams = {
     get: mockGetSearchParam,
 };
 
+const mockUseRouter = {
+    push: mockRouterPush,
+};
+
 vi.mock("next/navigation", () => ({
     useSearchParams: () => mockUseSearchParams,
+    useRouter: () => mockUseRouter,
 }));
 
 vi.mock("./components/CreatePortfolio/CreatePortfolioModal", () => ({

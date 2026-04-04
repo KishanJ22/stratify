@@ -3,9 +3,9 @@ import { getFromStore } from "../../../../plugins/localStorage.js";
 import { AssetType } from "../../../../schemas/common-schemas.js";
 import { UserDetails } from "../../../../utils/decodeToken.js";
 import { latestCurrencyConversionRateQuery } from "../../../../utils/latestCurrencyRateQuery.js";
-import { fetchCurrentPrice } from "../../../assets/fetch-current-price.js";
+import { fetchCurrentPrice } from "../../../assets/fetchCurrentPrice.js";
 import { portfolioInvestmentsQuery } from "../portfolioInvestmentsQuery.js";
-import { ValueHistory } from "./[portfolioId].value-history.get.js";
+import type { ValueHistory } from "./[portfolioId].value-history.get.js";
 
 const bulkHistoricAssetPriceQuery = (
     assetIds: number[],
@@ -108,8 +108,20 @@ export const calculatePortfolioValueHistory = async (portfolioId: number) => {
     const currencyPairs = Array.from(currencyConversionsRequired);
 
     const oldestTradeDate = trades.reduce((oldest, trade) => {
-        return trade.tradeDate < oldest ? trade.tradeDate : oldest;
+        return trade.tradeDate.getTime() < oldest.getTime()
+            ? trade.tradeDate
+            : oldest;
     }, new Date());
+
+    const isOldestTradeDateWeekend =
+        oldestTradeDate.getDay() === 0 || oldestTradeDate.getDay() === 6;
+
+    if (isOldestTradeDateWeekend) {
+        oldestTradeDate.setDate(
+            oldestTradeDate.getDate() -
+                (oldestTradeDate.getDay() === 0 ? 2 : 1),
+        );
+    }
 
     //? Get historic prices for all assets in the portfolio and currency conversion rates
     const historicAssetPrices = await bulkHistoricAssetPriceQuery(

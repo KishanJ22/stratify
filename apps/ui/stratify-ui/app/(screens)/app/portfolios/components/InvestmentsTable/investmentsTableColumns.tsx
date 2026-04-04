@@ -9,6 +9,7 @@ import {
 } from "@/app/components/ui/tooltip";
 import { InfoIcon } from "lucide-react";
 import { Dispatch, SetStateAction } from "react";
+import Link from "next/link";
 
 export const columns = (
     userCurrency: string,
@@ -25,12 +26,12 @@ export const columns = (
             const { name, symbol } = row.original;
 
             return (
-                <Button
-                    variant="link"
+                <Link
+                    href={`/app/assets/${row.original.assetId}`}
                     className="font-medium text-primary-darker hover:underline hover:text-primary-dark transition-colors"
                 >
                     {name} {symbol.length > 0 ? `(${symbol})` : ""}
-                </Button>
+                </Link>
             );
         },
     },

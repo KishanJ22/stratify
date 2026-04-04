@@ -37,13 +37,13 @@ const dateRanges = [
 export interface HistoryDateRangeSelectorProps {
     selectedDateRange: DateRange;
     setSelectedDateRange: Dispatch<SetStateAction<DateRange>>;
-    disabled: boolean;
+    disabled?: boolean;
 }
 
 const HistoryDateRangeSelector = ({
     selectedDateRange,
     setSelectedDateRange,
-    disabled,
+    disabled = false,
 }: HistoryDateRangeSelectorProps) => {
     return (
         <Select

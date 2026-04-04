@@ -1,14 +1,18 @@
 import { Static, Type } from "@sinclair/typebox";
 import {
     historicPriceQuery,
-    notFoundSchema,
     HistoricPriceQuery,
-    HistoricPriceResponse,
-    HistoricPriceErrorResponse,
-} from "../../assets/[assetId]/[assetId].historic-price.get.js";
+    InvalidTradeDateResponse,
+    invalidTradeDateSchema,
+    PriceNotFoundResponse,
+    priceNotFoundSchema,
+    priceResponse,
+    PriceResponse,
+} from "../../assets/[assetId]/historic-price/[assetId].historic-price.get.js";
 import { FastifyInstance } from "fastify";
 import logger from "../../../logger.js";
 import db from "../../../database/db.js";
+import { toTwoDecimalPoints } from "../../../utils/toTwoDecimalPoints.js";
 
 const historicPriceParams = Type.Object({
     currencyPair: Type.String(),
@@ -33,7 +37,7 @@ export default async function historicCurrencyPairPriceGet(
 ) {
     fastify.route<{
         Params: HistoricPriceParams;
-        Reply: HistoricPriceResponse | HistoricPriceErrorResponse;
+        Reply: PriceResponse | PriceNotFoundResponse | InvalidTradeDateResponse;
         Querystring: HistoricPriceQuery;
     }>({
         method: "GET",
@@ -42,15 +46,23 @@ export default async function historicCurrencyPairPriceGet(
             params: historicPriceParams,
             querystring: historicPriceQuery,
             response: {
-                200: HistoricPriceResponse,
-                404: notFoundSchema,
+                200: priceResponse,
+                400: invalidTradeDateSchema,
+                404: priceNotFoundSchema,
             },
         },
         handler: async (request, reply) => {
             const { currencyPair } = request.params;
             const { tradeDate } = request.query;
+            const now = new Date();
 
             try {
+                if (isNaN(Date.parse(tradeDate)) || new Date(tradeDate) > now) {
+                    return reply.status(400).send({
+                        message: "invalidTradeDate",
+                    });
+                }
+
                 const historicPrice = await historicPriceDbQuery(
                     currencyPair,
                     new Date(tradeDate),
@@ -62,7 +74,13 @@ export default async function historicCurrencyPairPriceGet(
                     });
                 }
 
-                return reply.status(200).send({ data: historicPrice });
+                return reply.status(200).send({
+                    data: {
+                        price: toTwoDecimalPoints(
+                            parseFloat(historicPrice.price),
+                        ),
+                    },
+                });
             } catch (error) {
                 logger.error(
                     { error },

@@ -4,7 +4,7 @@ import { paths } from "@/openapi/types/stratify-api";
 import { useTopGainers } from "../hooks/useTopGainers";
 import { DataTable } from "@/app/components/ui/data-table";
 import { columns } from "./marketDataTableColumns";
-import { MarketDataTab } from "../MarketDataTabs";
+import { MarketDataTab } from "../MarketDataTabs/MarketDataTabs";
 import { useTopLosers } from "../hooks/useTopLosers";
 import { useMostActiveAssets } from "../hooks/useMostActiveAssets";
 import { useAutoRefetch } from "@/app/utils/auto-refetch";
@@ -14,17 +14,8 @@ export type AssetType =
 export type MarketState =
     paths["/data/market/top-gainers"]["get"]["responses"]["200"]["content"]["application/json"]["data"][number]["marketState"];
 
-export interface Asset {
-    name: string;
-    symbol: string;
-    assetType: AssetType;
-    marketState: MarketState;
-    currentPrice: number | null;
-    currency: string | null;
-    volume: number | null;
-    priceChange: number | null;
-    priceChangePercentage: number | null;
-}
+export type TopAsset =
+    paths["/data/market/top-gainers"]["get"]["responses"]["200"]["content"]["application/json"]["data"][number];
 
 interface MarketDataTableProps {
     selectedTab: MarketDataTab;
@@ -80,27 +71,11 @@ const MarketDataTable = ({ selectedTab }: MarketDataTableProps) => {
               ? isTopLosersLoading
               : isMostActiveAssetsLoading;
 
-    const assets = data.reduce((acc, asset) => {
-        acc.push({
-            name: asset.name,
-            symbol: asset.symbol,
-            assetType: asset.assetType,
-            marketState: asset.marketState,
-            currency: asset.currency,
-            currentPrice: asset.priceDetails.currentPrice,
-            volume: asset.priceDetails.volume,
-            priceChange: asset.priceDetails.priceChange,
-            priceChangePercentage: asset.priceDetails.priceChangePercent,
-        });
-
-        return acc;
-    }, [] as Asset[]);
-
     return (
         <div className="mt-7">
             <DataTable
                 columns={columns}
-                data={assets}
+                data={data}
                 isLoading={isLoading}
                 key={selectedTab}
             />
