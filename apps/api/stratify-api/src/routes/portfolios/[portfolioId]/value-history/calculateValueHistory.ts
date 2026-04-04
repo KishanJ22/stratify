@@ -108,8 +108,20 @@ export const calculatePortfolioValueHistory = async (portfolioId: number) => {
     const currencyPairs = Array.from(currencyConversionsRequired);
 
     const oldestTradeDate = trades.reduce((oldest, trade) => {
-        return trade.tradeDate < oldest ? trade.tradeDate : oldest;
+        return trade.tradeDate.getTime() < oldest.getTime()
+            ? trade.tradeDate
+            : oldest;
     }, new Date());
+
+    const isOldestTradeDateWeekend =
+        oldestTradeDate.getDay() === 0 || oldestTradeDate.getDay() === 6;
+
+    if (isOldestTradeDateWeekend) {
+        oldestTradeDate.setDate(
+            oldestTradeDate.getDate() -
+                (oldestTradeDate.getDay() === 0 ? 2 : 1),
+        );
+    }
 
     //? Get historic prices for all assets in the portfolio and currency conversion rates
     const historicAssetPrices = await bulkHistoricAssetPriceQuery(

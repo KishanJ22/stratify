@@ -132,18 +132,24 @@ const retrieveOverviewDetails = async (portfolioIds: number[]) => {
         (investment) => investment.currentValue > 0,
     );
 
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    const sixMonthsAgo = new Date();
+    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+
     return {
         totalValue,
         overallChange: {
             lastThirtyDays: calculateChangeInTimePeriod(
                 sortedValueHistory,
                 totalValue,
-                new Date(new Date().setDate(new Date().getDate() - 30)),
+                thirtyDaysAgo,
             ),
             lastSixMonths: calculateChangeInTimePeriod(
                 sortedValueHistory,
                 totalValue,
-                new Date(new Date().setMonth(new Date().getMonth() - 6)),
+                sixMonthsAgo,
             ),
             allTime: allTimeReturn,
         },
