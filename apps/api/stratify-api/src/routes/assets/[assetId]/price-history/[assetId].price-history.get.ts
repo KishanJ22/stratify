@@ -70,7 +70,7 @@ export default async function assetPriceHistoryGet(fastify: FastifyInstance) {
                         } = price;
 
                         acc.push({
-                            date: priceDate.toISOString(),
+                            date: priceDate.toISOString().split("T")[0],
                             priceDetails: {
                                 open: toTwoDecimalPoints(parseFloat(openPrice)),
                                 close: toTwoDecimalPoints(
