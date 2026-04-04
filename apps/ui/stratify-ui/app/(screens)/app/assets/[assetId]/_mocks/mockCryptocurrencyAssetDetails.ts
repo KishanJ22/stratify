@@ -1,3 +1,5 @@
+import type { AssetDetails } from "../hooks/useAssetDetails";
+
 export const mockCryptocurrencyAssetDetails = {
     id: 3,
     name: "Bitcoin",
@@ -17,4 +19,4 @@ export const mockCryptocurrencyAssetDetails = {
         priceChangePercent: 1.12,
         tradingVolume: 35000,
     },
-};
+} satisfies AssetDetails;

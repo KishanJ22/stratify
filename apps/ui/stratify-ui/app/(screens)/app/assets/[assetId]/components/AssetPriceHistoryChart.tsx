@@ -47,7 +47,7 @@ const CustomChartTooltip = ({
     );
 };
 
-interface AssetPriceHistoryChartProps {
+export interface AssetPriceHistoryChartProps {
     assetId: number | null;
     assetCurrency: string;
     isAssetDetailsLoading: boolean;

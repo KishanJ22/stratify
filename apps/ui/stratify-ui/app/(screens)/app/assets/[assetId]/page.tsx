@@ -53,7 +53,7 @@ export default function AssetPage() {
     return (
         <div className="min-h-screen px-10 font-sans">
             {isAssetDetailsLoading ? (
-                <div className="flex flex-col gap-y-1">
+                <div className="flex flex-col gap-y-1" data-testid="asset-name-symbol-skeleton">
                     <Skeleton className="w-80 h-8" />
                     <Skeleton className="w-60 h-6" />
                 </div>

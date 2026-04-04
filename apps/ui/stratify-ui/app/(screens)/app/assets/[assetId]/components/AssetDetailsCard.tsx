@@ -7,7 +7,7 @@ import AssetBadge, {
 import { Dispatch, SetStateAction } from "react";
 import { Button } from "@/app/components/ui/button";
 
-interface AssetDetailsCardProps {
+export interface AssetDetailsCardProps {
     asset?: AssetDetails;
     setIsSectorsModalOpen: Dispatch<SetStateAction<boolean>>;
     isLoading: boolean;
@@ -26,7 +26,7 @@ const AssetDetailsCard = ({
                 {"Asset Details"}
             </div>
             {isLoading ? (
-                <div className="flex flex-col gap-y-1 mt-2">
+                <div className="flex flex-col gap-y-1 mt-2" data-testid="loading-skeletons">
                     <div className="flex flex-row justify-between">
                         <Skeleton className="h-4 w-25" />
                         <Skeleton className="h-4 w-25" />
@@ -87,6 +87,7 @@ const AssetDetailsCard = ({
                                     className="text-secondary-base hover:text-secondary-darker transition-colors text-lg leading-6 p-0"
                                     onClick={() => setIsSectorsModalOpen(true)}
                                     size="sm"
+                                    data-testid="view-sectors-button"
                                 >
                                     View Sectors
                                 </Button>

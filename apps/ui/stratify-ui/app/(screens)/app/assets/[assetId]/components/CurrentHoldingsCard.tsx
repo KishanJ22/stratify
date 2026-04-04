@@ -4,7 +4,7 @@ import { useSessionContext } from "../../../SessionProvider";
 import { cn } from "@/lib/utils";
 import { formatNumericValue } from "@/app/utils/formatNumericValue";
 
-interface CurrentHoldingsCardProps {
+export interface CurrentHoldingsCardProps {
     assetHoldings: AssetHolding[];
     assetCurrency: string;
     isLoading: boolean;
@@ -67,10 +67,13 @@ const CurrentHoldingsCard = ({
     return (
         <div className="flex flex-col py-2.5 px-3 bg-primary-lightest rounded-xl border border-primary-base font-sans min-h-60">
             <div className="font-semibold text-2xl leading-6 text-secondary-dark">
-                {"Current holdings"}
+                {"Current Holdings"}
             </div>
             {isLoading ? (
-                <div className="flex flex-col gap-y-1 mt-2">
+                <div
+                    className="flex flex-col gap-y-1 mt-2"
+                    data-testid="loading-skeletons"
+                >
                     <div className="flex flex-row justify-between">
                         <Skeleton className="h-4 w-25" />
                         <Skeleton className="h-4 w-25" />
@@ -97,7 +100,7 @@ const CurrentHoldingsCard = ({
                         <Skeleton className="h-4 w-25" />
                     </div>
                 </div>
-            ) : isHoldingsNotFoundError ? (
+            ) : isHoldingsNotFoundError || assetHoldings.length === 0 ? (
                 <div className="flex flex-1 items-center justify-center font-semibold text-secondary-light text-center text-lg leading-6">
                     {"Asset currently not held in any portfolios"}
                 </div>

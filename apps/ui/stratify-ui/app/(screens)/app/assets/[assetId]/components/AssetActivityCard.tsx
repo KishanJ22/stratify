@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 import { formatNumericValue } from "@/app/utils/formatNumericValue";
 
-interface AssetActivityCardProps {
+export interface AssetActivityCardProps {
     asset?: AssetDetails;
     isLoading: boolean;
 }
@@ -28,7 +28,10 @@ const AssetActivityCard = ({ asset, isLoading }: AssetActivityCardProps) => {
                 {"Asset Activity (last 24 hours)"}
             </div>
             {isLoading ? (
-                <div className="flex flex-col gap-y-1 mt-2">
+                <div
+                    className="flex flex-col gap-y-1 mt-2"
+                    data-testid="loading-skeletons"
+                >
                     <div className="flex flex-row justify-between">
                         <Skeleton className="h-4 w-25" />
                         <Skeleton className="h-4 w-25" />
@@ -97,11 +100,11 @@ const AssetActivityCard = ({ asset, isLoading }: AssetActivityCardProps) => {
                             </div>
                         </div>
                     ) : null}
-                    <div className="flex flex-row justify-between">
-                        <div className="font-medium text-secondary-base text-lg leading-6">
-                            {"Change"}
-                        </div>
-                        {asset?.dayTradingActivity?.priceChangePercent ? (
+                    {asset?.dayTradingActivity?.priceChangePercent != null ? (
+                        <div className="flex flex-row justify-between">
+                            <div className="font-medium text-secondary-base text-lg leading-6">
+                                {"Change"}
+                            </div>
                             <div
                                 className={cn(
                                     "flex flex-row gap-x-1 font-medium text-lg leading-6",
@@ -118,29 +121,25 @@ const AssetActivityCard = ({ asset, isLoading }: AssetActivityCardProps) => {
                             >
                                 {asset.dayTradingActivity.priceChangePercent >
                                 0 ? (
-                                    <ChartColumnIncreasing />
+                                    <ChartColumnIncreasing data-testid="chart-column-increasing" />
                                 ) : null}
 
                                 {asset.dayTradingActivity.priceChangePercent <
                                 0 ? (
-                                    <ChartColumnDecreasing />
+                                    <ChartColumnDecreasing data-testid="chart-column-decreasing" />
                                 ) : null}
 
                                 {asset.dayTradingActivity.priceChangePercent ===
                                 0 ? (
-                                    <ChartColumn />
+                                    <ChartColumn data-testid="chart-column" />
                                 ) : null}
 
                                 <span>
                                     {`${priceChangeSign}${asset.dayTradingActivity.priceChangePercent.toFixed(2)}%`}
                                 </span>
                             </div>
-                        ) : (
-                            <div className="font-medium text-secondary-base text-lg leading-6">
-                                {"---"}
-                            </div>
-                        )}
-                    </div>
+                        </div>
+                    ) : null}
                     <div className="border-t border-t-secondary-light my-0.5" />
                     {asset?.dayTradingActivity.tradingVolume ? (
                         <div className="flex flex-row justify-between">

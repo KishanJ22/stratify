@@ -8,7 +8,7 @@ import {
 } from "@/app/components/ui/dialog";
 import { X } from "lucide-react";
 
-interface FundSectorsModalProps {
+export interface FundSectorsModalProps {
     sectors: AssetDetails["sector"];
     isOpen: boolean;
     handleClose: () => void;

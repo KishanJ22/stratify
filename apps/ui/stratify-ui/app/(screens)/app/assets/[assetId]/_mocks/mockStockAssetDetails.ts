@@ -1,3 +1,5 @@
+import type { AssetDetails } from "../hooks/useAssetDetails";
+
 export const mockStockAssetDetails = {
     id: 1,
     name: "Apple Inc.",
@@ -22,4 +24,4 @@ export const mockStockAssetDetails = {
         priceChangePercent: 1.18,
         tradingVolume: 75000000,
     },
-};
+} satisfies AssetDetails;

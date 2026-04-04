@@ -5,8 +5,9 @@ export const formatNumericValue = (
     currency?: string,
     locale = "en",
 ) => {
+    const fractionDigits = Number.isInteger(value) ? 0 : 2;
     const formattedValue = value.toLocaleString(locale, {
-        minimumFractionDigits: 2,
+        minimumFractionDigits: fractionDigits,
         maximumFractionDigits: 2,
     });
 

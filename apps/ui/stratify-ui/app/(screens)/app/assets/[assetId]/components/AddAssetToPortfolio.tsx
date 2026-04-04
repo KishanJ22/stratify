@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/app/components/ui/button";
 import { formatNumericValue } from "@/app/utils/formatNumericValue";
 
-interface AddAssetToPortfolioProps {
+export interface AddAssetToPortfolioProps {
     assetHoldings: AssetHolding[];
     portfolioList: PortfolioList;
     assetCurrency: string;
@@ -45,10 +45,13 @@ const AddAssetToPortfolio = ({
     return (
         <div className="flex flex-col py-2.5 px-3 bg-primary-lightest rounded-xl border border-primary-base font-sans min-h-60">
             <div className="font-semibold text-2xl leading-6 text-secondary-dark">
-                {"Add to a portfolio"}
+                {"Add to a Portfolio"}
             </div>
             {isLoading ? (
-                <div className="flex flex-col gap-y-1 mt-2">
+                <div
+                    className="flex flex-col gap-y-1 mt-2"
+                    data-testid="loading-skeletons"
+                >
                     <div className="flex flex-row justify-between">
                         <Skeleton className="h-4 w-25" />
                         <Skeleton className="h-4 w-25" />
@@ -135,10 +138,10 @@ const AddAssetToPortfolio = ({
                                                     0 && "text-secondary-base",
                                             )}
                                         >
-                                            {formatNumericValue(
+                                            {`${overallReturnSign} ${formatNumericValue(
                                                 assetHoldingForPortfolio.currentReturn,
                                                 userCurrency,
-                                            )}
+                                            )}`}
                                         </div>
                                         <div
                                             className={cn(
