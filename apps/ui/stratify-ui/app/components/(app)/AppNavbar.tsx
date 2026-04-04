@@ -2,13 +2,12 @@
 
 import Link from "next/link";
 import StratifyIcon from "../Common/StratifyIcon";
-import { useSessionContext } from "@/app/(screens)/app/SessionProvider";
-import { Avatar, AvatarFallback } from "../ui/avatar";
+import UserIconMenu from "./UserIconMenu";
 
-type NavLink = {
+interface NavLink {
     label: string;
     href: string;
-};
+}
 
 const navLinks = [
     { label: "Dashboard", href: "/app/dashboard" },
@@ -18,16 +17,8 @@ const navLinks = [
 ] satisfies NavLink[];
 
 const AppNavbar = () => {
-    const { session } = useSessionContext();
-
-    const initials = session?.userDetails?.name
-        ?.split(" ")
-        .map((n) => n[0])
-        .join("")
-        .toUpperCase();
-
     return (
-        <nav className="sticky top-0 bg-background-light flex flex-row justify-between px-16 py-6 items-center">
+        <nav className="sticky top-0 bg-background-light flex flex-row justify-between px-10 py-6 items-center">
             <div className="flex-1 justify-start flex flex-row gap-x-2 py-2">
                 <StratifyIcon width={40} height={40} />
                 <div className="font-sans font-semibold text-primary-base text-4xl">
@@ -46,9 +37,7 @@ const AppNavbar = () => {
                 ))}
             </div>
             <div className="flex-1 flex justify-end">
-                <Avatar className="bg-primary-lightest text-primary-darkest font-sans">
-                    <AvatarFallback>{initials}</AvatarFallback>
-                </Avatar>
+                <UserIconMenu />
             </div>
         </nav>
     );
