@@ -26,6 +26,7 @@ const TextInput = ({
     dataTestId,
     disabled = false,
     defaultValue,
+    type,
 }: FormInputProps) => {
     const field = useFieldContext<string>();
 
@@ -42,6 +43,7 @@ const TextInput = ({
                 onChange={(e) => field.handleChange(e.target.value)}
                 onBlur={field.handleBlur}
                 disabled={disabled}
+                type={type}
                 className={
                     error
                         ? "bg-white border-negative-base focus-visible:border-negative-base focus-visible:ring-negative-base"
