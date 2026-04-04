@@ -3,6 +3,8 @@ import logger from "../../../../logger.js";
 import {
     AssetIdParam,
     assetIdParamSchema,
+    AssetNotFoundResponse,
+    assetNotFoundSchema,
 } from "../details/assetDetailsSchema.js";
 import {
     priceNotFoundSchema,
@@ -12,11 +14,12 @@ import {
 } from "../historic-price/[assetId].historic-price.get.js";
 import { assetDetailsByIdQuery } from "../details/[assetId].details.get.js";
 import { fetchCurrentPrice } from "../../fetchCurrentPrice.js";
+import { Type } from "@sinclair/typebox";
 
 export default async function currentAssetPriceGet(fastify: FastifyInstance) {
     fastify.route<{
         Params: AssetIdParam;
-        Reply: PriceResponse | PriceNotFoundResponse;
+        Reply: PriceResponse | PriceNotFoundResponse | AssetNotFoundResponse;
     }>({
         method: "GET",
         url: "assets/:assetId/current-price",
@@ -24,7 +27,7 @@ export default async function currentAssetPriceGet(fastify: FastifyInstance) {
             params: assetIdParamSchema,
             response: {
                 200: priceResponse,
-                404: priceNotFoundSchema,
+                404: Type.Union([priceNotFoundSchema, assetNotFoundSchema]),
             },
         },
         handler: async (request, reply) => {
@@ -36,7 +39,7 @@ export default async function currentAssetPriceGet(fastify: FastifyInstance) {
 
                 if (!asset) {
                     return reply.status(404).send({
-                        message: "priceNotFound",
+                        message: "assetNotFound",
                     });
                 }
 
