@@ -20,6 +20,9 @@ import {
     formatPriceDetails,
 } from "./formatAssetDetails.js";
 
+const assetExistsQuery = (assetId: number) =>
+    db.selectFrom("stratify.assets").where("id", "=", assetId).select("id");
+
 export const assetDetailsByIdQuery = (assetId: number) =>
     db
         .selectFrom("stratify.assets")
@@ -140,13 +143,18 @@ export default async function assetDetailsGet(fastify: FastifyInstance) {
             try {
                 const { assetId } = request.params;
 
-                const assetDetails = await retrieveAssetDetails(assetId);
+                const assetExists =
+                    await assetExistsQuery(assetId).executeTakeFirst();
 
-                if (!assetDetails) {
+                if (!assetExists) {
                     return reply.status(404).send({ message: "assetNotFound" });
                 }
 
-                return reply.status(200).send({ data: assetDetails });
+                const assetDetails = await retrieveAssetDetails(assetId);
+
+                if (assetDetails) {
+                    return reply.status(200).send({ data: assetDetails });
+                }
             } catch (error) {
                 logger.error({ error }, "Error fetching asset details");
                 throw error;
