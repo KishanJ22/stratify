@@ -36,9 +36,7 @@ describe("Navbar component", () => {
 
         const navLinks = [
             "Home",
-            "Portfolio",
-            "Markets",
-            "Learn",
+            "Features",
             "Login",
             "Sign Up",
         ];

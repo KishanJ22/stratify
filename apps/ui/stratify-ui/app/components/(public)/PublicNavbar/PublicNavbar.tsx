@@ -12,12 +12,14 @@ type NavLink = {
 
 const navLinks = [
     { label: "Home", href: "/" },
-    { label: "Portfolio", href: "/portfolio" },
-    { label: "Markets", href: "/markets" },
-    { label: "Learn", href: "/learn" },
+    { label: "Features", href: "/features" },
 ] satisfies NavLink[];
 
-const PublicNavbar = () => {
+interface PublicNavbarProps {
+    showLoginSignUpButtons?: boolean;
+}
+
+const PublicNavbar = ({ showLoginSignUpButtons = true }: PublicNavbarProps) => {
     const { push } = useRouter();
 
     return (
@@ -40,16 +42,24 @@ const PublicNavbar = () => {
                 ))}
             </div>
             <div className="flex-1 justify-end flex flex-row gap-x-2">
-                <Button variant="link" size="lg" onClick={() => push("/login")}>
-                    Login
-                </Button>
-                <Button
-                    variant="default"
-                    size="lg"
-                    onClick={() => push("/sign-up")}
-                >
-                    Sign Up
-                </Button>
+                {showLoginSignUpButtons ? (
+                    <>
+                        <Button
+                            variant="link"
+                            size="lg"
+                            onClick={() => push("/login")}
+                        >
+                            Login
+                        </Button>
+                        <Button
+                            variant="default"
+                            size="lg"
+                            onClick={() => push("/sign-up")}
+                        >
+                            Sign Up
+                        </Button>
+                    </>
+                ) : null}
             </div>
         </nav>
     );
