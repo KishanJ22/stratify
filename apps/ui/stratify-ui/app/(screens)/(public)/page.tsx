@@ -3,7 +3,7 @@ import KeyFeature from "../../components/(public)/LandingPage/KeyFeature";
 
 export default function LandingPage() {
     return (
-        <div className="font-sans items-center justify-items-center min-h-screen">
+        <div className="font-sans items-center justify-items-center h-full">
             <CallToAction />
             <div className="flex flex-row py-8 px-16 gap-x-12">
                 <KeyFeature

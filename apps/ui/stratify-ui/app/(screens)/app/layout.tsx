@@ -30,8 +30,14 @@ export default function AppLayout({ children }: AuthLayoutProps) {
                     authProxyUrl={authProxyUrl}
                 >
                     <SessionProvider>
-                        <AppNavbar />
-                        <TooltipProvider>{children}</TooltipProvider>
+                        <div className="h-screen flex flex-col">
+                            <AppNavbar />
+                            <TooltipProvider>
+                                <div className="flex-1 overflow-hidden">
+                                    {children}
+                                </div>
+                            </TooltipProvider>
+                        </div>
                     </SessionProvider>
                     <Toaster richColors />
                 </Providers>
