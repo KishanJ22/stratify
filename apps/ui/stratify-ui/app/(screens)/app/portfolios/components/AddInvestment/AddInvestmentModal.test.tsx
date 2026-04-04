@@ -9,6 +9,14 @@ import MockSessionProvider from "@/app/tests/_mocks/MockSessionProvider";
 
 const mockHandleClose = vi.fn();
 
+const mockRouterPush = vi.fn();
+
+vi.mock("next/navigation", () => ({
+    useRouter: () => ({
+        push: mockRouterPush,
+    }),
+}));
+
 const user = userEvent.setup();
 
 describe("AddInvestmentModal", () => {

@@ -10,7 +10,8 @@ type Asset =
 
 const mockTopGainersData = [
     {
-        name: "Apple Inc.",
+        assetId: 1,
+        assetName: "Apple Inc.",
         symbol: "AAPL",
         assetType: "STOCK",
         marketState: "REGULAR",
@@ -26,7 +27,8 @@ const mockTopGainersData = [
 
 const mockTopLosersData = [
     {
-        name: "Nvidia Corporation",
+        assetId: 2,
+        assetName: "Nvidia Corporation",
         symbol: "NVDA",
         assetType: "STOCK",
         marketState: "REGULAR",
@@ -54,6 +56,14 @@ vi.mock("../hooks/useTopLosers", () => ({
 
 vi.mock("../hooks/useMostActiveAssets", () => ({
     useMostActiveAssets: () => mockUseMostActiveAssets(),
+}));
+
+const mockRouterPush = vi.fn();
+
+vi.mock("next/navigation", () => ({
+    useRouter: () => ({
+        push: mockRouterPush,
+    }),
 }));
 
 describe("MarketDataTable", () => {

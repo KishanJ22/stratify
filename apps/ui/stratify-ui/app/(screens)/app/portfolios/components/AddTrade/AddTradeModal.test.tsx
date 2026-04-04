@@ -7,14 +7,29 @@ import MockSessionProvider from "@/app/tests/_mocks/MockSessionProvider";
 
 const mockHandleClose = vi.fn();
 
+const mockRouterPush = vi.fn();
+
+vi.mock("next/navigation", () => ({
+    useRouter: () => ({
+        push: mockRouterPush,
+    }),
+}));
+
 const user = userEvent.setup();
 
-const mockInvestment = {
-    assetId: 1,
+const mockAsset = {
+    id: 1,
     symbol: "AAPL",
     name: "Apple Inc.",
     assetCurrency: "USD",
 };
+
+const defaultProps = {
+    portfolioId: 1,
+    asset: mockAsset,
+    isOpen: true,
+    handleClose: mockHandleClose,
+} satisfies AddTradeModalProps;
 
 describe("AddTradeModal", () => {
     beforeEach(() => {
@@ -25,44 +40,24 @@ describe("AddTradeModal", () => {
         vi.clearAllMocks();
     });
 
-    const renderModal = ({
-        portfolioId,
-        investment,
-        isOpen,
-        handleClose,
-    }: AddTradeModalProps) =>
+    const renderModal = (props?: Partial<AddTradeModalProps>) =>
         renderWithContext({
             children: (
                 <MockSessionProvider>
-                    <AddTradeModal
-                        portfolioId={portfolioId}
-                        investment={investment}
-                        isOpen={isOpen}
-                        handleClose={handleClose}
-                    />
+                    <AddTradeModal {...defaultProps} {...props} />
                 </MockSessionProvider>
             ),
         });
 
     it("should render the modal when isOpen is true", () => {
-        renderModal({
-            portfolioId: 1,
-            investment: mockInvestment,
-            isOpen: true,
-            handleClose: mockHandleClose,
-        });
+        renderModal();
 
         expect(screen.getByTestId("modal-title")).toBeInTheDocument();
         expect(screen.getByTestId("modal-description")).toBeInTheDocument();
     });
 
     it("should not render the modal when isOpen is false", () => {
-        renderModal({
-            portfolioId: 1,
-            investment: mockInvestment,
-            isOpen: false,
-            handleClose: mockHandleClose,
-        });
+        renderModal({ isOpen: false });
 
         expect(screen.queryByTestId("modal-title")).not.toBeInTheDocument();
         expect(
@@ -71,12 +66,7 @@ describe("AddTradeModal", () => {
     });
 
     it("should call handleClose when the close icon is clicked", async () => {
-        renderModal({
-            portfolioId: 1,
-            investment: mockInvestment,
-            isOpen: true,
-            handleClose: mockHandleClose,
-        });
+        renderModal();
 
         const closeButton = screen.getByTestId("close-modal-icon");
         await user.click(closeButton);
@@ -85,12 +75,7 @@ describe("AddTradeModal", () => {
     });
 
     it("should display the correct fields in the form", () => {
-        renderModal({
-            portfolioId: 1,
-            investment: mockInvestment,
-            isOpen: true,
-            handleClose: mockHandleClose,
-        });
+        renderModal();
 
         expect(screen.getByTestId("asset-name-field")).toBeInTheDocument();
         expect(screen.getByTestId("trade-date-field")).toBeInTheDocument();
