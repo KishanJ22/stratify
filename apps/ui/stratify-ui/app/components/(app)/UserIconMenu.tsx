@@ -39,6 +39,7 @@ const UserIconMenu = () => {
             <Avatar
                 className="bg-primary-lightest text-primary-darkest font-sans cursor-pointer"
                 onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                data-testid="user-icon"
             >
                 <AvatarFallback>{initials}</AvatarFallback>
             </Avatar>
@@ -47,6 +48,7 @@ const UserIconMenu = () => {
                     "flex flex-col rounded-xl bg-muted-lightest border border-primary-dark mt-12 absolute right-10 w-44 font-sans text-sm leading-5 animate-in fade-in-50",
                     isUserMenuOpen ? "block" : "hidden",
                 )}
+                data-testid="user-menu"
             >
                 <div className="px-4 py-2 font-semibold text-primary-darker border-b border-primary-lighter">
                     {session?.userDetails?.displayUsername ||
