@@ -34,28 +34,21 @@ describe("Navbar component", () => {
         expect(screen.getByAltText("Stratify Logo")).toBeInTheDocument();
         expect(screen.getByText("Stratify")).toBeInTheDocument();
 
-        const navLinks = [
-            "Home",
-            "Portfolio",
-            "Markets",
-            "Learn",
-            "Login",
-            "Sign Up",
-        ];
+        const navLinks = ["Home", "Features", "Login", "Sign Up"];
 
         navLinks.forEach((link) => {
             expect(screen.getByText(link)).toBeInTheDocument();
         });
     });
 
-    it("AB#126 - should navigate to the learn page when the Learn nav link is clicked", () => {
+    it("AB#126 - should navigate to the Features page when the Features nav link is clicked", () => {
         renderComponent();
 
-        const learnLink = screen.getByText("Learn");
-        expect(learnLink).toBeInTheDocument();
+        const featuresLink = screen.getByText("Features");
+        expect(featuresLink).toBeInTheDocument();
 
-        user.click(learnLink);
-        expect(learnLink).toHaveAttribute("href", "/learn");
+        user.click(featuresLink);
+        expect(featuresLink).toHaveAttribute("href", "/features");
     });
 
     it("AB#126 - should navigate to the login page when the Login button is clicked", async () => {

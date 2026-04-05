@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Providers from "../../global/Providers";
 import { getFontClassNames } from "@/lib/fonts";
 import { Toaster } from "@/app/components/ui/sonner";
+import PublicNavbar from "@/app/components/(public)/PublicNavbar/PublicNavbar";
 
 export const metadata: Metadata = {
     title: "Stratify UI",
@@ -26,7 +27,10 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
                     apiProxyUrl={apiProxyUrl}
                     authProxyUrl={authProxyUrl}
                 >
-                    <main>{children}</main>
+                    <div className="h-screen flex flex-col">
+                        <PublicNavbar showLoginSignUpButtons={false} />
+                        <div className="flex-1 overflow-hidden">{children}</div>
+                    </div>
                     <Toaster richColors />
                 </Providers>
             </body>

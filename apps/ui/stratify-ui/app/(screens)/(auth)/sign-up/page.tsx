@@ -10,8 +10,8 @@ export default function SignUpPage() {
     const { push } = useRouter();
 
     return (
-        <div className="font-sans items-center justify-items-center min-h-screen">
-            <div className="flex flex-col min-h-screen justify-center items-center">
+        <div className="font-sans items-center justify-items-center h-full">
+            <div className="flex flex-col h-full justify-center items-center">
                 <StratifyIcon
                     width={650}
                     height={650}

@@ -16,7 +16,7 @@ export default function DashboardPage() {
     } = usePortfoliosOverview();
 
     return (
-        <div className="items-center justify-items-center min-h-screen px-10">
+        <div className="items-center justify-items-center h-full px-10">
             <div className="font-sans text-5xl text-primary-base font-semibold leading-14">
                 Dashboard
             </div>
