@@ -1,5 +1,11 @@
 # @stratify/stratify-api
 
+## 0.8.1
+
+### Patch Changes
+
+- 0ac2ee9: Update dependencies
+
 ## 0.8.0
 
 ### Minor Changes

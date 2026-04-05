@@ -1,5 +1,11 @@
 # stratify-data-api
 
+## 0.5.1
+
+### Patch Changes
+
+- 0ac2ee9: Update dependencies
+
 ## 0.5.0
 
 ### Minor Changes
