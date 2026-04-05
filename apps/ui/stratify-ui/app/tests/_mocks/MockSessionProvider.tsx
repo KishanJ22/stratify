@@ -9,7 +9,7 @@ interface MockSessionProviderProps {
     session?: UserSession | null;
 }
 
-const defaultSession = {
+export const defaultSession = {
     userDetails: {
         id: "test-user",
         name: "Test User",
