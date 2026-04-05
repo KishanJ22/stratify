@@ -1,5 +1,13 @@
 # @stratify/stratify-api
 
+## 0.8.2
+
+### Patch Changes
+
+- d630257: Patch to bump all package versions for deployment
+    - Remove Docker workflow as the GHCR push workflow will notify if image builds fail
+    - Execute changeset workflow after Build workflow
+
 ## 0.8.1
 
 ### Patch Changes
