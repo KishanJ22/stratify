@@ -6,6 +6,7 @@ import { Toaster } from "@/app/components/ui/sonner";
 import { SessionProvider } from "./SessionProvider";
 import AppNavbar from "@/app/components/(app)/AppNavbar";
 import { TooltipProvider } from "@/app/components/ui/tooltip";
+import { PublicEnv } from "@/public-env";
 
 export const metadata: Metadata = {
     title: "Stratify UI",
@@ -17,18 +18,14 @@ interface AuthLayoutProps {
 }
 
 export default function AppLayout({ children }: AuthLayoutProps) {
-    const apiProxyUrl = process.env.NEXT_PUBLIC_API_PROXY_URL || "";
-    const authProxyUrl = process.env.NEXT_PUBLIC_AUTH_PROXY_URL || "";
     const fontClassNames = getFontClassNames();
 
     return (
         <html lang="en">
             <head />
             <body className={`${fontClassNames} antialiased`} id="root">
-                <Providers
-                    apiProxyUrl={apiProxyUrl}
-                    authProxyUrl={authProxyUrl}
-                >
+                <PublicEnv />
+                <Providers>
                     <SessionProvider>
                         <div className="h-screen flex flex-col">
                             <AppNavbar />

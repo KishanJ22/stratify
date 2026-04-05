@@ -5,7 +5,7 @@ permissions:
 
 on:
   workflow_run:
-    workflows: [Build]
+    workflows: [Docker Image Checks]
     types: completed
     branches: main
 

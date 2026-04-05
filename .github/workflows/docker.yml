@@ -13,6 +13,7 @@ concurrency:
 
 jobs:
     stratify-api:
+        if: ${{ github.event.workflow_run.conclusion == 'success' }}
         runs-on: ubuntu-latest
         permissions:
             contents: read
@@ -26,6 +27,7 @@ jobs:
               run: docker build -f apps/api/stratify-api/Dockerfile . -t stratify-api:ci
 
     stratify-data-api:
+        if: ${{ github.event.workflow_run.conclusion == 'success' }}
         runs-on: ubuntu-latest
         permissions:
             contents: read
@@ -39,6 +41,7 @@ jobs:
               run: docker build -f apps/api/stratify-data-api/Dockerfile . -t stratify-data-api:ci
 
     stratify-ui:
+        if: ${{ github.event.workflow_run.conclusion == 'success' }}
         runs-on: ubuntu-latest
         permissions:
             contents: read

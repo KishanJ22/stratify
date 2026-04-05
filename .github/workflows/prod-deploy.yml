@@ -1,56 +1,59 @@
-name: Deploy to Development Environment
+name: Deploy to Production Environment
 
 on:
-    workflow_run:
-        workflows: ["Push Docker Images to GHCR"]
-        types: completed
+    workflow_dispatch:
+        inputs:
+            release_tag:
+                description: Release tag to deploy (e.g. release-05-04-2026.1)
+                required: true
+                type: string
 
 jobs:
     prepare-deployment:
         name: Prepare Deployment
         runs-on: self-hosted
         outputs:
-            latest-release-tag: ${{ steps.get_release_manifest.outputs.latest_release_tag }}
+            release-tag: ${{ steps.get_release_manifest.outputs.release_tag }}
             stratify_data_api_version: ${{ steps.get_release_manifest.outputs.stratify_data_api_version }}
             is_stratify_data_api_changed: ${{ steps.get_release_manifest.outputs.is_stratify_data_api_changed }}
             stratify_api_version: ${{ steps.get_release_manifest.outputs.stratify_api_version }}
             is_stratify_api_changed: ${{ steps.get_release_manifest.outputs.is_stratify_api_changed }}
             stratify_ui_version: ${{ steps.get_release_manifest.outputs.stratify_ui_version }}
             is_stratify_ui_changed: ${{ steps.get_release_manifest.outputs.is_stratify_ui_changed }}
-        if: ${{ github.event.workflow_run.conclusion == 'success' }}
         steps:
             - name: Checkout repository
               uses: actions/checkout@v4
               with:
                   fetch-depth: 0
 
-            - name: Get release manifest from latest release
+            - name: Get release manifest from specified release
               id: get_release_manifest
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  RELEASE_TAG: ${{ inputs.release_tag }}
               run: |
-                  #? Get latest release
-                  latest_release=$(gh release view --repo "$GITHUB_REPOSITORY" --json tagName,body -q '.body')
-                  latest_release_json=$(echo $latest_release | jq -r '.')
+                  #? Get the release manifest from the specified release tag
+                  release=$(gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --json tagName,body -q '.body')
+                  release_json=$(echo $release | jq -r '.')
 
-                  latest_release_tag=$(echo "$latest_release_json" | jq -r '.releaseTag')
-                  latest_release_apps=$(echo "$latest_release_json" | jq -r '.apps')
+                  release_tag=$(echo "$release_json" | jq -r '.releaseTag')
+                  release_apps=$(echo "$release_json" | jq -r '.apps')
 
-                  stratify_data_api_version=$(echo "$latest_release_apps" | jq -r '.["stratify-data-api"].version')
-                  is_stratify_data_api_changed=$(echo "$latest_release_apps" | jq -r '.["stratify-data-api"].isChanged')
+                  stratify_data_api_version=$(echo "$release_apps" | jq -r '.["stratify-data-api"].version')
+                  is_stratify_data_api_changed=$(echo "$release_apps" | jq -r '.["stratify-data-api"].isChanged')
 
-                  stratify_api_version=$(echo "$latest_release_apps" | jq -r '.["stratify-api"].version')
-                  is_stratify_api_changed=$(echo "$latest_release_apps" | jq -r '.["stratify-api"].isChanged')
+                  stratify_api_version=$(echo "$release_apps" | jq -r '.["stratify-api"].version')
+                  is_stratify_api_changed=$(echo "$release_apps" | jq -r '.["stratify-api"].isChanged')
 
-                  stratify_ui_version=$(echo "$latest_release_apps" | jq -r '.["stratify-ui"].version')
-                  is_stratify_ui_changed=$(echo "$latest_release_apps" | jq -r '.["stratify-ui"].isChanged')
+                  stratify_ui_version=$(echo "$release_apps" | jq -r '.["stratify-ui"].version')
+                  is_stratify_ui_changed=$(echo "$release_apps" | jq -r '.["stratify-ui"].isChanged')
 
-                  echo "latest_release_tag=$latest_release_tag" >> "$GITHUB_OUTPUT"
-                  echo "stratify_data_api_version=$stratify_data_api_version" >> "$GITHUB_OUTPUT" 
-                  echo "is_stratify_data_api_changed=$is_stratify_data_api_changed" >> "$GITHUB_OUTPUT" 
-                  echo "stratify_api_version=$stratify_api_version" >> "$GITHUB_OUTPUT" 
-                  echo "is_stratify_api_changed=$is_stratify_api_changed" >> "$GITHUB_OUTPUT" 
-                  echo "stratify_ui_version=$stratify_ui_version" >> "$GITHUB_OUTPUT" 
+                  echo "release_tag=$release_tag" >> "$GITHUB_OUTPUT"
+                  echo "stratify_data_api_version=$stratify_data_api_version" >> "$GITHUB_OUTPUT"
+                  echo "is_stratify_data_api_changed=$is_stratify_data_api_changed" >> "$GITHUB_OUTPUT"
+                  echo "stratify_api_version=$stratify_api_version" >> "$GITHUB_OUTPUT"
+                  echo "is_stratify_api_changed=$is_stratify_api_changed" >> "$GITHUB_OUTPUT"
+                  echo "stratify_ui_version=$stratify_ui_version" >> "$GITHUB_OUTPUT"
                   echo "is_stratify_ui_changed=$is_stratify_ui_changed" >> "$GITHUB_OUTPUT"
 
     deploy-stratify-data-api:
@@ -58,7 +61,7 @@ jobs:
         runs-on: self-hosted
         needs: prepare-deployment
         if: ${{ needs.prepare-deployment.outputs.is_stratify_data_api_changed == 'true' }}
-        environment: Development
+        environment: Production
         permissions:
             contents: read
             packages: read
@@ -93,7 +96,7 @@ jobs:
 
             - name: Deploy Stratify Data API to Coolify
               run: |
-                  coolify app update "${{ secrets.STRATIFY_DATA_API_UUID }}" --docker-tag "${{ needs.prepare-deployment.outputs.stratify_data_api_version }}" --description "${{ needs.prepare-deployment.outputs.latest-release-tag }}"
+                  coolify app update "${{ secrets.STRATIFY_DATA_API_UUID }}" --docker-tag "${{ needs.prepare-deployment.outputs.stratify_data_api_version }}" --description "${{ needs.prepare-deployment.outputs.release-tag }}"
                   coolify app restart "${{ secrets.STRATIFY_DATA_API_UUID }}"
 
     deploy-stratify-api:
@@ -101,7 +104,7 @@ jobs:
         runs-on: self-hosted
         needs: [prepare-deployment, deploy-stratify-data-api]
         if: ${{ always() && needs.prepare-deployment.outputs.is_stratify_api_changed == 'true' && needs.deploy-stratify-data-api.result != 'failure' }}
-        environment: Development
+        environment: Production
         permissions:
             contents: read
             packages: read
@@ -136,7 +139,7 @@ jobs:
 
             - name: Deploy Stratify API to Coolify
               run: |
-                  coolify app update "${{ secrets.STRATIFY_API_UUID }}" --docker-tag "${{ needs.prepare-deployment.outputs.stratify_api_version }}" --description "${{ needs.prepare-deployment.outputs.latest-release-tag }}"
+                  coolify app update "${{ secrets.STRATIFY_API_UUID }}" --docker-tag "${{ needs.prepare-deployment.outputs.stratify_api_version }}" --description "${{ needs.prepare-deployment.outputs.release-tag }}"
                   coolify app restart "${{ secrets.STRATIFY_API_UUID }}"
 
     deploy-stratify-ui:
@@ -144,11 +147,16 @@ jobs:
         runs-on: self-hosted
         needs: [prepare-deployment, deploy-stratify-api]
         if: ${{ always() && needs.prepare-deployment.outputs.is_stratify_ui_changed == 'true' && needs.deploy-stratify-api.result != 'failure' }}
-        environment: Development
+        environment: Production
         permissions:
             contents: read
             packages: read
         steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+              with:
+                  ref: ${{ inputs.release_tag }}
+
             - name: Login to Github Container Registry
               uses: docker/login-action@v3
               with:
@@ -179,5 +187,5 @@ jobs:
 
             - name: Deploy Stratify UI to Coolify
               run: |
-                  coolify app update "${{ secrets.STRATIFY_UI_UUID }}" --docker-tag "${{ needs.prepare-deployment.outputs.stratify_ui_version }}" --description "${{ needs.prepare-deployment.outputs.latest-release-tag }}"
+                  coolify app update "${{ secrets.STRATIFY_UI_UUID }}" --docker-tag "${{ needs.prepare-deployment.outputs.stratify_ui_version }}" --description "${{ needs.prepare-deployment.outputs.release-tag }}"
                   coolify app restart "${{ secrets.STRATIFY_UI_UUID }}"
