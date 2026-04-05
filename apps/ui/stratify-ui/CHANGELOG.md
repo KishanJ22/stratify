@@ -1,5 +1,12 @@
 # @stratify/stratify-ui
 
+## 0.9.0
+
+### Minor Changes
+
+- c8fffe8: - Add functionality to click on the avatar icon in the navbar to open a menu showing the user's username and a logout button
+    - Fix unnecessary ability to scroll on pages that don't need scrolling
+
 ## 0.8.0
 
 ### Minor Changes
