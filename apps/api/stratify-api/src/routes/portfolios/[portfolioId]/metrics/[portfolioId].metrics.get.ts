@@ -57,7 +57,7 @@ const determineRiskLevel = (
     volatility: number,
     sortinoRatio: number,
 ): RiskLevel => {
-    let baseLevel = 0;
+    let baseLevel: number;
 
     //? Determine base risk level based on volatility
     if (volatility < 15) {
