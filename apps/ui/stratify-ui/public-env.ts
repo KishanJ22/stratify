@@ -10,7 +10,5 @@ export const { getPublicEnv, PublicEnv } = createPublicEnv(
             STRATIFY_API_PROXY_URL: z.string(),
             STRATIFY_AUTH_PROXY_URL: z.string(),
         }),
-        validateAtBuildStep: true,
-        
     },
 );
