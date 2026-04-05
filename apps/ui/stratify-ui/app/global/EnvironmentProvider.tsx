@@ -28,12 +28,12 @@ export const EnvironmentProvider = ({
         [apiProxyUrl, authProxyUrl],
     );
 
-    const environmentProviderValues = {
-        envVariables,
-    };
-
     return (
-        <EnvironmentContext.Provider value={environmentProviderValues}>
+        <EnvironmentContext.Provider
+            value={{
+                envVariables,
+            }}
+        >
             {children}
         </EnvironmentContext.Provider>
     );

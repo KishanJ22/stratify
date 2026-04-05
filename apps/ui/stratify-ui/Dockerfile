@@ -27,12 +27,6 @@ COPY --from=builder /app/out/full/ .
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 
-ARG NEXT_PUBLIC_API_PROXY_URL
-ENV NEXT_PUBLIC_API_PROXY_URL=${NEXT_PUBLIC_API_PROXY_URL}
-
-ARG NEXT_PUBLIC_AUTH_PROXY_URL
-ENV NEXT_PUBLIC_AUTH_PROXY_URL=${NEXT_PUBLIC_AUTH_PROXY_URL}
-
 # Required as stratify-api is listed as a dependency in the package.json for the UI
 COPY apps/api/stratify-data-api/docs/openapi.json apps/api/stratify-data-api/docs/openapi.json
 
@@ -40,12 +34,6 @@ RUN pnpm build
 
 FROM base AS runner
 WORKDIR /app
-
-ARG STRATIFY_API_URL
-ENV STRATIFY_API_URL=${STRATIFY_API_URL}
-
-ARG STRATIFY_AUTH_URL
-ENV STRATIFY_AUTH_URL=${STRATIFY_AUTH_URL}
 
 # Don't run production as root
 RUN addgroup --system --gid 1001 nodejs && \

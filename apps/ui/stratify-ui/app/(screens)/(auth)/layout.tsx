@@ -4,6 +4,7 @@ import Providers from "../../global/Providers";
 import { getFontClassNames } from "@/lib/fonts";
 import { Toaster } from "@/app/components/ui/sonner";
 import PublicNavbar from "@/app/components/(public)/PublicNavbar/PublicNavbar";
+import { PublicEnv } from "@/public-env";
 
 export const metadata: Metadata = {
     title: "Stratify UI",
@@ -15,18 +16,14 @@ interface AuthLayoutProps {
 }
 
 export default function AuthLayout({ children }: AuthLayoutProps) {
-    const apiProxyUrl = process.env.NEXT_PUBLIC_API_PROXY_URL || "";
-    const authProxyUrl = process.env.NEXT_PUBLIC_AUTH_PROXY_URL || "";
     const fontClassNames = getFontClassNames();
 
     return (
         <html lang="en">
             <head />
             <body className={`${fontClassNames} antialiased`} id="root">
-                <Providers
-                    apiProxyUrl={apiProxyUrl}
-                    authProxyUrl={authProxyUrl}
-                >
+                <PublicEnv />
+                <Providers>
                     <div className="h-screen flex flex-col">
                         <PublicNavbar showLoginSignUpButtons={false} />
                         <div className="flex-1 overflow-hidden">{children}</div>

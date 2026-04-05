@@ -3,6 +3,7 @@ import "../../globals.css";
 import Providers from "../../global/Providers";
 import PublicNavbar from "../../components/(public)/PublicNavbar/PublicNavbar";
 import { getFontClassNames } from "@/lib/fonts";
+import { PublicEnv } from "@/public-env";
 
 export const metadata: Metadata = {
     title: "Stratify UI",
@@ -14,18 +15,14 @@ interface RootLayoutProps {
 }
 
 export default function RootLayout({ children }: RootLayoutProps) {
-    const apiProxyUrl = process.env.NEXT_PUBLIC_API_PROXY_URL || "";
-    const authProxyUrl = process.env.NEXT_PUBLIC_AUTH_PROXY_URL || "";
     const fontClassNames = getFontClassNames();
 
     return (
         <html lang="en">
             <head />
             <body className={`${fontClassNames} antialiased`} id="root">
-                <Providers
-                    apiProxyUrl={apiProxyUrl}
-                    authProxyUrl={authProxyUrl}
-                >
+                <PublicEnv />
+                <Providers>
                     <PublicNavbar />
                     {children}
                 </Providers>
