@@ -1,9 +1,8 @@
 import { betterAuth } from "better-auth";
-import { bearer, jwt, openAPI, twoFactor, username } from "better-auth/plugins";
+import { bearer, jwt, openAPI, username } from "better-auth/plugins";
 import { createPool } from "../database/db.js";
 import config from "../config.js";
 import logger from "../logger.js";
-import { sendMail } from "./mail.js";
 
 export const auth = betterAuth({
     appName: "Stratify",
@@ -25,17 +24,7 @@ export const auth = betterAuth({
     },
     emailAndPassword: {
         enabled: true,
-        requireEmailVerification: false, // TODO: Use resend for sending emails
-    },
-    emailVerification: {
-        sendVerificationEmail: async ({ user, url }) => {
-            await sendMail({
-                to: user.email,
-                subject: "Verify your email for Stratify",
-                html: `<p>Please verify your email by clicking the following link:</p><p><a href="${url}">${url}</a></p>`,
-            });
-        },
-        sendOnSignUp: false,
+        requireEmailVerification: false,
     },
     plugins: [
         jwt({
@@ -46,9 +35,6 @@ export const auth = betterAuth({
         bearer(),
         username(),
         openAPI(),
-        twoFactor({
-            issuer: "Stratify",
-        }),
     ],
     session: {
         cookieCache: {
