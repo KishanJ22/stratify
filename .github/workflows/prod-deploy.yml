@@ -92,12 +92,9 @@ jobs:
             - name: Update Stratify Data API in Coolify
               run: |
                   curl -X PATCH "${{ secrets.COOLIFY_URL }}/api/v1/applications/${{ secrets.STRATIFY_DATA_API_UUID }}" \
-                      -H "Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}" \
-                      -H "Content-Type: application/json" \
-                      -d `{
-                          "docker_registry_image_tag": "${{ needs.prepare-deployment.outputs.stratify_data_api_version }}",
-                          "description": "${{ needs.prepare-deployment.outputs.release-tag }}"    
-                      }`
+                    -H "Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}" \
+                    -H "Content-Type: application/json" \
+                    -d '{"docker_registry_image_tag": "${{ needs.prepare-deployment.outputs.stratify_data_api_version }}", "description": "${{ needs.prepare-deployment.outputs.release-tag }}"}'
 
             - name: Restart Stratify Data API in Coolify
               run: |
@@ -140,18 +137,15 @@ jobs:
             - name: Update Stratify API in Coolify
               run: |
                   curl -X PATCH "${{ secrets.COOLIFY_URL }}/api/v1/applications/${{ secrets.STRATIFY_API_UUID }}" \
-                      -H "Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}" \
-                      -H "Content-Type: application/json" \
-                      -d `{
-                          "docker_registry_image_tag": "${{ needs.prepare-deployment.outputs.stratify_api_version }}",
-                          "description": "${{ needs.prepare-deployment.outputs.release-tag }}"    
-                      }`
+                    -H "Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}" \
+                    -H "Content-Type: application/json" \
+                    -d '{"docker_registry_image_tag": "${{ needs.prepare-deployment.outputs.stratify_api_version }}", "description": "${{ needs.prepare-deployment.outputs.release-tag }}"}'
 
             - name: Restart Stratify API in Coolify
               run: |
                   curl -X GET "${{ secrets.COOLIFY_URL }}/api/v1/applications/${{ secrets.STRATIFY_API_UUID }}/restart" \
-                      -H "Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}" \
-                      -H "Content-Type: application/json"
+                    -H "Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}" \
+                    -H "Content-Type: application/json"
 
     deploy-stratify-ui:
         name: Deploy Stratify UI
@@ -188,20 +182,17 @@ jobs:
                       echo "IMAGE_EXISTS=false" >> $GITHUB_OUTPUT
                       echo "Image does not exist: $IMAGE_NAME"
                       exit 1
-                  fi[]===
+                  fi
 
             - name: Update Stratify UI in Coolify
               run: |
                   curl -X PATCH "${{ secrets.COOLIFY_URL }}/api/v1/applications/${{ secrets.STRATIFY_UI_UUID }}" \
-                      -H "Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}" \
-                      -H "Content-Type: application/json" \
-                      -d `{
-                          "docker_registry_image_tag": "${{ needs.prepare-deployment.outputs.stratify_ui_version }}",
-                          "description": "${{ needs.prepare-deployment.outputs.release-tag }}"    
-                      }`
+                    -H "Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}" \
+                    -H "Content-Type: application/json" \
+                    -d '{"docker_registry_image_tag": "${{ needs.prepare-deployment.outputs.stratify_ui_version }}", "description": "${{ needs.prepare-deployment.outputs.release-tag }}"}'
 
             - name: Restart Stratify UI in Coolify
               run: |
                   curl -X GET "${{ secrets.COOLIFY_URL }}/api/v1/applications/${{ secrets.STRATIFY_UI_UUID }}/restart" \
-                      -H "Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}" \
-                      -H "Content-Type: application/json"
+                    -H "Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}" \
+                    -H "Content-Type: application/json"
