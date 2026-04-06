@@ -88,16 +88,22 @@ jobs:
                       exit 1
                   fi
 
-            - name: Install Coolify CLI
-              uses: yarissi/setup-coolify@v1.0.0
-              with:
-                  token: ${{ secrets.COOLIFY_TOKEN }}
-                  url: ${{ secrets.COOLIFY_URL }}
-
-            - name: Deploy Stratify Data API to Coolify
+            #? API calls have to be made here instead of the Coolify CLI as the CLI returns a 401 unauthorized error
+            - name: Update Stratify Data API in Coolify
               run: |
-                  coolify app update "${{ secrets.STRATIFY_DATA_API_UUID }}" --docker-tag "${{ needs.prepare-deployment.outputs.stratify_data_api_version }}" --description "${{ needs.prepare-deployment.outputs.release-tag }}"
-                  coolify app restart "${{ secrets.STRATIFY_DATA_API_UUID }}"
+                  curl -X PATCH "${{ secrets.COOLIFY_URL }}/api/v1/applications/${{ secrets.STRATIFY_DATA_API_UUID }}" \
+                      -H "Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}" \
+                      -H "Content-Type: application/json" \
+                      -d `{
+                          "docker_registry_image_tag": "${{ needs.prepare-deployment.outputs.stratify_data_api_version }}",
+                          "description": "${{ needs.prepare-deployment.outputs.release-tag }}"    
+                      }`
+
+            - name: Restart Stratify Data API in Coolify
+              run: |
+                  curl -X GET "${{ secrets.COOLIFY_URL }}/api/v1/applications/${{ secrets.STRATIFY_DATA_API_UUID }}/restart" \
+                      -H "Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}" \
+                      -H "Content-Type: application/json"
 
     deploy-stratify-api:
         name: Deploy Stratify API
@@ -131,16 +137,21 @@ jobs:
                       exit 1
                   fi
 
-            - name: Install Coolify CLI
-              uses: yarissi/setup-coolify@v1.0.0
-              with:
-                  token: ${{ secrets.COOLIFY_TOKEN }}
-                  url: ${{ secrets.COOLIFY_URL }}
-
-            - name: Deploy Stratify API to Coolify
+            - name: Update Stratify API in Coolify
               run: |
-                  coolify app update "${{ secrets.STRATIFY_API_UUID }}" --docker-tag "${{ needs.prepare-deployment.outputs.stratify_api_version }}" --description "${{ needs.prepare-deployment.outputs.release-tag }}"
-                  coolify app restart "${{ secrets.STRATIFY_API_UUID }}"
+                  curl -X PATCH "${{ secrets.COOLIFY_URL }}/api/v1/applications/${{ secrets.STRATIFY_API_UUID }}" \
+                      -H "Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}" \
+                      -H "Content-Type: application/json" \
+                      -d `{
+                          "docker_registry_image_tag": "${{ needs.prepare-deployment.outputs.stratify_api_version }}",
+                          "description": "${{ needs.prepare-deployment.outputs.release-tag }}"    
+                      }`
+
+            - name: Restart Stratify API in Coolify
+              run: |
+                  curl -X GET "${{ secrets.COOLIFY_URL }}/api/v1/applications/${{ secrets.STRATIFY_API_UUID }}/restart" \
+                      -H "Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}" \
+                      -H "Content-Type: application/json"
 
     deploy-stratify-ui:
         name: Deploy Stratify UI
@@ -177,15 +188,20 @@ jobs:
                       echo "IMAGE_EXISTS=false" >> $GITHUB_OUTPUT
                       echo "Image does not exist: $IMAGE_NAME"
                       exit 1
-                  fi
+                  fi[]===
 
-            - name: Install Coolify CLI
-              uses: yarissi/setup-coolify@v1.0.0
-              with:
-                  token: ${{ secrets.COOLIFY_TOKEN }}
-                  url: ${{ secrets.COOLIFY_URL }}
-
-            - name: Deploy Stratify UI to Coolify
+            - name: Update Stratify UI in Coolify
               run: |
-                  coolify app update "${{ secrets.STRATIFY_UI_UUID }}" --docker-tag "${{ needs.prepare-deployment.outputs.stratify_ui_version }}" --description "${{ needs.prepare-deployment.outputs.release-tag }}"
-                  coolify app restart "${{ secrets.STRATIFY_UI_UUID }}"
+                  curl -X PATCH "${{ secrets.COOLIFY_URL }}/api/v1/applications/${{ secrets.STRATIFY_UI_UUID }}" \
+                      -H "Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}" \
+                      -H "Content-Type: application/json" \
+                      -d `{
+                          "docker_registry_image_tag": "${{ needs.prepare-deployment.outputs.stratify_ui_version }}",
+                          "description": "${{ needs.prepare-deployment.outputs.release-tag }}"    
+                      }`
+
+            - name: Restart Stratify UI in Coolify
+              run: |
+                  curl -X GET "${{ secrets.COOLIFY_URL }}/api/v1/applications/${{ secrets.STRATIFY_UI_UUID }}/restart" \
+                      -H "Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}" \
+                      -H "Content-Type: application/json"
