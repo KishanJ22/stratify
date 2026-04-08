@@ -35,7 +35,7 @@ interface RiskLabelTooltipContentProps {
 const RiskLabelTooltipContent = ({
     riskLevel,
 }: RiskLabelTooltipContentProps) => (
-    <div className="flex flex-col gap-y-1 text-wrap">
+    <div className="flex flex-col gap-y-1">
         <div className="grid grid-cols-3 gap-y-1 text-secondary-dark text-sm font-medium text-center">
             <div className="col-span-3 grid grid-cols-subgrid border-b border-b-secondary-light font-semibold pb-1">
                 <span>Risk level</span>
