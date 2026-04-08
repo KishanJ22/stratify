@@ -5,6 +5,7 @@ import AssetBadge, {
     marketStateMap,
 } from "@/app/components/(app)/AssetBadge";
 import Link from "next/link";
+import { formatNumericValue } from "@/app/utils/formatNumericValue";
 
 export const columns: ColumnDef<TopAsset>[] = [
     {
@@ -54,14 +55,11 @@ export const columns: ColumnDef<TopAsset>[] = [
                 row.original.priceDetails.currentPrice ?? "---";
             const currency = row.original.currency ?? "---";
 
-            const formattedPrice =
-                typeof currentPrice === "number"
-                    ? parseFloat(currentPrice.toFixed(2)).toLocaleString()
-                    : currentPrice;
-
             return (
-                <span className="flex flex-row justify-end">
-                    {formattedPrice} {`(${currency})`}
+                <span className="flex justify-end">
+                    {typeof currentPrice === "number"
+                        ? formatNumericValue(currentPrice, currency)
+                        : currentPrice}
                 </span>
             );
         },
