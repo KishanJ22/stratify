@@ -1,5 +1,14 @@
 # @stratify/stratify-ui
 
+## 0.10.3
+
+### Patch Changes
+
+- 347ed78: - Add content to tooltips on the portfolios page, including a table breaking down how the risk label is determined
+    - Fix formatting of numeric values in tables
+- Updated dependencies [347ed78]
+    - @stratify/stratify-api@0.8.3
+
 ## 0.10.2
 
 ### Patch Changes

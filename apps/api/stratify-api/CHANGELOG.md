@@ -1,5 +1,11 @@
 # @stratify/stratify-api
 
+## 0.8.3
+
+### Patch Changes
+
+- 347ed78: Retrieve 20 assets instead of just 10 for the top gainers so that the top gainers table can show more assets
+
 ## 0.8.2
 
 ### Patch Changes
