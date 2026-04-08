@@ -4,6 +4,7 @@ import {
     TooltipContent,
     TooltipTrigger,
 } from "@/app/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 import { InfoIcon } from "lucide-react";
 
 interface PortfolioMetricCardProps {
@@ -11,6 +12,7 @@ interface PortfolioMetricCardProps {
     tooltipContent: React.ReactNode;
     isLoading: boolean;
     children: React.ReactNode;
+    tooltipContentSide?: "top" | "right" | "bottom" | "left";
 }
 
 const PortfolioMetricCard = ({
@@ -18,6 +20,7 @@ const PortfolioMetricCard = ({
     tooltipContent,
     isLoading,
     children,
+    tooltipContentSide = "right",
 }: PortfolioMetricCardProps) => {
     return (
         <div className="bg-secondary-lightest rounded-xl py-2.5 px-3 border border-primary-dark font-sans">
@@ -34,9 +37,23 @@ const PortfolioMetricCard = ({
                 </span>
                 <Tooltip>
                     <TooltipTrigger data-testid="portfolio-metric-card-info-icon">
-                        <InfoIcon className="size-4 text-primary-darker" />
+                        <InfoIcon size={20} className="text-primary-darker" />
                     </TooltipTrigger>
-                    <TooltipContent side="right" className="font-semibold">
+                    <TooltipContent
+                        side={tooltipContentSide}
+                        className={cn(
+                            "font-medium text-sm bg-secondary-lighter text-secondary-dark",
+                            (tooltipContentSide === "bottom" ||
+                                tooltipContentSide === "top") &&
+                                "mr-10",
+                        )}
+                        arrowClassName={cn(
+                            "bg-secondary-lighter fill-secondary-lighter",
+                            (tooltipContentSide === "bottom" ||
+                                tooltipContentSide === "top") &&
+                                "ml-10",
+                        )}
+                    >
                         {tooltipContent}
                     </TooltipContent>
                 </Tooltip>
