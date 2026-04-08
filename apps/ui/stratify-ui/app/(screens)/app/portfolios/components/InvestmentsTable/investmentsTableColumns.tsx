@@ -10,6 +10,7 @@ import {
 import { InfoIcon } from "lucide-react";
 import { Dispatch, SetStateAction } from "react";
 import Link from "next/link";
+import { formatNumericValue } from "@/app/utils/formatNumericValue";
 
 export const columns = (
     userCurrency: string,
@@ -93,8 +94,10 @@ export const columns = (
                                 side="right"
                                 className="font-semibold"
                             >
-                                {currentAssetCurrencyValue.toLocaleString()}{" "}
-                                {`(${assetCurrency})`}
+                                {formatNumericValue(
+                                    currentAssetCurrencyValue,
+                                    assetCurrency,
+                                )}
                             </TooltipContent>
                         </Tooltip>
                     ) : null}
