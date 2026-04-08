@@ -154,7 +154,7 @@ describe("MarketDataTable", () => {
             expect(screen.getByText(header)).toBeInTheDocument();
         });
 
-        expect(screen.getAllByTestId("skeleton-row")).toHaveLength(5);
+        expect(screen.getAllByTestId("skeleton-row")).toHaveLength(10);
     });
 
     it("renders no data message when there is no data", () => {

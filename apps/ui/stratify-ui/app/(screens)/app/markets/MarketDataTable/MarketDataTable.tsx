@@ -78,6 +78,11 @@ const MarketDataTable = ({ selectedTab }: MarketDataTableProps) => {
                 data={data}
                 isLoading={isLoading}
                 key={selectedTab}
+                initialPaginationState={{
+                    pageIndex: 0,
+                    pageSize: 10,
+                }}
+                isLoadingRowCount={10}
             />
         </div>
     );
