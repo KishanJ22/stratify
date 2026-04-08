@@ -66,7 +66,7 @@ export default function PortfoliosPage() {
                             />
                         </div>
                     </div>
-                    <div className="flex flex-col">
+                    <div className="flex flex-col mt-2">
                         <div className="flex flex-row items-center justify-between">
                             <div className="font-sans text-3xl text-primary-base font-semibold">
                                 Investments

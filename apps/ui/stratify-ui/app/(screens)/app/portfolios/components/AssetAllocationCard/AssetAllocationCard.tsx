@@ -27,12 +27,26 @@ const AssetAllocationCard = ({ portfolioId }: AssetAllocationCardProps) => {
                 <div>Asset Allocation</div>
                 <Tooltip>
                     <TooltipTrigger>
-                        <InfoIcon className="w-4 h-4 text-primary-darker" />
+                        <InfoIcon size={20} className="text-primary-darker" />
                         <TooltipContent
-                            className="bg-secondary-lighter text-secondary-dark"
+                            className="bg-secondary-lighter text-secondary-dark text-sm font-medium w-52"
                             arrowClassName="bg-secondary-lighter fill-secondary-lighter"
+                            side="bottom"
                         >
-                            <p className="text-sm">Asset allocation tooltip</p>
+                            <div className="flex flex-col gap-y-2">
+                                <span>
+                                    How your investments are distributed across
+                                    different asset classes, countries and
+                                    sectors to understand how diversified your
+                                    portfolio is.
+                                </span>
+                                <span>
+                                    A portfolio with good diversification
+                                    typically has investments spread across
+                                    multiple asset classes, sectors and
+                                    countries, which helps reduce risk.
+                                </span>
+                            </div>
                         </TooltipContent>
                     </TooltipTrigger>
                 </Tooltip>

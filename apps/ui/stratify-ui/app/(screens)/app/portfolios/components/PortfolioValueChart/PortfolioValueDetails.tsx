@@ -8,7 +8,11 @@ import {
     ChartColumnIncreasing,
     InfoIcon,
 } from "lucide-react";
-import { Tooltip } from "@/app/components/ui/tooltip";
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipTrigger,
+} from "@/app/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
 const changeInDateRangeLabel = {
@@ -56,10 +60,20 @@ const PortfolioValueDetails = ({
                 <div className="flex flex-row items-center gap-x-1.5">
                     <span>Portfolio value</span>
                     <Tooltip>
-                        <InfoIcon
-                            size={20}
-                            className="text-primary-dark mt-1"
-                        />
+                        <TooltipTrigger>
+                            <InfoIcon
+                                size={20}
+                                className="text-primary-dark mt-1"
+                            />
+                        </TooltipTrigger>
+                        <TooltipContent
+                            side="right"
+                            className="font-medium text-primary-lightest text-sm w-72"
+                        >
+                            The total value of your portfolio based on the
+                            investments you currently hold and their current
+                            prices.
+                        </TooltipContent>
                     </Tooltip>
                 </div>
                 <HistoryDateRangeSelector
