@@ -40,8 +40,7 @@ export default function topGainersGet(fastify: FastifyInstance) {
                     .GET("/market/top-gainers", {
                         params: {
                             query: {
-                                limit: 10,
-                                minimumVolume: 2000000, // 2 million volume
+                                limit: 20,
                             },
                         },
                     })
