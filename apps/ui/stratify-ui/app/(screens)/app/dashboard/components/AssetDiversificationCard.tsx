@@ -6,7 +6,7 @@ import GroupBySelector, {
 import AssetAllocationChart from "../../portfolios/components/AssetAllocationCard/AssetAllocationChart";
 
 interface AssetDiversificationCardProps {
-    investments?: Investment[];
+    investments: Investment[];
     isLoading: boolean;
 }
 

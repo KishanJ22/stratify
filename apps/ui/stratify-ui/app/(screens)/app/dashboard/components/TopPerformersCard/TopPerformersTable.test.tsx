@@ -9,6 +9,8 @@ import TopPerformersTable from "./TopPerformersTable";
 const defaultProps = {
     investments: mockInvestmentsData,
     isLoading: false,
+    isInvestmentsNotFoundError: false,
+    isPortfoliosNotFoundError: false,
 } satisfies TopPerformersCardProps;
 
 describe("TopPerformersTable", () => {
@@ -51,21 +53,34 @@ describe("TopPerformersTable", () => {
     });
 
     it("should render placeholder data when there are no investments", () => {
-        renderComponent({ investments: [] });
+        renderComponent({ investments: [], isInvestmentsNotFoundError: true });
 
         expect(screen.getAllByText("No investments found")).toHaveLength(5);
+    });
+
+    it("should render placeholder data when there are no portfolios", () => {
+        renderComponent({ investments: [], isPortfoliosNotFoundError: true });
+
+        expect(screen.getAllByText("No portfolios found")).toHaveLength(5);
+    });
+
+    it("should render placeholder data when there are no top performers", () => {
+        renderComponent({
+            investments: mockInvestmentsData.map((investment) => ({
+                ...investment,
+                currentReturn: -100,
+            })),
+            isInvestmentsNotFoundError: false,
+            isPortfoliosNotFoundError: false,
+        });
+
+        expect(screen.getAllByText("No top performers found")).toHaveLength(5);
     });
 
     it("should filter out investments with negative returns", () => {
         renderComponent();
 
         expect(screen.queryByText("Apple Inc.")).not.toBeInTheDocument();
-    });
-
-    it("should render placeholder data when all investments have negative returns", () => {
-        renderComponent({ investments: [mockInvestmentsData[1]] });
-
-        expect(screen.getAllByText("No investments found")).toHaveLength(5);
     });
 
     it("should display a link to view the portfolio an investment is in", () => {

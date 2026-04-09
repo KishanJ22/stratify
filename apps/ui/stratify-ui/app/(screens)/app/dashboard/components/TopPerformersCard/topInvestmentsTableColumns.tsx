@@ -10,7 +10,10 @@ import { InfoIcon } from "lucide-react";
 import Link from "next/link";
 import { formatNumericValue } from "@/app/utils/formatNumericValue";
 
-export const columns = (userCurrency: string): ColumnDef<Investment>[] => [
+export const columns = (
+    userCurrency: string,
+    isNotFoundError: boolean,
+): ColumnDef<Investment>[] => [
     {
         accessorKey: "name",
         header: "Name",
@@ -20,7 +23,11 @@ export const columns = (userCurrency: string): ColumnDef<Investment>[] => [
         cell: ({ row }) => {
             const { name, portfolioName, assetId } = row.original;
 
-            return (
+            return isNotFoundError ? (
+                <div className="text-sm leading-5 max-w-62.5 whitespace-nowrap text-primary-dark">
+                    {name}
+                </div>
+            ) : (
                 <div className="flex flex-col leading-5 max-w-62.5">
                     <Link
                         href={`/app/assets/${assetId}`}
@@ -130,13 +137,14 @@ export const columns = (userCurrency: string): ColumnDef<Investment>[] => [
             type: "action",
             headerClassName: "w-[120px]",
         },
-        cell: ({ row }) => (
-            <Link
-                href={`/app/portfolios?portfolioId=${row.original.portfolioId}`}
-                className="font-medium text-nowrap text-primary-darker hover:text-primary-dark transition-colors hover:underline hover:cursor-pointer"
-            >
-                View Portfolio
-            </Link>
-        ),
+        cell: ({ row }) =>
+            isNotFoundError ? null : (
+                <Link
+                    href={`/app/portfolios?portfolioId=${row.original.portfolioId}`}
+                    className="font-medium text-nowrap text-primary-darker hover:text-primary-dark transition-colors hover:underline hover:cursor-pointer"
+                >
+                    View Portfolio
+                </Link>
+            ),
     },
 ];

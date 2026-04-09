@@ -5,38 +5,52 @@ import { columns } from "./topInvestmentsTableColumns";
 import { Investment } from "../../../portfolios/components/InvestmentsTable/InvestmentsTable";
 import { TopPerformersCardProps } from "./TopPerformersCard";
 
-const noInvestmentsData = Array.from({ length: 5 }, () => ({
-    assetId: 0,
-    symbol: "",
-    assetCountryId: 0,
-    assetCurrency: null,
-    name: "No investments found",
-    type: "" as AssetType,
-    shares: 0,
-    currentValue: 0,
-    currentReturn: 0,
-    currentAssetCurrencyValue: null,
-    currentReturnPercentage: 0,
-})) as Investment[];
+const noInvestmentsData = (label: string) =>
+    Array.from({ length: 5 }, () => ({
+        assetId: 0,
+        symbol: "",
+        assetCountryId: 0,
+        assetCurrency: null,
+        name: label,
+        type: "" as AssetType,
+        shares: 0,
+        currentValue: 0,
+        currentReturn: 0,
+        currentAssetCurrencyValue: null,
+        currentReturnPercentage: 0,
+    })) as Investment[];
 
 const TopPerformersTable = ({
     investments,
     isLoading,
+    isPortfoliosNotFoundError,
+    isInvestmentsNotFoundError,
 }: TopPerformersCardProps) => {
     const filteredInvestments =
         investments?.filter((investment) => investment.currentReturn > 0) ?? [];
 
+    const hasNoPositiveReturns = filteredInvestments.length === 0;
+
     const { session } = useSessionContext();
     const userCurrency = session?.userDetails.currency as string;
 
+    const data = isPortfoliosNotFoundError
+        ? noInvestmentsData("No portfolios found")
+        : isInvestmentsNotFoundError
+          ? noInvestmentsData("No investments found")
+          : hasNoPositiveReturns
+            ? noInvestmentsData("No top performers found")
+            : filteredInvestments;
+
+    const isNotFoundError =
+        isPortfoliosNotFoundError ||
+        isInvestmentsNotFoundError ||
+        hasNoPositiveReturns;
+
     return (
         <DataTable
-            columns={columns(userCurrency)}
-            data={
-                filteredInvestments.length > 0
-                    ? filteredInvestments
-                    : noInvestmentsData
-            }
+            columns={columns(userCurrency, isNotFoundError)}
+            data={data}
             isLoading={isLoading}
             isPaginationEnabled={false}
             className="border-secondary-dark"

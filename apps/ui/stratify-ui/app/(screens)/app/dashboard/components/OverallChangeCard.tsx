@@ -7,12 +7,14 @@ export interface OverallChangeCardProps {
     overallChange?: Overview["overallChange"];
     isLoading: boolean;
     isInvestmentsNotFoundError: boolean;
+    isPortfoliosNotFoundError: boolean;
 }
 
 const OverallChangeCard = ({
     overallChange,
     isLoading,
     isInvestmentsNotFoundError,
+    isPortfoliosNotFoundError,
 }: OverallChangeCardProps) => {
     return (
         <KeyPerformanceCard title="Overall change">
@@ -44,8 +46,9 @@ const OverallChangeCard = ({
                             valueChangePercent={
                                 overallChange?.lastThirtyDays.percentage
                             }
-                            isInvestmentsNotFoundError={
-                                isInvestmentsNotFoundError
+                            isNotFoundError={
+                                isInvestmentsNotFoundError ||
+                                isPortfoliosNotFoundError
                             }
                         />
                     </div>
@@ -57,8 +60,9 @@ const OverallChangeCard = ({
                             valueChangePercent={
                                 overallChange?.lastSixMonths.percentage
                             }
-                            isInvestmentsNotFoundError={
-                                isInvestmentsNotFoundError
+                            isNotFoundError={
+                                isInvestmentsNotFoundError ||
+                                isPortfoliosNotFoundError
                             }
                         />
                     </div>
@@ -70,8 +74,9 @@ const OverallChangeCard = ({
                             valueChangePercent={
                                 overallChange?.allTime.percentage
                             }
-                            isInvestmentsNotFoundError={
-                                isInvestmentsNotFoundError
+                            isNotFoundError={
+                                isInvestmentsNotFoundError ||
+                                isPortfoliosNotFoundError
                             }
                         />
                     </div>

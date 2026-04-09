@@ -4,10 +4,6 @@ import { render, screen } from "@testing-library/react";
 
 const defaultProps = {
     overallChange: {
-        lastSevenDays: {
-            absolute: -500,
-            percentage: -5,
-        },
         lastThirtyDays: {
             absolute: 0,
             percentage: 0,
@@ -23,6 +19,7 @@ const defaultProps = {
     },
     isLoading: false,
     isInvestmentsNotFoundError: false,
+    isPortfoliosNotFoundError: false,
 } satisfies OverallChangeCardProps;
 
 describe("OverallChangeCard", () => {
@@ -52,7 +49,17 @@ describe("OverallChangeCard", () => {
         ).toBeInTheDocument();
     });
 
-    it("should render placeholder values when no investments are found", () => {
+    it("should render placeholder values when the user has no portfolios", () => {
+        renderComponent({ isPortfoliosNotFoundError: true });
+
+        const emptyValues = screen.getAllByText("---");
+        expect(emptyValues).toHaveLength(3);
+
+        const chartColumns = screen.getAllByTestId("chart-column-not-found");
+        expect(chartColumns).toHaveLength(3);
+    });
+
+    it("should render placeholder values when the user has no investments", () => {
         renderComponent({ isInvestmentsNotFoundError: true });
 
         const emptyValues = screen.getAllByText("---");

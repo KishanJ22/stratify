@@ -2,13 +2,17 @@ import { Overview } from "../../usePortfoliosOverview";
 import TopPerformersTable from "./TopPerformersTable";
 
 export interface TopPerformersCardProps {
-    investments?: Overview["investments"];
+    investments: Overview["investments"];
     isLoading: boolean;
+    isPortfoliosNotFoundError: boolean;
+    isInvestmentsNotFoundError: boolean;
 }
 
 const TopPerformersCard = ({
     investments,
     isLoading,
+    isPortfoliosNotFoundError,
+    isInvestmentsNotFoundError,
 }: TopPerformersCardProps) => {
     return (
         <div className="flex flex-col h-full w-full bg-primary-lightest rounded-xl shadow-lg py-2.5 px-3 font-sans">
@@ -25,6 +29,8 @@ const TopPerformersCard = ({
                 <TopPerformersTable
                     investments={investments}
                     isLoading={isLoading}
+                    isPortfoliosNotFoundError={isPortfoliosNotFoundError}
+                    isInvestmentsNotFoundError={isInvestmentsNotFoundError}
                 />
             </div>
         </div>
