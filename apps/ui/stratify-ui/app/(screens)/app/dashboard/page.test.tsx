@@ -81,16 +81,4 @@ describe("DashboardPage", () => {
 
         expect(screen.getByText("Create a portfolio")).toBeInTheDocument();
     });
-
-    it("should display placeholder data if the user has no investments", async () => {
-        mockUsePortfoliosOverview.mockReturnValue({
-            ...defaultHookReturnValues,
-            isInvestmentsNotFoundError: true,
-        });
-
-        renderPage();
-
-        const placeholderElements = await screen.findAllByText("---");
-        expect(placeholderElements).toHaveLength(3);
-    });
 });

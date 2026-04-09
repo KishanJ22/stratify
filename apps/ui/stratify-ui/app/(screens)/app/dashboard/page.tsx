@@ -32,16 +32,23 @@ export default function DashboardPage() {
                         overallChange={data?.overallChange}
                         isLoading={isLoading}
                         isInvestmentsNotFoundError={isInvestmentsNotFoundError}
+                        isPortfoliosNotFoundError={isPortfoliosNotFoundError}
                     />
                     <GoalProgressionCard isLoading={isLoading} />
                     <div className="col-span-2">
                         <TopPerformersCard
-                            investments={data?.investments}
+                            investments={data?.investments ?? []}
                             isLoading={isLoading}
+                            isPortfoliosNotFoundError={
+                                isPortfoliosNotFoundError
+                            }
+                            isInvestmentsNotFoundError={
+                                isInvestmentsNotFoundError
+                            }
                         />
                     </div>
                     <AssetDiversificationCard
-                        investments={data?.investments}
+                        investments={data?.investments ?? []}
                         isLoading={isLoading}
                     />
                 </div>

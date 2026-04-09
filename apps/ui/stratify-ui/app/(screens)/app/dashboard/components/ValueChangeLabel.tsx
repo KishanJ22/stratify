@@ -8,17 +8,17 @@ import {
 
 interface ValueChangeLabelProps {
     valueChangePercent?: number;
-    isInvestmentsNotFoundError: boolean;
+    isNotFoundError: boolean;
 }
 
 const ValueChangeLabel = ({
     valueChangePercent,
-    isInvestmentsNotFoundError,
+    isNotFoundError,
 }: ValueChangeLabelProps) => {
     const baseClassName =
         "flex flex-row font-sans items-center text-lg gap-x-1 mt-1.5 leading-5";
 
-    if (isInvestmentsNotFoundError) {
+    if (isNotFoundError) {
         return (
             <div className={`${baseClassName} text-secondary-light`}>
                 <ChartColumn
