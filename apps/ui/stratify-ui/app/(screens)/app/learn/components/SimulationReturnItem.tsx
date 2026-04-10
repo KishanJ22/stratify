@@ -1,6 +1,7 @@
 import { cn } from "@/lib/utils";
 import { CompoundingSimulatorSuccessResponse } from "../compounding/useCompoundingSimulator";
 import { Skeleton } from "@/app/components/ui/skeleton";
+import { formatNumericValue } from "@/app/utils/formatNumericValue";
 
 interface SimulationReturnItemProps {
     title: string;
@@ -15,10 +16,10 @@ const SimulationReturnItem = ({
     returnDetails,
     isLoading,
 }: SimulationReturnItemProps) => {
-    const hasPositiveReturn = returnDetails
+    const hasPositiveReturn = returnDetails?.absolute
         ? returnDetails.absolute > 0
         : false;
-    const hasNegativeReturn = returnDetails
+    const hasNegativeReturn = returnDetails?.absolute
         ? returnDetails.absolute < 0
         : false;
 
@@ -56,19 +57,19 @@ const SimulationReturnItem = ({
                         hasNegativeReturn && "text-negative-base",
                     )}
                 >
-                    <div>
-                        {returnDetails
-                            ? (hasPositiveReturn ? "+" : "") +
-                              returnDetails.absolute.toLocaleString()
-                            : "---"}
-                    </div>
-                    <div>
-                        {returnDetails
-                            ? (hasPositiveReturn ? "+" : "") +
-                              returnDetails.percentage +
-                              "%"
-                            : "---"}
-                    </div>
+                    <span>
+                        {returnDetails?.absolute == null
+                            ? "---"
+                            : (returnDetails.absolute > 0 ? "+" : "") +
+                              formatNumericValue(returnDetails.absolute)}
+                    </span>
+                    <span>
+                        {returnDetails?.percentage == null
+                            ? "---"
+                            : (returnDetails.percentage > 0 ? "+" : "") +
+                              formatNumericValue(returnDetails.percentage) +
+                              "%"}
+                    </span>
                 </div>
             )}
         </div>
