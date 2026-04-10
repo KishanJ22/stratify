@@ -5,6 +5,7 @@ import { getFontClassNames } from "@/lib/fonts";
 import { Toaster } from "@/app/components/ui/sonner";
 import PublicNavbar from "@/app/components/(public)/PublicNavbar/PublicNavbar";
 import { PublicEnv } from "@/public-env";
+import { NextIntlClientProvider } from "next-intl";
 
 export const metadata: Metadata = {
     title: "Stratify UI",
@@ -22,14 +23,18 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
         <html lang="en">
             <head />
             <body className={`${fontClassNames} antialiased`} id="root">
-                <PublicEnv />
-                <Providers>
-                    <div className="h-screen flex flex-col">
-                        <PublicNavbar showLoginSignUpButtons={false} />
-                        <div className="flex-1 overflow-hidden">{children}</div>
-                    </div>
-                    <Toaster richColors />
-                </Providers>
+                <NextIntlClientProvider>
+                    <PublicEnv />
+                    <Providers>
+                        <div className="h-screen flex flex-col">
+                            <PublicNavbar showLoginSignUpButtons={false} />
+                            <div className="flex-1 overflow-hidden">
+                                {children}
+                            </div>
+                        </div>
+                        <Toaster richColors />
+                    </Providers>
+                </NextIntlClientProvider>
             </body>
         </html>
     );

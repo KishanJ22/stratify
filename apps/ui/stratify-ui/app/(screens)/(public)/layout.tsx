@@ -4,6 +4,7 @@ import Providers from "../../global/Providers";
 import PublicNavbar from "../../components/(public)/PublicNavbar/PublicNavbar";
 import { getFontClassNames } from "@/lib/fonts";
 import { PublicEnv } from "@/public-env";
+import { NextIntlClientProvider } from "next-intl";
 
 export const metadata: Metadata = {
     title: "Stratify UI",
@@ -21,11 +22,13 @@ export default function RootLayout({ children }: RootLayoutProps) {
         <html lang="en">
             <head />
             <body className={`${fontClassNames} antialiased`} id="root">
-                <PublicEnv />
-                <Providers>
-                    <PublicNavbar />
-                    {children}
-                </Providers>
+                <NextIntlClientProvider>
+                    <PublicEnv />
+                    <Providers>
+                        <PublicNavbar />
+                        {children}
+                    </Providers>
+                </NextIntlClientProvider>
             </body>
         </html>
     );
