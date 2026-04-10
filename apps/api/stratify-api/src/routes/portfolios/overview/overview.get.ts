@@ -60,11 +60,11 @@ const calculateChangeInTimePeriod = (
         (entry) => new Date(entry.date).getTime() >= startDate.getTime(),
     );
 
-    if (!startValueEntry) {
+    if (!startValueEntry || startValueEntry.portfolioValue === 0) {
         return {
-            absolute: 0,
-            percentage: 0,
-        };
+            absolute: null,
+            percentage: null,
+        } satisfies Return;
     }
 
     const valueDifference = latestValue - startValueEntry.portfolioValue;
@@ -74,7 +74,7 @@ const calculateChangeInTimePeriod = (
         percentage: toTwoDecimalPoints(
             (valueDifference / startValueEntry.portfolioValue) * 100,
         ),
-    };
+    } satisfies Return;
 };
 
 const retrieveOverviewDetails = async (portfolioIds: number[]) => {
@@ -128,9 +128,9 @@ const retrieveOverviewDetails = async (portfolioIds: number[]) => {
         percentage: toTwoDecimalPoints((overallReturn / totalBuyAmount) * 100),
     } satisfies Return;
 
-    const currentInvestments = investments.filter(
-        (investment) => investment.currentValue > 0,
-    );
+    const currentInvestments = investments
+        .filter((investment) => investment.currentValue > 0)
+        .sort((a, b) => b.currentReturnPercentage - a.currentReturnPercentage);
 
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
@@ -153,9 +153,7 @@ const retrieveOverviewDetails = async (portfolioIds: number[]) => {
             ),
             allTime: allTimeReturn,
         },
-        investments: currentInvestments.sort(
-            (a, b) => b.currentReturnPercentage - a.currentReturnPercentage,
-        ),
+        investments: currentInvestments,
     } satisfies Overview;
 };
 
