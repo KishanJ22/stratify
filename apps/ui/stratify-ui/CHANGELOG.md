@@ -1,5 +1,11 @@
 # @stratify/stratify-ui
 
+## 0.10.4
+
+### Patch Changes
+
+- 76c7df8: - Change the label displayed in the placeholder rows for the top performers table when the user has no portfolios, no investments in any portfolio or no investments with positive returns
+
 ## 0.10.3
 
 ### Patch Changes
