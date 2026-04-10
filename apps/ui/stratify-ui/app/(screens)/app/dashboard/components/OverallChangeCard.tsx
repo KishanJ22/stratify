@@ -4,7 +4,7 @@ import KeyPerformanceCard from "./KeyPerformanceCard";
 import ValueChangeLabel from "./ValueChangeLabel";
 
 export interface OverallChangeCardProps {
-    overallChange?: Overview["overallChange"];
+    overallChange: Overview["overallChange"];
     isLoading: boolean;
     isInvestmentsNotFoundError: boolean;
     isPortfoliosNotFoundError: boolean;
