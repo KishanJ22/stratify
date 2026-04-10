@@ -44,7 +44,7 @@ const OverallChangeCard = ({
                         </span>
                         <ValueChangeLabel
                             valueChangePercent={
-                                overallChange?.lastThirtyDays.percentage
+                                overallChange?.lastThirtyDays.percentage ?? null
                             }
                             isNotFoundError={
                                 isInvestmentsNotFoundError ||
@@ -58,7 +58,7 @@ const OverallChangeCard = ({
                         </span>
                         <ValueChangeLabel
                             valueChangePercent={
-                                overallChange?.lastSixMonths.percentage
+                                overallChange?.lastSixMonths.percentage ?? null
                             }
                             isNotFoundError={
                                 isInvestmentsNotFoundError ||
@@ -72,7 +72,7 @@ const OverallChangeCard = ({
                         </span>
                         <ValueChangeLabel
                             valueChangePercent={
-                                overallChange?.allTime.percentage
+                                overallChange?.allTime.percentage ?? null
                             }
                             isNotFoundError={
                                 isInvestmentsNotFoundError ||

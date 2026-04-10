@@ -26,10 +26,11 @@ const TopPerformersTable = ({
     isPortfoliosNotFoundError,
     isInvestmentsNotFoundError,
 }: TopPerformersCardProps) => {
-    const filteredInvestments =
-        investments?.filter((investment) => investment.currentReturn > 0) ?? [];
+    const investmentsWithPositiveReturn = investments
+        .filter((investment) => investment.currentReturn > 0)
+        .slice(0, 5);
 
-    const hasNoPositiveReturns = filteredInvestments.length === 0;
+    const hasNoPositiveReturns = investmentsWithPositiveReturn.length === 0;
 
     const { session } = useSessionContext();
     const userCurrency = session?.userDetails.currency as string;
@@ -40,7 +41,7 @@ const TopPerformersTable = ({
           ? noInvestmentsData("No investments found")
           : hasNoPositiveReturns
             ? noInvestmentsData("No top performers found")
-            : filteredInvestments;
+            : investmentsWithPositiveReturn;
 
     const isNotFoundError =
         isPortfoliosNotFoundError ||

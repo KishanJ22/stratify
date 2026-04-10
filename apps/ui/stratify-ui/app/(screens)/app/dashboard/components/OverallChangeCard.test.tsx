@@ -80,4 +80,22 @@ describe("OverallChangeCard", () => {
         ).toBeInTheDocument();
         expect(screen.getByTestId("chart-column")).toBeInTheDocument();
     });
+
+    it("should render placeholder values when there is a null value", () => {
+        renderComponent({
+            overallChange: {
+                ...defaultProps.overallChange,
+                lastThirtyDays: {
+                    absolute: null,
+                    percentage: null,
+                },
+            },
+        });
+
+        const emptyValues = screen.getAllByText("---");
+        expect(emptyValues).toHaveLength(1);
+
+        const chartColumn = screen.getByTestId("chart-column-not-found");
+        expect(chartColumn).toBeInTheDocument();
+    });
 });

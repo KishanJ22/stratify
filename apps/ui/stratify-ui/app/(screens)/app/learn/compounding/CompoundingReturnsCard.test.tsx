@@ -33,7 +33,7 @@ describe("CompoundingReturnsCard", () => {
             expect(screen.getByText(returnValue)).toBeInTheDocument();
         });
 
-        const percentageReturns = ["0%", "+57.5%", "+90%"];
+        const percentageReturns = ["0%", "+57.50%", "+90%"];
 
         percentageReturns.forEach((returnValue) => {
             expect(screen.getByText(returnValue)).toBeInTheDocument();

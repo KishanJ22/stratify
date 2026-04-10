@@ -115,6 +115,7 @@ const PortfolioMetrics = ({ portfolioId }: PortfolioMetricsProps) => {
                 {data?.overallReturn ? (
                     <div
                         className={`flex flex-row items-center justify-between font-sans font-medium text-lg ${
+                            data.overallReturn.absolute &&
                             data.overallReturn.absolute >= 0
                                 ? "text-positive-base"
                                 : "text-negative-base"
@@ -122,14 +123,20 @@ const PortfolioMetrics = ({ portfolioId }: PortfolioMetricsProps) => {
                         data-testid="overall-return"
                     >
                         <span>
-                            {data.overallReturn.absolute >= 0 ? "+" : ""}
-                            {formatNumericValue(
-                                data.overallReturn.absolute,
-                                userCurrency,
-                            )}
+                            {data.overallReturn.absolute &&
+                            data.overallReturn.absolute >= 0
+                                ? "+"
+                                : ""}
+                            {data.overallReturn.absolute
+                                ? formatNumericValue(
+                                      data.overallReturn.absolute,
+                                      userCurrency,
+                                  )
+                                : "---"}
                         </span>
                         <div className="flex flex-row items-center gap-x-1">
-                            {data.overallReturn.percentage >= 0 ? (
+                            {data.overallReturn.percentage &&
+                            data.overallReturn.percentage >= 0 ? (
                                 <ChartColumnIncreasing
                                     size={22}
                                     data-testid="chart-column-increasing"
@@ -140,8 +147,15 @@ const PortfolioMetrics = ({ portfolioId }: PortfolioMetricsProps) => {
                                     data-testid="chart-column-decreasing"
                                 />
                             )}
-                            {data.overallReturn.percentage >= 0 ? "+" : ""}
-                            {data.overallReturn.percentage}%
+                            {data.overallReturn.percentage &&
+                            data.overallReturn.percentage >= 0
+                                ? "+"
+                                : ""}
+                            {data.overallReturn.percentage &&
+                                formatNumericValue(
+                                    data.overallReturn.percentage,
+                                )}
+                            %
                         </div>
                     </div>
                 ) : (
