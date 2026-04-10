@@ -4,7 +4,7 @@ import KeyPerformanceCard from "./KeyPerformanceCard";
 import ValueChangeLabel from "./ValueChangeLabel";
 
 export interface OverallChangeCardProps {
-    overallChange: Overview["overallChange"];
+    overallChange?: Overview["overallChange"];
     isLoading: boolean;
     isInvestmentsNotFoundError: boolean;
     isPortfoliosNotFoundError: boolean;
@@ -44,7 +44,7 @@ const OverallChangeCard = ({
                         </span>
                         <ValueChangeLabel
                             valueChangePercent={
-                                overallChange?.lastThirtyDays.percentage
+                                overallChange?.lastThirtyDays.percentage ?? null
                             }
                             isNotFoundError={
                                 isInvestmentsNotFoundError ||
@@ -58,7 +58,7 @@ const OverallChangeCard = ({
                         </span>
                         <ValueChangeLabel
                             valueChangePercent={
-                                overallChange?.lastSixMonths.percentage
+                                overallChange?.lastSixMonths.percentage ?? null
                             }
                             isNotFoundError={
                                 isInvestmentsNotFoundError ||
@@ -72,7 +72,7 @@ const OverallChangeCard = ({
                         </span>
                         <ValueChangeLabel
                             valueChangePercent={
-                                overallChange?.allTime.percentage
+                                overallChange?.allTime.percentage ?? null
                             }
                             isNotFoundError={
                                 isInvestmentsNotFoundError ||
