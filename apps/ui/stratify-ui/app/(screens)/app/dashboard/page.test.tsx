@@ -6,7 +6,7 @@ import MockSessionProvider from "@/app/tests/_mocks/MockSessionProvider";
 import { mockPortfoliosOverviewData } from "./_mocks/mockPortfoliosOverviewData";
 import { TooltipProvider } from "@/app/components/ui/tooltip";
 
-const defaultHookReturnValues = {
+const defaultUseOverviewReturnValues = {
     data: mockPortfoliosOverviewData,
     isLoading: false,
     isPortfoliosNotFoundError: false,
@@ -17,6 +17,20 @@ const mockUsePortfoliosOverview = vi.fn();
 
 vi.mock("./usePortfoliosOverview", () => ({
     usePortfoliosOverview: () => mockUsePortfoliosOverview(),
+}));
+
+const defaultUseGoalReturnValues = {
+    data: {
+        targetAmount: 10000,
+    },
+    isLoading: false,
+    isGoalNotFoundError: false,
+};
+
+const mockUseGoal = vi.fn();
+
+vi.mock("./components/GoalProgressionCard/useGoal", () => ({
+    useGoal: () => mockUseGoal(),
 }));
 
 describe("DashboardPage", () => {
@@ -36,7 +50,11 @@ describe("DashboardPage", () => {
         });
 
     it("should render the page correctly", () => {
-        mockUsePortfoliosOverview.mockReturnValue(defaultHookReturnValues);
+        mockUsePortfoliosOverview.mockReturnValue(
+            defaultUseOverviewReturnValues,
+        );
+        mockUseGoal.mockReturnValue(defaultUseGoalReturnValues);
+
         renderPage();
 
         expect(screen.getByText("Dashboard")).toBeInTheDocument();
@@ -56,7 +74,11 @@ describe("DashboardPage", () => {
 
     it("should show loading states correctly", () => {
         mockUsePortfoliosOverview.mockReturnValue({
-            ...defaultHookReturnValues,
+            ...defaultUseOverviewReturnValues,
+            isLoading: true,
+        });
+        mockUseGoal.mockReturnValue({
+            ...defaultUseGoalReturnValues,
             isLoading: true,
         });
 
@@ -75,9 +97,10 @@ describe("DashboardPage", () => {
 
     it("should display create portfolio link if the user has no portfolios", () => {
         mockUsePortfoliosOverview.mockReturnValue({
-            ...defaultHookReturnValues,
+            ...defaultUseOverviewReturnValues,
             isPortfoliosNotFoundError: true,
         });
+        mockUseGoal.mockReturnValue(defaultUseGoalReturnValues);
 
         renderPage();
 

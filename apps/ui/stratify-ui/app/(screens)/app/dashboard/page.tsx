@@ -3,20 +3,32 @@
 import { usePortfoliosOverview } from "./usePortfoliosOverview";
 import TotalValueCard from "./components/TotalValueCard";
 import OverallChangeCard from "./components/OverallChangeCard";
-import GoalProgressionCard from "./components/GoalProgressionCard";
+import GoalProgressionCard from "./components/GoalProgressionCard/GoalProgressionCard";
 import TopPerformersCard from "./components/TopPerformersCard/TopPerformersCard";
 import AssetDiversificationCard from "./components/AssetDiversificationCard";
 import { useTranslations } from "next-intl";
+import { useGoal } from "./components/GoalProgressionCard/useGoal";
+import SetGoalModal from "./components/GoalProgressionCard/SetGoalModal";
+import { useState } from "react";
 
 export default function DashboardPage() {
+    const [isSetGoalModalOpen, setIsSetGoalModalOpen] = useState(false);
     const {
-        data,
-        isLoading,
+        data: overviewData,
+        isLoading: isOverviewLoading,
         isPortfoliosNotFoundError,
         isInvestmentsNotFoundError,
     } = usePortfoliosOverview();
 
+    const {
+        data: goalData,
+        isLoading: isGoalLoading,
+        isGoalNotFoundError,
+    } = useGoal();
+
     const translate = useTranslations("Dashboard");
+
+    const isLoading = isOverviewLoading || isGoalLoading;
 
     return (
         <div className="items-center justify-items-center h-full px-10">
@@ -26,21 +38,27 @@ export default function DashboardPage() {
             <div className="mt-8 w-full">
                 <div className="grid grid-cols-3 gap-x-16 gap-y-10">
                     <TotalValueCard
-                        totalValue={data?.totalValue}
+                        totalValue={overviewData?.totalValue}
                         isLoading={isLoading}
                         isPortfoliosNotFoundError={isPortfoliosNotFoundError}
                         isInvestmentsNotFoundError={isInvestmentsNotFoundError}
                     />
                     <OverallChangeCard
-                        overallChange={data?.overallChange}
+                        overallChange={overviewData?.overallChange}
                         isLoading={isLoading}
                         isInvestmentsNotFoundError={isInvestmentsNotFoundError}
                         isPortfoliosNotFoundError={isPortfoliosNotFoundError}
                     />
-                    <GoalProgressionCard isLoading={isLoading} />
+                    <GoalProgressionCard
+                        totalValue={overviewData?.totalValue}
+                        targetValue={goalData?.targetAmount}
+                        isGoalNotFoundError={isGoalNotFoundError}
+                        isLoading={isLoading}
+                        setIsGoalModalOpen={setIsSetGoalModalOpen}
+                    />
                     <div className="col-span-2">
                         <TopPerformersCard
-                            investments={data?.investments ?? []}
+                            investments={overviewData?.investments ?? []}
                             isLoading={isLoading}
                             isPortfoliosNotFoundError={
                                 isPortfoliosNotFoundError
@@ -51,11 +69,17 @@ export default function DashboardPage() {
                         />
                     </div>
                     <AssetDiversificationCard
-                        investments={data?.investments ?? []}
+                        investments={overviewData?.investments ?? []}
                         isLoading={isLoading}
                     />
                 </div>
             </div>
+            <SetGoalModal
+                isOpen={isSetGoalModalOpen}
+                handleClose={() => setIsSetGoalModalOpen(false)}
+                isGoalNotFoundError={isGoalNotFoundError}
+                currentTargetAmount={goalData?.targetAmount}
+            />
         </div>
     );
 }
