@@ -1,5 +1,11 @@
 # @stratify/stratify-ui
 
+## 0.10.7
+
+### Patch Changes
+
+- f8e7997: Fix asset name field being set to undefined (undefined) when selecting an asset in the add investment modal
+
 ## 0.10.6
 
 ### Patch Changes
