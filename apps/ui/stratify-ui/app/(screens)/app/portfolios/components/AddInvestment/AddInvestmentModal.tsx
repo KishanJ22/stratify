@@ -113,8 +113,6 @@ const AddInvestmentModal = ({
             onBlurAsync: async ({ value }) => {
                 const result = addInvestmentSchema.safeParse(value);
 
-                console.log("Validation result:", result);
-
                 //? If currency conversion is required but the conversion rate isn't set, then the submit button should be disabled
                 if (selectedAsset?.assetCurrency !== userCurrency) {
                     const currencyConversionRateValue =
@@ -378,10 +376,11 @@ const AddInvestmentModal = ({
                                                 preselectedAsset !== undefined
                                             }
                                             value={
-                                                field.state.value ||
                                                 preselectedAsset
                                                     ? `${preselectedAsset?.name} (${preselectedAsset?.symbol})`
-                                                    : searchValue
+                                                    : selectedAsset
+                                                      ? `${selectedAsset.name} (${selectedAsset.symbol})`
+                                                      : searchValue
                                             }
                                             onValueChange={(searchValue) =>
                                                 setSearchValue(searchValue)
