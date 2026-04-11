@@ -1,5 +1,12 @@
 # @stratify/stratify-api
 
+## 0.9.0
+
+### Minor Changes
+
+- 3571a3b: - Add endpoints to get the most recent goal and set a goal
+    - Add unit tests for these endpoints
+
 ## 0.8.4
 
 ### Patch Changes
