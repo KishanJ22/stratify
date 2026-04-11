@@ -115,6 +115,14 @@ export interface StratifyCurrencies {
   name: string;
 }
 
+export interface StratifyGoal {
+  createdAt: Generated<Timestamp>;
+  id: Generated<number>;
+  targetAmount: Numeric;
+  updatedAt: Generated<Timestamp>;
+  userId: string;
+}
+
 export interface StratifyMigrationsDbMigrations {
   name: string;
   timestamp: string;
@@ -156,6 +164,7 @@ export interface DB {
   "stratify.assets": StratifyAssets;
   "stratify.countries": StratifyCountries;
   "stratify.currencies": StratifyCurrencies;
+  "stratify.goal": StratifyGoal;
   "stratify.portfolios": StratifyPortfolios;
   "stratify.trades": StratifyTrades;
   "stratifyMigrations.dbMigrations": StratifyMigrationsDbMigrations;
