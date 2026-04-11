@@ -48,7 +48,12 @@ declare const messages: {
             "goalNotSet": "No goal set",
             "set": "Set",
             "edit": "Edit",
-            "goalSuccessfullyMet": "Your goal of {targetValue, number} ({userCurrency}) has been reached!"
+            "goalSuccessfullyMet": "Your goal of {targetValue, number} ({userCurrency}) has been reached!",
+            "setGoalModal": {
+                "setGoalTitle": "Set Goal",
+                "editGoalTitle": "Edit Goal",
+                "targetAmountLabel": "Target Amount"
+            }
         }
     },
     "Portfolios": {

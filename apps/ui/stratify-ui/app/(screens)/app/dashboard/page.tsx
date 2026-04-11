@@ -8,8 +8,11 @@ import TopPerformersCard from "./components/TopPerformersCard/TopPerformersCard"
 import AssetDiversificationCard from "./components/AssetDiversificationCard";
 import { useTranslations } from "next-intl";
 import { useGoal } from "./components/GoalProgressionCard/useGoal";
+import SetGoalModal from "./components/GoalProgressionCard/SetGoalModal";
+import { useState } from "react";
 
 export default function DashboardPage() {
+    const [isSetGoalModalOpen, setIsSetGoalModalOpen] = useState(false);
     const {
         data: overviewData,
         isLoading: isOverviewLoading,
@@ -51,6 +54,7 @@ export default function DashboardPage() {
                         targetValue={goalData?.targetAmount}
                         isGoalNotFoundError={isGoalNotFoundError}
                         isLoading={isLoading}
+                        setIsGoalModalOpen={setIsSetGoalModalOpen}
                     />
                     <div className="col-span-2">
                         <TopPerformersCard
@@ -70,6 +74,12 @@ export default function DashboardPage() {
                     />
                 </div>
             </div>
+            <SetGoalModal
+                isOpen={isSetGoalModalOpen}
+                handleClose={() => setIsSetGoalModalOpen(false)}
+                isGoalNotFoundError={isGoalNotFoundError}
+                currentTargetAmount={goalData?.targetAmount}
+            />
         </div>
     );
 }

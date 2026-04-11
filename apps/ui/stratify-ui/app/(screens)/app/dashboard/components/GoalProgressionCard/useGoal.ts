@@ -44,7 +44,6 @@ export const useGoal = () => {
                 throw error;
             }
         },
-        enabled: !cachedGoal,
     });
 
     return {
