@@ -16,6 +16,11 @@ declare const messages: {
         "lastTwelveMonths": "Last 12 months",
         "allTime": "All time"
     },
+    "assetClasses": {
+        "STOCK": "Stock",
+        "ETF": "Exchange Traded Fund",
+        "CRYPTOCURRENCY": "Cryptocurrency"
+    },
     "Dashboard": {
         "title": "Dashboard",
         "createAPortfolio": "Create a portfolio",
@@ -40,6 +45,19 @@ declare const messages: {
             }
         }
     },
+    "Portfolios": {
+        "title": "Portfolios",
+        "assetAllocation": {
+            "title": "Asset Allocation",
+            "groupBy": "Group by:",
+            "groupByOptions": {
+                "assetClass": "Asset class",
+                "country": "Country",
+                "sector": "Sector",
+                "noGrouping": "No grouping"
+            }
+        }
+    },
     "Sectors": {
         "sector": "Sector",
         "allocation": "Allocation",
@@ -53,7 +71,8 @@ declare const messages: {
         "industrial": "Industrials",
         "realestate": "Real Estate",
         "technology": "Technology",
-        "utilities": "Utilities"
+        "utilities": "Utilities",
+        "cryptocurrency": "Cryptocurrency"
     }
 };
 export default messages;

@@ -51,7 +51,7 @@ describe("AssetDetailsCard", () => {
             "Stock",
             "Open",
             "Consumer Electronics",
-            "technology",
+            "Technology",
         ];
 
         details.forEach((detail) => {
