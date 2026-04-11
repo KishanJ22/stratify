@@ -2,6 +2,7 @@ import { Skeleton } from "@/app/components/ui/skeleton";
 import { useSessionContext } from "../../SessionProvider";
 import KeyPerformanceCard from "./KeyPerformanceCard";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 export interface TotalValueCardProps {
     isPortfoliosNotFoundError: boolean;
@@ -17,10 +18,11 @@ const TotalValueCard = ({
     isLoading,
 }: TotalValueCardProps) => {
     const { session } = useSessionContext();
+    const translate = useTranslations();
     const userCurrency = session?.userDetails.currency as string;
 
     return (
-        <KeyPerformanceCard title="Total value">
+        <KeyPerformanceCard title={translate("Dashboard.totalValue")}>
             {isLoading ? (
                 <Skeleton
                     className="h-8 w-1/2"
@@ -32,7 +34,7 @@ const TotalValueCard = ({
                     className="text-3xl leading-9 text-secondary-light hover:text-secondary-base transition-colors hover:underline"
                     data-testid="create-portfolio-link"
                 >
-                    {"Create a portfolio"}
+                    {translate("Dashboard.createAPortfolio")}
                 </Link>
             ) : isInvestmentsNotFoundError ? (
                 <Link
@@ -40,12 +42,15 @@ const TotalValueCard = ({
                     className="text-3xl leading-9 text-secondary-light hover:text-secondary-base transition-colors hover:underline"
                     data-testid="add-investment-link"
                 >
-                    {"Add an investment"}
+                    {translate("Dashboard.addAnInvestment")}
                 </Link>
             ) : (
                 <span className="text-3xl leading-9 text-secondary-base">
                     {totalValue
-                        ? `${totalValue.toLocaleString()} (${userCurrency})`
+                        ? translate("Generic.currencyAmount", {
+                              amount: totalValue,
+                              currency: userCurrency,
+                          })
                         : "---"}
                 </span>
             )}

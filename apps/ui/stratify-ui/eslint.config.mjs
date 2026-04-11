@@ -18,6 +18,12 @@ const eslintConfig = [
         },
     },
     {
+        files: ["**/*.ts", "**/*.tsx"],
+        rules: {
+            "@typescript-eslint/no-explicit-any": "off", // Needed for using values in translation keys
+        },
+    },
+    {
         ignores: [
             "node_modules/**",
             ".next/**",

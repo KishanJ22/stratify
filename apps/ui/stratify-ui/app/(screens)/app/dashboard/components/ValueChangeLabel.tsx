@@ -5,6 +5,7 @@ import {
     ChartColumnDecreasing,
     ChartColumnIncreasing,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface ValueChangeLabelProps {
     valueChangePercent: number | null;
@@ -15,6 +16,7 @@ const ValueChangeLabel = ({
     valueChangePercent,
     isNotFoundError,
 }: ValueChangeLabelProps) => {
+    const translate = useTranslations("Generic");
     const baseClassName =
         "flex flex-row font-sans items-center text-lg gap-x-1 mt-1.5 leading-5";
 
@@ -33,7 +35,9 @@ const ValueChangeLabel = ({
     return valueChangePercent === 0 ? (
         <div className={`${baseClassName} text-secondary-light`}>
             <ChartColumn className="w-5 h-5" data-testid="chart-column" />
-            {"0%"}
+            {translate("percentage", {
+                percentage: 0,
+            })}
         </div>
     ) : valueChangePercent > 0 ? (
         <div className={`${baseClassName} text-positive-base`}>
@@ -41,7 +45,9 @@ const ValueChangeLabel = ({
                 className="w-5 h-5"
                 data-testid="chart-column-increasing-positive"
             />
-            {`+${valueChangePercent}%`}
+            {translate("positivePercentage", {
+                percentage: valueChangePercent,
+            })}
         </div>
     ) : (
         <div className={`${baseClassName} text-negative-base`}>
@@ -49,7 +55,9 @@ const ValueChangeLabel = ({
                 className="w-5 h-5"
                 data-testid="chart-column-decreasing-negative"
             />
-            {`${valueChangePercent}%`}
+            {translate("percentage", {
+                percentage: valueChangePercent,
+            })}
         </div>
     );
 };

@@ -24,7 +24,7 @@ describe("TotalValueCard", () => {
     it("should render the total value card successfully", () => {
         renderComponent();
 
-        expect(screen.getByText("Total value")).toBeInTheDocument();
+        expect(screen.getByText("Total Value")).toBeInTheDocument();
         expect(screen.getByText("100,000 (GBP)")).toBeInTheDocument();
     });
 

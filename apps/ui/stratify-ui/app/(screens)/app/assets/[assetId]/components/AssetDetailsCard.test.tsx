@@ -5,6 +5,8 @@ import { mockFundAssetDetails } from "../_mocks/mockFundAssetDetails";
 import { mockCryptocurrencyAssetDetails } from "../_mocks/mockCryptocurrencyAssetDetails";
 import AssetDetailsCard, { AssetDetailsCardProps } from "./AssetDetailsCard";
 import userEvent from "@testing-library/user-event";
+import { NextIntlClientProvider } from "next-intl";
+import messages from "@/messages/en/messages.json";
 
 const user = userEvent.setup();
 
@@ -22,7 +24,11 @@ describe("AssetDetailsCard", () => {
     });
 
     const renderComponent = (props?: Partial<AssetDetailsCardProps>) =>
-        render(<AssetDetailsCard {...defaultProps} {...props} />);
+        render(
+            <NextIntlClientProvider locale="en" messages={messages}>
+                <AssetDetailsCard {...defaultProps} {...props} />
+            </NextIntlClientProvider>,
+        );
 
     it("should render the asset details card correctly for a stock asset", () => {
         renderComponent();
@@ -41,7 +47,7 @@ describe("AssetDetailsCard", () => {
         });
 
         const details = [
-            "1",
+            "countries.1",
             "Stock",
             "Open",
             "Consumer Electronics",

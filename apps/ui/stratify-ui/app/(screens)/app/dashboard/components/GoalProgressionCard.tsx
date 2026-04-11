@@ -1,14 +1,17 @@
 import { Skeleton } from "@/app/components/ui/skeleton";
 import KeyPerformanceCard from "./KeyPerformanceCard";
 import { Progress } from "@/app/components/ui/progress";
+import { useTranslations } from "next-intl";
 
 interface GoalProgressionCardProps {
     isLoading: boolean;
 }
 
 const GoalProgressionCard = ({ isLoading }: GoalProgressionCardProps) => {
+    const translate = useTranslations("Dashboard");
+
     return (
-        <KeyPerformanceCard title="Goal progression">
+        <KeyPerformanceCard title={translate("goalProgression")}>
             {isLoading ? (
                 <Skeleton
                     className="h-4 w-full"

@@ -8,15 +8,16 @@ import {
 } from "@/app/components/ui/tooltip";
 import { InfoIcon } from "lucide-react";
 import Link from "next/link";
-import { formatNumericValue } from "@/app/utils/formatNumericValue";
+import { TFunction } from "@/i18n/TFunction";
 
 export const columns = (
     userCurrency: string,
     isNotFoundError: boolean,
+    translate: TFunction,
 ): ColumnDef<Investment>[] => [
     {
         accessorKey: "name",
-        header: "Name",
+        header: translate("Dashboard.topPerformers.headers.name"),
         meta: {
             headerClassName: "w-62.5",
         },
@@ -44,7 +45,7 @@ export const columns = (
     },
     {
         accessorKey: "type",
-        header: "Type",
+        header: translate("Dashboard.topPerformers.headers.type"),
         meta: {
             headerClassName: "w-[120px]",
         },
@@ -63,7 +64,9 @@ export const columns = (
     },
     {
         accessorKey: "currentValue",
-        header: `Value (${userCurrency})`,
+        header: translate("Dashboard.topPerformers.headers.currentValue", {
+            userCurrency,
+        }),
         meta: {
             align: "right",
             type: "currency",
@@ -87,10 +90,10 @@ export const columns = (
                                 side="right"
                                 className="font-semibold"
                             >
-                                {formatNumericValue(
-                                    currentAssetCurrencyValue,
-                                    assetCurrency,
-                                )}
+                                {translate("Generic.currencyAmount", {
+                                    amount: currentAssetCurrencyValue,
+                                    currency: assetCurrency,
+                                })}
                             </TooltipContent>
                         </Tooltip>
                     ) : null}
@@ -100,16 +103,15 @@ export const columns = (
     },
     {
         accessorKey: "currentReturn",
-        header: `Return (${userCurrency})`,
+        header: translate("Dashboard.topPerformers.headers.currentReturn", {
+            userCurrency,
+        }),
         meta: {
             align: "right",
             headerClassName: "w-[175px]",
         },
         cell: ({ row }) => {
             const { currentReturn, currentReturnPercentage } = row.original;
-
-            const isPositive = currentReturn > 0;
-            const sign = isPositive ? "+" : "";
 
             const isPlaceholderRow =
                 row.original.currentReturn === 0 && row.original.shares === 0;
@@ -118,13 +120,27 @@ export const columns = (
                 "---"
             ) : (
                 <div
-                    className={`flex flex-col justify-end text-sm leading-4 text-nowrap font-sans ${isPositive ? "text-positive-base" : "text-negative-base"}`}
+                    className={`flex flex-col justify-end text-sm leading-4 text-nowrap font-sans ${currentReturn > 0 ? "text-positive-base" : "text-negative-base"}`}
                 >
                     <span>
-                        {sign} {currentReturn.toLocaleString()}
+                        {translate(
+                            currentReturn > 0
+                                ? "Generic.positiveAmount"
+                                : "Generic.amount",
+                            {
+                                amount: currentReturn,
+                            },
+                        )}
                     </span>
                     <span>
-                        {sign} {currentReturnPercentage.toLocaleString()}%
+                        {translate(
+                            currentReturn > 0
+                                ? "Generic.positivePercentage"
+                                : "Generic.percentage",
+                            {
+                                percentage: currentReturnPercentage,
+                            },
+                        )}
                     </span>
                 </div>
             );
@@ -143,7 +159,7 @@ export const columns = (
                     href={`/app/portfolios?portfolioId=${row.original.portfolioId}`}
                     className="font-medium text-nowrap text-primary-darker hover:text-primary-dark transition-colors hover:underline hover:cursor-pointer"
                 >
-                    View Portfolio
+                    {translate("Dashboard.topPerformers.viewPortfolio")}
                 </Link>
             ),
     },

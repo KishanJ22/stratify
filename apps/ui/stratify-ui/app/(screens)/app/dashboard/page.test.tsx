@@ -42,9 +42,11 @@ describe("DashboardPage", () => {
         expect(screen.getByText("Dashboard")).toBeInTheDocument();
 
         const cardTitles = [
-            "Total value",
-            "Overall change",
-            "Goal progression",
+            "Total Value",
+            "Overall Change",
+            "Goal Progression",
+            "Top Performers",
+            "Asset Diversification",
         ];
 
         cardTitles.forEach((title) =>

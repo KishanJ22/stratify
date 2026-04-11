@@ -1,10 +1,10 @@
-import countries from "./en/countries.json";
-import enGB from "./en/messages.json";
+import enCountries from "./en/countries.json";
+import en from "./en/messages.json";
 
 const messages = {
-    "en-GB": {
-        ...enGB,
-        countries: countries,
+    en: {
+        ...en,
+        countries: enCountries,
     },
 };
 

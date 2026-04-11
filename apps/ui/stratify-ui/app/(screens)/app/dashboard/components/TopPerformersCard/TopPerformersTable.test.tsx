@@ -1,10 +1,11 @@
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { mockInvestmentsData } from "../../../portfolios/components/InvestmentsTable/_mocks/mockInvestmentData";
 import MockSessionProvider from "@/app/tests/_mocks/MockSessionProvider";
 import { TooltipProvider } from "@/app/components/ui/tooltip";
 import { TopPerformersCardProps } from "./TopPerformersCard";
 import TopPerformersTable from "./TopPerformersTable";
+import { renderWithContext } from "@/app/tests/utils";
 
 const defaultProps = {
     investments: mockInvestmentsData,
@@ -15,13 +16,15 @@ const defaultProps = {
 
 describe("TopPerformersTable", () => {
     const renderComponent = (props?: Partial<TopPerformersCardProps>) =>
-        render(
-            <MockSessionProvider>
-                <TooltipProvider>
-                    <TopPerformersTable {...defaultProps} {...props} />
-                </TooltipProvider>
-            </MockSessionProvider>,
-        );
+        renderWithContext({
+            children: (
+                <MockSessionProvider>
+                    <TooltipProvider>
+                        <TopPerformersTable {...defaultProps} {...props} />
+                    </TooltipProvider>
+                </MockSessionProvider>
+            ),
+        });
 
     it("should render the table successfully", () => {
         renderComponent();
@@ -37,8 +40,8 @@ describe("TopPerformersTable", () => {
             "Test Portfolio",
             "Stock",
             "2,219.2",
-            "+ 1,489.2",
-            "+ 204%",
+            "+1,489.2",
+            "+204%",
         ];
 
         investmentRow.forEach((text) => {
@@ -86,9 +89,9 @@ describe("TopPerformersTable", () => {
     it("should display a link to view the portfolio an investment is in", () => {
         renderComponent();
 
-        expect(screen.getByText("View Portfolio")).toBeInTheDocument();
+        expect(screen.getByText("View portfolio")).toBeInTheDocument();
 
-        const portfolioLink = screen.getByText("View Portfolio").closest("a");
+        const portfolioLink = screen.getByText("View portfolio").closest("a");
 
         expect(portfolioLink).toHaveAttribute(
             "href",

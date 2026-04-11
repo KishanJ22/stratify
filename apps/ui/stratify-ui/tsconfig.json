@@ -6,6 +6,7 @@
         "lib": ["dom", "dom.iterable", "esnext"],
         "typeRoots": ["node_modules/@types", "app/components/ui/types"],
         "allowJs": true,
+        "allowArbitraryExtensions": true,
         "skipLibCheck": true,
         "strict": true,
         "noEmit": true,

@@ -6,6 +6,7 @@ import AssetBadge, {
 } from "@/app/components/(app)/AssetBadge";
 import { Dispatch, SetStateAction } from "react";
 import { Button } from "@/app/components/ui/button";
+import { useTranslations } from "next-intl";
 
 export interface AssetDetailsCardProps {
     asset?: AssetDetails;
@@ -19,6 +20,7 @@ const AssetDetailsCard = ({
     setIsSectorsModalOpen,
 }: AssetDetailsCardProps) => {
     const sectorName = asset?.sector ? asset?.sector?.[0]?.sector : "---";
+    const translate = useTranslations("countries");
 
     return (
         <div className="flex-1 py-2.5 px-3 bg-primary-lightest rounded-xl border border-primary-base font-sans">
@@ -26,7 +28,10 @@ const AssetDetailsCard = ({
                 {"Asset Details"}
             </div>
             {isLoading ? (
-                <div className="flex flex-col gap-y-1 mt-2" data-testid="loading-skeletons">
+                <div
+                    className="flex flex-col gap-y-1 mt-2"
+                    data-testid="loading-skeletons"
+                >
                     <div className="flex flex-row justify-between">
                         <Skeleton className="h-4 w-25" />
                         <Skeleton className="h-4 w-25" />
@@ -70,7 +75,9 @@ const AssetDetailsCard = ({
                                 {"Country"}
                             </div>
                             <div className="font-medium text-secondary-base text-lg leading-6">
-                                {asset?.countryId ?? "---"}
+                                {asset?.countryId
+                                    ? translate(asset.countryId.toString() as any)
+                                    : "---"}
                             </div>
                         </div>
                     ) : null}

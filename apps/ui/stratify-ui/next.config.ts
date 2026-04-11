@@ -17,6 +17,11 @@ const nextConfig: NextConfig = {
 // Required for building Docker images for use in production
 if (process.env.ENVIRONMENT !== "local") nextConfig.output = "standalone";
 
-const nextIntlPlugin = createNextIntlPlugin("./lib/i18n-request.ts");
+const nextIntlPlugin = createNextIntlPlugin({
+    requestConfig: "./i18n/request.ts",
+    experimental: {
+        createMessagesDeclaration: "./messages/en/messages.json",
+    },
+});
 
 export default nextIntlPlugin(nextConfig);
