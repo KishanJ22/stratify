@@ -27,7 +27,6 @@ declare const messages: {
         "addAnInvestment": "Add an investment",
         "totalValue": "Total Value",
         "overallChange": "Overall Change",
-        "goalProgression": "Goal Progression",
         "assetDiversification": "Asset Diversification",
         "assetDiversificationDescription": "See how diverse your holdings are based on the class, market sector or country of each asset.",
         "topPerformers": {
@@ -43,6 +42,13 @@ declare const messages: {
                 "currentValue": "Value ({userCurrency})",
                 "currentReturn": "Return ({userCurrency})"
             }
+        },
+        "goalProgression": {
+            "title": "Goal Progression",
+            "goalNotSet": "No goal set",
+            "set": "Set",
+            "edit": "Edit",
+            "goalSuccessfullyMet": "Your goal of {targetValue, number} ({userCurrency}) has been reached!"
         }
     },
     "Portfolios": {
