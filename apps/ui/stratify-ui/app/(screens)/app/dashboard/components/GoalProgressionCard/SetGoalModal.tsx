@@ -49,7 +49,7 @@ const SetGoalModal = ({
     const queryClient = useQueryClient();
 
     const form = useAppForm({
-        formId: "create-portfolio-form",
+        formId: "set-goal-form",
         defaultValues: {
             targetAmount: currentTargetAmount?.toString() ?? "",
         },
@@ -140,6 +140,7 @@ const SetGoalModal = ({
                                     label="Target Amount"
                                     placeholder="Enter target amount"
                                     error={validationError}
+                                    dataTestId="target-amount-input"
                                 />
                             );
                         }}
@@ -160,7 +161,8 @@ const SetGoalModal = ({
                                     )}
                                     isDisabled={
                                         !form.state.canSubmit ||
-                                        isSubmitDisabled
+                                        isSubmitDisabled ||
+                                        form.state.isSubmitting
                                     }
                                     isLoading={
                                         isPending || form.state.isSubmitting

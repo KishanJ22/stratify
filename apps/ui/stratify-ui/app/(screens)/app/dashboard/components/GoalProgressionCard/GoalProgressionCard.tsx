@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import { Dispatch, SetStateAction } from "react";
 import { useSessionContext } from "../../../SessionProvider";
 
-interface GoalProgressionCardProps {
+export interface GoalProgressionCardProps {
     totalValue?: number;
     targetValue?: number;
     isLoading: boolean;
@@ -31,7 +31,10 @@ const GoalProgressionCard = ({
                     {translate("Dashboard.goalProgression.title")}
                 </div>
                 {isLoading ? (
-                    <Skeleton className="h-4 w-10" />
+                    <Skeleton
+                        className="h-4 w-10"
+                        data-testid="set-goal-button-skeleton"
+                    />
                 ) : (
                     <div
                         className="px-2 py-0.5 rounded-xl bg-secondary-lighter font-medium text-sm leading-5 text-secondary-darker cursor-pointer hover:bg-secondary-base hover:text-secondary-lightest transition-colors"
