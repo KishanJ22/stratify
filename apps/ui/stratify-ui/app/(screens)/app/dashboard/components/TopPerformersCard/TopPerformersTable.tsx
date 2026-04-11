@@ -4,6 +4,7 @@ import { useSessionContext } from "../../../SessionProvider";
 import { columns } from "./topInvestmentsTableColumns";
 import { Investment } from "../../../portfolios/components/InvestmentsTable/InvestmentsTable";
 import { TopPerformersCardProps } from "./TopPerformersCard";
+import { useTranslations } from "next-intl";
 
 const noInvestmentsData = (label: string) =>
     Array.from({ length: 5 }, () => ({
@@ -26,6 +27,7 @@ const TopPerformersTable = ({
     isPortfoliosNotFoundError,
     isInvestmentsNotFoundError,
 }: TopPerformersCardProps) => {
+    const translate = useTranslations();
     const investmentsWithPositiveReturn = investments
         .filter((investment) => investment.currentReturn > 0)
         .slice(0, 5);
@@ -36,11 +38,17 @@ const TopPerformersTable = ({
     const userCurrency = session?.userDetails.currency as string;
 
     const data = isPortfoliosNotFoundError
-        ? noInvestmentsData("No portfolios found")
+        ? noInvestmentsData(
+              translate("Dashboard.topPerformers.noPortfoliosFound"),
+          )
         : isInvestmentsNotFoundError
-          ? noInvestmentsData("No investments found")
+          ? noInvestmentsData(
+                translate("Dashboard.topPerformers.noInvestmentsFound"),
+            )
           : hasNoPositiveReturns
-            ? noInvestmentsData("No top performers found")
+            ? noInvestmentsData(
+                  translate("Dashboard.topPerformers.noTopPerformersFound"),
+              )
             : investmentsWithPositiveReturn;
 
     const isNotFoundError =
@@ -50,7 +58,7 @@ const TopPerformersTable = ({
 
     return (
         <DataTable
-            columns={columns(userCurrency, isNotFoundError)}
+            columns={columns(userCurrency, isNotFoundError, translate)}
             data={data}
             isLoading={isLoading}
             isPaginationEnabled={false}

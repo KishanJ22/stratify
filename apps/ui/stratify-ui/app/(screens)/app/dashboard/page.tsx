@@ -6,6 +6,7 @@ import OverallChangeCard from "./components/OverallChangeCard";
 import GoalProgressionCard from "./components/GoalProgressionCard";
 import TopPerformersCard from "./components/TopPerformersCard/TopPerformersCard";
 import AssetDiversificationCard from "./components/AssetDiversificationCard";
+import { useTranslations } from "next-intl";
 
 export default function DashboardPage() {
     const {
@@ -15,10 +16,12 @@ export default function DashboardPage() {
         isInvestmentsNotFoundError,
     } = usePortfoliosOverview();
 
+    const translate = useTranslations("Dashboard");
+
     return (
         <div className="items-center justify-items-center h-full px-10">
             <div className="font-sans text-5xl text-primary-base font-semibold leading-14">
-                Dashboard
+                {translate("title")}
             </div>
             <div className="mt-8 w-full">
                 <div className="grid grid-cols-3 gap-x-16 gap-y-10">

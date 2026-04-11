@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import OverallChangeCard, { OverallChangeCardProps } from "./OverallChangeCard";
 import { render, screen } from "@testing-library/react";
+import { NextIntlClientProvider } from "next-intl";
+import messages from "@/messages/en/messages.json";
 
 const defaultProps = {
     overallChange: {
@@ -24,10 +26,16 @@ const defaultProps = {
 
 describe("OverallChangeCard", () => {
     const renderComponent = (props?: Partial<OverallChangeCardProps>) =>
-        render(<OverallChangeCard {...defaultProps} {...props} />);
+        render(
+            <NextIntlClientProvider locale="en" messages={messages}>
+                <OverallChangeCard {...defaultProps} {...props} />
+            </NextIntlClientProvider>,
+        );
 
     it("should render the overall change card successfully", () => {
         renderComponent();
+
+        expect(screen.getByText("Overall Change")).toBeInTheDocument();
 
         const valueLabels = ["Last 30 days", "Last 6 months", "All time"];
 

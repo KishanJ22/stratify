@@ -3,6 +3,8 @@ import FundSectorsModal, { FundSectorsModalProps } from "./FundSectorsModal";
 import { mockFundAssetDetails } from "../_mocks/mockFundAssetDetails";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { NextIntlClientProvider } from "next-intl";
+import messages from "@/messages/en/messages.json";
 
 const user = userEvent.setup();
 
@@ -20,7 +22,11 @@ describe("FundSectorsModal", () => {
     });
 
     const renderComponent = (props?: Partial<FundSectorsModalProps>) =>
-        render(<FundSectorsModal {...defaultProps} {...props} />);
+        render(
+            <NextIntlClientProvider locale="en" messages={messages}>
+                <FundSectorsModal {...defaultProps} {...props} />
+            </NextIntlClientProvider>,
+        );
 
     it("should render the modal with a list of sectors and their percentage allocation", () => {
         renderComponent();
@@ -35,11 +41,15 @@ describe("FundSectorsModal", () => {
         expect(screen.getByText("Sector")).toBeInTheDocument();
         expect(screen.getByText("Allocation")).toBeInTheDocument();
 
-        mockFundAssetDetails.sector.forEach(({ sector, weight }) => {
+        const sectors = ["Technology", "Communication Services", "Energy"];
+        const allocations = ["0.95%", "0.03%", "0.02%"];
+
+        sectors.forEach((sector) => {
             expect(screen.getByText(sector)).toBeInTheDocument();
-            expect(
-                screen.getByText(`${weight?.toFixed(2)}%`),
-            ).toBeInTheDocument();
+        });
+
+        allocations.forEach((allocation) => {
+            expect(screen.getByText(allocation)).toBeInTheDocument();
         });
     });
 

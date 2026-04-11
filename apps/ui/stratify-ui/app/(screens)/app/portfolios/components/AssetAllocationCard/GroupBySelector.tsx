@@ -6,6 +6,8 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/app/components/ui/select";
+import { TFunction } from "@/i18n/TFunction";
+import { useTranslations } from "next-intl";
 import { Dispatch, SetStateAction } from "react";
 
 const groupByValues = [
@@ -19,19 +21,19 @@ export type GroupByOption = (typeof groupByValues)[number];
 
 const groupByOptions = [
     {
-        label: "Asset Class",
+        label: "Portfolios.assetAllocation.groupByOptions.assetClass",
         value: "assetClass",
     },
     {
-        label: "Sector",
+        label: "Portfolios.assetAllocation.groupByOptions.sector",
         value: "sector",
     },
     {
-        label: "Country",
+        label: "Portfolios.assetAllocation.groupByOptions.country",
         value: "country",
     },
     {
-        label: "No Grouping",
+        label: "Portfolios.assetAllocation.groupByOptions.noGrouping",
         value: "noGrouping",
     },
 ];
@@ -47,6 +49,8 @@ const GroupBySelector = ({
     setGroupBy,
     disabled,
 }: GroupBySelectorProps) => {
+    const translate = useTranslations();
+
     return (
         <div
             className="mt-2"
@@ -57,7 +61,7 @@ const GroupBySelector = ({
             }
         >
             <div className="text-base leading-5 text-secondary-base mb-1">
-                Group by:
+                {translate("Portfolios.assetAllocation.groupBy")}
             </div>
             <Select
                 value={disabled ? "" : groupBy}
@@ -86,7 +90,7 @@ const GroupBySelector = ({
                                 key={option.value}
                                 value={option.value}
                             >
-                                {option.label}
+                                {translate(option.label as any)}
                             </SelectItem>
                         ))}
                     </SelectGroup>

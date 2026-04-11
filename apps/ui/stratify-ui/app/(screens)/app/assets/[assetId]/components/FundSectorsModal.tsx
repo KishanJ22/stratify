@@ -7,6 +7,7 @@ import {
     DialogTitle,
 } from "@/app/components/ui/dialog";
 import { X } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export interface FundSectorsModalProps {
     sectors: AssetDetails["sector"];
@@ -19,6 +20,8 @@ const FundSectorsModal = ({
     isOpen,
     handleClose,
 }: FundSectorsModalProps) => {
+    const translate = useTranslations();
+
     return (
         <Dialog open={isOpen} onOpenChange={handleClose}>
             <DialogContent className="bg-muted-lightest border border-primary-base font-sans">
@@ -41,16 +44,22 @@ const FundSectorsModal = ({
                 </DialogDescription>
                 <div className="mt-2.5 flex flex-col gap-y-2">
                     <div className="flex flex-row justify-between font-semibold text-secondary-dark text-lg leading-6 border-b border-b-secondary-lighter pb-1">
-                        <div>Sector</div>
-                        <div>Allocation</div>
+                        <div>{translate("Sectors.sector")}</div>
+                        <div>{translate("Sectors.allocation")}</div>
                     </div>
                     {sectors?.map((sector) => (
                         <div
                             key={sector.sector}
                             className="flex flex-row justify-between font-medium text-secondary-base text-lg leading-6"
                         >
-                            <div>{sector.sector}</div>
-                            <div>{`${sector.weight?.toFixed(2)}%`}</div>
+                            <div>
+                                {translate(`Sectors.${sector.sector}` as any)}
+                            </div>
+                            <div>
+                                {translate("Generic.percentage", {
+                                    percentage: sector.weight,
+                                })}
+                            </div>
                         </div>
                     ))}
                 </div>

@@ -2,6 +2,7 @@ import { Skeleton } from "@/app/components/ui/skeleton";
 import { Overview } from "../usePortfoliosOverview";
 import KeyPerformanceCard from "./KeyPerformanceCard";
 import ValueChangeLabel from "./ValueChangeLabel";
+import { useTranslations } from "next-intl";
 
 export interface OverallChangeCardProps {
     overallChange?: Overview["overallChange"];
@@ -16,8 +17,10 @@ const OverallChangeCard = ({
     isInvestmentsNotFoundError,
     isPortfoliosNotFoundError,
 }: OverallChangeCardProps) => {
+    const translate = useTranslations();
+
     return (
-        <KeyPerformanceCard title="Overall change">
+        <KeyPerformanceCard title={translate("Dashboard.overallChange")}>
             {isLoading ? (
                 <div
                     className="flex flex-row justify-between items-center"
@@ -40,7 +43,7 @@ const OverallChangeCard = ({
                 <div className="flex flex-row justify-between items-center">
                     <div className="flex flex-col">
                         <span className="text-lg leading-5 text-secondary-base">
-                            {"Last 30 days"}
+                            {translate("valueChange.lastThirtyDays")}
                         </span>
                         <ValueChangeLabel
                             valueChangePercent={
@@ -54,7 +57,7 @@ const OverallChangeCard = ({
                     </div>
                     <div className="flex flex-col">
                         <span className="text-lg leading-5 text-secondary-base">
-                            {"Last 6 months"}
+                            {translate("valueChange.lastSixMonths")}
                         </span>
                         <ValueChangeLabel
                             valueChangePercent={
@@ -68,7 +71,7 @@ const OverallChangeCard = ({
                     </div>
                     <div className="flex flex-col">
                         <span className="text-lg leading-5 text-secondary-base">
-                            {"All time"}
+                            {translate("valueChange.allTime")}
                         </span>
                         <ValueChangeLabel
                             valueChangePercent={

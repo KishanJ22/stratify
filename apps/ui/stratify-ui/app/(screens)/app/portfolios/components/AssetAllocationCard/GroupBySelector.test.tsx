@@ -2,6 +2,8 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { MockPointerEvent } from "@/app/tests/_mocks/MockPointerEvent";
 import GroupBySelector, { GroupBySelectorProps } from "./GroupBySelector";
+import { NextIntlClientProvider } from "next-intl";
+import messages from "@/messages/en/messages.json";
 
 const mockSetGroupBy = vi.fn();
 
@@ -17,7 +19,11 @@ describe("GroupBySelector", () => {
     });
 
     const renderComponent = (props?: Partial<GroupBySelectorProps>) =>
-        render(<GroupBySelector {...defaultGroupBySelectorProps} {...props} />);
+        render(
+            <NextIntlClientProvider locale="en" messages={messages}>
+                <GroupBySelector {...defaultGroupBySelectorProps} {...props} />
+            </NextIntlClientProvider>,
+        );
 
     it("should render the group by selector", () => {
         renderComponent();
@@ -26,7 +32,7 @@ describe("GroupBySelector", () => {
             screen.getByTestId("group-by-select-enabled"),
         ).toBeInTheDocument();
         expect(screen.getByText("Group by:")).toBeInTheDocument();
-        expect(screen.getByText("Asset Class")).toBeInTheDocument();
+        expect(screen.getByText("Asset class")).toBeInTheDocument();
     });
 
     it("should be disabled when the disabled prop is true", () => {
@@ -40,7 +46,7 @@ describe("GroupBySelector", () => {
     it("should render the group by options when clicking on the selector", async () => {
         renderComponent();
 
-        const selectButton = screen.getByText("Asset Class");
+        const selectButton = screen.getByText("Asset class");
 
         fireEvent.click(
             selectButton,
@@ -48,10 +54,10 @@ describe("GroupBySelector", () => {
         );
 
         const groupByOptions = [
-            "Asset Class",
+            "Asset class",
             "Sector",
             "Country",
-            "No Grouping",
+            "No grouping",
         ];
 
         const groupByOptionsComponent =
@@ -67,7 +73,7 @@ describe("GroupBySelector", () => {
     it("should set the group by option when selecting an option", async () => {
         renderComponent();
 
-        const selectButton = screen.getByText("Asset Class");
+        const selectButton = screen.getByText("Asset class");
 
         fireEvent.click(
             selectButton,

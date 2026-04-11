@@ -9,6 +9,8 @@ import PieChartSkeleton from "./PieChartSkeleton";
 import { useSessionContext } from "../../../SessionProvider";
 import { Button } from "@/app/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
+import { TFunction } from "@/i18n/TFunction";
 
 const colourVars = [
     "var(--primary-base)",
@@ -34,15 +36,15 @@ interface AssetClassConfig {
 
 const assetClasses = {
     STOCK: {
-        label: "Stock",
+        label: "assetClasses.STOCK",
         colour: "var(--secondary-base)",
     },
     CRYPTOCURRENCY: {
-        label: "Cryptocurrency",
+        label: "assetClasses.CRYPTOCURRENCY",
         colour: "var(--accent-base)",
     },
     ETF: {
-        label: "Exchange traded fund",
+        label: "assetClasses.ETF",
         colour: "var(--primary-base)",
     },
 } as Record<AssetType, AssetClassConfig>;
@@ -61,9 +63,10 @@ export interface ChartDataItem {
 interface CustomLegendProps {
     data?: ChartDataItem[];
     groupBy: GroupByOption;
+    translate: TFunction;
 }
 
-const CustomLegend = ({ data, groupBy }: CustomLegendProps) => {
+const CustomLegend = ({ data, groupBy, translate }: CustomLegendProps) => {
     return (
         <div
             className={cn(
@@ -81,7 +84,7 @@ const CustomLegend = ({ data, groupBy }: CustomLegendProps) => {
                         className="h-3 w-3 shrink-0 rounded-full"
                         style={{ backgroundColor: item.fill }}
                     />
-                    {item.label}
+                    {translate(item.label as any)}
                 </div>
             ))}
         </div>
@@ -94,6 +97,7 @@ interface ChartTooltipContentProps {
     data: ChartDataItem;
     totalPortfolioValue: number;
     currency: string;
+    translate: TFunction;
 }
 
 const CustomTooltip = ({
@@ -102,6 +106,7 @@ const CustomTooltip = ({
     data,
     totalPortfolioValue,
     currency,
+    translate,
 }: ChartTooltipContentProps) => {
     if (!active || !data) return null;
 
@@ -110,20 +115,25 @@ const CustomTooltip = ({
         100
     ).toFixed(2);
 
+    const title =
+        groupBy === "noGrouping" ? data.label : translate(data.label as any);
+
     return (
         <div className="flex flex-col items-start gap-y-1 bg-secondary-lightest border border-secondary-dark rounded-md py-1 px-2 font-sans text-secondary-base font-medium">
             <div className="font-semibold text-base text-secondary-dark text-nowrap">
-                {data.label}
+                {title}
             </div>
             {groupBy === "noGrouping" ? (
                 <div className="flex flex-col text-sm w-full">
                     <div className="flex flex-row justify-between gap-x-2">
                         {"Country"}
-                        <div>{data?.countryId}</div>
+                        <div>
+                            {translate(`countries.${data.countryId}` as any)}
+                        </div>
                     </div>
                     <div className="flex flex-row justify-between gap-x-2">
                         {"Sector"}
-                        <div>{data?.sector}</div>
+                        <div>{translate(`Sectors.${data.sector}` as any)}</div>
                     </div>
                     <div className="flex flex-row justify-between gap-x-2">
                         {"Allocation"}
@@ -168,6 +178,7 @@ const AssetAllocationChart = ({
     isLoading,
 }: AssetAllocationChartProps) => {
     const { session } = useSessionContext();
+    const translate = useTranslations();
     const userCurrency = session?.userDetails.currency;
 
     const [isLegendVisible, setIsLegendVisible] = useState<boolean>(false);
@@ -203,7 +214,9 @@ const AssetAllocationChart = ({
         const country = data?.reduce((acc, investment) => {
             const countryId = investment.assetCountryId;
 
-            const existingItem = acc.find((item) => item.label === countryId);
+            const existingItem = acc.find(
+                (item) => item.label === `countries.${countryId}`,
+            );
 
             if (existingItem) {
                 existingItem.currentValue += investment.currentValue;
@@ -213,7 +226,7 @@ const AssetAllocationChart = ({
                 existingItem.assetCount += 1;
             } else {
                 acc.push({
-                    label: countryId,
+                    label: `countries.${countryId}`,
                     currentValue: investment.currentValue,
                     fill: colourVars[
                         Object.keys(acc).length % colourVars.length
@@ -229,7 +242,9 @@ const AssetAllocationChart = ({
 
         const sector = data?.reduce((acc, investment) => {
             investment.sectorDetails.forEach(({ sector, weight }) => {
-                const existingItem = acc.find((item) => item.label === sector);
+                const existingItem = acc.find(
+                    (item) => item.label === `Sectors.${sector}`,
+                );
 
                 if (existingItem) {
                     existingItem.currentValue +=
@@ -241,7 +256,7 @@ const AssetAllocationChart = ({
                     existingItem.assetCount += 1;
                 } else {
                     acc.push({
-                        label: sector,
+                        label: `Sectors.${sector}`,
                         currentValue: investment.currentValue * weight,
                         fill: colourVars[
                             Object.keys(acc).length % colourVars.length
@@ -328,6 +343,7 @@ const AssetAllocationChart = ({
                                     data={payload[0]?.payload}
                                     totalPortfolioValue={totalPortfolioValue}
                                     currency={userCurrency!}
+                                    translate={translate}
                                 />
                             )}
                         />
@@ -394,7 +410,8 @@ const AssetAllocationChart = ({
                                                         x={viewBox.cx}
                                                         y={viewBox.cy}
                                                     >
-                                                        {data?.length}
+                                                        {groupedData?.noGrouping
+                                                            ?.length || "---"}
                                                     </tspan>
                                                     <tspan
                                                         className="font-sans text-xl fill-secondary-base"
@@ -424,6 +441,7 @@ const AssetAllocationChart = ({
                         <CustomLegend
                             data={selectedGroupData}
                             groupBy={groupBy}
+                            translate={translate}
                         />
                     )}
                     <Button

@@ -1,3 +1,4 @@
+import createNextIntlPlugin from "next-intl/plugin";
 import type { NextConfig } from "next";
 import { join } from "path";
 
@@ -9,11 +10,18 @@ const nextConfig: NextConfig = {
         },
     },
     turbopack: {
-      root: join(__dirname, "../../.."),
-    }
+        root: join(__dirname, "../../.."),
+    },
 };
 
 // Required for building Docker images for use in production
 if (process.env.ENVIRONMENT !== "local") nextConfig.output = "standalone";
 
-export default nextConfig;
+const nextIntlPlugin = createNextIntlPlugin({
+    requestConfig: "./i18n/request.ts",
+    experimental: {
+        createMessagesDeclaration: "./messages/en/messages.json",
+    },
+});
+
+export default nextIntlPlugin(nextConfig);
