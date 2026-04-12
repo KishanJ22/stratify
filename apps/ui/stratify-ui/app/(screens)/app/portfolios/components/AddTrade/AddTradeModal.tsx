@@ -26,6 +26,7 @@ import { addTradeSchema, AddTradeSchema } from "./add-trade-schema";
 import { Field, FieldLabel } from "@/app/components/ui/field";
 import { Tabs, TabsList, TabsTrigger } from "@/app/components/ui/tabs";
 import { useRouter } from "next/navigation";
+import { formatNumericValue } from "@/app/utils/formatNumericValue";
 
 export interface SelectedAsset {
     id: number;
@@ -49,7 +50,7 @@ const defaultValues: AddTradeSchema = {
     tradeDate: "",
     pricePerShare: "",
     currencyConversionRate: "1",
-    fee: "0",
+    fee: "",
     total: 0,
     assetCurrencyTotal: 0,
 };
@@ -480,7 +481,10 @@ const AddTradeModal = ({
                                 </span>
                                 <span className="font-medium text-muted-dark">
                                     {subtotal > 0 && userCurrency
-                                        ? `${subtotal.toFixed(2)} (${userCurrency})`
+                                        ? formatNumericValue(
+                                              subtotal,
+                                              userCurrency,
+                                          )
                                         : "---"}
                                 </span>
                             </div>
@@ -493,7 +497,10 @@ const AddTradeModal = ({
                                     <span className="font-medium text-muted-dark">
                                         {assetCurrencySubtotal > 0 &&
                                         assetCurrency
-                                            ? `${assetCurrencySubtotal.toFixed(2)} (${assetCurrency})`
+                                            ? formatNumericValue(
+                                                  assetCurrencySubtotal,
+                                                  assetCurrency,
+                                              )
                                             : "---"}
                                     </span>
                                 </div>
@@ -504,7 +511,7 @@ const AddTradeModal = ({
                                         Fee
                                     </span>
                                     <span className="font-medium text-muted-dark">
-                                        {fee.toFixed(2)} {userCurrency}
+                                        {formatNumericValue(fee, userCurrency)}
                                     </span>
                                 </div>
                             ) : null}
@@ -516,7 +523,7 @@ const AddTradeModal = ({
                             </span>
                             <span className="font-medium text-muted-darker">
                                 {total > 0 && userCurrency
-                                    ? `${total.toFixed(2)} (${userCurrency})`
+                                    ? formatNumericValue(total, userCurrency)
                                     : "---"}
                             </span>
                         </div>
