@@ -39,6 +39,7 @@ import { HTTPError } from "ky";
 import { toast } from "sonner";
 import { SelectedAsset } from "../AddTrade/AddTradeModal";
 import { useRouter } from "next/navigation";
+import { formatNumericValue } from "@/app/utils/formatNumericValue";
 
 const defaultValues: AddInvestmentSchema = {
     assetName: "",
@@ -46,7 +47,7 @@ const defaultValues: AddInvestmentSchema = {
     tradeDate: "",
     pricePerShare: "",
     currencyConversionRate: "1",
-    fee: "0",
+    fee: "",
     total: 0,
     assetCurrencyTotal: 0,
 };
@@ -581,7 +582,7 @@ const AddInvestmentModal = ({
                                 </span>
                                 <span className="font-medium text-muted-dark">
                                     {subtotal > 0 && userCurrency
-                                        ? `${subtotal.toFixed(2)} (${userCurrency})`
+                                        ? formatNumericValue(subtotal, userCurrency)
                                         : "---"}
                                 </span>
                             </div>
@@ -594,7 +595,10 @@ const AddInvestmentModal = ({
                                     <span className="font-medium text-muted-dark">
                                         {assetCurrencySubtotal > 0 &&
                                         assetCurrency
-                                            ? `${assetCurrencySubtotal.toFixed(2)} (${assetCurrency})`
+                                            ? formatNumericValue(
+                                                  assetCurrencySubtotal,
+                                                  assetCurrency,
+                                              )
                                             : "---"}
                                     </span>
                                 </div>
@@ -605,7 +609,7 @@ const AddInvestmentModal = ({
                                         Fee
                                     </span>
                                     <span className="font-medium text-muted-dark">
-                                        {fee.toFixed(2)} {userCurrency}
+                                        {formatNumericValue(fee, userCurrency)}
                                     </span>
                                 </div>
                             ) : null}
@@ -616,7 +620,7 @@ const AddInvestmentModal = ({
                             </span>
                             <span className="font-medium text-muted-darker">
                                 {total > 0 && userCurrency
-                                    ? `${total.toFixed(2)} (${userCurrency})`
+                                    ? formatNumericValue(total, userCurrency)
                                     : "---"}
                             </span>
                         </div>

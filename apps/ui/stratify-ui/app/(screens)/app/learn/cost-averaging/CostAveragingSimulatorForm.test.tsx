@@ -59,30 +59,12 @@ describe("CostAveragingSimulatorForm", () => {
         fieldLabels.forEach((label) => {
             expect(screen.getByText(label)).toBeInTheDocument();
         });
-    });
-
-    it("should render the default values correctly", () => {
-        renderComponent();
-
-        const fieldTestIds = [
-            "total-investment-field",
-            "time-period-years-field",
-            "amount-per-contribution-field",
-        ];
-
-        fieldTestIds.forEach((testId) => {
-            within(screen.getByTestId(testId)).getByDisplayValue("0");
-        });
 
         expect(
             within(
                 screen.getByTestId("contribution-frequency-select-value"),
             ).getByText("Monthly"),
         ).toBeInTheDocument();
-    });
-
-    it("should render teh submit button", () => {
-        renderComponent();
 
         expect(screen.getByText("Simulate")).toBeInTheDocument();
     });
@@ -100,15 +82,15 @@ describe("CostAveragingSimulatorForm", () => {
 
         await user.click(screen.getByTestId("asset-name-card"));
 
-        const totalInvestmentInput = within(
-            screen.getByTestId("total-investment-field"),
-        ).getByDisplayValue("0");
+        const totalInvestmentInput = screen.getByTestId(
+            "total-investment-field-input",
+        );
         await user.clear(totalInvestmentInput);
         await user.type(totalInvestmentInput, "12000");
 
-        const timePeriodInput = within(
-            screen.getByTestId("time-period-years-field"),
-        ).getByDisplayValue("0");
+        const timePeriodInput = screen.getByTestId(
+            "time-period-years-field-input",
+        );
         await user.clear(timePeriodInput);
         await user.type(timePeriodInput, "2");
         await user.tab();
@@ -148,22 +130,22 @@ describe("CostAveragingSimulatorForm", () => {
 
         await user.click(screen.getByTestId("asset-name-card"));
 
-        const totalInvestmentInput = within(
-            screen.getByTestId("total-investment-field"),
-        ).getByDisplayValue("0");
+        const totalInvestmentInput = screen.getByTestId(
+            "total-investment-field-input",
+        );
         await user.clear(totalInvestmentInput);
         await user.type(totalInvestmentInput, "12000");
 
-        const timePeriodInput = within(
-            screen.getByTestId("time-period-years-field"),
-        ).getByDisplayValue("0");
+        const timePeriodInput = screen.getByTestId(
+            "time-period-years-field-input",
+        );
         await user.clear(timePeriodInput);
         await user.type(timePeriodInput, "2");
         await user.tab();
 
-        const displayValues = ["12000", "2", "500", "Monthly"];
+        const formInputs = ["12000", "2", "500.00", "Monthly"];
 
-        displayValues.forEach((value) => {
+        formInputs.forEach((value) => {
             expect(screen.getAllByDisplayValue(value)).toHaveLength(1);
         });
 
@@ -191,9 +173,9 @@ describe("CostAveragingSimulatorForm", () => {
     it("should disable the simulate button when the form is invalid", async () => {
         renderComponent();
 
-        const totalInvestmentInput = within(
-            screen.getByTestId("total-investment-field"),
-        ).getByDisplayValue("0");
+        const totalInvestmentInput = screen.getByTestId(
+            "total-investment-field-input",
+        );
         await user.clear(totalInvestmentInput);
         await user.type(totalInvestmentInput, "-100");
 

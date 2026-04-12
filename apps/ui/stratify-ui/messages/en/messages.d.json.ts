@@ -45,7 +45,7 @@ declare const messages: {
         },
         "goalProgression": {
             "title": "Goal Progression",
-            "goalNotSet": "No goal set",
+            "goalNotSet": "Goal not set",
             "set": "Set",
             "edit": "Edit",
             "goalSuccessfullyMet": "Your goal of {targetValue, number} ({userCurrency}) has been reached!",

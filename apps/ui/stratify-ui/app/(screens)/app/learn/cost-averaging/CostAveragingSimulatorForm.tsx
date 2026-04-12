@@ -36,10 +36,10 @@ import {
 
 const defaultValues: CostAveragingSimulatorSchema = {
     assetName: "",
-    totalInvestment: 0,
+    totalInvestment: "",
     contributionFrequency: "monthly",
-    timePeriodYears: 0,
-    amountPerContribution: 0,
+    timePeriodYears: "",
+    amountPerContribution: "",
 };
 
 const costAveragingSimulatorFormOptions = formOptions({
@@ -135,10 +135,10 @@ const CostAveragingSimulatorForm = ({
 
             const requestBody = {
                 assetId: selectedAsset.id,
-                totalInvestment: value.totalInvestment,
+                totalInvestment: parseFloat(value.totalInvestment),
                 contributionFrequency: value.contributionFrequency,
-                amountPerContribution: value.amountPerContribution,
-                timePeriodYears: value.timePeriodYears,
+                amountPerContribution: parseFloat(value.amountPerContribution),
+                timePeriodYears: parseInt(value.timePeriodYears),
             } satisfies CostAveragingSimulatorRequestSchema;
 
             executeSimulation(requestBody, {
@@ -160,18 +160,16 @@ const CostAveragingSimulatorForm = ({
     useEffect(() => {
         if (formValues.totalInvestment && formValues.timePeriodYears) {
             const totalContributions =
-                formValues.timePeriodYears *
+                parseInt(formValues.timePeriodYears) *
                 contributionFrequencyToContributionsPerYearMap[
                     formValues.contributionFrequency
                 ];
 
             form.setFieldValue(
                 "amountPerContribution",
-                parseFloat(
-                    (formValues.totalInvestment / totalContributions).toFixed(
-                        2,
-                    ),
-                ),
+                (
+                    parseFloat(formValues.totalInvestment) / totalContributions
+                ).toFixed(2),
             );
         }
     }, [
@@ -293,14 +291,13 @@ const CostAveragingSimulatorForm = ({
             </form.AppField>
             <div className="flex flex-row justify-between gap-x-5">
                 <form.AppField name="totalInvestment">
-                    {({ state: { meta }, NumberInput }) => {
+                    {({ state: { meta }, TextInput }) => {
                         return (
-                            <NumberInput
+                            <TextInput
                                 id="totalInvestment"
                                 dataTestId="total-investment-field"
                                 label="Total Investment"
-                                placeholder="Enter total investment"
-                                type="number"
+                                placeholder="e.g. 100,000"
                                 error={
                                     meta.isTouched
                                         ? meta.errors?.[0]?.message
@@ -365,13 +362,13 @@ const CostAveragingSimulatorForm = ({
             </div>
             <div className="flex flex-row justify-between gap-x-5">
                 <form.AppField name="timePeriodYears">
-                    {({ state: { meta }, NumberInput }) => {
+                    {({ state: { meta }, TextInput }) => {
                         return (
-                            <NumberInput
+                            <TextInput
                                 id="timePeriodYears"
                                 dataTestId="time-period-years-field"
                                 label="Time Period (Years)"
-                                placeholder="Enter time period in years"
+                                placeholder="e.g. 5"
                                 error={
                                     meta.isTouched
                                         ? meta.errors?.[0]?.message
@@ -382,9 +379,9 @@ const CostAveragingSimulatorForm = ({
                     }}
                 </form.AppField>
                 <form.AppField name="amountPerContribution">
-                    {({ NumberInput }) => {
+                    {({ TextInput }) => {
                         return (
-                            <NumberInput
+                            <TextInput
                                 id="amountPerContribution"
                                 dataTestId="amount-per-contribution-field"
                                 label={

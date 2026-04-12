@@ -44,7 +44,11 @@ export const addInvestmentSchema = zod.object({
         (value) => {
             const numberValue = parseFloat(value);
 
-            return !isNaN(numberValue) && numberValue >= 0;
+            if (value === "") {
+                return true; // Treat an empty input as valid
+            } else {
+                return !isNaN(numberValue) && numberValue >= 0;
+            }
         },
         { error: "Fee should be a number greater than or equal to 0" },
     ),

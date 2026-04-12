@@ -28,9 +28,9 @@ import AssetNameCard from "../../portfolios/components/AddInvestment/AssetNameCa
 
 const defaultValues: CompoundingSimulatorSchema = {
     assetName: "",
-    initialInvestment: 0,
-    monthlyContribution: 0,
-    timePeriodYears: 0,
+    initialInvestment: "",
+    monthlyContribution: "",
+    timePeriodYears: "",
     dividendYield: "",
 };
 
@@ -94,9 +94,9 @@ const CompoundingSimulatorForm = ({
 
             const requestBody = {
                 assetId: selectedAsset.id,
-                initialInvestment: value.initialInvestment,
-                monthlyContribution: value.monthlyContribution,
-                timePeriodYears: value.timePeriodYears,
+                initialInvestment: parseFloat(value.initialInvestment),
+                monthlyContribution: parseFloat(value.monthlyContribution),
+                timePeriodYears: parseInt(value.timePeriodYears),
                 dividendYield: value.dividendYield
                     ? parseFloat(value.dividendYield)
                     : null,
@@ -229,14 +229,13 @@ const CompoundingSimulatorForm = ({
             </form.AppField>
             <div className="flex flex-row justify-between gap-x-5">
                 <form.AppField name="initialInvestment">
-                    {({ state: { meta }, NumberInput }) => {
+                    {({ state: { meta }, TextInput }) => {
                         return (
-                            <NumberInput
+                            <TextInput
                                 id="initialInvestment"
                                 dataTestId="initial-investment-field"
                                 label="Initial Investment"
-                                placeholder="Enter initial investment"
-                                type="number"
+                                placeholder="e.g. 10000"
                                 error={
                                     meta.isTouched
                                         ? meta.errors?.[0]?.message
@@ -247,13 +246,13 @@ const CompoundingSimulatorForm = ({
                     }}
                 </form.AppField>
                 <form.AppField name="monthlyContribution">
-                    {({ state: { meta }, NumberInput }) => {
+                    {({ state: { meta }, TextInput }) => {
                         return (
-                            <NumberInput
+                            <TextInput
                                 id="monthlyContribution"
                                 dataTestId="monthly-contribution-field"
                                 label="Monthly Contribution"
-                                placeholder="Enter monthly contribution"
+                                placeholder="e.g. 500"
                                 error={
                                     meta.isTouched
                                         ? meta.errors?.[0]?.message
@@ -266,13 +265,13 @@ const CompoundingSimulatorForm = ({
             </div>
             <div className="flex flex-row justify-between gap-x-5">
                 <form.AppField name="timePeriodYears">
-                    {({ state: { meta }, NumberInput }) => {
+                    {({ state: { meta }, TextInput }) => {
                         return (
-                            <NumberInput
+                            <TextInput
                                 id="timePeriodYears"
                                 dataTestId="time-period-years-field"
                                 label="Time Period (Years)"
-                                placeholder="Enter time period in years"
+                                placeholder="e.g. 5"
                                 error={
                                     meta.isTouched
                                         ? meta.errors?.[0]?.message
@@ -289,7 +288,7 @@ const CompoundingSimulatorForm = ({
                                 id="dividendYield"
                                 dataTestId="annual-dividend-yield-field"
                                 label="Annual Dividend Yield"
-                                placeholder="Optional"
+                                placeholder="e.g. 2.5 (Optional)"
                                 error={
                                     meta.isTouched
                                         ? meta.errors?.[0]?.message
