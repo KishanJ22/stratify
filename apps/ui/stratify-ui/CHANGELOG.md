@@ -1,5 +1,11 @@
 # @stratify/stratify-ui
 
+## 0.12.0
+
+### Minor Changes
+
+- 73f3edb: Build features page and add translations for landing page
+
 ## 0.11.1
 
 ### Patch Changes
