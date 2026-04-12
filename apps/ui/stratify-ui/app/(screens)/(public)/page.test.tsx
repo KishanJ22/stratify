@@ -1,55 +1,72 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import LandingPage from "./page";
 import userEvent from "@testing-library/user-event";
+import { mockNextLink } from "@/app/tests/_mocks/mockNextLink";
+import { NextIntlClientProvider } from "next-intl";
 
-const mockRouterPush = vi.fn();
-
-vi.mock("next/navigation", () => ({
-    useRouter: () => ({
-        push: mockRouterPush,
-    }),
-}));
+mockNextLink();
 
 const user = userEvent.setup();
 
 describe("Landing page", () => {
-    const renderPage = () => render(<LandingPage />);
+    beforeEach(() => {
+        vi.clearAllMocks();
+    });
 
-    it("AB#127 - should display the headline", () => {
+    const renderPage = () =>
+        render(
+            <NextIntlClientProvider locale="en" messages={{}}>
+                <LandingPage />
+            </NextIntlClientProvider>,
+        );
+
+    it("AB#127 - should display the call to action", () => {
         renderPage();
 
         expect(
-            screen.getByText("All of your investments."),
+            screen.getByText("LandingPage.callToAction.allOfYourInvestments"),
         ).toBeInTheDocument();
 
-        expect(screen.getByText("One place.")).toBeInTheDocument();
+        expect(
+            screen.getByText("LandingPage.callToAction.onePlace"),
+        ).toBeInTheDocument();
+
+        expect(
+            screen.getByText("LandingPage.callToAction.description"),
+        ).toBeInTheDocument();
     });
 
-    it("should display the call to action buttons", () => {
+    it("AB#128 - should direct to the sign up page when clicking on the Get Started button", async () => {
         renderPage();
 
-        expect(screen.getByText("Get Started")).toBeInTheDocument();
-        expect(screen.getByText("Learn More")).toBeInTheDocument();
-    });
-
-    it("AB#128 - Sign up should direct to the sign up page", async () => {
-        renderPage();
-
-        const signUpButton = screen.getByText("Get Started");
+        const signUpButton = screen.getByText("LandingPage.getStarted");
         expect(signUpButton).toBeInTheDocument();
 
         await user.click(signUpButton);
-        expect(mockRouterPush).toHaveBeenCalledWith("/sign-up");
+        expect(signUpButton.closest("a")).toHaveAttribute("href", "/sign-up");
+    });
+
+    it("should direct to the features page when clicking on the Learn More button", async () => {
+        renderPage();
+
+        const learnMoreButton = screen.getByText("LandingPage.learnMore");
+        expect(learnMoreButton).toBeInTheDocument();
+
+        await user.click(learnMoreButton);
+        expect(learnMoreButton.closest("a")).toHaveAttribute(
+            "href",
+            "/features",
+        );
     });
 
     it("AB#129 - should display the key features", () => {
         renderPage();
 
         const keyFeatureTitles = [
-            "Real-time Portfolio Tracking",
-            "Trading Simulator",
-            "Stratify Learn",
+            "LandingPage.keyFeatures.realTimeTracking.title",
+            "LandingPage.keyFeatures.interactiveLearning.title",
+            "LandingPage.keyFeatures.goalTracking.title",
         ];
 
         keyFeatureTitles.forEach((title) => {
@@ -57,9 +74,9 @@ describe("Landing page", () => {
         });
 
         const keyFeatureDescriptions = [
-            "Monitor and analyse all of your stock and cryptocurrency holdings in one place with live updates and intuitive performance metrics.",
-            "Practice trading in realistic market scenarios without risking real money. Learn by doing, build confidence through personal feedback.",
-            "Discover core concepts and real-world scenarios that help build practical investing skills through interactive and bite-sized lessons.",
+            "LandingPage.keyFeatures.realTimeTracking.description",
+            "LandingPage.keyFeatures.interactiveLearning.description",
+            "LandingPage.keyFeatures.goalTracking.description",
         ];
 
         keyFeatureDescriptions.forEach((description) => {

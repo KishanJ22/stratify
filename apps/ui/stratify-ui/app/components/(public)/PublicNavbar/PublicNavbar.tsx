@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { Button } from "../../ui/button";
-import { useRouter } from "next/navigation";
 import StratifyIcon from "../../Common/StratifyIcon";
 
 type NavLink = {
@@ -20,8 +19,6 @@ interface PublicNavbarProps {
 }
 
 const PublicNavbar = ({ showLoginSignUpButtons = true }: PublicNavbarProps) => {
-    const { push } = useRouter();
-
     return (
         <nav className="sticky top-0 bg-background-light flex flex-row justify-between px-16 py-6 items-center">
             <div className="flex-1 justify-start flex flex-row gap-x-2 py-2">
@@ -44,20 +41,16 @@ const PublicNavbar = ({ showLoginSignUpButtons = true }: PublicNavbarProps) => {
             <div className="flex-1 justify-end flex flex-row gap-x-2">
                 {showLoginSignUpButtons ? (
                     <>
-                        <Button
-                            variant="link"
-                            size="lg"
-                            onClick={() => push("/login")}
-                        >
-                            Login
-                        </Button>
-                        <Button
-                            variant="default"
-                            size="lg"
-                            onClick={() => push("/sign-up")}
-                        >
-                            Sign Up
-                        </Button>
+                        <Link href="/sign-up">
+                            <Button variant="default" size="lg">
+                                Sign Up
+                            </Button>
+                        </Link>
+                        <Link href="/login">
+                            <Button variant="primaryLighter" size="lg">
+                                Login
+                            </Button>
+                        </Link>
                     </>
                 ) : null}
             </div>
