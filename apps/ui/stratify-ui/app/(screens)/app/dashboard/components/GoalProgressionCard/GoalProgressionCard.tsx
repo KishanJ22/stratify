@@ -81,9 +81,11 @@ const GoalProgressionCard = ({
                             )}
                         </div>
                     </div>
-                ) : totalValue && targetValue ? (
+                ) : targetValue ? (
                     <div className="flex flex-col gap-y-2.5">
-                        <Progress value={(totalValue / targetValue) * 100} />
+                        <Progress
+                            value={((totalValue ?? 0) / targetValue) * 100}
+                        />
                         <div className="flex flex-row justify-between text-lg leading-5 text-secondary-base">
                             <span>{"0"}</span>
                             <span>
