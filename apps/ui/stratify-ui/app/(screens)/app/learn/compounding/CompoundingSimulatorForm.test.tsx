@@ -55,24 +55,6 @@ describe("CompoundingSimulatorForm", () => {
         fieldLabels.forEach((label) => {
             expect(screen.getByText(label)).toBeInTheDocument();
         });
-    });
-
-    it("should render the default values correctly", () => {
-        renderComponent();
-
-        const fieldTestIds = [
-            "initial-investment-field",
-            "monthly-contribution-field",
-            "time-period-years-field",
-        ];
-
-        fieldTestIds.forEach((testId) => {
-            within(screen.getByTestId(testId)).getByDisplayValue("0");
-        });
-    });
-
-    it("should render the submit button", () => {
-        renderComponent();
 
         expect(screen.getByText("Simulate")).toBeInTheDocument();
     });
@@ -90,27 +72,27 @@ describe("CompoundingSimulatorForm", () => {
 
         await user.click(screen.getByTestId("asset-name-card"));
 
-        const initialInvestmentInput = within(
-            screen.getByTestId("initial-investment-field"),
-        ).getByDisplayValue("0");
+        const initialInvestmentInput = screen.getByTestId(
+            "initial-investment-field-input",
+        );
         await user.clear(initialInvestmentInput);
         await user.type(initialInvestmentInput, "10000");
 
-        const monthlyContributionInput = within(
-            screen.getByTestId("monthly-contribution-field"),
-        ).getByDisplayValue("0");
+        const monthlyContributionInput = screen.getByTestId(
+            "monthly-contribution-field-input",
+        );
         await user.clear(monthlyContributionInput);
         await user.type(monthlyContributionInput, "500");
 
-        const timePeriodInput = within(
-            screen.getByTestId("time-period-years-field"),
-        ).getByDisplayValue("0");
+        const timePeriodInput = screen.getByTestId(
+            "time-period-years-field-input",
+        );
         await user.clear(timePeriodInput);
         await user.type(timePeriodInput, "20");
 
-        const dividendYieldInput = within(
-            screen.getByTestId("annual-dividend-yield-field"),
-        ).getByPlaceholderText("Optional");
+        const dividendYieldInput = screen.getByTestId(
+            "annual-dividend-yield-field-input",
+        );
         await user.clear(dividendYieldInput);
         await user.type(dividendYieldInput, "5");
 
@@ -143,27 +125,27 @@ describe("CompoundingSimulatorForm", () => {
 
         await user.click(screen.getByTestId("asset-name-card"));
 
-        const initialInvestmentInput = within(
-            screen.getByTestId("initial-investment-field"),
-        ).getByDisplayValue("0");
+        const initialInvestmentInput = screen.getByTestId(
+            "initial-investment-field-input",
+        );
         await user.clear(initialInvestmentInput);
         await user.type(initialInvestmentInput, "10000");
 
-        const monthlyContributionInput = within(
-            screen.getByTestId("monthly-contribution-field"),
-        ).getByDisplayValue("0");
+        const monthlyContributionInput = screen.getByTestId(
+            "monthly-contribution-field-input",
+        );
         await user.clear(monthlyContributionInput);
         await user.type(monthlyContributionInput, "500");
 
-        const timePeriodInput = within(
-            screen.getByTestId("time-period-years-field"),
-        ).getByDisplayValue("0");
+        const timePeriodInput = screen.getByTestId(
+            "time-period-years-field-input",
+        );
         await user.clear(timePeriodInput);
         await user.type(timePeriodInput, "20");
 
-        const dividendYieldInput = within(
-            screen.getByTestId("annual-dividend-yield-field"),
-        ).getByPlaceholderText("Optional");
+        const dividendYieldInput = screen.getByTestId(
+            "annual-dividend-yield-field-input",
+        );
         await user.clear(dividendYieldInput);
         await user.type(dividendYieldInput, "5");
 
@@ -177,7 +159,7 @@ describe("CompoundingSimulatorForm", () => {
 
         expect(mockResetSimulation).toHaveBeenCalled();
 
-        expect(screen.getAllByDisplayValue("0")).toHaveLength(3);
+        expect(screen.getAllByDisplayValue("")).toHaveLength(5);
     });
 
     it("should disable the simulate button when isPending is true", () => {
@@ -199,9 +181,9 @@ describe("CompoundingSimulatorForm", () => {
     it("should disable the simulate button when the form is invalid", async () => {
         renderComponent();
 
-        const initialInvestmentInput = within(
-            screen.getByTestId("initial-investment-field"),
-        ).getByDisplayValue("0");
+        const initialInvestmentInput = screen.getByTestId(
+            "initial-investment-field-input",
+        );
         await user.clear(initialInvestmentInput);
         await user.type(initialInvestmentInput, "-100");
 

@@ -46,7 +46,7 @@ const defaultValues: AddInvestmentSchema = {
     tradeDate: "",
     pricePerShare: "",
     currencyConversionRate: "1",
-    fee: "0",
+    fee: "",
     total: 0,
     assetCurrencyTotal: 0,
 };

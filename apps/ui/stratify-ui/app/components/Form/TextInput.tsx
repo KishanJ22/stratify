@@ -38,6 +38,7 @@ const TextInput = ({
             <FieldLabel htmlFor={id}>{label}</FieldLabel>
             <Input
                 id={id}
+                data-testid={dataTestId ? `${dataTestId}-input` : undefined}
                 placeholder={placeholder}
                 value={defaultValue ? defaultValue : field.state.value}
                 onChange={(e) => field.handleChange(e.target.value)}
