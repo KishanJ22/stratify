@@ -5,6 +5,7 @@ import { screen } from "@testing-library/react";
 import MockSessionProvider from "@/app/tests/_mocks/MockSessionProvider";
 import { PortfolioValueHistory } from "./usePortfolioValueHistory";
 import { TooltipProvider } from "@/app/components/ui/tooltip";
+import { mockMetricsData } from "../PortfolioMetrics/_mocks/mockMetricsData";
 
 const mockPortfolioValueHistoryData = [
     {
@@ -36,6 +37,17 @@ vi.mock("./usePortfolioValueHistory", () => ({
     usePortfolioValueHistory: () => mockUsePortfolioValueHistory(),
 }));
 
+const defaultPortfolioMetricsHookReturnValues = {
+    data: mockMetricsData,
+    isLoading: false,
+};
+
+const mockUsePortfolioMetrics = vi.fn();
+
+vi.mock("../PortfolioMetrics/usePortfolioMetrics", () => ({
+    usePortfolioMetrics: () => mockUsePortfolioMetrics(),
+}));
+
 describe("PortfolioValueChart", () => {
     beforeEach(() => {
         vi.clearAllMocks();
@@ -54,6 +66,9 @@ describe("PortfolioValueChart", () => {
 
     it("should render the component successfully", () => {
         mockUsePortfolioValueHistory.mockReturnValue(defaultHookReturnValues);
+        mockUsePortfolioMetrics.mockReturnValue(
+            defaultPortfolioMetricsHookReturnValues,
+        );
 
         renderComponent();
 
@@ -61,17 +76,21 @@ describe("PortfolioValueChart", () => {
 
         expect(screen.getByText("Portfolio value")).toBeInTheDocument();
         expect(selectedDateRange).toHaveTextContent("Last 30 days");
-        expect(screen.getByText("11,000")).toBeInTheDocument();
+        expect(screen.getByText("100,000")).toBeInTheDocument();
 
         expect(screen.getByText("(GBP)")).toBeInTheDocument();
 
-        expect(screen.getByText("+10.00%")).toBeInTheDocument();
+        expect(screen.getByText("+900%")).toBeInTheDocument();
         expect(screen.getByText("in the past thirty days")).toBeInTheDocument();
     });
 
     it("should render the loading state when data is loading", () => {
         mockUsePortfolioValueHistory.mockReturnValue({
             ...defaultHookReturnValues,
+            isLoading: true,
+        });
+        mockUsePortfolioMetrics.mockReturnValue({
+            ...defaultPortfolioMetricsHookReturnValues,
             isLoading: true,
         });
 
@@ -86,6 +105,10 @@ describe("PortfolioValueChart", () => {
         mockUsePortfolioValueHistory.mockReturnValue({
             ...defaultHookReturnValues,
             data: [],
+        });
+        mockUsePortfolioMetrics.mockReturnValue({
+            ...defaultPortfolioMetricsHookReturnValues,
+            data: {},
         });
 
         renderComponent();

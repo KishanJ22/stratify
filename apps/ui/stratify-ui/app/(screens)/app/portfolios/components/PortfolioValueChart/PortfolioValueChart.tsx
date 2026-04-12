@@ -1,6 +1,6 @@
 "use client";
 
-import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
+import { Area, AreaChart, XAxis } from "recharts";
 import { ChartContainer, ChartTooltip } from "@/app/components/ui/chart";
 import { useSessionContext } from "../../../SessionProvider";
 import { usePortfolioValueHistory } from "./usePortfolioValueHistory";
@@ -10,6 +10,7 @@ import PortfolioValueDetails from "./PortfolioValueDetails";
 import PortfolioValueChartSkeleton from "./PortfolioValueChartSkeleton";
 import { placeholderChartData } from "./placeholderChartData";
 import { formatNumericValue } from "@/app/utils/formatNumericValue";
+import { usePortfolioMetrics } from "../PortfolioMetrics/usePortfolioMetrics";
 
 interface ChartTooltipProps {
     active?: boolean;
@@ -55,10 +56,15 @@ const PortfolioValueChart = ({ portfolioId }: PortfolioValueChartProps) => {
     const [selectedDateRange, setSelectedDateRange] =
         useState<DateRange>("30d");
 
-    const { data, isLoading } = usePortfolioValueHistory(portfolioId);
+    const { data: portfolioValueData, isLoading: isPortfolioValueLoading } =
+        usePortfolioValueHistory(portfolioId);
+    const { data: portfolioMetricsData, isLoading: isPortfolioMetricsLoading } =
+        usePortfolioMetrics(portfolioId);
+
+    const isLoading = isPortfolioValueLoading || isPortfolioMetricsLoading;
 
     const filteredData =
-        data?.filter((value) => {
+        portfolioValueData?.filter((value) => {
             const valueDate = new Date(value.date).toISOString().split("T")[0];
             const startDate = new Date();
 
@@ -92,6 +98,7 @@ const PortfolioValueChart = ({ portfolioId }: PortfolioValueChartProps) => {
         <div className="flex flex-col w-full font-sans">
             <PortfolioValueDetails
                 filteredData={filteredData}
+                currentValue={portfolioMetricsData?.totalValue}
                 currency={currency!}
                 selectedDateRange={selectedDateRange}
                 setSelectedDateRange={setSelectedDateRange}
@@ -108,7 +115,14 @@ const PortfolioValueChart = ({ portfolioId }: PortfolioValueChartProps) => {
                 <AreaChart
                     data={
                         filteredData.length > 0
-                            ? filteredData
+                            ? [
+                                  ...filteredData,
+                                  {
+                                      date: new Date().toISOString(),
+                                      portfolioValue:
+                                          portfolioMetricsData?.totalValue ?? 0,
+                                  },
+                              ]
                             : placeholderChartData
                     }
                 >
@@ -140,7 +154,6 @@ const PortfolioValueChart = ({ portfolioId }: PortfolioValueChartProps) => {
                             />
                         </linearGradient>
                     </defs>
-                    <CartesianGrid vertical={false} />
                     <XAxis
                         dataKey="date"
                         hide={filteredData.length === 0}

@@ -14,6 +14,8 @@ import {
     TooltipTrigger,
 } from "@/app/components/ui/tooltip";
 import { cn } from "@/lib/utils";
+import { formatNumericValue } from "@/app/utils/formatNumericValue";
+import { useTranslations } from "next-intl";
 
 const changeInDateRangeLabel = {
     "7d": "in the past seven days",
@@ -25,6 +27,7 @@ const changeInDateRangeLabel = {
 
 interface PortfolioValueDetailsProps {
     filteredData: PortfolioValueHistory[];
+    currentValue?: number;
     selectedDateRange: DateRange;
     setSelectedDateRange: Dispatch<SetStateAction<DateRange>>;
     currency?: string;
@@ -32,27 +35,23 @@ interface PortfolioValueDetailsProps {
 
 const PortfolioValueDetails = ({
     filteredData,
+    currentValue,
     currency,
     selectedDateRange,
     setSelectedDateRange,
 }: PortfolioValueDetailsProps) => {
+    const translate = useTranslations();
     const firstValue =
         filteredData.length > 0 ? filteredData[0].portfolioValue : null;
 
-    const latestValue =
-        filteredData.length > 0
-            ? filteredData[filteredData.length - 1].portfolioValue
-            : null;
-
-    const portfolioValueChange =
-        firstValue && latestValue
-            ? ((latestValue - firstValue) / firstValue) * 100
+    const portfolioValueChangePercentage =
+        firstValue && currentValue
+            ? ((currentValue - firstValue) / firstValue) * 100
             : null;
 
     const isPositiveChange =
-        portfolioValueChange !== null && portfolioValueChange >= 0.01;
-
-    const sign = isPositiveChange ? "+" : "";
+        portfolioValueChangePercentage !== null &&
+        portfolioValueChangePercentage >= 0.01;
 
     return (
         <div className="flex flex-col">
@@ -83,12 +82,12 @@ const PortfolioValueDetails = ({
                 />
             </div>
             <div className="flex flex-row text-muted-base text-3xl font-semibold">
-                {latestValue !== null ? (
+                {currentValue ? (
                     <>
-                        <div>{latestValue.toLocaleString()}</div>
-                        <div className="text-base ml-1 mt-2 content-end">
-                            {currency ? `(${currency})` : null}
-                        </div>
+                        <span>{formatNumericValue(currentValue)}</span>
+                        <span className="text-base ml-1 mt-2 content-end">
+                            {currency ? `(${currency})` : "---"}
+                        </span>
                     </>
                 ) : (
                     <div>No data available</div>
@@ -103,15 +102,20 @@ const PortfolioValueDetails = ({
                         : "text-negative-base",
                 )}
             >
-                {portfolioValueChange !== null ? (
+                {portfolioValueChangePercentage !== null ? (
                     <div className="flex flex-row items-center transition-all">
                         {isPositiveChange ? (
                             <ChartColumnIncreasing size={22} />
                         ) : (
                             <ChartColumnDecreasing size={22} />
                         )}
-                        {sign}
-                        {portfolioValueChange.toFixed(2)}%
+                        {portfolioValueChangePercentage > 0
+                            ? translate("Generic.positivePercentage", {
+                                  percentage: portfolioValueChangePercentage,
+                              })
+                            : translate("Generic.percentage", {
+                                  percentage: portfolioValueChangePercentage,
+                              })}
                         <span className="ml-1 text-sm">
                             {changeInDateRangeLabel[selectedDateRange]}
                         </span>
