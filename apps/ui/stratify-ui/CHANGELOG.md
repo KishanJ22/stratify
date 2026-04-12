@@ -1,5 +1,13 @@
 # @stratify/stratify-ui
 
+## 0.11.1
+
+### Patch Changes
+
+- 143d634: - Fix number inputs in compounding and cost-averaging simulator forms so they are empty strings by default
+    - Change fee field in add trade and add investment modals to default to empty string instead of 0 and pass validation as an empty string (blank is treated as 0)
+    - Format subtotal, asset currency subtotal, fee and total values in add trade and add investment modals to display numeric values correctly
+
 ## 0.11.0
 
 ### Minor Changes
