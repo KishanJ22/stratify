@@ -1,5 +1,11 @@
 # @stratify/stratify-ui
 
+## 0.12.1
+
+### Patch Changes
+
+- b508315: Fix goal not being visible when there is no total value (user has no portfolio or investments)
+
 ## 0.12.0
 
 ### Minor Changes
