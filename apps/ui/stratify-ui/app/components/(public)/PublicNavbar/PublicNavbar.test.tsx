@@ -1,20 +1,12 @@
 import { userEvent } from "@testing-library/user-event";
 import { render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import Navbar from "./PublicNavbar";
 import { mockNextLink } from "@/app/tests/_mocks/mockNextLink";
+import Navbar from "./PublicNavbar";
 
 // Mock Image component from next/image
 vi.mock("next/image", () => ({
     default: (props: { alt?: string }) => <img alt={props.alt} />,
-}));
-
-const mockRouterPush = vi.fn();
-
-vi.mock("next/navigation", () => ({
-    useRouter: () => ({
-        push: mockRouterPush,
-    }),
 }));
 
 mockNextLink();
@@ -58,6 +50,16 @@ describe("Navbar component", () => {
         expect(loginButton).toBeInTheDocument();
 
         await user.click(loginButton);
-        expect(mockRouterPush).toHaveBeenCalledWith("/login");
+        expect(loginButton.closest("a")).toHaveAttribute("href", "/login");
+    });
+
+    it("should navigate to the sign-up page when the Sign Up button is clicked", async () => {
+        renderComponent();
+
+        const signUpButton = screen.getByText("Sign Up");
+        expect(signUpButton).toBeInTheDocument();
+
+        await user.click(signUpButton);
+        expect(signUpButton.closest("a")).toHaveAttribute("href", "/sign-up");
     });
 });
