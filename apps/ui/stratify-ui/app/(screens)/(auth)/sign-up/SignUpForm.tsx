@@ -193,7 +193,7 @@ const SignUpForm = () => {
                                         }}
                                     />
                                     <CommandList
-                                        className={`absolute w-auto mt-11 p-1 gap-y-1.5 max-h-[150px] bg-white border border-secondary-dark rounded-md ${isCurrencyListOpen ? "" : "hidden"}`}
+                                        className={`absolute w-auto mt-11 p-1 gap-y-1.5 max-h-37.5 bg-white border border-secondary-dark rounded-md ${isCurrencyListOpen ? "" : "hidden"}`}
                                     >
                                         {isLoading ? (
                                             <div className="flex flex-col gap-2">

@@ -86,7 +86,7 @@ export default function AssetPage() {
                         />
                     </div>
                 </div>
-                <div className="flex flex-col justify-between ml-10 w-1/4">
+                <div className="flex flex-col justify-between ml-10 w-1/4 gap-y-5">
                     <CurrentHoldingsCard
                         assetHoldings={assetHoldings ?? []}
                         assetCurrency={assetDetails?.assetCurrency ?? ""}

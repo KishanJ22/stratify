@@ -41,6 +41,8 @@ const mockAuthClient = {
     },
 } as unknown as AuthClient;
 
+const mockSetIsPending = vi.fn();
+
 vi.mock("@/lib/auth/auth", () => ({
     useAuthClient: () => mockAuthClient,
 }));
@@ -51,7 +53,12 @@ describe("handleLogin", () => {
     });
 
     const executeLogin = async (values: LoginFormValues) => {
-        await handleLogin(values, mockAuthClient, mockRouterPush);
+        await handleLogin(
+            values,
+            mockAuthClient,
+            mockRouterPush,
+            mockSetIsPending,
+        );
     };
 
     it("AB#153 - should handle login with username successfully", async () => {
@@ -76,6 +83,7 @@ describe("handleLogin", () => {
         });
 
         expect(mockStoreToken).toHaveBeenCalledWith("valid-token");
+        expect(mockSetIsPending).toHaveBeenCalledWith(false);
         expect(mockRouterPush).toHaveBeenCalledWith("/app/dashboard");
     });
 
@@ -102,6 +110,7 @@ describe("handleLogin", () => {
 
         expect(mockStoreToken).toHaveBeenCalledWith("valid-token");
         expect(mockRouterPush).toHaveBeenCalledWith("/app/dashboard");
+        expect(mockSetIsPending).toHaveBeenCalledWith(false);
     });
 
     it("should handle login failure correctly (error code specified)", async () => {
@@ -133,6 +142,7 @@ describe("handleLogin", () => {
             "Invalid username or password.",
         );
         expect(mockRouterPush).not.toHaveBeenCalled();
+        expect(mockSetIsPending).toHaveBeenCalledWith(false);
     });
 
     it("should handle login failure correctly (no error code)", async () => {
@@ -158,6 +168,7 @@ describe("handleLogin", () => {
             "Login failed. Please try again.",
         );
         expect(mockRouterPush).not.toHaveBeenCalled();
+        expect(mockSetIsPending).toHaveBeenCalledWith(false);
     });
 
     it("should handle unexpected errors correctly", async () => {
@@ -182,5 +193,6 @@ describe("handleLogin", () => {
         );
 
         expect(mockRouterPush).not.toHaveBeenCalled();
+        expect(mockSetIsPending).toHaveBeenCalledWith(false);
     });
 });

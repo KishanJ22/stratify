@@ -18,6 +18,7 @@ const loginFormOptions = formOptions({
 
 const LoginForm = () => {
     const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
+    const [isPending, setIsPending] = useState(false);
 
     const authClient = useAuthClient();
     const { push } = useRouter();
@@ -36,8 +37,10 @@ const LoginForm = () => {
                 setIsSubmitDisabled(false);
             },
         },
-        onSubmit: async ({ value }) =>
-            await handleLogin(value, authClient, push),
+        onSubmit: async ({ value }) => {
+            setIsPending(true);
+            await handleLogin(value, authClient, push, setIsPending);
+        },
         onSubmitInvalid: () => {
             toast.error("Login failed. Please check the form for errors.");
             setIsSubmitDisabled(true);
