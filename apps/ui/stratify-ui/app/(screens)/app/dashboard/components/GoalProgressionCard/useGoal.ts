@@ -26,9 +26,11 @@ export const useGoal = () => {
         refetch,
     } = useQuery({
         queryKey: ["goal"],
+        enabled: !cachedGoal,
         queryFn: async () => {
             try {
                 const response = await client.GET("/goal");
+                setIsGoalNotFoundError(false);
 
                 return response.data?.data;
             } catch (error) {
