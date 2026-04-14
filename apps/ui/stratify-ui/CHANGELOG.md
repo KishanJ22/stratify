@@ -1,5 +1,12 @@
 # @stratify/stratify-ui
 
+## 0.12.5
+
+### Patch Changes
+
+- Updated dependencies [7b085c2]
+    - @stratify/stratify-api@0.9.1
+
 ## 0.12.4
 
 ### Patch Changes
