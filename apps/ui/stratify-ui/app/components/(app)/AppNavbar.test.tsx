@@ -4,6 +4,7 @@ import { beforeEach, describe } from "vitest";
 import AppNavbar from "./AppNavbar";
 import MockSessionProvider from "@/app/tests/_mocks/MockSessionProvider";
 import userEvent from "@testing-library/user-event";
+import { mockNextLink } from "@/app/tests/_mocks/mockNextLink";
 
 const user = userEvent.setup();
 
@@ -11,6 +12,8 @@ const user = userEvent.setup();
 vi.mock("next/image", () => ({
     default: (props: { alt?: string }) => <img alt={props.alt} />,
 }));
+
+mockNextLink();
 
 describe("AppNavbar", () => {
     beforeEach(() => {

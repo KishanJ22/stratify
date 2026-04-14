@@ -19,12 +19,15 @@ const navLinks = [
 const AppNavbar = () => {
     return (
         <nav className="sticky top-0 bg-background-light flex flex-row justify-between px-10 py-6 items-center">
-            <div className="flex-1 justify-start flex flex-row gap-x-2 py-2">
+            <Link
+                href="/app/dashboard"
+                className="flex-1 justify-start flex flex-row gap-x-2 py-2"
+            >
                 <StratifyIcon width={40} height={40} />
                 <div className="font-sans font-semibold text-primary-base text-4xl">
                     Stratify
                 </div>
-            </div>
+            </Link>
             <div className="font-sans bg-sidebar-light rounded-full px-10 py-4 w-fit flex flex-row gap-x-10 justify-self-center">
                 {navLinks.map((link) => (
                     <Link
