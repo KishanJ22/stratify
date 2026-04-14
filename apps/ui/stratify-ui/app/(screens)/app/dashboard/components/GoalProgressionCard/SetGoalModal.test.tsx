@@ -11,11 +11,14 @@ const mockHandleClose = vi.fn();
 
 const user = userEvent.setup();
 
+const mockRefetchGoal = vi.fn();
+
 const defaultProps = {
     isOpen: true,
     handleClose: mockHandleClose,
     currentTargetAmount: 1000,
     isGoalNotFoundError: false,
+    refetchGoal: mockRefetchGoal,
 } satisfies SetGoalModalProps;
 
 describe("SetGoalModal", () => {
