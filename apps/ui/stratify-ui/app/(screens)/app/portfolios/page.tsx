@@ -33,8 +33,8 @@ export default function PortfoliosPage() {
     }, [data, selectedPortfolioId]);
 
     return (
-        <div className="h-full px-10">
-            <div className="font-sans text-5xl text-primary-base font-semibold">
+        <div className="min-h-screen px-10">
+            <div className="font-sans text-5xl text-primary-base font-semibold w-full text-left">
                 Portfolios
             </div>
             <div className="flex flex-row w-full mt-4">

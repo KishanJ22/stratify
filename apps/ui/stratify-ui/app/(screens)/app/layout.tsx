@@ -29,14 +29,8 @@ export default function AppLayout({ children }: AuthLayoutProps) {
                     <PublicEnv />
                     <Providers>
                         <SessionProvider>
-                            <div className="h-screen flex flex-col">
-                                <AppNavbar />
-                                <TooltipProvider>
-                                    <div className="flex-1 overflow-hidden">
-                                        {children}
-                                    </div>
-                                </TooltipProvider>
-                            </div>
+                            <AppNavbar />
+                            <TooltipProvider>{children}</TooltipProvider>
                         </SessionProvider>
                         <Toaster richColors />
                     </Providers>
