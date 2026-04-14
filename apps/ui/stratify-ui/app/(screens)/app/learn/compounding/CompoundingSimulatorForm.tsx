@@ -122,7 +122,7 @@ const CompoundingSimulatorForm = ({
                 e.preventDefault();
                 form.handleSubmit();
             }}
-            className="bg-primary-lightest rounded-xl border border-primary-light py-2 px-3 flex flex-col gap-y-3"
+            className="bg-primary-lightest rounded-xl border border-primary-light py-2 px-3 flex flex-col gap-y-3 w-1/3"
         >
             <form.AppField name="assetName">
                 {(field) => {

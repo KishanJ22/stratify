@@ -11,12 +11,12 @@ export default function MarketsPage() {
     const [selectedTab, setSelectedTab] = useState<MarketDataTab>("topGainers");
 
     return (
-        <div className="items-center justify-items-center h-full px-10">
-            <div className="font-sans text-5xl text-primary-base font-semibold">
+        <div className="min-h-screen px-10 pb-10">
+            <div className="font-sans text-5xl text-primary-base font-semibold w-full text-left">
                 Markets
             </div>
 
-            <div className="flex items-center justify-between mt-4">
+            <div className="flex flex-row items-center justify-between mt-4">
                 <MarketDataTabs
                     selectedTab={selectedTab}
                     setSelectedTab={setSelectedTab}

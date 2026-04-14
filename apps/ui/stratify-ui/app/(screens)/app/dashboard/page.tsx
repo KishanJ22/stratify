@@ -31,8 +31,8 @@ export default function DashboardPage() {
     const isLoading = isOverviewLoading || isGoalLoading;
 
     return (
-        <div className="items-center justify-items-center h-full px-10">
-            <div className="font-sans text-5xl text-primary-base font-semibold leading-14">
+        <div className="min-h-screen px-10">
+            <div className="font-sans text-5xl text-primary-base font-semibold leading-14 w-full text-left">
                 {translate("title")}
             </div>
             <div className="mt-8 w-full">

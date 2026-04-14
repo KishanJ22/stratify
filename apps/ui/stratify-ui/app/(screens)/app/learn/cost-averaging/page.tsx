@@ -5,8 +5,8 @@ import CostAveragingSimulator from "./CostAveragingSimulator";
 
 export default function CostAveragingPage() {
     return (
-        <div className="items-center justify-items-center font-sans h-full px-10">
-            <div className="text-5xl leading-14 text-primary-base font-semibold">
+        <div className="font-sans min-h-screen px-10">
+            <div className="text-5xl leading-14 text-primary-base font-semibold w-full text-left">
                 Cost Averaging
             </div>
             <div className="flex flex-col mt-4 gap-y-5">
