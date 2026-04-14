@@ -8,6 +8,7 @@ import AppNavbar from "@/app/components/(app)/AppNavbar";
 import { TooltipProvider } from "@/app/components/ui/tooltip";
 import { PublicEnv } from "@/public-env";
 import { NextIntlClientProvider } from "next-intl";
+import ProgressProvider from "@/app/global/ProgressProvider";
 
 export const metadata: Metadata = {
     title: "Stratify UI",
@@ -30,7 +31,9 @@ export default function AppLayout({ children }: AuthLayoutProps) {
                     <Providers>
                         <SessionProvider>
                             <AppNavbar />
-                            <TooltipProvider>{children}</TooltipProvider>
+                            <TooltipProvider>
+                                <ProgressProvider>{children}</ProgressProvider>
+                            </TooltipProvider>
                         </SessionProvider>
                         <Toaster richColors />
                     </Providers>

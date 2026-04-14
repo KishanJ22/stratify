@@ -6,6 +6,7 @@ import { Toaster } from "@/app/components/ui/sonner";
 import PublicNavbar from "@/app/components/(public)/PublicNavbar/PublicNavbar";
 import { PublicEnv } from "@/public-env";
 import { NextIntlClientProvider } from "next-intl";
+import ProgressProvider from "@/app/global/ProgressProvider";
 
 export const metadata: Metadata = {
     title: "Stratify UI",
@@ -29,7 +30,7 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
                         <div className="h-screen flex flex-col">
                             <PublicNavbar showLoginSignUpButtons={false} />
                             <div className="flex-1 overflow-hidden">
-                                {children}
+                                <ProgressProvider>{children}</ProgressProvider>
                             </div>
                         </div>
                         <Toaster richColors />

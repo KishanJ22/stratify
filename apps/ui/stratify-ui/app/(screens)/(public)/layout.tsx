@@ -5,6 +5,7 @@ import PublicNavbar from "../../components/(public)/PublicNavbar/PublicNavbar";
 import { getFontClassNames } from "@/lib/fonts";
 import { PublicEnv } from "@/public-env";
 import { NextIntlClientProvider } from "next-intl";
+import ProgressProvider from "@/app/global/ProgressProvider";
 
 export const metadata: Metadata = {
     title: "Stratify UI",
@@ -26,7 +27,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
                     <PublicEnv />
                     <Providers>
                         <PublicNavbar />
-                        {children}
+                        <ProgressProvider>{children}</ProgressProvider>
                     </Providers>
                 </NextIntlClientProvider>
             </body>
