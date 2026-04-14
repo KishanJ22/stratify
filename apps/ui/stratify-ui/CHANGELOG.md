@@ -1,5 +1,11 @@
 # @stratify/stratify-ui
 
+## 0.12.6
+
+### Patch Changes
+
+- 86fc3d1: Add progress loading bar to each page to show that the page (or page content) is loading
+
 ## 0.12.5
 
 ### Patch Changes
