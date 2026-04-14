@@ -24,6 +24,7 @@ export default function DashboardPage() {
         data: goalData,
         isLoading: isGoalLoading,
         isGoalNotFoundError,
+        refetch: refetchGoal,
     } = useGoal();
 
     const translate = useTranslations("Dashboard");
@@ -79,6 +80,7 @@ export default function DashboardPage() {
                 handleClose={() => setIsSetGoalModalOpen(false)}
                 isGoalNotFoundError={isGoalNotFoundError}
                 currentTargetAmount={goalData?.targetAmount}
+                refetchGoal={refetchGoal}
             />
         </div>
     );

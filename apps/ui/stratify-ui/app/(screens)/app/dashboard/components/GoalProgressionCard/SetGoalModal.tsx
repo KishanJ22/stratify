@@ -12,7 +12,6 @@ import { X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import * as zod from "zod";
-import { useQueryClient } from "@tanstack/react-query";
 import { useSetGoal } from "./useSetGoal";
 import { useTranslations } from "next-intl";
 
@@ -34,6 +33,7 @@ export interface SetGoalModalProps {
     handleClose: () => void;
     currentTargetAmount?: number;
     isGoalNotFoundError?: boolean;
+    refetchGoal: () => void;
 }
 
 const SetGoalModal = ({
@@ -41,12 +41,12 @@ const SetGoalModal = ({
     handleClose,
     currentTargetAmount,
     isGoalNotFoundError,
+    refetchGoal,
 }: SetGoalModalProps) => {
     const translate = useTranslations("Dashboard");
     const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
 
     const { isPending, mutate: setGoal } = useSetGoal();
-    const queryClient = useQueryClient();
 
     const form = useAppForm({
         formId: "set-goal-form",
@@ -75,10 +75,7 @@ const SetGoalModal = ({
                 onSuccess: () => {
                     toast.success("Goal set successfully!");
 
-                    //? Invalidate the goal query to refetch the updated goal
-                    queryClient.invalidateQueries({
-                        queryKey: ["goal"],
-                    });
+                    refetchGoal();
 
                     handleClose();
                     form.reset();
