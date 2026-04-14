@@ -105,19 +105,17 @@ const retrieveOverviewDetails = async (portfolioIds: number[]) => {
         (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
     );
 
-    const totalValue = sortedValueHistory.length
-        ? sortedValueHistory[sortedValueHistory.length - 1].portfolioValue
-        : 0;
-
-    const { overallReturn, totalBuyAmount } = investments.reduce(
+    const { totalValue, overallReturn, totalBuyAmount } = investments.reduce(
         (sum, investment) => {
             return {
+                totalValue: (sum.totalValue += investment.currentValue),
                 overallReturn: (sum.overallReturn += investment.currentReturn),
                 totalBuyAmount: (sum.totalBuyAmount +=
                     investment.totalBuyAmount),
             };
         },
         {
+            totalValue: 0,
             overallReturn: 0,
             totalBuyAmount: 0,
         },
