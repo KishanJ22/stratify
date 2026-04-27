@@ -1,5 +1,11 @@
 # stratify-data-api
 
+## 1.0.0
+
+### Major Changes
+
+- 4afd346: Bump all apps to first major version
+
 ## 0.5.2
 
 ### Patch Changes
