@@ -1,5 +1,16 @@
 # @stratify/stratify-ui
 
+## 1.0.0
+
+### Major Changes
+
+- 4afd346: Bump all apps to first major version
+
+### Patch Changes
+
+- Updated dependencies [4afd346]
+    - @stratify/stratify-api@1.0.0
+
 ## 0.12.7
 
 ### Patch Changes

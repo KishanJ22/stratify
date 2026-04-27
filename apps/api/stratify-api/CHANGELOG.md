@@ -1,5 +1,11 @@
 # @stratify/stratify-api
 
+## 1.0.0
+
+### Major Changes
+
+- 4afd346: Bump all apps to first major version
+
 ## 0.9.1
 
 ### Patch Changes
