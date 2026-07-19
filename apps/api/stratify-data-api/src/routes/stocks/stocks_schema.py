@@ -10,6 +10,7 @@ class StockItem(BaseModel):
     displayName: Optional[str] = None
     shortName: Optional[str] = None
     longName: Optional[str] = None
+    symbol: Optional[str] = None
     summary: Optional[str] = None
     marketState: Optional[str] = None
     marketCap: Optional[int] = None

@@ -7,57 +7,60 @@ import { mockHistoricAssetPrices } from "../_mocks/mockHistoricAssetPrices.js";
 import { mockAssetData } from "../_mocks/mockAssetData.js";
 import { mockTrades } from "../_mocks/mockTrades.js";
 
-const mockAssetPriceResponse = {
+const mockStockDetails = {
     data: {
-        data: {
-            currentPrice: 30,
-        },
-    },
-};
-
-const mockGetCurrentPrice = vi.fn().mockResolvedValue(mockAssetPriceResponse);
-
-const mockSectorDetailsResponse = {
-    data: {
-        data: {
-            industryDetails: {
-                sector: "technology",
-            },
-        },
-    },
-};
-
-const mockFetchStockDetails = vi
-    .fn()
-    .mockResolvedValue(mockSectorDetailsResponse);
-
-const mockFundSectorDetailsResponse = {
-    data: {
-        data: {
-            sectorWeights: [
-                {
+        data: [
+            {
+                symbol: "AAPL",
+                industryDetails: {
                     sector: "technology",
-                    weight: 0.6,
                 },
-                {
-                    sector: "financials",
-                    weight: 0.4,
+                priceDetails: {
+                    currentPrice: 30,
                 },
-            ],
-        },
+            },
+            {
+                symbol: "LEON",
+                industryDetails: {
+                    sector: "technology",
+                },
+                priceDetails: {
+                    currentPrice: 30,
+                },
+            },
+        ],
     },
 };
 
-const mockFetchFundDetails = vi
-    .fn()
-    .mockResolvedValue(mockFundSectorDetailsResponse);
+const mockFetchStockDetails = vi.fn().mockResolvedValue(mockStockDetails);
+
+const mockFundDetails = {
+    data: {
+        data: [
+            {
+                symbol: "FUND",
+                priceDetails: {
+                    currentPrice: 30,
+                },
+                sectorWeights: [
+                    {
+                        sector: "technology",
+                        weight: 0.6,
+                    },
+                    {
+                        sector: "financials",
+                        weight: 0.4,
+                    },
+                ],
+            },
+        ],
+    },
+};
+
+const mockFetchFundDetails = vi.fn().mockResolvedValue(mockFundDetails);
 
 const mockDataApiClient = {
     GET: (url: string) => {
-        if (url.includes("/current-price")) {
-            return mockGetCurrentPrice();
-        }
-
         if (url.includes("/stocks")) {
             return mockFetchStockDetails();
         }

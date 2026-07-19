@@ -1,3 +1,4 @@
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from fastapi import APIRouter, Query, HTTPException
 from src.routes.stocks.stocks_schema import StockItem
 from src.utils.clean_symbol import clean_symbol
@@ -27,6 +28,7 @@ def format_stock_info(ticker_info) -> StockItem:
         "displayName": ticker_info.get("displayName"),
         "shortName": ticker_info.get("shortName"),
         "longName": ticker_info.get("longName"),
+        "symbol": ticker_info.get("symbol"),
         "summary": ticker_info.get("longBusinessSummary"),
         "marketState": ticker_info.get("marketState"),
         "marketCap": ticker_info.get("marketCap"),
@@ -47,6 +49,15 @@ def format_stock_info(ticker_info) -> StockItem:
             },
         }
     }
+    
+def fetch_stock_ticker(ticker, tickers):
+    data = tickers[ticker].info
+    if not data or data.get("quoteType") == "NONE":
+        return None
+    
+    return format_stock_info(data)
+    
+
 
 symbols_get = APIRouter()
 
@@ -56,7 +67,7 @@ async def get_stocks(
         description="Comma-separated stock symbols",
         examples={"Symbols": "AAPL,MSFT,GOOGL"},
         )
-    ):
+    ) -> StocksGetResponse:
         try:
             symbol_list = []
             for symbol in symbols.split(","):
@@ -69,19 +80,16 @@ async def get_stocks(
 
             tickers = Tickers(' '.join(symbol_list)).tickers
             formatted_stocks = []
-
             
-            for ticker in tickers:
-                ticker_data = tickers[ticker].info
-                if not ticker_data or ticker_data.get("quoteType") == "NONE":
-                    print(f"No info found for ticker: {ticker}")
-                    continue
-
-                ticker_info = format_stock_info(ticker_data)
-
-                if ticker_info:
-                    formatted_stocks.append(ticker_info)
-
+            with ThreadPoolExecutor() as executor:
+                futures = [executor.submit(fetch_stock_ticker, t, tickers) for t in tickers]
+                
+                for future in as_completed(futures):
+                    result = future.result()
+                    
+                    if result:
+                        formatted_stocks.append(result)
+            
             if not formatted_stocks or len(formatted_stocks) == 0:
                 raise HTTPException(
                     status_code=404, 

@@ -1,5 +1,9 @@
 import { dataApiClient } from "../../../../../lib/api/data-api-client.js";
+import { paths } from "../../../../../lib/api/stratify-data-api.js";
 import logger from "../../../../../logger.js";
+
+export type YahooFund =
+    paths["/funds/{symbol}"]["get"]["responses"]["200"]["content"]["application/json"]["data"];
 
 export const fetchFundDetails = async (
     assetSymbol: string,

@@ -3,7 +3,7 @@
   "info": {
     "title": "Stratify Data API",
     "description": "A REST API for accessing stock market data powered by Yahoo Finance and Stooq.",
-    "version": "0.5.0"
+    "version": "1.0.0"
   },
   "paths": {
     "/stocks": {
@@ -34,7 +34,9 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/StocksGetResponse"
+                }
               }
             }
           },
@@ -310,7 +312,9 @@
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/CryptoCurrenciesGetResponse"
+                }
               }
             }
           },
@@ -556,6 +560,22 @@
   },
   "components": {
     "schemas": {
+      "CryptoCurrenciesGetResponse": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/CryptocurrencyItem"
+            },
+            "type": "array",
+            "title": "Data"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "CryptoCurrenciesGetResponse"
+      },
       "CryptoSymbolGetResponse": {
         "properties": {
           "data": {
@@ -606,6 +626,9 @@
             "type": "number",
             "title": "Alltimelow"
           },
+          "industryDetails": {
+            "$ref": "#/components/schemas/IndustryDetails"
+          },
           "priceDetails": {
             "$ref": "#/components/schemas/PriceDetails"
           }
@@ -621,6 +644,7 @@
           "marketState",
           "allTimeHigh",
           "allTimeLow",
+          "industryDetails",
           "priceDetails"
         ],
         "title": "CryptocurrencyItem"
@@ -1034,6 +1058,17 @@
             ],
             "title": "Longname"
           },
+          "symbol": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Symbol"
+          },
           "summary": {
             "anyOf": [
               {
@@ -1080,6 +1115,22 @@
           "priceDetails"
         ],
         "title": "StockItem"
+      },
+      "StocksGetResponse": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/StockItem"
+            },
+            "type": "array",
+            "title": "Data"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "StocksGetResponse"
       },
       "SymbolGetResponse": {
         "properties": {

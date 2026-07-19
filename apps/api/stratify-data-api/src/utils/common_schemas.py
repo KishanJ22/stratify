@@ -17,3 +17,7 @@ class OHLCV(BaseModel):
 class PriceDetails(BaseModel):
     currentPrice: Optional[float] = None
     dayTradingActivity: OHLCV
+    
+class IndustryDetails(BaseModel):
+    industry: Optional[str] = None
+    sector: Optional[str] = None

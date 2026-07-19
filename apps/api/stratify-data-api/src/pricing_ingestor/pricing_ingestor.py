@@ -2,9 +2,11 @@ import os
 import time
 import pandas as pd
 import glob
-from src.custom_logger import get_logger
 from src.pricing_ingestor.write_asset_prices import write_asset_prices_to_json
 from src.pricing_ingestor.pricing_ingestor_schema import Asset, AssetPrice, PricingIngestorSuccess, PricingIngestorFailure
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from tqdm import tqdm
+from src.custom_logger import get_logger
 
 logger = get_logger("pricing_ingestor")
 
@@ -168,10 +170,6 @@ def ingest_data(filepath: str):
         validate_data = data_validation(df, filepath)
         
         if validate_data.get("is_valid") is False:
-            logger.error(f"Failed to ingest data from {filepath}")
-            for issue in validate_data.get("issues", []):
-                logger.error(f"Issue: {issue}")
-            
             return PricingIngestorFailure(
                 filepath=filepath,
                 error="Data validation failed",
@@ -187,12 +185,7 @@ def ingest_data(filepath: str):
         # Convert date to the correct format
         df["date"] = pd.to_datetime(df["date"], format="%Y%m%d", errors="raise").dt.strftime("%Y-%m-%d")
         records = df.to_dict(orient='records')
-        
-        if validate_data.get("fixes"):
-            logger.info(f"Data fixes applied for {ticker}:")
-            for fix in validate_data.get("fixes"):
-                logger.info(fix)
-                
+                        
         asset = Asset(
             ticker=ticker,
             country=country,
@@ -227,21 +220,24 @@ def get_files():
     
     return csv_files    
 
+def process_file(filepath):
+    result = ingest_data(filepath)
+    
+    if result.success:
+        write_asset_prices_to_json(result.data, filepath)
+        return True
+
 def pricing_ingestor():
     txt_files = get_files()
     start_time = time.time()
     successful_files = 0
-    
-    for filepath in txt_files:
-        ingestion_result = ingest_data(filepath)
-        if ingestion_result.success is True:
-            
-            asset_data = ingestion_result.data
-            write_asset_prices_to_json(asset_data, filepath)
-            successful_files += 1
-        else:
-            if ingestion_result.error:
-                logger.error(f"Error details: {ingestion_result.error}")
+     
+    with ThreadPoolExecutor() as executor:
+        futures = {executor.submit(process_file, f): f for f in txt_files}
+        
+        for future in tqdm(as_completed(futures), total=len(txt_files), desc="Ingesting files"):
+            if future.result():
+                successful_files += 1
     
     logger.info(f"Successfully ingested {successful_files}/{len(txt_files)} files.")
     logger.info(f"Took {time.time() - start_time:.2f} seconds to ingest data.")

@@ -1,3 +1,4 @@
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from src.routes.funds.funds_schema import FundItem, SectorWeight
 from src.utils.clean_symbol import clean_symbol
 from fastapi import APIRouter, Query, HTTPException
@@ -58,6 +59,15 @@ def format_fund_info(ticker_info, sector_weights) -> FundItem:
     
 class FundsGetResponse(BaseModel):
     data: List[FundItem]
+    
+def fetch_fund_ticker(ticker, tickers):
+    data = tickers[ticker].info
+    weights = tickers[ticker].funds_data.sector_weightings
+    
+    if not data or data.get("quoteType") == "NONE":
+        return None
+    
+    return format_fund_info(data, weights)
 
 funds_get = APIRouter()
 
@@ -83,15 +93,14 @@ async def get_funds(
             
             formatted_funds = []
             
-            for ticker in tickers:
-                ticker_data = tickers[ticker].info
-                sector_weights = tickers[ticker].funds_data.sector_weightings
+            with ThreadPoolExecutor() as executor:
+                futures = [executor.submit(fetch_fund_ticker, t, tickers) for t in tickers]
                 
-                if not ticker_data or ticker_data.get("quoteType") == "NONE":
-                    print(f"No info found for ticker: {ticker}")
-                    continue
-                
-                formatted_funds.append(format_fund_info(ticker_data, sector_weights))
+                for future in as_completed(futures):
+                    result = future.result()
+                    
+                    if result:
+                        formatted_funds.append(result)
                 
             if not formatted_funds or len(formatted_funds) == 0:
                 raise HTTPException(status_code=404, detail="No fund data found for provided symbols")
@@ -101,5 +110,4 @@ async def get_funds(
             raise
         
         except Exception as e:
-            print("Error fetching funds:", e)
             raise HTTPException(status_code=500, detail="Internal Server Error")

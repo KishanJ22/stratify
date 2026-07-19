@@ -7,7 +7,7 @@ import { fetchCurrentPrice } from "../../../assets/fetchCurrentPrice.js";
 import { portfolioInvestmentsQuery } from "../portfolioInvestmentsQuery.js";
 import type { ValueHistory } from "./[portfolioId].value-history.get.js";
 
-const bulkHistoricAssetPriceQuery = (
+export const bulkHistoricAssetPriceQuery = (
     assetIds: number[],
     startDate: Date,
     endDate: Date,
@@ -23,7 +23,7 @@ const bulkHistoricAssetPriceQuery = (
             "assetPrices.closePrice as price",
         ]);
 
-const bulkHistoricCurrencyConversionQuery = (
+export const bulkHistoricCurrencyConversionQuery = (
     currencyPairs: string[],
     startDate: Date,
     endDate: Date,
@@ -45,7 +45,7 @@ const bulkHistoricCurrencyConversionQuery = (
             "assetPrices.closePrice as price",
         ]);
 
-interface UniqueAsset {
+export interface UniqueAsset {
     assetId: number;
     assetSymbol: string;
     assetCountryId: number;

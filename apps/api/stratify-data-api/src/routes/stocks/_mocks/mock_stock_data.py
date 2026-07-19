@@ -1,4 +1,5 @@
 mock_stock_data = {
+    "symbol": "AAPL",
     "displayName": "Apple Inc.",
     "shortName": "Apple",
     "longName": "Apple Inc.",

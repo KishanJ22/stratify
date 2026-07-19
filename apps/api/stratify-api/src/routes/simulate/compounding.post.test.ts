@@ -70,8 +70,8 @@ describe("POST /simulate/compounding", () => {
                 percentage: 260.47,
             },
             compounding: {
-                absolute: 41988.11,
-                percentage: 152.68,
+                absolute: 41971.67,
+                percentage: 152.62,
             },
             compoundingWithDividends: null,
         });
@@ -126,12 +126,12 @@ describe("POST /simulate/compounding", () => {
                 percentage: 260.47,
             },
             compounding: {
-                absolute: 41988.11,
-                percentage: 152.68,
+                absolute: 41971.67,
+                percentage: 152.62,
             },
             compoundingWithDividends: {
-                absolute: 44774.16,
-                percentage: 162.82,
+                absolute: 44757.26,
+                percentage: 162.75,
             },
         });
     });

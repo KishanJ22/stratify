@@ -1,10 +1,10 @@
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from src.routes.cryptocurrencies.cryptocurrencies_schema import CryptocurrencyItem
 from src.utils.clean_symbol import clean_symbol
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 from yfinance import Tickers
 from typing import List
-import logging
 
 def format_cryptocurrency_data(crypto_data) -> CryptocurrencyItem:
     return {
@@ -17,6 +17,10 @@ def format_cryptocurrency_data(crypto_data) -> CryptocurrencyItem:
         "marketState": crypto_data.get("marketState"),
         "allTimeHigh": crypto_data.get("allTimeHigh"),
         "allTimeLow": crypto_data.get("allTimeLow"),
+        "industryDetails": {
+            "industry": "fintech",
+            "sector": "cryptocurrency"
+        },
         "priceDetails": {
             "currentPrice": crypto_data.get("regularMarketPrice"),
             "dayTradingActivity": {
@@ -31,11 +35,17 @@ def format_cryptocurrency_data(crypto_data) -> CryptocurrencyItem:
         }
     }
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
 class CryptoCurrenciesGetResponse(BaseModel):
     data: List[CryptocurrencyItem]
+    
+def fetch_crypto_ticker(ticker, tickers):
+    data = tickers[ticker].info
+    
+    if not data or data.get("quoteType") == "NONE":
+        return None
+    
+    return format_cryptocurrency_data(data)
+    
 
 crypto_symbols_get = APIRouter()
 
@@ -44,7 +54,7 @@ async def get_cryptocurrencies(symbols: str = Query(
         description="Comma-separated cryptocurrency symbols",
         examples={"Symbols": "BTC-USD,ETH-USD,ADA-GBP"}
         )
-    ):
+    ) -> CryptoCurrenciesGetResponse:
     try:
         symbol_list = []
         
@@ -60,17 +70,14 @@ async def get_cryptocurrencies(symbols: str = Query(
         
         formatted_cryptocurrencies = []
         
-        for ticker in tickers:
-            ticker_data = tickers[ticker].info
+        with ThreadPoolExecutor() as executor:
+            futures = [executor.submit(fetch_crypto_ticker, t, tickers) for t in tickers]
             
-            if not ticker_data or ticker_data.get("quoteType") == "NONE":
-                logger.error(f"No info found for ticker: {ticker}")
-                continue
-            
-            crypto_info = format_cryptocurrency_data(ticker_data)
-            
-            if crypto_info:
-                formatted_cryptocurrencies.append(crypto_info)
+            for future in as_completed(futures):
+                result = future.result()
+                
+                if result:
+                    formatted_cryptocurrencies.append(result)
                 
         if not formatted_cryptocurrencies:
             raise HTTPException(
@@ -84,7 +91,6 @@ async def get_cryptocurrencies(symbols: str = Query(
             raise
         
     except Exception as err:
-        logger.error(f"Error retrieving stock data: {err}")
         raise HTTPException(
             status_code=500,
             detail="Internal server error"
