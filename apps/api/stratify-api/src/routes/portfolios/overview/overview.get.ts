@@ -30,6 +30,7 @@ import { fetchFundsList } from "./fetchFundsList.js";
 import { fetchCryptosList } from "./fetchCryptosList.js";
 import { portfolioValueOnDate } from "./portfolioValueOnDate.js";
 import { adjustForWeekend } from "../../../utils/adjustForWeekend.js";
+import { toTwoDecimalPoints } from "../../../utils/toTwoDecimalPoints.js";
 
 interface GroupedInvestment {
     key: string;
@@ -44,7 +45,7 @@ interface GroupedInvestment {
     totalBuyAmount: number;
     realisedReturn: number;
     currentValue: number;
-    currentAssetCurrencyValue: number;
+    currentAssetCurrencyValue: number | null;
     currentReturn: number;
     currentReturnPercentage: number;
     portfolioId: number;
@@ -100,8 +101,8 @@ const calculateChangeSincePastValue = (
     const valueDifference = latestValue - pastValue;
 
     return {
-        absolute: valueDifference,
-        percentage: (valueDifference / pastValue) * 100,
+        absolute: toTwoDecimalPoints(valueDifference),
+        percentage: toTwoDecimalPoints((valueDifference / pastValue) * 100),
     } satisfies Return;
 };
 
@@ -337,15 +338,18 @@ const overviewDetails = async (portfolioIds: number[]) => {
         const currentValue =
             currentPrice * currentHoldingQuantity * conversionRate;
 
-        const currentAssetCurrencyValue =
-            (assetDetails?.priceDetails.currentPrice ?? 0) *
-            currentHoldingQuantity;
+        const currentAssetCurrencyValue = isCurrencyConversionRequired
+            ? (assetDetails?.priceDetails.currentPrice ?? 0) *
+              currentHoldingQuantity
+            : null;
 
         const currentReturn =
             currentValue - currentAverageCost + realisedReturn;
 
         const currentReturnPercentage =
-            totalBuyAmount > 0 ? (currentReturn / totalBuyAmount) * 100 : 0;
+            totalBuyAmount > 0
+                ? toTwoDecimalPoints((currentReturn / totalBuyAmount) * 100)
+                : 0;
 
         let sectorDetails = [{ sector: "", weight: 1 }];
 
@@ -465,7 +469,9 @@ const overviewDetails = async (portfolioIds: number[]) => {
     const allTimeReturn = {
         absolute: overallReturn,
         percentage:
-            totalBuyAmount > 0 ? (overallReturn / totalBuyAmount) * 100 : null,
+            totalBuyAmount > 0
+                ? toTwoDecimalPoints((overallReturn / totalBuyAmount) * 100)
+                : null,
     } satisfies Return;
 
     return {
@@ -500,7 +506,6 @@ export default async function overviewGet(fastify: FastifyInstance) {
                 const { userId } = getFromStore("user") as UserDetails;
 
                 const portfolios = await portfolioListQuery(userId).execute();
-                fastify.checkpoint("portfolios query");
 
                 if (portfolios.length === 0) {
                     return reply

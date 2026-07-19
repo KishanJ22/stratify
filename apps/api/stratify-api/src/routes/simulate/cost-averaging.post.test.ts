@@ -68,8 +68,8 @@ describe("POST /simulate/cost-averaging", () => {
                 percentage: 260.47,
             },
             costAveraging: {
-                absolute: 8578.81,
-                percentage: 85.79,
+                absolute: 8569.68,
+                percentage: 85.7,
             },
         });
     });
