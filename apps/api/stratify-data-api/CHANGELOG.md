@@ -1,5 +1,11 @@
 # stratify-data-api
 
+## 1.0.1
+
+### Patch Changes
+
+- c438934: Add multithreading to asset symbol list endpoints
+
 ## 1.0.0
 
 ### Major Changes

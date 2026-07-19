@@ -1,5 +1,11 @@
 # @stratify/stratify-api
 
+## 1.1.0
+
+### Minor Changes
+
+- c438934: Rewrite overview endpoint to significantly improve efficiency and response time
+
 ## 1.0.0
 
 ### Major Changes
