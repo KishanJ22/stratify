@@ -31,7 +31,7 @@ def format_stock_info(ticker_info) -> StockItem:
         "symbol": ticker_info.get("symbol"),
         "summary": ticker_info.get("longBusinessSummary"),
         "marketState": ticker_info.get("marketState"),
-        "marketCap": ticker_info.get("market_cap"),
+        "marketCap": ticker_info.get("marketCap"),
         "industryDetails": {
             "industry": ticker_info.get("industry"),
             "sector": sector_mapping.get(ticker_info.get("sector"), "other")

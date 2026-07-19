@@ -8,6 +8,10 @@ mock_cryptocurrency_data = {
     "marketState": "REGULAR",
     "allTimeHigh": 150000,
     "allTimeLow": 10,
+    "industryDetails": {
+            "industry": "fintech",
+            "sector": "cryptocurrency"
+    },
     "priceDetails": {
         "currentPrice": 45000,
         "dayTradingActivity": {
