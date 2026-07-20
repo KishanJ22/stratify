@@ -1,5 +1,13 @@
 # @stratify/stratify-ui
 
+## 1.0.2
+
+### Patch Changes
+
+- bb7e13c: Update dependencies and fix ETF and crypto asset details not being retrieved properly
+- Updated dependencies [bb7e13c]
+    - @stratify/stratify-api@1.1.1
+
 ## 1.0.1
 
 ### Patch Changes
