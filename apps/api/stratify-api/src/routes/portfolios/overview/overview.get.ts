@@ -180,7 +180,7 @@ const overviewDetails = async (portfolioIds: number[]) => {
 
     const currencyRates = Array.from(historicCurrencyRatesMap);
 
-    const symbols = trades.reduce(
+    const { stocks, cryptos, funds } = trades.reduce(
         (acc, investment) => {
             const { assetSymbol, assetCountryId, assetType } = investment;
 
@@ -212,9 +212,11 @@ const overviewDetails = async (portfolioIds: number[]) => {
     );
 
     const [stocksList, fundsList, cryptosList] = await Promise.all([
-        fetchStocksList(Array.from(symbols.stocks).toString()),
-        fetchFundsList(Array.from(symbols.funds).toString()),
-        fetchCryptosList(Array.from(symbols.cryptos).toString()),
+        stocks.size > 0 ? fetchStocksList(Array.from(stocks).toString()) : [],
+        funds.size > 0 ? fetchFundsList(Array.from(funds).toString()) : [],
+        cryptos.size > 0
+            ? fetchCryptosList(Array.from(cryptos).toString())
+            : [],
     ]);
 
     const currentAssetPricesMap = new Map<number, number>();
@@ -322,13 +324,20 @@ const overviewDetails = async (portfolioIds: number[]) => {
         const realisedReturn =
             totalSellAmount - averageCost * totalSellQuantity;
 
+        const combinedSymbol =
+            assetType === "CRYPTOCURRENCY"
+                ? `${assetSymbol}-USD`
+                : assetCountryId === 223
+                  ? `${assetSymbol}.L`
+                  : assetSymbol;
+
         const assetDetails =
             trade.assetType === "STOCK"
-                ? stocksList?.find((stock) => stock.symbol === assetSymbol)
+                ? stocksList?.find((stock) => stock.symbol === combinedSymbol)
                 : trade.assetType === "ETF"
-                  ? fundsList?.find((fund) => fund.symbol === assetSymbol)
+                  ? fundsList?.find((fund) => fund.symbol === combinedSymbol)
                   : cryptosList?.find(
-                        (crypto) => crypto.symbol === assetSymbol,
+                        (crypto) => crypto.symbol === combinedSymbol,
                     );
 
         const currentPrice = assetDetails?.priceDetails.currentPrice ?? 0;
@@ -355,15 +364,10 @@ const overviewDetails = async (portfolioIds: number[]) => {
 
         if (assetType === "STOCK") {
             const stockDetails = stocksList?.find(
-                (stock) => stock.symbol === assetSymbol,
+                (stock) => stock.symbol === combinedSymbol,
             );
 
             if (stockDetails?.industryDetails?.sector) {
-                logger.info(
-                    { sector: stockDetails.industryDetails.sector },
-                    "Sector found",
-                );
-
                 sectorDetails = [
                     {
                         sector: stockDetails.industryDetails.sector,
@@ -375,7 +379,7 @@ const overviewDetails = async (portfolioIds: number[]) => {
 
         if (assetType === "ETF") {
             const fundDetails = fundsList?.find(
-                (fund) => fund.symbol === assetSymbol,
+                (fund) => fund.symbol === combinedSymbol,
             );
 
             if (fundDetails?.sectorWeights) {

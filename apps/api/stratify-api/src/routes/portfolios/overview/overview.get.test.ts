@@ -38,7 +38,7 @@ const mockFundDetails = {
     data: {
         data: [
             {
-                symbol: "FUND",
+                symbol: "FUND.L",
                 priceDetails: {
                     currentPrice: 30,
                 },
@@ -135,8 +135,8 @@ describe("GET /portfolios/overview", () => {
                     percentage: 115.91,
                 },
                 lastThirtyDays: {
-                    absolute: 475,
-                    percentage: 50,
+                    absolute: 925,
+                    percentage: 185,
                 },
                 lastSixMonths: {
                     absolute: 1225,
