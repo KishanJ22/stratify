@@ -5,18 +5,18 @@ import { UserDetails } from "../../utils/decodeToken.js";
 import db from "../../database/db.js";
 import logger from "../../logger.js";
 
-const requestBodySchema = Type.Object({
+export const requestBodySchema = Type.Object({
     name: Type.String({ description: "The portfolio name" }),
 });
 
-type RequestBody = Static<typeof requestBodySchema>;
+export type RequestBody = Static<typeof requestBodySchema>;
 
 //? Error value is camelCase to allow for translations to be easily mapped
-const portfolioNameAlreadyExistsResponseSchema = Type.Object({
+export const portfolioNameAlreadyExistsResponseSchema = Type.Object({
     message: Type.Literal("portfolioNameAlreadyExists"),
 });
 
-type PortfolioNameAlreadyExistsResponse = Static<
+export type PortfolioNameAlreadyExistsResponse = Static<
     typeof portfolioNameAlreadyExistsResponseSchema
 >;
 
@@ -40,13 +40,12 @@ const createPortfolio = (userId: string, name: string) => {
 };
 
 // Check if the user already has a portfolio with the same name
-const checkPortfolioNameExists = (userId: string, name: string) => {
-    return db
+export const checkPortfolioNameExists = (userId: string, name: string) =>
+    db
         .selectFrom("stratify.portfolios")
         .where("userId", "=", userId)
         .where("name", "=", name.toLowerCase())
         .selectAll();
-};
 
 export default async function portfolioCreatePost(fastify: FastifyInstance) {
     fastify.route<{
