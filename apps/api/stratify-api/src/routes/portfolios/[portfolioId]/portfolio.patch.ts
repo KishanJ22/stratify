@@ -14,7 +14,6 @@ import {
     PortfolioIdParam,
     portfolioIdParamSchema,
 } from "./investments/investmentSchema.js";
-import { Type } from "@sinclair/typebox";
 import {
     PortfolioNotFoundResponse,
     portfolioNotFoundSchema,
@@ -30,7 +29,7 @@ const updatePortfolio = (userId: string, name: string, portfolioId: number) =>
         .where("stratify.portfolios.id", "=", portfolioId)
         .where("stratify.portfolios.userId", "=", userId);
 
-export default async function portfolioRenamePatch(fastify: FastifyInstance) {
+export default async function portfolioPatch(fastify: FastifyInstance) {
     fastify.route<{
         Body: RequestBody;
         Params: PortfolioIdParam;
