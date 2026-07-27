@@ -5,8 +5,10 @@ import { Avatar, AvatarFallback } from "../ui/avatar";
 import { useSessionContext } from "@/app/(screens)/app/SessionProvider";
 import { cn } from "@/lib/utils";
 import { LogOut } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 const UserIconMenu = () => {
+    const translate = useTranslations();
     const { session, logout } = useSessionContext();
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
@@ -59,7 +61,7 @@ const UserIconMenu = () => {
                     onClick={() => logout()}
                 >
                     <LogOut className="mr-2" size={16} />
-                    {"Log out"}
+                    {translate("Generic.logout")}
                 </div>
             </div>
         </div>
