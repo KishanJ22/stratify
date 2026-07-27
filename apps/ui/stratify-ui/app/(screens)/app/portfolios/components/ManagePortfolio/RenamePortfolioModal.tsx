@@ -4,7 +4,6 @@ import { useAppForm } from "@/app/components/Form/useForm";
 import {
     Dialog,
     DialogContent,
-    DialogDescription,
     DialogFooter,
     DialogHeader,
     DialogTitle,
@@ -14,45 +13,52 @@ import { Dispatch, SetStateAction, useState } from "react";
 import { toast } from "sonner";
 import {
     PortfolioNameAlreadyExistsResponse,
-    useCreatePortfolio,
-} from "./useCreatePortfolio";
+    useRenamePortfolio,
+} from "./useRenamePortfolio";
 import { HTTPError } from "ky";
 import * as zod from "zod";
 import { useQueryClient } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 
-const createPortfolioSchema = zod.object({
+const renamePortfolioSchema = zod.object({
     name: zod.string().min(1, "Portfolio name is required"),
 });
 
 export interface CreatePortfolioModalProps {
     isOpen: boolean;
     handleClose: () => void;
-    setSelectedPortfolioId: Dispatch<SetStateAction<number | null>>;
+    selectedPortfolioId: number | null;
+    selectedPortfolioName: string;
     setSelectedPortfolioName: Dispatch<SetStateAction<string>>;
 }
 
-const CreatePortfolioModal = ({
+const RenamePortfolioModal = ({
     isOpen,
     handleClose,
-    setSelectedPortfolioId,
+    selectedPortfolioId,
+    selectedPortfolioName,
     setSelectedPortfolioName,
 }: CreatePortfolioModalProps) => {
+    const translate = useTranslations();
     const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
     const [isPortfolioNameAlreadyExists, setIsPortfolioNameAlreadyExists] =
         useState(false);
 
-    const { isPending, mutate: createPortfolio } = useCreatePortfolio();
+    const [isPortfolioNameSame, setIsPortfolioNameSame] = useState(true);
+
+    const { isPending, mutate: renamePortfolio } =
+        useRenamePortfolio(selectedPortfolioId);
     const queryClient = useQueryClient();
 
     const form = useAppForm({
-        formId: "create-portfolio-form",
+        formId: "rename-portfolio-form",
         defaultValues: {
-            name: "",
+            name: selectedPortfolioName,
         },
         validators: {
-            onChange: createPortfolioSchema,
+            onChange: renamePortfolioSchema,
             onBlurAsync: async ({ value }) => {
-                const errors = createPortfolioSchema.safeParse(value);
+                const errors = renamePortfolioSchema.safeParse(value);
 
                 if (!errors.success) {
                     setIsSubmitDisabled(true);
@@ -63,9 +69,8 @@ const CreatePortfolioModal = ({
             },
         },
         onSubmit: async ({ value }) => {
-            createPortfolio(value, {
-                onSuccess: ({ data }) => {
-                    toast.success("Portfolio created successfully!");
+            renamePortfolio(value, {
+                onSuccess: ({ response }) => {
                     setIsPortfolioNameAlreadyExists(false);
 
                     //? Invalidate portfolio list query to fetch updated list
@@ -73,10 +78,12 @@ const CreatePortfolioModal = ({
                         queryKey: ["portfolio-list"],
                     });
 
-                    const portfolioId = data?.data.portfolioId;
-
-                    if (portfolioId) {
-                        setSelectedPortfolioId(portfolioId);
+                    if (response.status === 204) {
+                        toast.success(
+                            translate(
+                                "Portfolios.renamePortfolioModal.portfolioRenamedSuccess",
+                            ),
+                        );
                         setSelectedPortfolioName(value.name.toLowerCase());
                     }
 
@@ -101,7 +108,9 @@ const CreatePortfolioModal = ({
         },
         onSubmitInvalid: () => {
             toast.error(
-                "Portfolio could not be created. Please check the form for errors.",
+                translate(
+                    "Portfolios.renamePortfolioModal.portfolioRenameError",
+                ),
             );
             setIsSubmitDisabled(true);
         },
@@ -120,7 +129,7 @@ const CreatePortfolioModal = ({
                 <DialogHeader>
                     <div className="flex flex-row items-center justify-between">
                         <DialogTitle className="font-medium text-lg leading-7 text-secondary-darker">
-                            Create Portfolio
+                            {translate("Portfolios.renamePortfolioModal.title")}
                         </DialogTitle>
                         <X
                             size={20}
@@ -133,10 +142,6 @@ const CreatePortfolioModal = ({
                             data-testid="close-modal-icon"
                         />
                     </div>
-                    <DialogDescription className="text-secondary-base leading-5">
-                        Add and monitor your investments by creating a
-                        portfolio.
-                    </DialogDescription>
                 </DialogHeader>
                 <form
                     onSubmit={(e) => {
@@ -147,8 +152,13 @@ const CreatePortfolioModal = ({
                     <form.AppField
                         name="name"
                         validators={{
-                            onChange: () => {
-                                setIsPortfolioNameAlreadyExists(false);
+                            onChange: ({ value }) => {
+                                if (value === selectedPortfolioName) {
+                                    setIsPortfolioNameSame(true);
+                                } else {
+                                    setIsPortfolioNameSame(false);
+                                    setIsPortfolioNameAlreadyExists(false);
+                                }
                             },
                         }}
                     >
@@ -159,14 +169,24 @@ const CreatePortfolioModal = ({
 
                             const portfolioNameError =
                                 isPortfolioNameAlreadyExists
-                                    ? "Portfolio name already exists. Please choose a different name."
-                                    : validationError;
+                                    ? translate(
+                                          "Portfolios.portfolioNameAlreadyExists",
+                                      )
+                                    : isPortfolioNameSame
+                                      ? translate(
+                                            "Portfolios.renamePortfolioModal.portfolioNameIsSame",
+                                        )
+                                      : validationError;
 
                             return (
                                 <TextInput
                                     id="name"
-                                    label="Name"
-                                    placeholder="Main Portfolio"
+                                    label={translate(
+                                        "Portfolios.renamePortfolioModal.nameLabel",
+                                    )}
+                                    placeholder={translate(
+                                        "Portfolios.renamePortfolioModal.namePlaceholder",
+                                    )}
                                     error={portfolioNameError}
                                 />
                             );
@@ -181,7 +201,7 @@ const CreatePortfolioModal = ({
                         >
                             <DialogFooter className="flex flex-col justify-end mt-8">
                                 <form.SubmitButton
-                                    label="Create"
+                                    label={translate("Generic.save")}
                                     isDisabled={
                                         !form.state.canSubmit ||
                                         isSubmitDisabled
@@ -199,4 +219,4 @@ const CreatePortfolioModal = ({
     );
 };
 
-export default CreatePortfolioModal;
+export default RenamePortfolioModal;

@@ -143,6 +143,10 @@ const AddTradeModal = ({
                         queryKey: ["portfolio-metrics", portfolioId],
                     });
 
+                    queryClient.invalidateQueries({
+                        queryKey: ["portfolios-overview"],
+                    });
+
                     if (navigateToPortfolioPage) {
                         push(`/app/portfolios?portfolioId=${portfolioId}`);
                     }

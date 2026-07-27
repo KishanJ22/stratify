@@ -166,6 +166,10 @@ const AddInvestmentModal = ({
                         queryKey: ["portfolio-metrics", portfolioId],
                     });
 
+                    queryClient.invalidateQueries({
+                        queryKey: ["portfolios-overview"],
+                    });
+
                     if (preselectedAsset) {
                         push(`/app/portfolios?portfolioId=${portfolioId}`);
                     }
@@ -582,7 +586,10 @@ const AddInvestmentModal = ({
                                 </span>
                                 <span className="font-medium text-muted-dark">
                                     {subtotal > 0 && userCurrency
-                                        ? formatNumericValue(subtotal, userCurrency)
+                                        ? formatNumericValue(
+                                              subtotal,
+                                              userCurrency,
+                                          )
                                         : "---"}
                                 </span>
                             </div>
