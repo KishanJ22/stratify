@@ -5,6 +5,8 @@ import AppNavbar from "./AppNavbar";
 import MockSessionProvider from "@/app/tests/_mocks/MockSessionProvider";
 import userEvent from "@testing-library/user-event";
 import { mockNextLink } from "@/app/tests/_mocks/mockNextLink";
+import { NextIntlClientProvider } from "next-intl";
+import messages from "@/messages/en/messages.json";
 
 const user = userEvent.setup();
 
@@ -22,9 +24,11 @@ describe("AppNavbar", () => {
 
     const renderComponent = () =>
         render(
-            <MockSessionProvider>
-                <AppNavbar />
-            </MockSessionProvider>,
+            <NextIntlClientProvider locale="en" messages={messages}>
+                <MockSessionProvider>
+                    <AppNavbar />
+                </MockSessionProvider>
+            </NextIntlClientProvider>,
         );
 
     it("should render the navbar correctly", () => {

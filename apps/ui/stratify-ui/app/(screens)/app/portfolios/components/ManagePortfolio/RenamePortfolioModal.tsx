@@ -24,7 +24,7 @@ const renamePortfolioSchema = zod.object({
     name: zod.string().min(1, "Portfolio name is required"),
 });
 
-export interface CreatePortfolioModalProps {
+export interface RenamePortfolioModalProps {
     isOpen: boolean;
     handleClose: () => void;
     selectedPortfolioId: number | null;
@@ -38,7 +38,7 @@ const RenamePortfolioModal = ({
     selectedPortfolioId,
     selectedPortfolioName,
     setSelectedPortfolioName,
-}: CreatePortfolioModalProps) => {
+}: RenamePortfolioModalProps) => {
     const translate = useTranslations();
     const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
     const [isPortfolioNameAlreadyExists, setIsPortfolioNameAlreadyExists] =

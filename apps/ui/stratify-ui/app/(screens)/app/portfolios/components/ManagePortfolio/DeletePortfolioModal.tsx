@@ -15,7 +15,7 @@ import { Spinner } from "@/app/components/ui/spinner";
 import { Dispatch, SetStateAction } from "react";
 import { useTranslations } from "next-intl";
 
-export interface CreatePortfolioModalProps {
+export interface DeletePortfolioModalProps {
     isOpen: boolean;
     handleClose: () => void;
     selectedPortfolioId: number | null;
@@ -31,7 +31,7 @@ const DeletePortfolioModal = ({
     selectedPortfolioName,
     setSelectedPortfolioId,
     setSelectedPortfolioName,
-}: CreatePortfolioModalProps) => {
+}: DeletePortfolioModalProps) => {
     const translate = useTranslations();
     const { isPending, mutate: deletePortfolio } = useDeletePortfolio();
     const queryClient = useQueryClient();
@@ -103,6 +103,7 @@ const DeletePortfolioModal = ({
                     <Button
                         variant="primaryLighter"
                         onClick={() => handleClose()}
+                        data-testid="go-back-button"
                     >
                         <div className="flex flex-row items-center">
                             <CircleArrowLeft className="mr-2" size={16} />
@@ -114,10 +115,11 @@ const DeletePortfolioModal = ({
                     <Button
                         variant="destructive"
                         onClick={() => handleDelete()}
+                        data-testid="delete-portfolio-button"
                     >
                         <div className="flex flex-row items-center">
                             {isPending ? (
-                                <Spinner />
+                                <Spinner data-testid="loading-spinner" />
                             ) : (
                                 <Trash2 className="mr-2" size={16} />
                             )}

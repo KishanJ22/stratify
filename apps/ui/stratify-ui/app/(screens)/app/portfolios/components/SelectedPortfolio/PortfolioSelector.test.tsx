@@ -4,6 +4,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { MockPointerEvent } from "@/app/tests/_mocks/MockPointerEvent";
 
 const mockSetSelectedPortfolioId = vi.fn();
+const mockSetSelectedPortfolioName = vi.fn();
 
 const defaultPortfolioSelectorProps = {
     portfolioList: [
@@ -13,6 +14,7 @@ const defaultPortfolioSelectorProps = {
     isLoading: false,
     selectedPortfolioId: null,
     setSelectedPortfolioId: mockSetSelectedPortfolioId,
+    setSelectedPortfolioName: mockSetSelectedPortfolioName,
 } satisfies PortfolioSelectorProps;
 
 describe("PortfolioSelector", () => {
@@ -50,6 +52,7 @@ describe("PortfolioSelector", () => {
             isLoading: false,
             selectedPortfolioId: null,
             setSelectedPortfolioId: mockSetSelectedPortfolioId,
+            setSelectedPortfolioName: mockSetSelectedPortfolioName,
         });
 
         const selectButton = screen.getByText("Create a portfolio");
@@ -69,6 +72,7 @@ describe("PortfolioSelector", () => {
             isLoading: true,
             selectedPortfolioId: null,
             setSelectedPortfolioId: mockSetSelectedPortfolioId,
+            setSelectedPortfolioName: mockSetSelectedPortfolioName,
         });
 
         const skeleton = screen.getByTestId("loading-skeleton");
