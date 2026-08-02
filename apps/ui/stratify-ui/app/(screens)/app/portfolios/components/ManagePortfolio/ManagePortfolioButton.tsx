@@ -15,7 +15,10 @@ const ManagePortfolioButton = ({
     isLoading,
 }: ManagePortfolioButtonProps) => {
     return isLoading ? (
-        <Skeleton className="rounded-full w-10 h-10" data-testid="loading-skeleton" />
+        <Skeleton
+            className="rounded-full w-10 h-10"
+            data-testid="loading-skeleton"
+        />
     ) : (
         <Button
             variant="primaryLighter"

@@ -94,7 +94,7 @@ const RenamePortfolioModal = ({
                     const httpError = error as HTTPError;
                     if (httpError.response) {
                         const errorJson =
-                            await httpError.data as PortfolioNameAlreadyExistsResponse;
+                            (await httpError.data) as PortfolioNameAlreadyExistsResponse;
 
                         const errorMessage = errorJson?.message;
 
@@ -181,6 +181,7 @@ const RenamePortfolioModal = ({
                             return (
                                 <TextInput
                                     id="name"
+                                    dataTestId="name"
                                     label={translate(
                                         "Portfolios.renamePortfolioModal.nameLabel",
                                     )}

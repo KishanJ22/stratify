@@ -1,5 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import ManagePortfolioMenu, { ManagePortfolioMenuProps } from "./ManagePortfolioMenu";
+import ManagePortfolioMenu, {
+    ManagePortfolioMenuProps,
+} from "./ManagePortfolioMenu";
 import { screen } from "@testing-library/react";
 import { renderWithContext } from "@/app/tests/utils";
 import userEvent from "@testing-library/user-event";
@@ -12,21 +14,28 @@ const mockSetIsDeletePortfolioModalOpen = vi.fn();
 const defaultProps = {
     isManagePortfolioMenuOpen: true,
     setIsRenamePortfolioModalOpen: mockSetIsRenamePortfolioModalOpen,
-    setIsDeletePortfolioModalOpen: mockSetIsDeletePortfolioModalOpen
+    setIsDeletePortfolioModalOpen: mockSetIsDeletePortfolioModalOpen,
 } satisfies ManagePortfolioMenuProps;
 
 describe("ManagePortfolioMenu", () => {
-    beforeEach(() => { 
+    beforeEach(() => {
         vi.clearAllMocks();
     });
 
-    const renderComponent = (props ?: Partial<ManagePortfolioMenuProps>) => renderWithContext({ children: <ManagePortfolioMenu {...defaultProps} {...props} />})
+    const renderComponent = (props?: Partial<ManagePortfolioMenuProps>) =>
+        renderWithContext({
+            children: <ManagePortfolioMenu {...defaultProps} {...props} />,
+        });
 
     it("should render the menu correctly", () => {
         renderComponent();
 
-        expect(screen.getByText("Portfolios.renamePortfolio")).toBeInTheDocument();
-        expect(screen.getByText("Portfolios.deletePortfolio")).toBeInTheDocument();
+        expect(
+            screen.getByText("Portfolios.renamePortfolio"),
+        ).toBeInTheDocument();
+        expect(
+            screen.getByText("Portfolios.deletePortfolio"),
+        ).toBeInTheDocument();
     });
 
     it("should call the correct function when the rename portfolio button is pressed", async () => {
@@ -44,4 +53,4 @@ describe("ManagePortfolioMenu", () => {
 
         expect(mockSetIsDeletePortfolioModalOpen).toHaveBeenCalled();
     });
-})
+});
