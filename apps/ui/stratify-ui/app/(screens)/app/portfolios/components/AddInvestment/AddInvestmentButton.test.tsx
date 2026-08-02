@@ -28,7 +28,7 @@ describe("AddInvestmentButton", () => {
     it("should render the add investment button", () => {
         renderComponent();
 
-        const button = screen.getByText("Add Investment");
+        const button = screen.getByText("Investments.addInvestment");
         expect(button).toBeInTheDocument();
         const plusIcon = screen.getByTestId("plus");
         expect(plusIcon).toBeInTheDocument();
@@ -37,7 +37,7 @@ describe("AddInvestmentButton", () => {
     it("should open the add investment modal when clicking the button", async () => {
         renderComponent();
 
-        const button = screen.getByText("Add Investment");
+        const button = screen.getByText("Investments.addInvestment");
 
         await user.click(button);
 

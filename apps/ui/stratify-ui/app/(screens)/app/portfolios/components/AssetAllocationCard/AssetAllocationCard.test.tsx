@@ -38,7 +38,9 @@ describe("AssetAllocationCard", () => {
         renderComponent();
 
         expect(screen.getByText("Asset Allocation")).toBeInTheDocument();
-        expect(screen.getByText("Group by:")).toBeInTheDocument();
+        expect(
+            screen.getByText("Portfolios.assetAllocation.groupBy"),
+        ).toBeInTheDocument();
         expect(screen.getByTestId("group-by-select-value")).toBeInTheDocument();
         expect(
             await screen.findByTestId("asset-allocation-chart"),

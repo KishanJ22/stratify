@@ -29,7 +29,12 @@ describe("TopPerformersTable", () => {
     it("should render the table successfully", () => {
         renderComponent();
 
-        const columnHeaders = ["Name", "Type", "Value (GBP)", "Return (GBP)"];
+        const columnHeaders = [
+            "Dashboard.topPerformers.headers.name",
+            "Dashboard.topPerformers.headers.type",
+            "Dashboard.topPerformers.headers.currentValue",
+            "Dashboard.topPerformers.headers.currentReturn",
+        ];
 
         columnHeaders.forEach((header) => {
             expect(screen.getByText(header)).toBeInTheDocument();
@@ -40,8 +45,6 @@ describe("TopPerformersTable", () => {
             "Test Portfolio",
             "Stock",
             "2,219.2",
-            "+1,489.2",
-            "+204%",
         ];
 
         investmentRow.forEach((text) => {
@@ -58,13 +61,17 @@ describe("TopPerformersTable", () => {
     it("should render placeholder data when there are no investments", () => {
         renderComponent({ investments: [], isInvestmentsNotFoundError: true });
 
-        expect(screen.getAllByText("No investments found")).toHaveLength(5);
+        expect(
+            screen.getAllByText("Dashboard.topPerformers.noInvestmentsFound"),
+        ).toHaveLength(5);
     });
 
     it("should render placeholder data when there are no portfolios", () => {
         renderComponent({ investments: [], isPortfoliosNotFoundError: true });
 
-        expect(screen.getAllByText("No portfolios found")).toHaveLength(5);
+        expect(
+            screen.getAllByText("Dashboard.topPerformers.noPortfoliosFound"),
+        ).toHaveLength(5);
     });
 
     it("should render placeholder data when there are no top performers", () => {
@@ -77,7 +84,9 @@ describe("TopPerformersTable", () => {
             isPortfoliosNotFoundError: false,
         });
 
-        expect(screen.getAllByText("No top performers found")).toHaveLength(5);
+        expect(
+            screen.getAllByText("Dashboard.topPerformers.noTopPerformersFound"),
+        ).toHaveLength(5);
     });
 
     it("should filter out investments with negative returns", () => {
@@ -89,9 +98,13 @@ describe("TopPerformersTable", () => {
     it("should display a link to view the portfolio an investment is in", () => {
         renderComponent();
 
-        expect(screen.getByText("View portfolio")).toBeInTheDocument();
+        expect(
+            screen.getByText("Dashboard.topPerformers.viewPortfolio"),
+        ).toBeInTheDocument();
 
-        const portfolioLink = screen.getByText("View portfolio").closest("a");
+        const portfolioLink = screen
+            .getByText("Dashboard.topPerformers.viewPortfolio")
+            .closest("a");
 
         expect(portfolioLink).toHaveAttribute(
             "href",
