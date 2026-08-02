@@ -69,6 +69,8 @@
                 "noGrouping": "No grouping"
             }
         },
+        "renamePortfolio": "Rename portfolio",
+        "deletePortfolio": "Delete portfolio",
         "portfolioNameAlreadyExists": "Portfolio name already exists. Please choose a different name.",
         "renamePortfolioModal": {
             "title": "Rename Portfolio",

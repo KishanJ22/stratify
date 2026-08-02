@@ -2,9 +2,10 @@
 
 import { cn } from "@/lib/utils";
 import { Pencil, Trash2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Dispatch, SetStateAction } from "react";
 
-interface ManagePortfolioMenuProps {
+export interface ManagePortfolioMenuProps {
     isManagePortfolioMenuOpen: boolean;
     setIsRenamePortfolioModalOpen: Dispatch<SetStateAction<boolean>>;
     setIsDeletePortfolioModalOpen: Dispatch<SetStateAction<boolean>>;
@@ -15,6 +16,8 @@ const ManagePortfolioMenu = ({
     setIsRenamePortfolioModalOpen,
     setIsDeletePortfolioModalOpen,
 }: ManagePortfolioMenuProps) => {
+    const translate = useTranslations("Portfolios");
+
     return (
         <div
             className={cn(
@@ -28,14 +31,14 @@ const ManagePortfolioMenu = ({
                 onClick={() => setIsRenamePortfolioModalOpen(true)}
             >
                 <Pencil className="mr-2" size={16} />
-                {"Rename portfolio"}
+                {translate("renamePortfolio")}
             </div>
             <div
                 className="px-4 py-2 flex flex-row items-center text-negative-base font-medium cursor-pointer rounded-b-xl hover:bg-negative-base hover:text-white transition-colors"
                 onClick={() => setIsDeletePortfolioModalOpen(true)}
             >
                 <Trash2 className="mr-2" size={16} />
-                {"Delete portfolio"}
+                {translate("deletePortfolio")}
             </div>
         </div>
     );

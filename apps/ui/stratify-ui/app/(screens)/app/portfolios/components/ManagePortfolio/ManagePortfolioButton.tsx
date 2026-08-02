@@ -3,7 +3,7 @@ import { Skeleton } from "@/app/components/ui/skeleton";
 import { Ellipsis } from "lucide-react";
 import { Dispatch, SetStateAction } from "react";
 
-interface ManagePortfolioButtonProps {
+export interface ManagePortfolioButtonProps {
     isManagePortfolioMenuOpen: boolean;
     setIsManagePortfolioMenuOpen: Dispatch<SetStateAction<boolean>>;
     isLoading: boolean;
@@ -15,7 +15,7 @@ const ManagePortfolioButton = ({
     isLoading,
 }: ManagePortfolioButtonProps) => {
     return isLoading ? (
-        <Skeleton className="rounded-full w-10 h-10" />
+        <Skeleton className="rounded-full w-10 h-10" data-testid="loading-skeleton" />
     ) : (
         <Button
             variant="primaryLighter"

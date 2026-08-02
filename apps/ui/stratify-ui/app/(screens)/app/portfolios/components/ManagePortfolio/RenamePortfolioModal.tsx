@@ -93,8 +93,8 @@ const RenamePortfolioModal = ({
                 onError: async (error) => {
                     const httpError = error as HTTPError;
                     if (httpError.response) {
-                        const errorJson: PortfolioNameAlreadyExistsResponse =
-                            await httpError.response.json();
+                        const errorJson =
+                            await httpError.data as PortfolioNameAlreadyExistsResponse;
 
                         const errorMessage = errorJson?.message;
 

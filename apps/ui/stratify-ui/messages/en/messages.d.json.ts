@@ -32,8 +32,8 @@ declare const messages: {
         "assetDiversification": "Asset Diversification",
         "assetDiversificationDescription": "See how diverse your holdings are based on the class, market sector or country of each asset.",
         "topPerformers": {
-            "topPerformersTitle": "Top Performers",
-            "topPerformersDescription": "View the investments that are performing the best across all of your portfolios.",
+            "title": "Top Performers",
+            "description": "View the investments that are performing the best across all of your portfolios.",
             "noPortfoliosFound": "No portfolios found",
             "noInvestmentsFound": "No investments found",
             "noTopPerformersFound": "No top performers found",
@@ -72,6 +72,8 @@ declare const messages: {
                 "noGrouping": "No grouping"
             }
         },
+        "renamePortfolio": "Rename portfolio",
+        "deletePortfolio": "Delete portfolio",
         "portfolioNameAlreadyExists": "Portfolio name already exists. Please choose a different name.",
         "renamePortfolioModal": {
             "title": "Rename Portfolio",
