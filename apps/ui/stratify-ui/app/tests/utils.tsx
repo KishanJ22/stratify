@@ -27,7 +27,7 @@ export const renderWithContext = ({
     return render(
         <EnvironmentProvider apiProxyUrl="" authProxyUrl="">
             <QueryClientProvider client={queryClient || defaultQueryClient()}>
-                <NextIntlClientProvider locale="en">
+                <NextIntlClientProvider locale="en" onError={() => {}}>
                     {children}
                 </NextIntlClientProvider>
             </QueryClientProvider>

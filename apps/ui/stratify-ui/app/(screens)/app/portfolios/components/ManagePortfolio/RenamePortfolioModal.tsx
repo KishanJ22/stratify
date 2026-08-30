@@ -70,7 +70,7 @@ const RenamePortfolioModal = ({
         },
         onSubmit: async ({ value }) => {
             renamePortfolio(value, {
-                onSuccess: ({ response }) => {
+                onSuccess: () => {
                     setIsPortfolioNameAlreadyExists(false);
 
                     //? Invalidate portfolio list query to fetch updated list
@@ -78,14 +78,12 @@ const RenamePortfolioModal = ({
                         queryKey: ["portfolio-list"],
                     });
 
-                    if (response.status === 204) {
-                        toast.success(
-                            translate(
-                                "Portfolios.renamePortfolioModal.portfolioRenamedSuccess",
-                            ),
-                        );
-                        setSelectedPortfolioName(value.name.toLowerCase());
-                    }
+                    toast.success(
+                        translate(
+                            "Portfolios.renamePortfolioModal.portfolioRenamedSuccess",
+                        ),
+                    );
+                    setSelectedPortfolioName(value.name.toLowerCase());
 
                     handleClose();
                     form.reset();

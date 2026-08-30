@@ -42,7 +42,7 @@ const TextInput = ({
                 placeholder={placeholder}
                 value={defaultValue ? defaultValue : field.state.value}
                 onChange={(e) => field.handleChange(e.target.value)}
-                onBlur={field.handleBlur}
+                onBlur={() => field.handleBlur()}
                 disabled={disabled}
                 type={type}
                 className={

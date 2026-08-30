@@ -4,7 +4,8 @@ import RenamePortfolioModal, {
 } from "./RenamePortfolioModal";
 import userEvent from "@testing-library/user-event";
 import { renderWithContext } from "@/app/tests/utils";
-import { screen } from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/react";
+import { toast } from "sonner";
 
 vi.mock("sonner", () => ({
     toast: {
@@ -71,15 +72,50 @@ describe("RenamePortfolioModal", () => {
         expect(mockHandleClose).toHaveBeenCalled();
     });
 
-    it("should rename the portfolio when clicking on the Save button", async () => {
+    it("should rename the portfolio successfully when clicking on the Save button", async () => {
         renderModal();
 
-        const nameInput = screen.getByTestId("name");
-        const saveButton = screen.getByText("Generic.save");
-
+        const nameInput = screen.getByTestId("name-input");
+        await user.clear(nameInput);
         await user.type(nameInput, "technology portfolio");
-        await user.click(saveButton);
+        fireEvent.blur(nameInput);
 
-        expect(mockMutate).toHaveBeenCalled();
+        await user.click(screen.getByText("Generic.save"));
+
+        const [, { onSuccess }] = mockMutate.mock.calls[0];
+        onSuccess({ response: { status: 204 } });
+
+        expect(mockSetSelectedPortfolioName).toHaveBeenCalledWith(
+            "technology portfolio",
+        );
+
+        expect(toast.success).toHaveBeenCalledWith(
+            "Portfolios.renamePortfolioModal.portfolioRenamedSuccess",
+        );
+        expect(mockHandleClose).toHaveBeenCalled();
+    });
+
+    it("should show an error message if the portfolio name already exists", async () => {
+        renderModal();
+
+        const nameInput = screen.getByTestId("name-input");
+        await user.clear(nameInput);
+        await user.type(nameInput, "technology portfolio");
+        fireEvent.blur(nameInput);
+
+        await user.click(screen.getByText("Generic.save"));
+
+        const [, { onError }] = mockMutate.mock.calls[0];
+        await onError({
+            response: { status: 400 },
+            data: Promise.resolve({ message: "portfolioNameAlreadyExists" }),
+        });
+
+        expect(mockSetSelectedPortfolioName).not.toHaveBeenCalled();
+        expect(toast.success).not.toHaveBeenCalled();
+
+        expect(
+            await screen.findByText("Portfolios.portfolioNameAlreadyExists"),
+        ).toBeInTheDocument();
     });
 });
