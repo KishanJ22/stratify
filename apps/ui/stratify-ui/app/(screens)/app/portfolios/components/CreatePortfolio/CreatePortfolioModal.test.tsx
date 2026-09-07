@@ -8,11 +8,13 @@ import userEvent from "@testing-library/user-event";
 
 const mockHandleClose = vi.fn();
 const mockSetSelectedPortfolioId = vi.fn();
+const mockSetSelectedPortfolioName = vi.fn();
 
 const defaultProps = {
     isOpen: true,
     handleClose: mockHandleClose,
     setSelectedPortfolioId: mockSetSelectedPortfolioId,
+    setSelectedPortfolioName: mockSetSelectedPortfolioName,
 } satisfies CreatePortfolioModalProps;
 
 const user = userEvent.setup();

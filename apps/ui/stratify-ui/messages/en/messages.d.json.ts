@@ -8,7 +8,9 @@ declare const messages: {
         "positivePercentage": "+{percentage, number, percentage}%",
         "percentage": "{percentage, number, percentage}%",
         "positiveAmount": "+{amount, number}",
-        "amount": "{amount, number}"
+        "amount": "{amount, number}",
+        "save": "Save",
+        "logout": "Log out"
     },
     "valueChange": {
         "lastThirtyDays": "Last 30 days",
@@ -30,8 +32,8 @@ declare const messages: {
         "assetDiversification": "Asset Diversification",
         "assetDiversificationDescription": "See how diverse your holdings are based on the class, market sector or country of each asset.",
         "topPerformers": {
-            "topPerformersTitle": "Top Performers",
-            "topPerformersDescription": "View the investments that are performing the best across all of your portfolios.",
+            "title": "Top Performers",
+            "description": "View the investments that are performing the best across all of your portfolios.",
             "noPortfoliosFound": "No portfolios found",
             "noInvestmentsFound": "No investments found",
             "noTopPerformersFound": "No top performers found",
@@ -58,6 +60,8 @@ declare const messages: {
     },
     "Portfolios": {
         "title": "Portfolios",
+        "selectedPortfolio": "Selected Portfolio",
+        "createPortfolio": "Create Portfolio",
         "assetAllocation": {
             "title": "Asset Allocation",
             "groupBy": "Group by:",
@@ -67,7 +71,30 @@ declare const messages: {
                 "sector": "Sector",
                 "noGrouping": "No grouping"
             }
+        },
+        "renamePortfolio": "Rename portfolio",
+        "deletePortfolio": "Delete portfolio",
+        "portfolioNameAlreadyExists": "Portfolio name already exists. Please choose a different name.",
+        "renamePortfolioModal": {
+            "title": "Rename Portfolio",
+            "portfolioNameIsSame": "Portfolio name is the same as the name already set",
+            "nameLabel": "Name",
+            "namePlaceholder": "Main Portfolio",
+            "portfolioRenamedSuccess": "Portfolio renamed successfully!",
+            "portfolioRenameError": "Portfolio could not be updated. Please check the form for errors."
+        },
+        "deletePortfolioModal": {
+            "title": "Delete Portfolio",
+            "portfolioDeletedSuccess": "Portfolio deleted successfully",
+            "descriptionLineOne": "This will remove the portfolio and all of its tracked investments from Stratify.",
+            "descriptionLineTwo": "Are you sure you want to delete <bold>{portfolioName}</bold>?",
+            "goBack": "Go back",
+            "deletePortfolio": "Delete"
         }
+    },
+    "Investments": {
+        "title": "Investments",
+        "addInvestment": "Add Investment"
     },
     "Sectors": {
         "sector": "Sector",

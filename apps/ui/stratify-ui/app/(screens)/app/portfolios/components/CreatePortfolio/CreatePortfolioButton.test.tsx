@@ -25,7 +25,7 @@ describe("CreatePortfolioButton", () => {
     it("should render the create portfolio button", () => {
         renderComponent();
 
-        const button = screen.getByText("Create Portfolio");
+        const button = screen.getByText("Portfolios.createPortfolio");
         expect(button).toBeInTheDocument();
         const plusIcon = screen.getByTestId("plus");
         expect(plusIcon).toBeInTheDocument();
@@ -34,7 +34,7 @@ describe("CreatePortfolioButton", () => {
     it("should open the create portfolio modal when clicking the button", async () => {
         renderComponent();
 
-        const button = screen.getByText("Create Portfolio");
+        const button = screen.getByText("Portfolios.createPortfolio");
 
         await user.click(button);
 

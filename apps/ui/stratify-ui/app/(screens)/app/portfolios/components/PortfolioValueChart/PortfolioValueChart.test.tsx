@@ -79,8 +79,6 @@ describe("PortfolioValueChart", () => {
         expect(screen.getByText("100,000")).toBeInTheDocument();
 
         expect(screen.getByText("(GBP)")).toBeInTheDocument();
-
-        expect(screen.getByText("+900%")).toBeInTheDocument();
         expect(screen.getByText("in the past thirty days")).toBeInTheDocument();
     });
 

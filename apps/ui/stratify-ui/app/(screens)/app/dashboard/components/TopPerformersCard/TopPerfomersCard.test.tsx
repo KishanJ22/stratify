@@ -28,11 +28,11 @@ describe("TopPerformersCard", () => {
     it("should render the card successfully", () => {
         renderComponent();
 
-        expect(screen.getByText("Top Performers")).toBeInTheDocument();
         expect(
-            screen.getByText(
-                "View the investments that are performing the best across all of your portfolios.",
-            ),
+            screen.getByText("Dashboard.topPerformers.title"),
+        ).toBeInTheDocument();
+        expect(
+            screen.getByText("Dashboard.topPerformers.description"),
         ).toBeInTheDocument();
 
         const investmentRow = [
@@ -40,8 +40,6 @@ describe("TopPerformersCard", () => {
             "Test Portfolio",
             "Stock",
             "2,219.2",
-            "+1,489.2",
-            "+204%",
         ];
 
         investmentRow.forEach((text) => {

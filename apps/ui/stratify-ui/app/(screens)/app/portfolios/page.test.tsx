@@ -45,8 +45,8 @@ describe("Portfolios page", () => {
     it("should render the portfolios page", () => {
         renderPage();
 
-        expect(screen.getByText("Portfolios")).toBeInTheDocument();
-        expect(screen.getByText("Investments")).toBeInTheDocument();
+        expect(screen.getByText("Portfolios.title")).toBeInTheDocument();
+        expect(screen.getByText("Investments.title")).toBeInTheDocument();
     });
 
     it("should open the create portfolio modal when the create search param is true", async () => {

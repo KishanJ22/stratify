@@ -16,6 +16,7 @@ export interface PortfolioSelectorProps {
     isLoading: boolean;
     selectedPortfolioId: number | null;
     setSelectedPortfolioId: Dispatch<SetStateAction<number | null>>;
+    setSelectedPortfolioName: Dispatch<SetStateAction<string>>;
     variant?: "primary" | "secondary";
 }
 
@@ -24,29 +25,40 @@ const PortfolioSelector = ({
     isLoading,
     selectedPortfolioId,
     setSelectedPortfolioId,
+    setSelectedPortfolioName,
     variant = "primary",
 }: PortfolioSelectorProps) => {
     const isSelectDisabled = portfolioList.length === 0;
 
     return isLoading ? (
         <Skeleton
-            className="h-11 w-64 rounded-xl"
+            className="h-11 w-48 sm:w-64 md:w-52 rounded-xl"
             data-testid="loading-skeleton"
         />
     ) : (
         <Select
-            onValueChange={(value) => setSelectedPortfolioId(parseInt(value))}
+            onValueChange={(value) => {
+                const selectedId = parseInt(value);
+                const selectedPortfolio = portfolioList.find(
+                    ({ id }) => id === selectedId,
+                );
+
+                setSelectedPortfolioId(selectedId);
+                setSelectedPortfolioName(selectedPortfolio?.name ?? "");
+            }}
             value={
                 selectedPortfolioId ? selectedPortfolioId.toString() : undefined
             }
         >
             <SelectTrigger
                 className={cn(
-                    "max-w-64",
+                    "w-48 sm:w-48 md:w-52",
                     variant === "secondary" &&
                         "border-secondary-dark bg-white text-secondary-dark ring-secondary-dark shadow-none",
                 )}
-                iconClassName={variant === "secondary" ? "text-secondary-dark" : ""}
+                iconClassName={
+                    variant === "secondary" ? "text-secondary-dark" : ""
+                }
                 disabled={isSelectDisabled}
             >
                 <SelectValue
