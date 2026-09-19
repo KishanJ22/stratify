@@ -9,7 +9,7 @@ export const mockTrades = (portfolioId: number) => [
         totalAmount: 300,
         assetCurrencyTotalAmount: 330,
         tradeAction: "BUY",
-        tradeDate: new Date(new Date().setMonth(now.getMonth() - 1)),
+        tradeDate: new Date(new Date().setDate(now.getDate() - 15)),
     },
     {
         portfolioId,

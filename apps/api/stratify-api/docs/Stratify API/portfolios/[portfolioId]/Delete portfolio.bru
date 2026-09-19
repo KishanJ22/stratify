@@ -1,0 +1,20 @@
+meta {
+  name: Delete portfolio
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{baseUrl}}/portfolios/:portfolioId
+  body: none
+  auth: inherit
+}
+
+params:path {
+  portfolioId: 28
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -57,14 +57,14 @@ describe("DashboardPage", () => {
 
         renderPage();
 
-        expect(screen.getByText("Dashboard")).toBeInTheDocument();
+        expect(screen.getByText("Dashboard.title")).toBeInTheDocument();
 
         const cardTitles = [
-            "Total Value",
-            "Overall Change",
-            "Goal Progression",
-            "Top Performers",
-            "Asset Diversification",
+            "Dashboard.totalValue",
+            "Dashboard.overallChange",
+            "Dashboard.goalProgression.title",
+            "Dashboard.topPerformers.title",
+            "Dashboard.assetDiversification",
         ];
 
         cardTitles.forEach((title) =>
@@ -104,6 +104,8 @@ describe("DashboardPage", () => {
 
         renderPage();
 
-        expect(screen.getByText("Create a portfolio")).toBeInTheDocument();
+        expect(
+            screen.getByText("Dashboard.createAPortfolio"),
+        ).toBeInTheDocument();
     });
 });

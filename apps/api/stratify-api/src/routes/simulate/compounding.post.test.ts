@@ -1,9 +1,20 @@
-import { describe, it, expect, vi, beforeAll, beforeEach } from "vitest";
+import {
+    describe,
+    it,
+    expect,
+    vi,
+    beforeAll,
+    beforeEach,
+    afterEach,
+} from "vitest";
 import loadMockApp from "../../__mocks__/mockApp.js";
 import db from "../../database/db.js";
 import { createUser } from "../../tests/create-user.js";
 import { generateDevToken } from "../../utils/generateDevToken.js";
-import { mockHistoricAssetPrices } from "./_mocks/mockHistoricAssetPrices.js";
+import {
+    mockHistoricAssetPrices,
+    MOCK_NOW,
+} from "./_mocks/mockHistoricAssetPrices.js";
 import type { SimulationResponse } from "./compounding.post.js";
 
 describe("POST /simulate/compounding", () => {
@@ -19,6 +30,12 @@ describe("POST /simulate/compounding", () => {
 
     beforeEach(() => {
         vi.clearAllMocks();
+        vi.useFakeTimers({ toFake: ["Date"] });
+        vi.setSystemTime(MOCK_NOW);
+    });
+
+    afterEach(() => {
+        vi.useRealTimers();
     });
 
     it("should execute compounding simulation successfully", async () => {
@@ -70,8 +87,8 @@ describe("POST /simulate/compounding", () => {
                 percentage: 260.47,
             },
             compounding: {
-                absolute: 41971.67,
-                percentage: 152.62,
+                absolute: 41986.56,
+                percentage: 152.68,
             },
             compoundingWithDividends: null,
         });
@@ -126,12 +143,12 @@ describe("POST /simulate/compounding", () => {
                 percentage: 260.47,
             },
             compounding: {
-                absolute: 41971.67,
-                percentage: 152.62,
+                absolute: 41986.56,
+                percentage: 152.68,
             },
             compoundingWithDividends: {
-                absolute: 44757.26,
-                percentage: 162.75,
+                absolute: 44772.77,
+                percentage: 162.81,
             },
         });
     });

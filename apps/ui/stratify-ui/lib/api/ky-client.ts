@@ -8,9 +8,6 @@ const createKyClient = (baseUrl: string) =>
     createClient<paths>({
         baseUrl,
         fetch: kyInstance,
-        headers: {
-            "Content-Type": "application/json",
-        },
     });
 
 export const useKyClient = () => {

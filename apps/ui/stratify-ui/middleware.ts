@@ -13,7 +13,6 @@ const AUTH_API_URL = process.env.STRATIFY_AUTH_API_URL;
 
 const proxyRequest = async (request: NextRequest) => {
     const requestPathname = request.nextUrl.pathname;
-    const requestMethod = request.method;
 
     // Allow calls to health endpoint without proxying
     if (requestPathname.startsWith("/api/health")) {

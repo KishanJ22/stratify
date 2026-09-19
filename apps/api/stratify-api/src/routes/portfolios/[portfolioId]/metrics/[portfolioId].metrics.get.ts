@@ -45,8 +45,8 @@ const portfolioMetricsResponse = Type.Object({
 
 type PortfolioMetricsResponse = Static<typeof portfolioMetricsResponse>;
 
-const portfolioNotFoundSchema = createNotFound("portfolioNotFound");
-type PortfolioNotFoundResponse = Static<typeof portfolioNotFoundSchema>;
+export const portfolioNotFoundSchema = createNotFound("portfolioNotFound");
+export type PortfolioNotFoundResponse = Static<typeof portfolioNotFoundSchema>;
 
 const metricsNotFoundSchema = createNotFound("metricsNotFound");
 type MetricsNotFoundResponse = Static<typeof metricsNotFoundSchema>;

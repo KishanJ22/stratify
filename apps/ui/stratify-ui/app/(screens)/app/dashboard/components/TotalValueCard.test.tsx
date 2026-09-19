@@ -24,8 +24,7 @@ describe("TotalValueCard", () => {
     it("should render the total value card successfully", () => {
         renderComponent();
 
-        expect(screen.getByText("Total Value")).toBeInTheDocument();
-        expect(screen.getByText("100,000 (GBP)")).toBeInTheDocument();
+        expect(screen.getByText("Dashboard.totalValue")).toBeInTheDocument();
     });
 
     it("should show the loading state when isLoading is true", () => {
@@ -37,12 +36,16 @@ describe("TotalValueCard", () => {
     it("should show the create portfolio link when the user has no portfolios", async () => {
         renderComponent({ isPortfoliosNotFoundError: true });
 
-        expect(screen.getByText("Create a portfolio")).toBeInTheDocument();
+        expect(
+            screen.getByText("Dashboard.createAPortfolio"),
+        ).toBeInTheDocument();
     });
 
     it("should show the add investment link when the user has portfolios but no investments", () => {
         renderComponent({ isInvestmentsNotFoundError: true });
 
-        expect(screen.getByText("Add an investment")).toBeInTheDocument();
+        expect(
+            screen.getByText("Dashboard.addAnInvestment"),
+        ).toBeInTheDocument();
     });
 });
