@@ -1,49 +1,49 @@
-import { useCreatePortfolio } from "./useCreatePortfolio";
-import { beforeEach, describe, expect, it, vi } from "vitest";
 import { renderHook, waitFor } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import MockEnvironmentProvider from "@/app/tests/_mocks/MockEnvironmentProvider";
+import { useCreatePortfolio } from "./useCreatePortfolio";
 
 const mockPostCreatePortfolio = vi.fn();
 
 const mockKyClient = {
-    POST: mockPostCreatePortfolio,
+	POST: mockPostCreatePortfolio,
 };
 
 vi.mock("@/lib/api/ky-client", () => ({
-    useKyClient: () => mockKyClient,
+	useKyClient: () => mockKyClient,
 }));
 
 describe("useCreatePortfolio", () => {
-    beforeEach(() => {
-        vi.clearAllMocks();
-    });
+	beforeEach(() => {
+		vi.clearAllMocks();
+	});
 
-    const renderCreatePortfolioHook = () => {
-        return renderHook(() => useCreatePortfolio(), {
-            wrapper: ({ children }) => (
-                <MockEnvironmentProvider>{children}</MockEnvironmentProvider>
-            ),
-        });
-    };
+	const renderCreatePortfolioHook = () => {
+		return renderHook(() => useCreatePortfolio(), {
+			wrapper: ({ children }) => (
+				<MockEnvironmentProvider>{children}</MockEnvironmentProvider>
+			),
+		});
+	};
 
-    it("should call POST /portfolios successfully", async () => {
-        mockPostCreatePortfolio.mockResolvedValue({
-            data: {
-                portfolioId: 1,
-            },
-        });
+	it("should call POST /portfolios successfully", async () => {
+		mockPostCreatePortfolio.mockResolvedValue({
+			data: {
+				portfolioId: 1,
+			},
+		});
 
-        const { result } = renderCreatePortfolioHook();
+		const { result } = renderCreatePortfolioHook();
 
-        expect(result.current.isPending).toBe(false);
-        result.current.mutate({ name: "New Portfolio" });
+		expect(result.current.isPending).toBe(false);
+		result.current.mutate({ name: "New Portfolio" });
 
-        await waitFor(() => {
-            expect(mockKyClient.POST).toHaveBeenCalledWith("/portfolios", {
-                body: { name: "New Portfolio" },
-            });
+		await waitFor(() => {
+			expect(mockKyClient.POST).toHaveBeenCalledWith("/portfolios", {
+				body: { name: "New Portfolio" },
+			});
 
-            expect(result.current.isSuccess).toBe(true);
-        });
-    });
+			expect(result.current.isSuccess).toBe(true);
+		});
+	});
 });

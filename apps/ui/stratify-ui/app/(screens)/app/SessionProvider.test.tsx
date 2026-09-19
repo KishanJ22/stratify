@@ -1,8 +1,8 @@
 import { render, screen, waitFor } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
 import userEvent from "@testing-library/user-event";
-import { SessionProvider, useSessionContext } from "./SessionProvider";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { defaultSession } from "@/app/tests/_mocks/MockSessionProvider";
+import { SessionProvider, useSessionContext } from "./SessionProvider";
 
 const mockPush = vi.fn();
 const mockGetSessionTokenFromCookies = vi.fn();
@@ -12,151 +12,151 @@ const mockLogoutUser = vi.fn();
 const user = userEvent.setup();
 
 const mockUseRouter = {
-    push: mockPush,
+	push: mockPush,
 };
 
 vi.mock("next/navigation", () => ({
-    useRouter: () => mockUseRouter,
+	useRouter: () => mockUseRouter,
 }));
 
 vi.mock("@/lib/auth/auth", () => ({
-    useAuthClient: () => ({}),
+	useAuthClient: () => ({}),
 }));
 
 vi.mock("@/lib/auth/get-auth-token", () => ({
-    getSessionTokenFromCookies: () => mockGetSessionTokenFromCookies(),
+	getSessionTokenFromCookies: () => mockGetSessionTokenFromCookies(),
 }));
 
 vi.mock("@/lib/auth/get-session", () => ({
-    getUserSession: () => mockGetUserSession(),
+	getUserSession: () => mockGetUserSession(),
 }));
 
 vi.mock("@/lib/auth/logout", () => ({
-    logoutUser: (bearer: string, authClient: unknown) =>
-        mockLogoutUser(bearer, authClient),
+	logoutUser: (bearer: string, authClient: unknown) =>
+		mockLogoutUser(bearer, authClient),
 }));
 
 const mockSessionData = {
-    data: defaultSession,
+	data: defaultSession,
 };
 
 const TestSessionComponent = () => {
-    const { session, logout } = useSessionContext();
-    return (
-        <>
-            <span data-testid="user-name">{session?.userDetails.username}</span>
-            <span data-testid="user-currency">
-                {session?.userDetails.currency}
-            </span>
-            <button onClick={logout}>Log out</button>
-        </>
-    );
+	const { session, logout } = useSessionContext();
+	return (
+		<>
+			<span data-testid="user-name">{session?.userDetails.username}</span>
+			<span data-testid="user-currency">
+				{session?.userDetails.currency}
+			</span>
+			<button type="button" onClick={logout}>Log out</button>
+		</>
+	);
 };
 
 describe("SessionProvider", () => {
-    beforeEach(() => {
-        vi.clearAllMocks();
-    });
+	beforeEach(() => {
+		vi.clearAllMocks();
+	});
 
-    const renderComponent = () =>
-        render(
-            <SessionProvider>
-                <TestSessionComponent />
-            </SessionProvider>,
-        );
+	const renderComponent = () =>
+		render(
+			<SessionProvider>
+				<TestSessionComponent />
+			</SessionProvider>,
+		);
 
-    it("should redirect to /login when no bearer token is found", async () => {
-        mockGetSessionTokenFromCookies.mockResolvedValue(null);
+	it("should redirect to /login when no bearer token is found", async () => {
+		mockGetSessionTokenFromCookies.mockResolvedValue(null);
 
-        renderComponent();
+		renderComponent();
 
-        await waitFor(() => {
-            expect(mockPush).toHaveBeenCalledWith("/login");
-        });
-    });
+		await waitFor(() => {
+			expect(mockPush).toHaveBeenCalledWith("/login");
+		});
+	});
 
-    it("should set the session when a valid bearer token and session data are found", async () => {
-        mockGetSessionTokenFromCookies.mockResolvedValue("bearer-token");
-        mockGetUserSession.mockResolvedValue(mockSessionData);
+	it("should set the session when a valid bearer token and session data are found", async () => {
+		mockGetSessionTokenFromCookies.mockResolvedValue("bearer-token");
+		mockGetUserSession.mockResolvedValue(mockSessionData);
 
-        renderComponent();
+		renderComponent();
 
-        await waitFor(() => {
-            expect(screen.getByTestId("user-name")).toHaveTextContent(
-                "Test User",
-            );
-            expect(screen.getByTestId("user-currency")).toHaveTextContent(
-                "GBP",
-            );
-        });
-    });
+		await waitFor(() => {
+			expect(screen.getByTestId("user-name")).toHaveTextContent(
+				"Test User",
+			);
+			expect(screen.getByTestId("user-currency")).toHaveTextContent(
+				"GBP",
+			);
+		});
+	});
 
-    it("should redirect to /login?sessionInvalid=true when session retrieval fails", async () => {
-        mockGetSessionTokenFromCookies.mockResolvedValue("bearer-token");
-        mockGetUserSession.mockResolvedValue(null);
+	it("should redirect to /login?sessionInvalid=true when session retrieval fails", async () => {
+		mockGetSessionTokenFromCookies.mockResolvedValue("bearer-token");
+		mockGetUserSession.mockResolvedValue(null);
 
-        renderComponent();
+		renderComponent();
 
-        await waitFor(() => {
-            expect(mockPush).toHaveBeenCalledWith("/login?sessionInvalid=true");
-        });
-    });
+		await waitFor(() => {
+			expect(mockPush).toHaveBeenCalledWith("/login?sessionInvalid=true");
+		});
+	});
 
-    it("should redirect to /login?sessionInvalid=true when the session has expired", async () => {
-        mockGetSessionTokenFromCookies.mockResolvedValue("bearer-token");
-        mockGetUserSession.mockResolvedValue({
-            data: {
-                userDetails: {
-                    ...mockSessionData.data.userDetails,
-                    expiresAt: new Date(Date.now() - 1000),
-                },
-            },
-        });
+	it("should redirect to /login?sessionInvalid=true when the session has expired", async () => {
+		mockGetSessionTokenFromCookies.mockResolvedValue("bearer-token");
+		mockGetUserSession.mockResolvedValue({
+			data: {
+				userDetails: {
+					...mockSessionData.data.userDetails,
+					expiresAt: new Date(Date.now() - 1000),
+				},
+			},
+		});
 
-        renderComponent();
+		renderComponent();
 
-        await waitFor(() => {
-            expect(mockPush).toHaveBeenCalledWith("/login?sessionInvalid=true");
-        });
-    });
+		await waitFor(() => {
+			expect(mockPush).toHaveBeenCalledWith("/login?sessionInvalid=true");
+		});
+	});
 
-    it("should call logoutUser and redirect to /login?loggedOut=true when logging out", async () => {
-        mockGetSessionTokenFromCookies.mockResolvedValue("bearer-token");
-        mockGetUserSession.mockResolvedValue(mockSessionData);
-        mockLogoutUser.mockResolvedValue(undefined);
+	it("should call logoutUser and redirect to /login?loggedOut=true when logging out", async () => {
+		mockGetSessionTokenFromCookies.mockResolvedValue("bearer-token");
+		mockGetUserSession.mockResolvedValue(mockSessionData);
+		mockLogoutUser.mockResolvedValue(undefined);
 
-        renderComponent();
+		renderComponent();
 
-        await waitFor(() => {
-            expect(screen.getByTestId("user-name")).toHaveTextContent(
-                "Test User",
-            );
-        });
+		await waitFor(() => {
+			expect(screen.getByTestId("user-name")).toHaveTextContent(
+				"Test User",
+			);
+		});
 
-        await user.click(screen.getByText("Log out"));
+		await user.click(screen.getByText("Log out"));
 
-        await waitFor(() => {
-            expect(mockLogoutUser).toHaveBeenCalledWith("bearer-token", {});
-            expect(mockPush).toHaveBeenCalledWith("/login?loggedOut=true");
-        });
-    });
+		await waitFor(() => {
+			expect(mockLogoutUser).toHaveBeenCalledWith("bearer-token", {});
+			expect(mockPush).toHaveBeenCalledWith("/login?loggedOut=true");
+		});
+	});
 
-    it("should not call logoutUser if no bearer token is present when logging out", async () => {
-        mockGetSessionTokenFromCookies
-            .mockResolvedValueOnce("bearer-token")
-            .mockResolvedValueOnce(null);
-        mockGetUserSession.mockResolvedValue(mockSessionData);
+	it("should not call logoutUser if no bearer token is present when logging out", async () => {
+		mockGetSessionTokenFromCookies
+			.mockResolvedValueOnce("bearer-token")
+			.mockResolvedValueOnce(null);
+		mockGetUserSession.mockResolvedValue(mockSessionData);
 
-        renderComponent();
+		renderComponent();
 
-        await waitFor(() => {
-            expect(screen.getByTestId("user-name")).toHaveTextContent(
-                "Test User",
-            );
-        });
+		await waitFor(() => {
+			expect(screen.getByTestId("user-name")).toHaveTextContent(
+				"Test User",
+			);
+		});
 
-        await user.click(screen.getByText("Log out"));
+		await user.click(screen.getByText("Log out"));
 
-        expect(mockLogoutUser).not.toHaveBeenCalled();
-    });
+		expect(mockLogoutUser).not.toHaveBeenCalled();
+	});
 });

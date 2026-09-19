@@ -1,51 +1,51 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
 import { renderHook, waitFor } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import MockEnvironmentProvider from "@/app/tests/_mocks/MockEnvironmentProvider";
 import { useCurrencyList } from "./useCurrencyList";
 
 const mockGetCurrencyList = vi.fn();
 
 const mockKyClient = {
-    GET: mockGetCurrencyList,
+	GET: mockGetCurrencyList,
 };
 
 vi.mock("@/lib/api/ky-client", () => ({
-    useKyClient: () => mockKyClient,
+	useKyClient: () => mockKyClient,
 }));
 
 describe("useCurrencyList", () => {
-    beforeEach(() => {
-        vi.clearAllMocks();
-    });
+	beforeEach(() => {
+		vi.clearAllMocks();
+	});
 
-    const renderUseCurrencyListHook = () => {
-        return renderHook(() => useCurrencyList(), {
-            wrapper: ({ children }) => (
-                <MockEnvironmentProvider>{children}</MockEnvironmentProvider>
-            ),
-        });
-    };
+	const renderUseCurrencyListHook = () => {
+		return renderHook(() => useCurrencyList(), {
+			wrapper: ({ children }) => (
+				<MockEnvironmentProvider>{children}</MockEnvironmentProvider>
+			),
+		});
+	};
 
-    it("should call GET /currencies successfully", async () => {
-        mockGetCurrencyList.mockResolvedValue({
-            data: {
-                data: [
-                    { code: "USD", name: "US Dollar" },
-                    { code: "GBP", name: "British Pound" },
-                ],
-            },
-        });
+	it("should call GET /currencies successfully", async () => {
+		mockGetCurrencyList.mockResolvedValue({
+			data: {
+				data: [
+					{ code: "USD", name: "US Dollar" },
+					{ code: "GBP", name: "British Pound" },
+				],
+			},
+		});
 
-        const { result } = renderUseCurrencyListHook();
+		const { result } = renderUseCurrencyListHook();
 
-        await waitFor(() => {
-            expect(mockKyClient.GET).toHaveBeenCalledWith("/currencies");
+		await waitFor(() => {
+			expect(mockKyClient.GET).toHaveBeenCalledWith("/currencies");
 
-            expect(result.current.data).toEqual([
-                { code: "USD", name: "US Dollar" },
-                { code: "GBP", name: "British Pound" },
-            ]);
-            expect(result.current.isLoading).toBe(false);
-        });
-    });
+			expect(result.current.data).toEqual([
+				{ code: "USD", name: "US Dollar" },
+				{ code: "GBP", name: "British Pound" },
+			]);
+			expect(result.current.isLoading).toBe(false);
+		});
+	});
 });

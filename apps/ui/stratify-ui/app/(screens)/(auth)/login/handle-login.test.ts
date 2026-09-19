@@ -1,198 +1,198 @@
-import { expect, describe, beforeEach, vi, it } from "vitest";
-import { LoginFormValues } from "./login-schema";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { AuthClient } from "@/lib/auth/auth";
 import { handleLogin } from "./handle-login";
-import { AuthClient } from "@/lib/auth/auth";
+import type { LoginFormValues } from "./login-schema";
 
 const mockToastError = vi.fn();
 
 vi.mock("sonner", () => ({
-    toast: {
-        error: (msg: string) => mockToastError(msg),
-    },
+	toast: {
+		error: (msg: string) => mockToastError(msg),
+	},
 }));
 
 const mockRouterPush = vi.fn();
 
 vi.mock("next/navigation", () => ({
-    useRouter: () => ({
-        push: mockRouterPush,
-    }),
+	useRouter: () => ({
+		push: mockRouterPush,
+	}),
 }));
 
 const mockStoreToken = vi.fn();
 
 vi.mock("@/lib/auth/store-auth-token", () => ({
-    storeAuthToken: (token: string) => mockStoreToken(token),
+	storeAuthToken: (token: string) => mockStoreToken(token),
 }));
 
 const mockGetAuthErrorMessage = vi.fn();
 
 vi.mock("@/lib/auth/authErrorCodes", () => ({
-    getAuthErrorMessage: (code: string) => mockGetAuthErrorMessage(code),
+	getAuthErrorMessage: (code: string) => mockGetAuthErrorMessage(code),
 }));
 
 const mockLoginWithUsername = vi.fn();
 const mockLoginWithEmail = vi.fn();
 
 const mockAuthClient = {
-    signIn: {
-        username: mockLoginWithUsername,
-        email: mockLoginWithEmail,
-    },
+	signIn: {
+		username: mockLoginWithUsername,
+		email: mockLoginWithEmail,
+	},
 } as unknown as AuthClient;
 
 const mockSetIsPending = vi.fn();
 
 vi.mock("@/lib/auth/auth", () => ({
-    useAuthClient: () => mockAuthClient,
+	useAuthClient: () => mockAuthClient,
 }));
 
 describe("handleLogin", () => {
-    beforeEach(() => {
-        vi.clearAllMocks();
-    });
+	beforeEach(() => {
+		vi.clearAllMocks();
+	});
 
-    const executeLogin = async (values: LoginFormValues) => {
-        await handleLogin(
-            values,
-            mockAuthClient,
-            mockRouterPush,
-            mockSetIsPending,
-        );
-    };
+	const executeLogin = async (values: LoginFormValues) => {
+		await handleLogin(
+			values,
+			mockAuthClient,
+			mockRouterPush,
+			mockSetIsPending,
+		);
+	};
 
-    it("AB#153 - should handle login with username successfully", async () => {
-        mockLoginWithUsername.mockResolvedValueOnce({
-            data: {
-                token: "valid-token",
-            },
-        });
+	it("AB#153 - should handle login with username successfully", async () => {
+		mockLoginWithUsername.mockResolvedValueOnce({
+			data: {
+				token: "valid-token",
+			},
+		});
 
-        const loginWithUsernameValues = {
-            emailOrUsername: "johndoe",
-            password: "supersecretpassword",
-            rememberMe: true,
-        } satisfies LoginFormValues;
+		const loginWithUsernameValues = {
+			emailOrUsername: "johndoe",
+			password: "supersecretpassword",
+			rememberMe: true,
+		} satisfies LoginFormValues;
 
-        await executeLogin(loginWithUsernameValues);
+		await executeLogin(loginWithUsernameValues);
 
-        expect(mockLoginWithUsername).toHaveBeenCalledWith({
-            username: loginWithUsernameValues.emailOrUsername,
-            password: loginWithUsernameValues.password,
-            rememberMe: loginWithUsernameValues.rememberMe,
-        });
+		expect(mockLoginWithUsername).toHaveBeenCalledWith({
+			username: loginWithUsernameValues.emailOrUsername,
+			password: loginWithUsernameValues.password,
+			rememberMe: loginWithUsernameValues.rememberMe,
+		});
 
-        expect(mockStoreToken).toHaveBeenCalledWith("valid-token");
-        expect(mockSetIsPending).toHaveBeenCalledWith(false);
-        expect(mockRouterPush).toHaveBeenCalledWith("/app/dashboard");
-    });
+		expect(mockStoreToken).toHaveBeenCalledWith("valid-token");
+		expect(mockSetIsPending).toHaveBeenCalledWith(false);
+		expect(mockRouterPush).toHaveBeenCalledWith("/app/dashboard");
+	});
 
-    it("AB#152 - should handle login with email successfully", async () => {
-        mockLoginWithEmail.mockResolvedValueOnce({
-            data: {
-                token: "valid-token",
-            },
-        });
+	it("AB#152 - should handle login with email successfully", async () => {
+		mockLoginWithEmail.mockResolvedValueOnce({
+			data: {
+				token: "valid-token",
+			},
+		});
 
-        const loginWithEmailValues = {
-            emailOrUsername: "johndoe@example.com",
-            password: "supersecretpassword",
-            rememberMe: false,
-        } satisfies LoginFormValues;
+		const loginWithEmailValues = {
+			emailOrUsername: "johndoe@example.com",
+			password: "supersecretpassword",
+			rememberMe: false,
+		} satisfies LoginFormValues;
 
-        await executeLogin(loginWithEmailValues);
+		await executeLogin(loginWithEmailValues);
 
-        expect(mockLoginWithEmail).toHaveBeenCalledWith({
-            email: loginWithEmailValues.emailOrUsername,
-            password: loginWithEmailValues.password,
-            rememberMe: loginWithEmailValues.rememberMe,
-        });
+		expect(mockLoginWithEmail).toHaveBeenCalledWith({
+			email: loginWithEmailValues.emailOrUsername,
+			password: loginWithEmailValues.password,
+			rememberMe: loginWithEmailValues.rememberMe,
+		});
 
-        expect(mockStoreToken).toHaveBeenCalledWith("valid-token");
-        expect(mockRouterPush).toHaveBeenCalledWith("/app/dashboard");
-        expect(mockSetIsPending).toHaveBeenCalledWith(false);
-    });
+		expect(mockStoreToken).toHaveBeenCalledWith("valid-token");
+		expect(mockRouterPush).toHaveBeenCalledWith("/app/dashboard");
+		expect(mockSetIsPending).toHaveBeenCalledWith(false);
+	});
 
-    it("should handle login failure correctly (error code specified)", async () => {
-        mockLoginWithUsername.mockResolvedValueOnce({
-            error: {
-                code: "InvalidCredentials",
-            },
-        });
+	it("should handle login failure correctly (error code specified)", async () => {
+		mockLoginWithUsername.mockResolvedValueOnce({
+			error: {
+				code: "InvalidCredentials",
+			},
+		});
 
-        mockGetAuthErrorMessage.mockReturnValueOnce(
-            "Invalid username or password.",
-        );
+		mockGetAuthErrorMessage.mockReturnValueOnce(
+			"Invalid username or password.",
+		);
 
-        const loginValues = {
-            emailOrUsername: "johndoe",
-            password: "wrongpassword",
-            rememberMe: false,
-        } satisfies LoginFormValues;
+		const loginValues = {
+			emailOrUsername: "johndoe",
+			password: "wrongpassword",
+			rememberMe: false,
+		} satisfies LoginFormValues;
 
-        await executeLogin(loginValues);
+		await executeLogin(loginValues);
 
-        expect(mockLoginWithUsername).toHaveBeenCalledWith({
-            username: loginValues.emailOrUsername,
-            password: loginValues.password,
-            rememberMe: loginValues.rememberMe,
-        });
+		expect(mockLoginWithUsername).toHaveBeenCalledWith({
+			username: loginValues.emailOrUsername,
+			password: loginValues.password,
+			rememberMe: loginValues.rememberMe,
+		});
 
-        expect(mockToastError).toHaveBeenCalledWith(
-            "Invalid username or password.",
-        );
-        expect(mockRouterPush).not.toHaveBeenCalled();
-        expect(mockSetIsPending).toHaveBeenCalledWith(false);
-    });
+		expect(mockToastError).toHaveBeenCalledWith(
+			"Invalid username or password.",
+		);
+		expect(mockRouterPush).not.toHaveBeenCalled();
+		expect(mockSetIsPending).toHaveBeenCalledWith(false);
+	});
 
-    it("should handle login failure correctly (no error code)", async () => {
-        mockLoginWithUsername.mockResolvedValueOnce({
-            error: {},
-        });
+	it("should handle login failure correctly (no error code)", async () => {
+		mockLoginWithUsername.mockResolvedValueOnce({
+			error: {},
+		});
 
-        const loginValues = {
-            emailOrUsername: "johndoe",
-            password: "wrongpassword",
-            rememberMe: false,
-        } satisfies LoginFormValues;
+		const loginValues = {
+			emailOrUsername: "johndoe",
+			password: "wrongpassword",
+			rememberMe: false,
+		} satisfies LoginFormValues;
 
-        await executeLogin(loginValues);
+		await executeLogin(loginValues);
 
-        expect(mockLoginWithUsername).toHaveBeenCalledWith({
-            username: loginValues.emailOrUsername,
-            password: loginValues.password,
-            rememberMe: loginValues.rememberMe,
-        });
+		expect(mockLoginWithUsername).toHaveBeenCalledWith({
+			username: loginValues.emailOrUsername,
+			password: loginValues.password,
+			rememberMe: loginValues.rememberMe,
+		});
 
-        expect(mockToastError).toHaveBeenCalledWith(
-            "Login failed. Please try again.",
-        );
-        expect(mockRouterPush).not.toHaveBeenCalled();
-        expect(mockSetIsPending).toHaveBeenCalledWith(false);
-    });
+		expect(mockToastError).toHaveBeenCalledWith(
+			"Login failed. Please try again.",
+		);
+		expect(mockRouterPush).not.toHaveBeenCalled();
+		expect(mockSetIsPending).toHaveBeenCalledWith(false);
+	});
 
-    it("should handle unexpected errors correctly", async () => {
-        mockLoginWithUsername.mockRejectedValueOnce(new Error("Network error"));
+	it("should handle unexpected errors correctly", async () => {
+		mockLoginWithUsername.mockRejectedValueOnce(new Error("Network error"));
 
-        const loginValues = {
-            emailOrUsername: "johndoe",
-            password: "supersecretpassword",
-            rememberMe: true,
-        } satisfies LoginFormValues;
+		const loginValues = {
+			emailOrUsername: "johndoe",
+			password: "supersecretpassword",
+			rememberMe: true,
+		} satisfies LoginFormValues;
 
-        await executeLogin(loginValues);
+		await executeLogin(loginValues);
 
-        expect(mockLoginWithUsername).toHaveBeenCalledWith({
-            username: loginValues.emailOrUsername,
-            password: loginValues.password,
-            rememberMe: loginValues.rememberMe,
-        });
+		expect(mockLoginWithUsername).toHaveBeenCalledWith({
+			username: loginValues.emailOrUsername,
+			password: loginValues.password,
+			rememberMe: loginValues.rememberMe,
+		});
 
-        expect(mockToastError).toHaveBeenCalledWith(
-            "Login failed. Please try again.",
-        );
+		expect(mockToastError).toHaveBeenCalledWith(
+			"Login failed. Please try again.",
+		);
 
-        expect(mockRouterPush).not.toHaveBeenCalled();
-        expect(mockSetIsPending).toHaveBeenCalledWith(false);
-    });
+		expect(mockRouterPush).not.toHaveBeenCalled();
+		expect(mockSetIsPending).toHaveBeenCalledWith(false);
+	});
 });

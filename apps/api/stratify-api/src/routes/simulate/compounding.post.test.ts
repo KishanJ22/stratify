@@ -1,246 +1,246 @@
 import {
-    describe,
-    it,
-    expect,
-    vi,
-    beforeAll,
-    beforeEach,
-    afterEach,
+	afterEach,
+	beforeAll,
+	beforeEach,
+	describe,
+	expect,
+	it,
+	vi,
 } from "vitest";
 import loadMockApp from "../../__mocks__/mockApp.js";
 import db from "../../database/db.js";
 import { createUser } from "../../tests/create-user.js";
 import { generateDevToken } from "../../utils/generateDevToken.js";
 import {
-    mockHistoricAssetPrices,
-    MOCK_NOW,
+	MOCK_NOW,
+	mockHistoricAssetPrices,
 } from "./_mocks/mockHistoricAssetPrices.js";
 import type { SimulationResponse } from "./compounding.post.js";
 
 describe("POST /simulate/compounding", () => {
-    let devToken = "";
+	let devToken = "";
 
-    let app: any;
+	let app: any;
 
-    beforeAll(async () => {
-        app = await loadMockApp();
+	beforeAll(async () => {
+		app = await loadMockApp();
 
-        devToken = await generateDevToken({ userId: "test-user" });
-    });
+		devToken = await generateDevToken({ userId: "test-user" });
+	});
 
-    beforeEach(() => {
-        vi.clearAllMocks();
-        vi.useFakeTimers({ toFake: ["Date"] });
-        vi.setSystemTime(MOCK_NOW);
-    });
+	beforeEach(() => {
+		vi.clearAllMocks();
+		vi.useFakeTimers({ toFake: ["Date"] });
+		vi.setSystemTime(MOCK_NOW);
+	});
 
-    afterEach(() => {
-        vi.useRealTimers();
-    });
+	afterEach(() => {
+		vi.useRealTimers();
+	});
 
-    it("should execute compounding simulation successfully", async () => {
-        await createUser("test-user").execute();
+	it("should execute compounding simulation successfully", async () => {
+		await createUser("test-user").execute();
 
-        await db
-            .insertInto("stratify.assets")
-            .values({
-                id: 1,
-                name: "Apple Inc.",
-                symbol: "AAPL",
-                currency: "USD",
-                type: "STOCK",
-                countryId: 224, // Country ID for united states
-            })
-            .execute();
+		await db
+			.insertInto("stratify.assets")
+			.values({
+				id: 1,
+				name: "Apple Inc.",
+				symbol: "AAPL",
+				currency: "USD",
+				type: "STOCK",
+				countryId: 224, // Country ID for united states
+			})
+			.execute();
 
-        await db
-            .insertInto("stratify.assetPrices")
-            .values(mockHistoricAssetPrices)
-            .execute();
+		await db
+			.insertInto("stratify.assetPrices")
+			.values(mockHistoricAssetPrices)
+			.execute();
 
-        const response = await app.inject({
-            method: "POST",
-            url: "/simulate/compounding",
-            headers: {
-                Authorization: devToken,
-            },
-            payload: {
-                assetId: 1,
-                initialInvestment: 10000,
-                monthlyContribution: 500,
-                timePeriodYears: 3,
-                dividendYield: null,
-            },
-        });
+		const response = await app.inject({
+			method: "POST",
+			url: "/simulate/compounding",
+			headers: {
+				Authorization: devToken,
+			},
+			payload: {
+				assetId: 1,
+				initialInvestment: 10000,
+				monthlyContribution: 500,
+				timePeriodYears: 3,
+				dividendYield: null,
+			},
+		});
 
-        expect(response.statusCode).toBe(200);
+		expect(response.statusCode).toBe(200);
 
-        const data = (await response.json().data) as SimulationResponse;
+		const data = (await response.json().data) as SimulationResponse;
 
-        expect(data).toBeDefined();
+		expect(data).toBeDefined();
 
-        expect(data.results.length).toBeGreaterThan(0);
+		expect(data.results.length).toBeGreaterThan(0);
 
-        expect(data.returns).toEqual({
-            noCompounding: {
-                absolute: 26046.51,
-                percentage: 260.47,
-            },
-            compounding: {
-                absolute: 41986.56,
-                percentage: 152.68,
-            },
-            compoundingWithDividends: null,
-        });
-    });
+		expect(data.returns).toEqual({
+			noCompounding: {
+				absolute: 26046.51,
+				percentage: 260.47,
+			},
+			compounding: {
+				absolute: 41986.56,
+				percentage: 152.68,
+			},
+			compoundingWithDividends: null,
+		});
+	});
 
-    it("should include compounding with dividends when a dividend yield is provided", async () => {
-        await createUser("test-user").execute();
+	it("should include compounding with dividends when a dividend yield is provided", async () => {
+		await createUser("test-user").execute();
 
-        await db
-            .insertInto("stratify.assets")
-            .values({
-                id: 1,
-                name: "Apple Inc.",
-                symbol: "AAPL",
-                currency: "USD",
-                type: "STOCK",
-                countryId: 224, // Country ID for united states
-            })
-            .execute();
+		await db
+			.insertInto("stratify.assets")
+			.values({
+				id: 1,
+				name: "Apple Inc.",
+				symbol: "AAPL",
+				currency: "USD",
+				type: "STOCK",
+				countryId: 224, // Country ID for united states
+			})
+			.execute();
 
-        await db
-            .insertInto("stratify.assetPrices")
-            .values(mockHistoricAssetPrices)
-            .execute();
+		await db
+			.insertInto("stratify.assetPrices")
+			.values(mockHistoricAssetPrices)
+			.execute();
 
-        const response = await app.inject({
-            method: "POST",
-            url: "/simulate/compounding",
-            headers: {
-                Authorization: devToken,
-            },
-            payload: {
-                assetId: 1,
-                initialInvestment: 10000,
-                monthlyContribution: 500,
-                timePeriodYears: 3,
-                dividendYield: 1.5,
-            },
-        });
+		const response = await app.inject({
+			method: "POST",
+			url: "/simulate/compounding",
+			headers: {
+				Authorization: devToken,
+			},
+			payload: {
+				assetId: 1,
+				initialInvestment: 10000,
+				monthlyContribution: 500,
+				timePeriodYears: 3,
+				dividendYield: 1.5,
+			},
+		});
 
-        expect(response.statusCode).toBe(200);
+		expect(response.statusCode).toBe(200);
 
-        const data = (await response.json().data) as SimulationResponse;
+		const data = (await response.json().data) as SimulationResponse;
 
-        expect(data).toBeDefined();
+		expect(data).toBeDefined();
 
-        expect(data.results.length).toBeGreaterThan(0);
+		expect(data.results.length).toBeGreaterThan(0);
 
-        expect(data.returns).toEqual({
-            noCompounding: {
-                absolute: 26046.51,
-                percentage: 260.47,
-            },
-            compounding: {
-                absolute: 41986.56,
-                percentage: 152.68,
-            },
-            compoundingWithDividends: {
-                absolute: 44772.77,
-                percentage: 162.81,
-            },
-        });
-    });
+		expect(data.returns).toEqual({
+			noCompounding: {
+				absolute: 26046.51,
+				percentage: 260.47,
+			},
+			compounding: {
+				absolute: 41986.56,
+				percentage: 152.68,
+			},
+			compoundingWithDividends: {
+				absolute: 44772.77,
+				percentage: 162.81,
+			},
+		});
+	});
 
-    it("should return a 404 error if no historic price data is found for the asset", async () => {
-        await createUser("test-user").execute();
+	it("should return a 404 error if no historic price data is found for the asset", async () => {
+		await createUser("test-user").execute();
 
-        await db
-            .insertInto("stratify.assets")
-            .values({
-                id: 1,
-                name: "Apple Inc.",
-                symbol: "AAPL",
-                currency: "USD",
-                type: "STOCK",
-                countryId: 224, // Country ID for united states
-            })
-            .execute();
+		await db
+			.insertInto("stratify.assets")
+			.values({
+				id: 1,
+				name: "Apple Inc.",
+				symbol: "AAPL",
+				currency: "USD",
+				type: "STOCK",
+				countryId: 224, // Country ID for united states
+			})
+			.execute();
 
-        const response = await app.inject({
-            method: "POST",
-            url: "/simulate/compounding",
-            headers: {
-                Authorization: devToken,
-            },
-            payload: {
-                assetId: 1,
-                initialInvestment: 10000,
-                monthlyContribution: 500,
-                timePeriodYears: 3,
-                dividendYield: null,
-            },
-        });
+		const response = await app.inject({
+			method: "POST",
+			url: "/simulate/compounding",
+			headers: {
+				Authorization: devToken,
+			},
+			payload: {
+				assetId: 1,
+				initialInvestment: 10000,
+				monthlyContribution: 500,
+				timePeriodYears: 3,
+				dividendYield: null,
+			},
+		});
 
-        expect(response.statusCode).toBe(404);
+		expect(response.statusCode).toBe(404);
 
-        const json = await response.json();
+		const json = await response.json();
 
-        expect(json).toEqual({
-            message: "noDataFound",
-        });
-    });
+		expect(json).toEqual({
+			message: "noDataFound",
+		});
+	});
 
-    it("should return a 400 error if the simulation is unsuccessful", async () => {
-        await createUser("test-user").execute();
+	it("should return a 400 error if the simulation is unsuccessful", async () => {
+		await createUser("test-user").execute();
 
-        await db
-            .insertInto("stratify.assets")
-            .values({
-                id: 1,
-                name: "Apple Inc.",
-                symbol: "AAPL",
-                currency: "USD",
-                type: "STOCK",
-                countryId: 224, // Country ID for united states
-            })
-            .execute();
+		await db
+			.insertInto("stratify.assets")
+			.values({
+				id: 1,
+				name: "Apple Inc.",
+				symbol: "AAPL",
+				currency: "USD",
+				type: "STOCK",
+				countryId: 224, // Country ID for united states
+			})
+			.execute();
 
-        await db
-            .insertInto("stratify.assetPrices")
-            .values({
-                assetId: 1,
-                priceDate: new Date("2026-01-05"),
-                closePrice: 150,
-                openPrice: 150,
-                lowPrice: 150,
-                highPrice: 150,
-                volume: 1000,
-            })
-            .execute();
+		await db
+			.insertInto("stratify.assetPrices")
+			.values({
+				assetId: 1,
+				priceDate: new Date("2026-01-05"),
+				closePrice: 150,
+				openPrice: 150,
+				lowPrice: 150,
+				highPrice: 150,
+				volume: 1000,
+			})
+			.execute();
 
-        const response = await app.inject({
-            method: "POST",
-            url: "/simulate/compounding",
-            headers: {
-                Authorization: devToken,
-            },
-            payload: {
-                assetId: 1,
-                initialInvestment: 10000,
-                monthlyContribution: 500,
-                timePeriodYears: 3,
-                dividendYield: null,
-            },
-        });
+		const response = await app.inject({
+			method: "POST",
+			url: "/simulate/compounding",
+			headers: {
+				Authorization: devToken,
+			},
+			payload: {
+				assetId: 1,
+				initialInvestment: 10000,
+				monthlyContribution: 500,
+				timePeriodYears: 3,
+				dividendYield: null,
+			},
+		});
 
-        expect(response.statusCode).toBe(400);
+		expect(response.statusCode).toBe(400);
 
-        const json = await response.json();
+		const json = await response.json();
 
-        expect(json).toEqual({
-            message: "cannotSimulate",
-        });
-    });
+		expect(json).toEqual({
+			message: "cannotSimulate",
+		});
+	});
 });

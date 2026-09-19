@@ -1,45 +1,45 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import { MarketDataTab } from "../MarketDataTabs/MarketDataTabs";
-import { renderWithContext } from "@/app/tests/utils";
-import MarketDataTable from "./MarketDataTable";
 import { screen } from "@testing-library/react";
-import { paths } from "@/openapi/types/stratify-api";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { renderWithContext } from "@/app/tests/utils";
+import type { paths } from "@/openapi/types/stratify-api";
+import type { MarketDataTab } from "../MarketDataTabs/MarketDataTabs";
+import MarketDataTable from "./MarketDataTable";
 
 type Asset =
-    paths["/data/market/top-gainers"]["get"]["responses"]["200"]["content"]["application/json"]["data"][number];
+	paths["/data/market/top-gainers"]["get"]["responses"]["200"]["content"]["application/json"]["data"][number];
 
 const mockTopGainersData = [
-    {
-        assetId: 1,
-        assetName: "Apple Inc.",
-        symbol: "AAPL",
-        assetType: "STOCK",
-        marketState: "REGULAR",
-        currency: "USD",
-        priceDetails: {
-            currentPrice: 150.25,
-            volume: 1000000,
-            priceChange: 2.5,
-            priceChangePercent: 1.69,
-        },
-    },
+	{
+		assetId: 1,
+		assetName: "Apple Inc.",
+		symbol: "AAPL",
+		assetType: "STOCK",
+		marketState: "REGULAR",
+		currency: "USD",
+		priceDetails: {
+			currentPrice: 150.25,
+			volume: 1000000,
+			priceChange: 2.5,
+			priceChangePercent: 1.69,
+		},
+	},
 ] satisfies Asset[];
 
 const mockTopLosersData = [
-    {
-        assetId: 2,
-        assetName: "Nvidia Corporation",
-        symbol: "NVDA",
-        assetType: "STOCK",
-        marketState: "REGULAR",
-        currency: "USD",
-        priceDetails: {
-            currentPrice: 200.75,
-            volume: 500000,
-            priceChange: -3.0,
-            priceChangePercent: -1.48,
-        },
-    },
+	{
+		assetId: 2,
+		assetName: "Nvidia Corporation",
+		symbol: "NVDA",
+		assetType: "STOCK",
+		marketState: "REGULAR",
+		currency: "USD",
+		priceDetails: {
+			currentPrice: 200.75,
+			volume: 500000,
+			priceChange: -3.0,
+			priceChangePercent: -1.48,
+		},
+	},
 ] satisfies Asset[];
 
 const mockUseTopGainers = vi.fn();
@@ -47,183 +47,183 @@ const mockUseTopLosers = vi.fn();
 const mockUseMostActiveAssets = vi.fn();
 
 vi.mock("../hooks/useTopGainers", () => ({
-    useTopGainers: () => mockUseTopGainers(),
+	useTopGainers: () => mockUseTopGainers(),
 }));
 
 vi.mock("../hooks/useTopLosers", () => ({
-    useTopLosers: () => mockUseTopLosers(),
+	useTopLosers: () => mockUseTopLosers(),
 }));
 
 vi.mock("../hooks/useMostActiveAssets", () => ({
-    useMostActiveAssets: () => mockUseMostActiveAssets(),
+	useMostActiveAssets: () => mockUseMostActiveAssets(),
 }));
 
 const mockRouterPush = vi.fn();
 
 vi.mock("next/navigation", () => ({
-    useRouter: () => ({
-        push: mockRouterPush,
-    }),
+	useRouter: () => ({
+		push: mockRouterPush,
+	}),
 }));
 
 describe("MarketDataTable", () => {
-    beforeEach(() => {
-        vi.clearAllMocks();
-    });
+	beforeEach(() => {
+		vi.clearAllMocks();
+	});
 
-    const renderComponent = (selectedTab: MarketDataTab) => {
-        renderWithContext({
-            children: <MarketDataTable selectedTab={selectedTab} />,
-        });
-    };
+	const renderComponent = (selectedTab: MarketDataTab) => {
+		renderWithContext({
+			children: <MarketDataTable selectedTab={selectedTab} />,
+		});
+	};
 
-    it("render table with data", () => {
-        mockUseTopGainers.mockReturnValue({
-            data: mockTopGainersData,
-            isLoading: false,
-        });
+	it("render table with data", () => {
+		mockUseTopGainers.mockReturnValue({
+			data: mockTopGainersData,
+			isLoading: false,
+		});
 
-        mockUseTopLosers.mockReturnValue({
-            data: [],
-            isLoading: false,
-        });
+		mockUseTopLosers.mockReturnValue({
+			data: [],
+			isLoading: false,
+		});
 
-        mockUseMostActiveAssets.mockReturnValue({
-            data: [],
-            isLoading: false,
-        });
+		mockUseMostActiveAssets.mockReturnValue({
+			data: [],
+			isLoading: false,
+		});
 
-        renderComponent("topGainers");
+		renderComponent("topGainers");
 
-        const tableHeaders = [
-            "Asset Name",
-            "Asset Type",
-            "Market State",
-            "Current Price",
-            "Volume (24 hours)",
-            "Change (24 hours)",
-        ];
+		const tableHeaders = [
+			"Asset Name",
+			"Asset Type",
+			"Market State",
+			"Current Price",
+			"Volume (24 hours)",
+			"Change (24 hours)",
+		];
 
-        tableHeaders.forEach((header) => {
-            expect(screen.getByText(header)).toBeInTheDocument();
-        });
+		tableHeaders.forEach((header) => {
+			expect(screen.getByText(header)).toBeInTheDocument();
+		});
 
-        const assetRow = [
-            "Apple Inc. (AAPL)",
-            "Stock",
-            "Open",
-            "150.25 (USD)",
-            "1,000,000",
-            "+ 2.5",
-            "+ 1.69%",
-        ];
+		const assetRow = [
+			"Apple Inc. (AAPL)",
+			"Stock",
+			"Open",
+			"150.25 (USD)",
+			"1,000,000",
+			"+ 2.5",
+			"+ 1.69%",
+		];
 
-        assetRow.forEach((cell) => {
-            expect(screen.getByText(cell)).toBeInTheDocument();
-        });
-    });
+		assetRow.forEach((cell) => {
+			expect(screen.getByText(cell)).toBeInTheDocument();
+		});
+	});
 
-    it("renders loading state when data is loading", () => {
-        mockUseTopGainers.mockReturnValue({
-            data: [],
-            isLoading: true,
-        });
+	it("renders loading state when data is loading", () => {
+		mockUseTopGainers.mockReturnValue({
+			data: [],
+			isLoading: true,
+		});
 
-        mockUseTopLosers.mockReturnValue({
-            data: [],
-            isLoading: false,
-        });
+		mockUseTopLosers.mockReturnValue({
+			data: [],
+			isLoading: false,
+		});
 
-        mockUseMostActiveAssets.mockReturnValue({
-            data: [],
-            isLoading: false,
-        });
+		mockUseMostActiveAssets.mockReturnValue({
+			data: [],
+			isLoading: false,
+		});
 
-        renderComponent("topGainers");
+		renderComponent("topGainers");
 
-        const tableHeaders = [
-            "Asset Name",
-            "Asset Type",
-            "Market State",
-            "Current Price",
-            "Volume (24 hours)",
-            "Change (24 hours)",
-        ];
+		const tableHeaders = [
+			"Asset Name",
+			"Asset Type",
+			"Market State",
+			"Current Price",
+			"Volume (24 hours)",
+			"Change (24 hours)",
+		];
 
-        tableHeaders.forEach((header) => {
-            expect(screen.getByText(header)).toBeInTheDocument();
-        });
+		tableHeaders.forEach((header) => {
+			expect(screen.getByText(header)).toBeInTheDocument();
+		});
 
-        expect(screen.getAllByTestId("skeleton-row")).toHaveLength(10);
-    });
+		expect(screen.getAllByTestId("skeleton-row")).toHaveLength(10);
+	});
 
-    it("renders no data message when there is no data", () => {
-        mockUseTopGainers.mockReturnValue({
-            data: [],
-            isLoading: false,
-        });
+	it("renders no data message when there is no data", () => {
+		mockUseTopGainers.mockReturnValue({
+			data: [],
+			isLoading: false,
+		});
 
-        mockUseTopLosers.mockReturnValue({
-            data: [],
-            isLoading: false,
-        });
+		mockUseTopLosers.mockReturnValue({
+			data: [],
+			isLoading: false,
+		});
 
-        mockUseMostActiveAssets.mockReturnValue({
-            data: [],
-            isLoading: false,
-        });
+		mockUseMostActiveAssets.mockReturnValue({
+			data: [],
+			isLoading: false,
+		});
 
-        renderComponent("topGainers");
+		renderComponent("topGainers");
 
-        const tableHeaders = [
-            "Asset Name",
-            "Asset Type",
-            "Market State",
-            "Current Price",
-            "Volume (24 hours)",
-            "Change (24 hours)",
-        ];
+		const tableHeaders = [
+			"Asset Name",
+			"Asset Type",
+			"Market State",
+			"Current Price",
+			"Volume (24 hours)",
+			"Change (24 hours)",
+		];
 
-        tableHeaders.forEach((header) => {
-            expect(screen.getByText(header)).toBeInTheDocument();
-        });
+		tableHeaders.forEach((header) => {
+			expect(screen.getByText(header)).toBeInTheDocument();
+		});
 
-        expect(screen.getByText("No results.")).toBeInTheDocument();
-    });
+		expect(screen.getByText("No results.")).toBeInTheDocument();
+	});
 
-    it("renders only the selected tab's data", () => {
-        mockUseTopLosers.mockReturnValue({
-            data: mockTopLosersData,
-            isLoading: false,
-        });
+	it("renders only the selected tab's data", () => {
+		mockUseTopLosers.mockReturnValue({
+			data: mockTopLosersData,
+			isLoading: false,
+		});
 
-        renderComponent("topLosers");
+		renderComponent("topLosers");
 
-        const tableHeaders = [
-            "Asset Name",
-            "Asset Type",
-            "Market State",
-            "Current Price",
-            "Volume (24 hours)",
-            "Change (24 hours)",
-        ];
+		const tableHeaders = [
+			"Asset Name",
+			"Asset Type",
+			"Market State",
+			"Current Price",
+			"Volume (24 hours)",
+			"Change (24 hours)",
+		];
 
-        tableHeaders.forEach((header) => {
-            expect(screen.getByText(header)).toBeInTheDocument();
-        });
+		tableHeaders.forEach((header) => {
+			expect(screen.getByText(header)).toBeInTheDocument();
+		});
 
-        const assetRow = [
-            "Nvidia Corporation (NVDA)",
-            "Stock",
-            "Open",
-            "200.75 (USD)",
-            "500,000",
-            "-3",
-            "-1.48%",
-        ];
+		const assetRow = [
+			"Nvidia Corporation (NVDA)",
+			"Stock",
+			"Open",
+			"200.75 (USD)",
+			"500,000",
+			"-3",
+			"-1.48%",
+		];
 
-        assetRow.forEach((cell) => {
-            expect(screen.getByText(cell)).toBeInTheDocument();
-        });
-    });
+		assetRow.forEach((cell) => {
+			expect(screen.getByText(cell)).toBeInTheDocument();
+		});
+	});
 });

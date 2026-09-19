@@ -1,52 +1,52 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
 import { renderHook, waitFor } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import MockEnvironmentProvider from "@/app/tests/_mocks/MockEnvironmentProvider";
 import { usePortfolioList } from "./usePortfolioList";
 
 const mockGetPortfolioList = vi.fn();
 
 const mockKyClient = {
-    GET: mockGetPortfolioList,
+	GET: mockGetPortfolioList,
 };
 
 vi.mock("@/lib/api/ky-client", () => ({
-    useKyClient: () => mockKyClient,
+	useKyClient: () => mockKyClient,
 }));
 
 describe("usePortfolioList", () => {
-    beforeEach(() => {
-        vi.clearAllMocks();
-    });
+	beforeEach(() => {
+		vi.clearAllMocks();
+	});
 
-    const renderGetPortfolioListHook = () => {
-        return renderHook(() => usePortfolioList(), {
-            wrapper: ({ children }) => (
-                <MockEnvironmentProvider>{children}</MockEnvironmentProvider>
-            ),
-        });
-    };
+	const renderGetPortfolioListHook = () => {
+		return renderHook(() => usePortfolioList(), {
+			wrapper: ({ children }) => (
+				<MockEnvironmentProvider>{children}</MockEnvironmentProvider>
+			),
+		});
+	};
 
-    it("should call GET /portfolios successfully", async () => {
-        mockGetPortfolioList.mockResolvedValue({
-            data: {
-                data: [
-                    { id: 1, name: "Portfolio 1" },
-                    { id: 2, name: "Portfolio 2" },
-                ],
-            },
-        });
+	it("should call GET /portfolios successfully", async () => {
+		mockGetPortfolioList.mockResolvedValue({
+			data: {
+				data: [
+					{ id: 1, name: "Portfolio 1" },
+					{ id: 2, name: "Portfolio 2" },
+				],
+			},
+		});
 
-        const { result } = renderGetPortfolioListHook();
+		const { result } = renderGetPortfolioListHook();
 
-        await waitFor(() => {
-            expect(mockKyClient.GET).toHaveBeenCalledWith("/portfolios");
+		await waitFor(() => {
+			expect(mockKyClient.GET).toHaveBeenCalledWith("/portfolios");
 
-            expect(result.current.data).toEqual([
-                { id: 1, name: "Portfolio 1" },
-                { id: 2, name: "Portfolio 2" },
-            ]);
+			expect(result.current.data).toEqual([
+				{ id: 1, name: "Portfolio 1" },
+				{ id: 2, name: "Portfolio 2" },
+			]);
 
-            expect(result.current.isLoading).toBe(false);
-        });
-    });
+			expect(result.current.isLoading).toBe(false);
+		});
+	});
 });

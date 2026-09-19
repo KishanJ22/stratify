@@ -1,29 +1,29 @@
 "use client";
 
-import * as React from "react";
 import * as CheckboxPrimitive from "@radix-ui/react-checkbox";
 import { Check } from "lucide-react";
+import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
 const Checkbox = React.forwardRef<
-    React.ElementRef<typeof CheckboxPrimitive.Root>,
-    React.ComponentPropsWithoutRef<typeof CheckboxPrimitive.Root>
+	React.ElementRef<typeof CheckboxPrimitive.Root>,
+	React.ComponentPropsWithoutRef<typeof CheckboxPrimitive.Root>
 >(({ className, ...props }, ref) => (
-    <CheckboxPrimitive.Root
-        ref={ref}
-        className={cn(
-            "grid place-content-center peer h-4 w-4 shrink-0 rounded-sm border border-secondary-light bg-secondary-lightest/60 cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-secondary-base disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-secondary-base data-[state=checked]:text-secondary-lightest",
-            className,
-        )}
-        {...props}
-    >
-        <CheckboxPrimitive.Indicator
-            className={cn("grid place-content-center text-current")}
-        >
-            <Check className="h-4 w-4 text-primary-lightest" />
-        </CheckboxPrimitive.Indicator>
-    </CheckboxPrimitive.Root>
+	<CheckboxPrimitive.Root
+		ref={ref}
+		className={cn(
+			"grid place-content-center peer h-4 w-4 shrink-0 rounded-sm border border-secondary-light bg-secondary-lightest/60 cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-secondary-base disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-secondary-base data-[state=checked]:text-secondary-lightest",
+			className,
+		)}
+		{...props}
+	>
+		<CheckboxPrimitive.Indicator
+			className={cn("grid place-content-center text-current")}
+		>
+			<Check className="h-4 w-4 text-primary-lightest" />
+		</CheckboxPrimitive.Indicator>
+	</CheckboxPrimitive.Root>
 ));
 Checkbox.displayName = CheckboxPrimitive.Root.displayName;
 

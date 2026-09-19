@@ -1,50 +1,50 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
 import { renderHook, waitFor } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import MockEnvironmentProvider from "@/app/tests/_mocks/MockEnvironmentProvider";
 import { useGoal } from "./useGoal";
 
 const mockGetGoal = vi.fn();
 
 const mockKyClient = {
-    GET: mockGetGoal,
+	GET: mockGetGoal,
 };
 
 vi.mock("@/lib/api/ky-client", () => ({
-    useKyClient: () => mockKyClient,
+	useKyClient: () => mockKyClient,
 }));
 
 describe("useGoal", () => {
-    beforeEach(() => {
-        vi.clearAllMocks();
-    });
+	beforeEach(() => {
+		vi.clearAllMocks();
+	});
 
-    const renderGetGoalHook = () => {
-        return renderHook(() => useGoal(), {
-            wrapper: ({ children }) => (
-                <MockEnvironmentProvider>{children}</MockEnvironmentProvider>
-            ),
-        });
-    };
+	const renderGetGoalHook = () => {
+		return renderHook(() => useGoal(), {
+			wrapper: ({ children }) => (
+				<MockEnvironmentProvider>{children}</MockEnvironmentProvider>
+			),
+		});
+	};
 
-    it("should call GET /goal successfully", async () => {
-        mockGetGoal.mockResolvedValue({
-            data: {
-                data: {
-                    targetAmount: 10000,
-                },
-            },
-        });
+	it("should call GET /goal successfully", async () => {
+		mockGetGoal.mockResolvedValue({
+			data: {
+				data: {
+					targetAmount: 10000,
+				},
+			},
+		});
 
-        const { result } = renderGetGoalHook();
+		const { result } = renderGetGoalHook();
 
-        await waitFor(() => {
-            expect(mockKyClient.GET).toHaveBeenCalledWith("/goal");
+		await waitFor(() => {
+			expect(mockKyClient.GET).toHaveBeenCalledWith("/goal");
 
-            expect(result.current.data).toEqual({
-                targetAmount: 10000,
-            });
+			expect(result.current.data).toEqual({
+				targetAmount: 10000,
+			});
 
-            expect(result.current.isLoading).toBe(false);
-        });
-    });
+			expect(result.current.isLoading).toBe(false);
+		});
+	});
 });

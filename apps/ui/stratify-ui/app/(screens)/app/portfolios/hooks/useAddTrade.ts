@@ -1,34 +1,34 @@
 "use client";
 
-import { useKyClient } from "@/lib/api/ky-client";
-import { paths } from "@/openapi/types/stratify-api";
 import { useMutation } from "@tanstack/react-query";
+import { useKyClient } from "@/lib/api/ky-client";
+import type { paths } from "@/openapi/types/stratify-api";
 
 export type AddTradeErrorResponse =
-    | paths["/portfolios/{portfolioId}/add-trade"]["post"]["responses"]["400"]["content"]["application/json"]
-    | paths["/portfolios/{portfolioId}/add-trade"]["post"]["responses"]["404"]["content"]["application/json"];
+	| paths["/portfolios/{portfolioId}/add-trade"]["post"]["responses"]["400"]["content"]["application/json"]
+	| paths["/portfolios/{portfolioId}/add-trade"]["post"]["responses"]["404"]["content"]["application/json"];
 
 export type AddTradeRequestSchema =
-    paths["/portfolios/{portfolioId}/add-trade"]["post"]["requestBody"]["content"]["application/json"];
+	paths["/portfolios/{portfolioId}/add-trade"]["post"]["requestBody"]["content"]["application/json"];
 
 export const useAddTrade = (portfolioId: number) => {
-    const client = useKyClient();
+	const client = useKyClient();
 
-    const { isPending, mutate, isSuccess } = useMutation({
-        mutationFn: async (value: AddTradeRequestSchema) =>
-            client.POST("/portfolios/{portfolioId}/add-trade", {
-                params: {
-                    path: {
-                        portfolioId,
-                    },
-                },
-                body: value,
-            }),
-    });
+	const { isPending, mutate, isSuccess } = useMutation({
+		mutationFn: async (value: AddTradeRequestSchema) =>
+			client.POST("/portfolios/{portfolioId}/add-trade", {
+				params: {
+					path: {
+						portfolioId,
+					},
+				},
+				body: value,
+			}),
+	});
 
-    return {
-        mutate,
-        isPending,
-        isSuccess,
-    };
+	return {
+		mutate,
+		isPending,
+		isSuccess,
+	};
 };

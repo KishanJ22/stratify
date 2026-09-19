@@ -1,48 +1,48 @@
-import { renderWithContext } from "@/app/tests/utils";
-import { beforeEach, describe, expect, it, vi } from "vitest";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { AddInvestmentModalProps } from "./AddInvestmentModal";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { renderWithContext } from "@/app/tests/utils";
 import AddInvestmentButton from "./AddInvestmentButton";
+import type { AddInvestmentModalProps } from "./AddInvestmentModal";
 
 vi.mock("./AddInvestmentModal", () => ({
-    default: ({ isOpen }: AddInvestmentModalProps) => {
-        if (isOpen) {
-            return <div>AddInvestmentModal</div>;
-        }
-    },
+	default: ({ isOpen }: AddInvestmentModalProps) => {
+		if (isOpen) {
+			return <div>AddInvestmentModal</div>;
+		}
+	},
 }));
 
 const user = userEvent.setup();
 
 describe("AddInvestmentButton", () => {
-    beforeEach(() => {
-        vi.clearAllMocks();
-    });
+	beforeEach(() => {
+		vi.clearAllMocks();
+	});
 
-    const renderComponent = (portfolioId = 1) =>
-        renderWithContext({
-            children: <AddInvestmentButton portfolioId={portfolioId} />,
-        });
+	const renderComponent = (portfolioId = 1) =>
+		renderWithContext({
+			children: <AddInvestmentButton portfolioId={portfolioId} />,
+		});
 
-    it("should render the add investment button", () => {
-        renderComponent();
+	it("should render the add investment button", () => {
+		renderComponent();
 
-        const button = screen.getByText("Investments.addInvestment");
-        expect(button).toBeInTheDocument();
-        const plusIcon = screen.getByTestId("plus");
-        expect(plusIcon).toBeInTheDocument();
-    });
+		const button = screen.getByText("Investments.addInvestment");
+		expect(button).toBeInTheDocument();
+		const plusIcon = screen.getByTestId("plus");
+		expect(plusIcon).toBeInTheDocument();
+	});
 
-    it("should open the add investment modal when clicking the button", async () => {
-        renderComponent();
+	it("should open the add investment modal when clicking the button", async () => {
+		renderComponent();
 
-        const button = screen.getByText("Investments.addInvestment");
+		const button = screen.getByText("Investments.addInvestment");
 
-        await user.click(button);
+		await user.click(button);
 
-        await waitFor(async () => {
-            expect(screen.getByText("AddInvestmentModal")).toBeInTheDocument();
-        });
-    });
+		await waitFor(async () => {
+			expect(screen.getByText("AddInvestmentModal")).toBeInTheDocument();
+		});
+	});
 });

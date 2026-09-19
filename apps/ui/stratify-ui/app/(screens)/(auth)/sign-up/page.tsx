@@ -1,46 +1,46 @@
 "use client";
 
-import StratifyIcon from "@/app/components/Common/StratifyIcon";
-import { Button } from "@/app/components/ui/button";
 import { ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
+import StratifyIcon from "@/app/components/Common/StratifyIcon";
+import { Button } from "@/app/components/ui/button";
 import SignUpForm from "./SignUpForm";
 
 export default function SignUpPage() {
-    const { push } = useRouter();
+	const { push } = useRouter();
 
-    return (
-        <div className="font-sans items-center justify-items-center h-full">
-            <div className="flex flex-col h-full justify-center items-center">
-                <StratifyIcon
-                    width={650}
-                    height={650}
-                    className="blur-sm z-0 absolute"
-                />
-                <div className="relative bg-primary-lightest/80 rounded-3xl mx-8 pt-14 min-w-lg">
-                    <h1 className="text-4xl text-secondary-darker text-center font-bold pb-8">
-                        Create Your Account
-                    </h1>
-                    <SignUpForm />
-                    <div className="flex flex-row justify-center py-6">
-                        <div className="text-sm text-secondary-darker">
-                            Already have an account?
-                        </div>
-                        <div
-                            className="mx-1 flex flex-row items-center hover:underline hover:underline-offset-1 hover:cursor-pointer"
-                            onClick={() => push("/login")}
-                        >
-                            <Button
-                                variant="link"
-                                className="text-secondary-darker hover:text-secondary-base transition-colors -my-2"
-                            >
-                                Log In
-                                <ChevronRight size={14} />
-                            </Button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
+	return (
+		<div className="font-sans items-center justify-items-center h-full">
+			<div className="flex flex-col h-full justify-center items-center">
+				<StratifyIcon
+					width={650}
+					height={650}
+					className="blur-sm z-0 absolute"
+				/>
+				<div className="relative bg-primary-lightest/80 rounded-3xl mx-8 pt-14 min-w-lg">
+					<h1 className="text-4xl text-secondary-darker text-center font-bold pb-8">
+						Create Your Account
+					</h1>
+					<SignUpForm />
+					<div className="flex flex-row justify-center py-6">
+						<div className="text-sm text-secondary-darker">
+							Already have an account?
+						</div>
+						<div
+							className="mx-1 flex flex-row items-center hover:underline hover:underline-offset-1 hover:cursor-pointer"
+							onClick={() => push("/login")}
+						>
+							<Button
+								variant="link"
+								className="text-secondary-darker hover:text-secondary-base transition-colors -my-2"
+							>
+								Log In
+								<ChevronRight size={14} />
+							</Button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	);
 }

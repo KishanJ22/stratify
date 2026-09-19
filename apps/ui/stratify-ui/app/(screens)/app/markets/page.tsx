@@ -1,29 +1,29 @@
 "use client";
 
 import { useState } from "react";
-import MarketDataTabs, {
-    type MarketDataTab,
-} from "./MarketDataTabs/MarketDataTabs";
-import MarketDataTable from "./MarketDataTable/MarketDataTable";
 import AssetSearch from "./AssetSearch/AssetSearch";
+import MarketDataTable from "./MarketDataTable/MarketDataTable";
+import MarketDataTabs, {
+	type MarketDataTab,
+} from "./MarketDataTabs/MarketDataTabs";
 
 export default function MarketsPage() {
-    const [selectedTab, setSelectedTab] = useState<MarketDataTab>("topGainers");
+	const [selectedTab, setSelectedTab] = useState<MarketDataTab>("topGainers");
 
-    return (
-        <div className="min-h-screen px-10 pb-10">
-            <div className="font-sans text-5xl text-primary-base font-semibold w-full text-left">
-                Markets
-            </div>
+	return (
+		<div className="min-h-screen px-10 pb-10">
+			<div className="font-sans text-5xl text-primary-base font-semibold w-full text-left">
+				Markets
+			</div>
 
-            <div className="flex flex-row items-center justify-between mt-4">
-                <MarketDataTabs
-                    selectedTab={selectedTab}
-                    setSelectedTab={setSelectedTab}
-                />
-                <AssetSearch />
-            </div>
-            <MarketDataTable selectedTab={selectedTab} />
-        </div>
-    );
+			<div className="flex flex-row items-center justify-between mt-4">
+				<MarketDataTabs
+					selectedTab={selectedTab}
+					setSelectedTab={setSelectedTab}
+				/>
+				<AssetSearch />
+			</div>
+			<MarketDataTable selectedTab={selectedTab} />
+		</div>
+	);
 }

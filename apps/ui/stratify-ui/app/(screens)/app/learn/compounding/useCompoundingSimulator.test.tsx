@@ -1,71 +1,71 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
 import { renderHook, waitFor } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import MockEnvironmentProvider from "@/app/tests/_mocks/MockEnvironmentProvider";
-import {
-    CompoundingSimulatorRequestSchema,
-    useCompoundingSimulator,
-} from "./useCompoundingSimulator";
 import { mockReturns, mockSimulationResults } from "./_mocks/mockChartData";
+import {
+	type CompoundingSimulatorRequestSchema,
+	useCompoundingSimulator,
+} from "./useCompoundingSimulator";
 
 const mockPostCompoundingSimulator = vi.fn();
 
 const mockKyClient = {
-    POST: mockPostCompoundingSimulator,
+	POST: mockPostCompoundingSimulator,
 };
 
 vi.mock("@/lib/api/ky-client", () => ({
-    useKyClient: () => mockKyClient,
+	useKyClient: () => mockKyClient,
 }));
 
 describe("useCompoundingSimulator", () => {
-    beforeEach(() => {
-        vi.clearAllMocks();
-    });
+	beforeEach(() => {
+		vi.clearAllMocks();
+	});
 
-    const renderCompoundingSimulatorHook = () => {
-        return renderHook(() => useCompoundingSimulator(), {
-            wrapper: ({ children }) => (
-                <MockEnvironmentProvider>{children}</MockEnvironmentProvider>
-            ),
-        });
-    };
+	const renderCompoundingSimulatorHook = () => {
+		return renderHook(() => useCompoundingSimulator(), {
+			wrapper: ({ children }) => (
+				<MockEnvironmentProvider>{children}</MockEnvironmentProvider>
+			),
+		});
+	};
 
-    it("should call POST /simulate/compounding successfully", async () => {
-        mockPostCompoundingSimulator.mockResolvedValue({
-            data: {
-                data: {
-                    results: mockSimulationResults,
-                    returns: mockReturns,
-                },
-            },
-        });
+	it("should call POST /simulate/compounding successfully", async () => {
+		mockPostCompoundingSimulator.mockResolvedValue({
+			data: {
+				data: {
+					results: mockSimulationResults,
+					returns: mockReturns,
+				},
+			},
+		});
 
-        const { result } = renderCompoundingSimulatorHook();
+		const { result } = renderCompoundingSimulatorHook();
 
-        expect(result.current.isPending).toBe(false);
+		expect(result.current.isPending).toBe(false);
 
-        const requestBody = {
-            assetId: 1,
-            initialInvestment: 10000,
-            monthlyContribution: 500,
-            timePeriodYears: 20,
-            dividendYield: 5,
-        } satisfies CompoundingSimulatorRequestSchema;
+		const requestBody = {
+			assetId: 1,
+			initialInvestment: 10000,
+			monthlyContribution: 500,
+			timePeriodYears: 20,
+			dividendYield: 5,
+		} satisfies CompoundingSimulatorRequestSchema;
 
-        result.current.mutate(requestBody);
+		result.current.mutate(requestBody);
 
-        await waitFor(() => {
-            expect(mockKyClient.POST).toHaveBeenCalledWith(
-                "/simulate/compounding",
-                {
-                    body: requestBody,
-                },
-            );
-        });
+		await waitFor(() => {
+			expect(mockKyClient.POST).toHaveBeenCalledWith(
+				"/simulate/compounding",
+				{
+					body: requestBody,
+				},
+			);
+		});
 
-        expect(result.current.data).toEqual({
-            results: mockSimulationResults,
-            returns: mockReturns,
-        });
-    });
+		expect(result.current.data).toEqual({
+			results: mockSimulationResults,
+			returns: mockReturns,
+		});
+	});
 });

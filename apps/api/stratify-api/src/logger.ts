@@ -1,67 +1,67 @@
-import { getFromStore } from "./plugins/localStorage.js";
 import { pino } from "pino";
+import { getFromStore } from "./plugins/localStorage.js";
 import "dotenv/config";
-import { UserDetails } from "./utils/decodeToken.js";
+import type { UserDetails } from "./utils/decodeToken.js";
 
 export const loggerVariant = {
-    local: {
-        level: process.env.LOG_LEVEL ?? "debug",
-        transport: {
-            target: "pino-pretty",
-            options: {
-                colorize: true,
-                translateTime: "HH:MM:ss Z",
-                ignore: "pid,hostname",
-                levelFirst: true,
-            },
-        },
-    },
-    development: {
-        level: process.env.LOG_LEVEL ?? "debug",
-    },
-    production: {
-        level: process.env.LOG_LEVEL ?? "info",
-        base: {
-            pid: undefined,
-            hostname: undefined,
-        },
-    },
-    test: {
-        level: process.env.LOG_LEVEL ?? "debug",
-        transport: {
-            target: "pino-pretty",
-            options: {
-                colorize: true,
-                translateTime: "HH:MM:ss Z",
-                ignore: "pid,hostname",
-                levelFirst: true,
-            },
-        },
-    },
+	local: {
+		level: process.env.LOG_LEVEL ?? "debug",
+		transport: {
+			target: "pino-pretty",
+			options: {
+				colorize: true,
+				translateTime: "HH:MM:ss Z",
+				ignore: "pid,hostname",
+				levelFirst: true,
+			},
+		},
+	},
+	development: {
+		level: process.env.LOG_LEVEL ?? "debug",
+	},
+	production: {
+		level: process.env.LOG_LEVEL ?? "info",
+		base: {
+			pid: undefined,
+			hostname: undefined,
+		},
+	},
+	test: {
+		level: process.env.LOG_LEVEL ?? "debug",
+		transport: {
+			target: "pino-pretty",
+			options: {
+				colorize: true,
+				translateTime: "HH:MM:ss Z",
+				ignore: "pid,hostname",
+				levelFirst: true,
+			},
+		},
+	},
 };
 
 const environment = (process.env.ENVIRONMENT ??
-    "development") as keyof typeof loggerVariant;
+	"development") as keyof typeof loggerVariant;
 
 const logger = pino({
-    ...loggerVariant[environment],
-    hooks: {
-        streamWrite: (s) => {
-            if (environment === "test") {
-                console.log(s);
-            }
-            return s;
-        },
-    },
-    mixin: () => {
-        const requestId = getFromStore("requestId");
-        const user = getFromStore("user") as UserDetails | null;
+	...loggerVariant[environment],
+	hooks: {
+		streamWrite: (s) => {
+			if (environment === "test") {
+				console.log(s);
+			}
+			return s;
+		},
+	},
+	mixin: () => {
+		const requestId = getFromStore("requestId");
+		const user = getFromStore("user") as UserDetails | null;
 
-        return {
-            requestId: requestId ?? undefined,
-            user: user ?? undefined,
-        };
-    },
+		return {
+			requestId: requestId ?? undefined,
+			user: user ?? undefined,
+		};
+	},
 });
 
 export default logger;

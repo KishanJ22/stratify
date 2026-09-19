@@ -1,167 +1,167 @@
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import loadMockApp from "../../../__mocks__/mockApp.js";
-import { mockDataResponse } from "./_mocks/mock-data-response.js";
 import db from "../../../database/db.js";
 import { createUser } from "../../../tests/create-user.js";
-import type { TopAsset } from "./topAssetSchema.js";
 import { generateDevToken } from "../../../utils/generateDevToken.js";
+import { mockDataResponse } from "./_mocks/mock-data-response.js";
+import type { TopAsset } from "./topAssetSchema.js";
 
 const mockTopGainersDataGet = vi.fn();
 
 const mockDataApiClient = {
-    GET: mockTopGainersDataGet,
+	GET: mockTopGainersDataGet,
 };
 
 vi.mock("../../../lib/api/data-api-client.js", () => ({
-    dataApiClient: () => mockDataApiClient,
+	dataApiClient: () => mockDataApiClient,
 }));
 
 describe("GET /data/market/top-gainers", () => {
-    let devToken = "";
+	let devToken = "";
 
-    let app: any;
+	let app: any;
 
-    beforeAll(async () => {
-        devToken = await generateDevToken({ userId: "test-user" });
+	beforeAll(async () => {
+		devToken = await generateDevToken({ userId: "test-user" });
 
-        app = await loadMockApp();
-    });
+		app = await loadMockApp();
+	});
 
-    beforeEach(() => {
-        vi.clearAllMocks();
-    });
+	beforeEach(() => {
+		vi.clearAllMocks();
+	});
 
-    it("should return the top gainers in the market and a 200 status", async () => {
-        await createUser("test-user").execute();
+	it("should return the top gainers in the market and a 200 status", async () => {
+		await createUser("test-user").execute();
 
-        mockTopGainersDataGet.mockResolvedValue(mockDataResponse);
+		mockTopGainersDataGet.mockResolvedValue(mockDataResponse);
 
-        await db
-            .insertInto("stratify.assets")
-            .values([
-                {
-                    id: 1,
-                    symbol: "ABC",
-                    name: "ABC company",
-                    type: "STOCK",
-                    countryId: 223,
-                    currency: "GBP",
-                },
-                {
-                    id: 2,
-                    symbol: "DEF",
-                    name: "DEF company",
-                    type: "STOCK",
-                    countryId: 223,
-                    currency: "GBP",
-                },
-                {
-                    id: 3,
-                    symbol: "ABCD",
-                    name: "ABCD company",
-                    type: "STOCK",
-                    countryId: 224,
-                    currency: "USD",
-                },
-            ])
-            .execute();
+		await db
+			.insertInto("stratify.assets")
+			.values([
+				{
+					id: 1,
+					symbol: "ABC",
+					name: "ABC company",
+					type: "STOCK",
+					countryId: 223,
+					currency: "GBP",
+				},
+				{
+					id: 2,
+					symbol: "DEF",
+					name: "DEF company",
+					type: "STOCK",
+					countryId: 223,
+					currency: "GBP",
+				},
+				{
+					id: 3,
+					symbol: "ABCD",
+					name: "ABCD company",
+					type: "STOCK",
+					countryId: 224,
+					currency: "USD",
+				},
+			])
+			.execute();
 
-        const response = await app.inject({
-            method: "GET",
-            url: "/data/market/top-gainers",
-            headers: {
-                Authorization: devToken,
-                Accept: "application/json",
-            },
-        });
+		const response = await app.inject({
+			method: "GET",
+			url: "/data/market/top-gainers",
+			headers: {
+				Authorization: devToken,
+				Accept: "application/json",
+			},
+		});
 
-        expect(response.statusCode).toBe(200);
+		expect(response.statusCode).toBe(200);
 
-        const json = await response.json();
-        const data = json.data as TopAsset[];
+		const json = await response.json();
+		const data = json.data as TopAsset[];
 
-        expect(data).toHaveLength(3);
-        expect(data[0]).toMatchObject({
-            assetId: 1,
-            assetName: "ABC company",
-            symbol: "ABC",
-            currency: "GBP",
-            assetType: "STOCK",
-            marketState: "POSTPOST",
-            priceDetails: {
-                currentPrice: 46.55,
-                volume: 40,
-                priceChange: 26.9614,
-                priceChangePercent: 137.63821,
-            },
-        });
-    });
+		expect(data).toHaveLength(3);
+		expect(data[0]).toMatchObject({
+			assetId: 1,
+			assetName: "ABC company",
+			symbol: "ABC",
+			currency: "GBP",
+			assetType: "STOCK",
+			marketState: "POSTPOST",
+			priceDetails: {
+				currentPrice: 46.55,
+				volume: 40,
+				priceChange: 26.9614,
+				priceChangePercent: 137.63821,
+			},
+		});
+	});
 
-    it("should return a 404 status if there are no top gainers", async () => {
-        await createUser("test-user").execute();
+	it("should return a 404 status if there are no top gainers", async () => {
+		await createUser("test-user").execute();
 
-        mockTopGainersDataGet.mockResolvedValue({ data: { data: [] } });
+		mockTopGainersDataGet.mockResolvedValue({ data: { data: [] } });
 
-        const response = await app.inject({
-            method: "GET",
-            url: "/data/market/top-gainers",
-            headers: {
-                Authorization: devToken,
-                Accept: "application/json",
-            },
-        });
+		const response = await app.inject({
+			method: "GET",
+			url: "/data/market/top-gainers",
+			headers: {
+				Authorization: devToken,
+				Accept: "application/json",
+			},
+		});
 
-        expect(response.statusCode).toBe(404);
+		expect(response.statusCode).toBe(404);
 
-        const json = await response.json();
-        expect(json).toMatchObject({ message: "noTopGainersData" });
-    });
+		const json = await response.json();
+		expect(json).toMatchObject({ message: "noTopGainersData" });
+	});
 
-    it("should not return assets for which details cannot be found in the db", async () => {
-        await createUser("test-user").execute();
+	it("should not return assets for which details cannot be found in the db", async () => {
+		await createUser("test-user").execute();
 
-        mockTopGainersDataGet.mockResolvedValue(mockDataResponse);
+		mockTopGainersDataGet.mockResolvedValue(mockDataResponse);
 
-        await db
-            .insertInto("stratify.assets")
-            .values([
-                {
-                    id: 1,
-                    symbol: "ABC",
-                    name: "ABC company",
-                    type: "STOCK",
-                    countryId: 223,
-                    currency: "GBP",
-                },
-                {
-                    id: 2,
-                    symbol: "DEF",
-                    name: "DEF company",
-                    type: "STOCK",
-                    countryId: 223,
-                    currency: "GBP",
-                },
-            ])
-            .execute();
+		await db
+			.insertInto("stratify.assets")
+			.values([
+				{
+					id: 1,
+					symbol: "ABC",
+					name: "ABC company",
+					type: "STOCK",
+					countryId: 223,
+					currency: "GBP",
+				},
+				{
+					id: 2,
+					symbol: "DEF",
+					name: "DEF company",
+					type: "STOCK",
+					countryId: 223,
+					currency: "GBP",
+				},
+			])
+			.execute();
 
-        const response = await app.inject({
-            method: "GET",
-            url: "/data/market/top-gainers",
-            headers: {
-                Authorization: devToken,
-                Accept: "application/json",
-            },
-        });
+		const response = await app.inject({
+			method: "GET",
+			url: "/data/market/top-gainers",
+			headers: {
+				Authorization: devToken,
+				Accept: "application/json",
+			},
+		});
 
-        expect(response.statusCode).toBe(200);
+		expect(response.statusCode).toBe(200);
 
-        const json = await response.json();
-        const data = json.data as TopAsset[];
+		const json = await response.json();
+		const data = json.data as TopAsset[];
 
-        expect(data).toHaveLength(2);
+		expect(data).toHaveLength(2);
 
-        data.forEach((asset) => {
-            expect("ABCD").not.toBe(asset.symbol);
-        });
-    });
+		data.forEach((asset) => {
+			expect("ABCD").not.toBe(asset.symbol);
+		});
+	});
 });

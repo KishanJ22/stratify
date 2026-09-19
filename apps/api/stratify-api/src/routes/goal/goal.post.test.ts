@@ -1,43 +1,42 @@
+import { beforeAll, describe, expect, it } from "vitest";
 import loadMockApp from "../../__mocks__/mockApp.js";
-import { describe, beforeAll, expect, it } from "vitest";
 import { createUser } from "../../tests/create-user.js";
-import db from "../../database/db.js";
 import { generateDevToken } from "../../utils/generateDevToken.js";
 
 describe("POST /goal", () => {
-    let devToken = "";
+	let devToken = "";
 
-    let app: any;
+	let app: any;
 
-    beforeAll(async () => {
-        devToken = await generateDevToken({ userId: "test-user" });
+	beforeAll(async () => {
+		devToken = await generateDevToken({ userId: "test-user" });
 
-        app = await loadMockApp();
-    });
+		app = await loadMockApp();
+	});
 
-    it("should create a new goal for a user successfully", async () => {
-        await createUser("test-user").execute();
+	it("should create a new goal for a user successfully", async () => {
+		await createUser("test-user").execute();
 
-        const response = await app.inject({
-            method: "POST",
-            url: "/goal",
-            headers: {
-                Authorization: devToken,
-                Accept: "application/json",
-            },
-            payload: {
-                targetAmount: 5000,
-            },
-        });
+		const response = await app.inject({
+			method: "POST",
+			url: "/goal",
+			headers: {
+				Authorization: devToken,
+				Accept: "application/json",
+			},
+			payload: {
+				targetAmount: 5000,
+			},
+		});
 
-        const json = await response.json();
+		const json = await response.json();
 
-        expect(response.statusCode).toBe(201);
+		expect(response.statusCode).toBe(201);
 
-        expect(json).toEqual({
-            data: {
-                success: true,
-            },
-        });
-    });
+		expect(json).toEqual({
+			data: {
+				success: true,
+			},
+		});
+	});
 });

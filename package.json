@@ -1,32 +1,31 @@
 {
-    "name": "stratify",
-    "description": "",
-    "scripts": {
-        "build": "turbo run build",
-        "clean": "turbo run clean",
-        "dev": "turbo run dev",
-        "prod": "turbo run prod",
-        "format": "biome format --write .",
-        "lint": "turbo run lint",
-        "lint:fix": "turbo run lint:fix",
-        "test": "turbo run test",
-        "test:watch": "turbo run test:watch",
-        "test:coverage": "turbo run test:coverage"
-    },
-    "engines": {
-        "node": ">=21"
-    },
-    "keywords": [],
-    "author": "Kishan Jethwa",
-    "license": "ISC",
-    "packageManager": "pnpm@12.4.2",
-    "dependencies": {
-        "@changesets/cli": "3.0.3"
-    },
-    "devDependencies": {
-        "@biomejs/biome": "2.5.14",
-        "globals": "17.7.0",
-        "turbo": "2.11.2",
-        "vitest": "5.0.1"
-    }
+	"name": "stratify",
+	"description": "",
+	"scripts": {
+		"build": "turbo run build",
+		"clean": "turbo run clean",
+		"dev": "turbo run dev",
+		"prod": "turbo run prod",
+		"lint": "biome check .",
+		"lint:fix": "biome check --write .",
+		"test": "turbo run test",
+		"test:watch": "turbo run test:watch",
+		"test:coverage": "turbo run test:coverage"
+	},
+	"engines": {
+		"node": ">=21"
+	},
+	"keywords": [],
+	"author": "Kishan Jethwa",
+	"license": "ISC",
+	"packageManager": "pnpm@12.4.2",
+	"dependencies": {
+		"@changesets/cli": "3.0.3"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "2.5.14",
+		"globals": "17.7.0",
+		"turbo": "2.11.2",
+		"vitest": "5.0.1"
+	}
 }

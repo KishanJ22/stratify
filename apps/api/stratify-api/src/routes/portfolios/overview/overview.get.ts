@@ -1,72 +1,72 @@
-import { Static, Type } from "@sinclair/typebox";
-import { FastifyInstance } from "fastify";
-import {
-    AssetType,
-    Return,
-    returnSchema,
-} from "../../../schemas/common-schemas.js";
-import {
-    portfolioListQuery,
-    NotFoundResponse,
-    notFoundSchema,
-} from "../portfolios.get.js";
+import { type Static, Type } from "@sinclair/typebox";
+import type { FastifyInstance } from "fastify";
+import db from "../../../database/db.js";
 import logger from "../../../logger.js";
 import { getFromStore } from "../../../plugins/localStorage.js";
-import { UserDetails } from "../../../utils/decodeToken.js";
 import {
-    bulkHistoricAssetPriceQuery,
-    bulkHistoricCurrencyConversionQuery,
-    UniqueAsset,
+	type AssetType,
+	type Return,
+	returnSchema,
+} from "../../../schemas/common-schemas.js";
+import { adjustForWeekend } from "../../../utils/adjustForWeekend.js";
+import { createNotFound } from "../../../utils/createNotFoundSchema.js";
+import type { UserDetails } from "../../../utils/decodeToken.js";
+import { toTwoDecimalPoints } from "../../../utils/toTwoDecimalPoints.js";
+import {
+	investmentSchema,
+	type SectorDetails,
+} from "../[portfolioId]/investments/investmentSchema.js";
+import {
+	bulkHistoricAssetPriceQuery,
+	bulkHistoricCurrencyConversionQuery,
+	type UniqueAsset,
 } from "../[portfolioId]/value-history/calculateValueHistory.js";
 import {
-    investmentSchema,
-    SectorDetails,
-} from "../[portfolioId]/investments/investmentSchema.js";
-import db from "../../../database/db.js";
-import { createNotFound } from "../../../utils/createNotFoundSchema.js";
+	type NotFoundResponse,
+	notFoundSchema,
+	portfolioListQuery,
+} from "../portfolios.get.js";
 import { allTradesQuery } from "./allTradesQuery.js";
-import { fetchStocksList } from "./fetchStocksList.js";
-import { fetchFundsList } from "./fetchFundsList.js";
 import { fetchCryptosList } from "./fetchCryptosList.js";
+import { fetchFundsList } from "./fetchFundsList.js";
+import { fetchStocksList } from "./fetchStocksList.js";
 import { portfolioValueOnDate } from "./portfolioValueOnDate.js";
-import { adjustForWeekend } from "../../../utils/adjustForWeekend.js";
-import { toTwoDecimalPoints } from "../../../utils/toTwoDecimalPoints.js";
 
 interface GroupedInvestment {
-    key: string;
-    assetId: number;
-    symbol: string;
-    name: string;
-    assetCurrency: string | null;
-    assetCountryId: number;
-    type: AssetType;
-    shares: number;
-    currentAverageCost: number;
-    totalBuyAmount: number;
-    realisedReturn: number;
-    currentValue: number;
-    currentAssetCurrencyValue: number | null;
-    currentReturn: number;
-    currentReturnPercentage: number;
-    portfolioId: number;
-    portfolioName: string;
-    sectorDetails: SectorDetails[];
+	key: string;
+	assetId: number;
+	symbol: string;
+	name: string;
+	assetCurrency: string | null;
+	assetCountryId: number;
+	type: AssetType;
+	shares: number;
+	currentAverageCost: number;
+	totalBuyAmount: number;
+	realisedReturn: number;
+	currentValue: number;
+	currentAssetCurrencyValue: number | null;
+	currentReturn: number;
+	currentReturnPercentage: number;
+	portfolioId: number;
+	portfolioName: string;
+	sectorDetails: SectorDetails[];
 }
 
 const overviewSchema = Type.Object({
-    totalValue: Type.Number(),
-    overallChange: Type.Object({
-        lastThirtyDays: returnSchema,
-        lastSixMonths: returnSchema,
-        allTime: returnSchema,
-    }),
-    investments: Type.Array(investmentSchema),
+	totalValue: Type.Number(),
+	overallChange: Type.Object({
+		lastThirtyDays: returnSchema,
+		lastSixMonths: returnSchema,
+		allTime: returnSchema,
+	}),
+	investments: Type.Array(investmentSchema),
 });
 
 type Overview = Static<typeof overviewSchema>;
 
 const successResponseSchema = Type.Object({
-    data: overviewSchema,
+	data: overviewSchema,
 });
 
 type SuccessResponse = Static<typeof successResponseSchema>;
@@ -75,468 +75,467 @@ const noInvestmentsFoundSchema = createNotFound("noInvestmentsFound");
 type NoInvestmentsFound = Static<typeof noInvestmentsFoundSchema>;
 
 const hasInvestmentsQuery = (portfolioIds: number[], userId: string) =>
-    db
-        .selectFrom("stratify.trades as trades")
-        .innerJoin(
-            "stratify.portfolios as portfolios",
-            "trades.portfolioId",
-            "portfolios.id",
-        )
-        .where("trades.portfolioId", "in", portfolioIds)
-        .where("portfolios.userId", "=", userId)
-        .selectAll()
-        .limit(1);
+	db
+		.selectFrom("stratify.trades as trades")
+		.innerJoin(
+			"stratify.portfolios as portfolios",
+			"trades.portfolioId",
+			"portfolios.id",
+		)
+		.where("trades.portfolioId", "in", portfolioIds)
+		.where("portfolios.userId", "=", userId)
+		.selectAll()
+		.limit(1);
 
 const calculateChangeSincePastValue = (
-    latestValue: number,
-    pastValue: number,
+	latestValue: number,
+	pastValue: number,
 ) => {
-    if (pastValue === 0) {
-        return {
-            absolute: null,
-            percentage: null,
-        } satisfies Return;
-    }
+	if (pastValue === 0) {
+		return {
+			absolute: null,
+			percentage: null,
+		} satisfies Return;
+	}
 
-    const valueDifference = latestValue - pastValue;
+	const valueDifference = latestValue - pastValue;
 
-    return {
-        absolute: toTwoDecimalPoints(valueDifference),
-        percentage: toTwoDecimalPoints((valueDifference / pastValue) * 100),
-    } satisfies Return;
+	return {
+		absolute: toTwoDecimalPoints(valueDifference),
+		percentage: toTwoDecimalPoints((valueDifference / pastValue) * 100),
+	} satisfies Return;
 };
 
 const overviewDetails = async (portfolioIds: number[]) => {
-    const { userId, userCurrency } = getFromStore("user") as UserDetails;
-    const today = new Date();
+	const { userId, userCurrency } = getFromStore("user") as UserDetails;
+	const today = new Date();
 
-    const trades = await allTradesQuery(portfolioIds, userId).execute();
+	const trades = await allTradesQuery(portfolioIds, userId).execute();
 
-    const uniqueAssets = new Map<number, UniqueAsset>();
+	const uniqueAssets = new Map<number, UniqueAsset>();
 
-    trades.map((trade) => {
-        if (!uniqueAssets.has(trade.assetId)) {
-            uniqueAssets.set(trade.assetId, {
-                assetId: trade.assetId,
-                assetSymbol: trade.assetSymbol,
-                assetCountryId: trade.assetCountryId,
-                assetType: trade.assetType as AssetType,
-                assetCurrency: trade.assetCurrency,
-            });
-        }
-    });
+	trades.forEach((trade) => {
+		if (!uniqueAssets.has(trade.assetId)) {
+			uniqueAssets.set(trade.assetId, {
+				assetId: trade.assetId,
+				assetSymbol: trade.assetSymbol,
+				assetCountryId: trade.assetCountryId,
+				assetType: trade.assetType as AssetType,
+				assetCurrency: trade.assetCurrency,
+			});
+		}
+	});
 
-    const currencyConversionsRequired = new Set<string>();
+	const currencyConversionsRequired = new Set<string>();
 
-    uniqueAssets.forEach(({ assetCurrency }) => {
-        if (assetCurrency === "GBX" && userCurrency === "GBP") {
-            return;
-        }
+	uniqueAssets.forEach(({ assetCurrency }) => {
+		if (assetCurrency === "GBX" && userCurrency === "GBP") {
+			return;
+		}
 
-        const key = `${assetCurrency === "GBX" ? "GBP" : assetCurrency}${userCurrency}`;
+		const key = `${assetCurrency === "GBX" ? "GBP" : assetCurrency}${userCurrency}`;
 
-        if (assetCurrency) {
-            if (
-                assetCurrency !== userCurrency &&
-                !currencyConversionsRequired.has(key)
-            ) {
-                currencyConversionsRequired.add(key);
-            }
-        }
-    });
+		if (assetCurrency) {
+			if (
+				assetCurrency !== userCurrency &&
+				!currencyConversionsRequired.has(key)
+			) {
+				currencyConversionsRequired.add(key);
+			}
+		}
+	});
 
-    const oldestTradeDate = trades.reduce((oldest, trade) => {
-        return trade.tradeDate.getTime() < oldest.getTime()
-            ? trade.tradeDate
-            : oldest;
-    }, new Date());
+	const oldestTradeDate = trades.reduce((oldest, trade) => {
+		return trade.tradeDate.getTime() < oldest.getTime()
+			? trade.tradeDate
+			: oldest;
+	}, new Date());
 
-    const adjustedOldestTradeDate = adjustForWeekend(oldestTradeDate);
+	const adjustedOldestTradeDate = adjustForWeekend(oldestTradeDate);
 
-    const currencyPairs = Array.from(currencyConversionsRequired);
+	const currencyPairs = Array.from(currencyConversionsRequired);
 
-    const historicCurrencyRates =
-        currencyPairs.length > 0
-            ? await bulkHistoricCurrencyConversionQuery(
-                  currencyPairs,
-                  adjustedOldestTradeDate,
-                  today,
-              ).execute()
-            : [];
+	const historicCurrencyRates =
+		currencyPairs.length > 0
+			? await bulkHistoricCurrencyConversionQuery(
+					currencyPairs,
+					adjustedOldestTradeDate,
+					today,
+				).execute()
+			: [];
 
-    const historicCurrencyRatesMap = new Map<
-        { currencyPair: string; priceDate: string },
-        number
-    >();
+	const historicCurrencyRatesMap = new Map<
+		{ currencyPair: string; priceDate: string },
+		number
+	>();
 
-    historicCurrencyRates.forEach((rate) => {
-        const key = {
-            currencyPair: rate.currencyPair,
-            priceDate: rate.priceDate.toISOString().split("T")[0],
-        };
+	historicCurrencyRates.forEach((rate) => {
+		const key = {
+			currencyPair: rate.currencyPair,
+			priceDate: rate.priceDate.toISOString().split("T")[0],
+		};
 
-        historicCurrencyRatesMap.set(key, parseFloat(rate.price));
-    });
+		historicCurrencyRatesMap.set(key, parseFloat(rate.price));
+	});
 
-    const currencyRates = Array.from(historicCurrencyRatesMap);
+	const currencyRates = Array.from(historicCurrencyRatesMap);
 
-    const { stocks, cryptos, funds } = trades.reduce(
-        (acc, investment) => {
-            const { assetSymbol, assetCountryId, assetType } = investment;
+	const { stocks, cryptos, funds } = trades.reduce(
+		(acc, investment) => {
+			const { assetSymbol, assetCountryId, assetType } = investment;
 
-            const combinedSymbol =
-                assetType === "CRYPTOCURRENCY"
-                    ? `${assetSymbol}-USD`
-                    : assetCountryId === 223
-                      ? `${assetSymbol}.L`
-                      : assetSymbol;
+			const combinedSymbol =
+				assetType === "CRYPTOCURRENCY"
+					? `${assetSymbol}-USD`
+					: assetCountryId === 223
+						? `${assetSymbol}.L`
+						: assetSymbol;
 
-            if (assetType === "STOCK" && !acc.stocks.has(combinedSymbol)) {
-                acc.stocks.add(combinedSymbol);
-            } else if (
-                assetType === "CRYPTOCURRENCY" &&
-                !acc.cryptos.has(combinedSymbol)
-            ) {
-                acc.cryptos.add(combinedSymbol);
-            } else if (assetType === "ETF" && !acc.funds.has(combinedSymbol)) {
-                acc.funds.add(combinedSymbol);
-            }
+			if (assetType === "STOCK" && !acc.stocks.has(combinedSymbol)) {
+				acc.stocks.add(combinedSymbol);
+			} else if (
+				assetType === "CRYPTOCURRENCY" &&
+				!acc.cryptos.has(combinedSymbol)
+			) {
+				acc.cryptos.add(combinedSymbol);
+			} else if (assetType === "ETF" && !acc.funds.has(combinedSymbol)) {
+				acc.funds.add(combinedSymbol);
+			}
 
-            return acc;
-        },
-        {
-            stocks: new Set(),
-            cryptos: new Set(),
-            funds: new Set(),
-        },
-    );
+			return acc;
+		},
+		{
+			stocks: new Set(),
+			cryptos: new Set(),
+			funds: new Set(),
+		},
+	);
 
-    const [stocksList, fundsList, cryptosList] = await Promise.all([
-        stocks.size > 0 ? fetchStocksList(Array.from(stocks).toString()) : [],
-        funds.size > 0 ? fetchFundsList(Array.from(funds).toString()) : [],
-        cryptos.size > 0
-            ? fetchCryptosList(Array.from(cryptos).toString())
-            : [],
-    ]);
+	const [stocksList, fundsList, cryptosList] = await Promise.all([
+		stocks.size > 0 ? fetchStocksList(Array.from(stocks).toString()) : [],
+		funds.size > 0 ? fetchFundsList(Array.from(funds).toString()) : [],
+		cryptos.size > 0
+			? fetchCryptosList(Array.from(cryptos).toString())
+			: [],
+	]);
 
-    const currentAssetPricesMap = new Map<number, number>();
-    const historicAssetPricesMap = new Map<string, number>();
+	const currentAssetPricesMap = new Map<number, number>();
+	const historicAssetPricesMap = new Map<string, number>();
 
-    const historicAssetPrices = await bulkHistoricAssetPriceQuery(
-        Array.from(uniqueAssets.keys()),
-        adjustedOldestTradeDate,
-        today,
-    ).execute();
+	const historicAssetPrices = await bulkHistoricAssetPriceQuery(
+		Array.from(uniqueAssets.keys()),
+		adjustedOldestTradeDate,
+		today,
+	).execute();
 
-    historicAssetPrices.forEach(({ assetId, price, priceDate }) => {
-        const key = `${assetId}-${priceDate.toISOString().split("T")[0]}`;
-        historicAssetPricesMap.set(key, parseFloat(price));
-    });
+	historicAssetPrices.forEach(({ assetId, price, priceDate }) => {
+		const key = `${assetId}-${priceDate.toISOString().split("T")[0]}`;
+		historicAssetPricesMap.set(key, parseFloat(price));
+	});
 
-    const groupedInvestments = trades.reduce((acc, trade) => {
-        const {
-            assetId,
-            assetCurrency,
-            assetSymbol,
-            assetType,
-            assetName,
-            assetCountryId,
-            portfolioId,
-            portfolioName,
-        } = trade;
+	const groupedInvestments = trades.reduce((acc, trade) => {
+		const {
+			assetId,
+			assetCurrency,
+			assetSymbol,
+			assetType,
+			assetName,
+			assetCountryId,
+			portfolioId,
+			portfolioName,
+		} = trade;
 
-        const key = `${portfolioId}-${assetId}`;
+		const key = `${portfolioId}-${assetId}`;
 
-        if (acc.some((investment) => investment.key === key)) return acc;
+		if (acc.some((investment) => investment.key === key)) return acc;
 
-        const isCurrencyConversionRequired =
-            assetCurrency === userCurrency ? false : true;
+		const isCurrencyConversionRequired = assetCurrency !== userCurrency;
 
-        let conversionRate = 1;
+		let conversionRate = 1;
 
-        if (isCurrencyConversionRequired) {
-            if (assetCurrency === "GBX" && userCurrency === "GBP") {
-                conversionRate = 0.01;
-            } else {
-                const currencyPair = `${assetCurrency === "GBX" ? "GBP" : assetCurrency}${userCurrency}`;
-                const latestConversionRate = currencyRates
-                    .filter((rate) => rate[0].currencyPair === currencyPair)
-                    .sort(
-                        (a, b) =>
-                            new Date(b[0].priceDate).getTime() -
-                            new Date(a[0].priceDate).getTime(),
-                    )[0][1];
+		if (isCurrencyConversionRequired) {
+			if (assetCurrency === "GBX" && userCurrency === "GBP") {
+				conversionRate = 0.01;
+			} else {
+				const currencyPair = `${assetCurrency === "GBX" ? "GBP" : assetCurrency}${userCurrency}`;
+				const latestConversionRate = currencyRates
+					.filter((rate) => rate[0].currencyPair === currencyPair)
+					.sort(
+						(a, b) =>
+							new Date(b[0].priceDate).getTime() -
+							new Date(a[0].priceDate).getTime(),
+					)[0][1];
 
-                conversionRate =
-                    assetCurrency === "GBX"
-                        ? latestConversionRate / 100
-                        : latestConversionRate;
-            }
-        }
+				conversionRate =
+					assetCurrency === "GBX"
+						? latestConversionRate / 100
+						: latestConversionRate;
+			}
+		}
 
-        const tradesForAsset = trades.filter(
-            (t) => t.assetId === assetId && t.portfolioId === portfolioId,
-        );
+		const tradesForAsset = trades.filter(
+			(t) => t.assetId === assetId && t.portfolioId === portfolioId,
+		);
 
-        const {
-            currentHoldingQuantity,
-            totalBuyQuantity,
-            totalBuyAmount,
-            totalSellQuantity,
-            totalSellAmount,
-        } = tradesForAsset.reduce(
-            (sum, t) => {
-                const quantity = parseFloat(t.quantity);
-                const totalAmount = parseFloat(t.totalAmount);
+		const {
+			currentHoldingQuantity,
+			totalBuyQuantity,
+			totalBuyAmount,
+			totalSellQuantity,
+			totalSellAmount,
+		} = tradesForAsset.reduce(
+			(sum, t) => {
+				const quantity = parseFloat(t.quantity);
+				const totalAmount = parseFloat(t.totalAmount);
 
-                return {
-                    currentHoldingQuantity:
-                        sum.currentHoldingQuantity +
-                        (t.tradeAction === "BUY" ? quantity : -quantity),
-                    totalBuyQuantity:
-                        sum.totalBuyQuantity +
-                        (t.tradeAction === "BUY" ? quantity : 0),
-                    totalBuyAmount:
-                        sum.totalBuyAmount +
-                        (t.tradeAction === "BUY" ? totalAmount : 0),
-                    totalSellQuantity:
-                        sum.totalSellQuantity +
-                        (t.tradeAction === "SELL" ? quantity : 0),
-                    totalSellAmount:
-                        sum.totalSellAmount +
-                        (t.tradeAction === "SELL" ? totalAmount : 0),
-                };
-            },
-            {
-                currentHoldingQuantity: 0,
-                totalBuyQuantity: 0,
-                totalBuyAmount: 0,
-                totalSellQuantity: 0,
-                totalSellAmount: 0,
-            },
-        );
+				return {
+					currentHoldingQuantity:
+						sum.currentHoldingQuantity +
+						(t.tradeAction === "BUY" ? quantity : -quantity),
+					totalBuyQuantity:
+						sum.totalBuyQuantity +
+						(t.tradeAction === "BUY" ? quantity : 0),
+					totalBuyAmount:
+						sum.totalBuyAmount +
+						(t.tradeAction === "BUY" ? totalAmount : 0),
+					totalSellQuantity:
+						sum.totalSellQuantity +
+						(t.tradeAction === "SELL" ? quantity : 0),
+					totalSellAmount:
+						sum.totalSellAmount +
+						(t.tradeAction === "SELL" ? totalAmount : 0),
+				};
+			},
+			{
+				currentHoldingQuantity: 0,
+				totalBuyQuantity: 0,
+				totalBuyAmount: 0,
+				totalSellQuantity: 0,
+				totalSellAmount: 0,
+			},
+		);
 
-        const averageCost =
-            totalBuyQuantity > 0 ? totalBuyAmount / totalBuyQuantity : 0;
+		const averageCost =
+			totalBuyQuantity > 0 ? totalBuyAmount / totalBuyQuantity : 0;
 
-        const currentAverageCost = averageCost * currentHoldingQuantity;
+		const currentAverageCost = averageCost * currentHoldingQuantity;
 
-        const realisedReturn =
-            totalSellAmount - averageCost * totalSellQuantity;
+		const realisedReturn =
+			totalSellAmount - averageCost * totalSellQuantity;
 
-        const combinedSymbol =
-            assetType === "CRYPTOCURRENCY"
-                ? `${assetSymbol}-USD`
-                : assetCountryId === 223
-                  ? `${assetSymbol}.L`
-                  : assetSymbol;
+		const combinedSymbol =
+			assetType === "CRYPTOCURRENCY"
+				? `${assetSymbol}-USD`
+				: assetCountryId === 223
+					? `${assetSymbol}.L`
+					: assetSymbol;
 
-        const assetDetails =
-            trade.assetType === "STOCK"
-                ? stocksList?.find((stock) => stock.symbol === combinedSymbol)
-                : trade.assetType === "ETF"
-                  ? fundsList?.find((fund) => fund.symbol === combinedSymbol)
-                  : cryptosList?.find(
-                        (crypto) => crypto.symbol === combinedSymbol,
-                    );
+		const assetDetails =
+			trade.assetType === "STOCK"
+				? stocksList?.find((stock) => stock.symbol === combinedSymbol)
+				: trade.assetType === "ETF"
+					? fundsList?.find((fund) => fund.symbol === combinedSymbol)
+					: cryptosList?.find(
+							(crypto) => crypto.symbol === combinedSymbol,
+						);
 
-        const currentPrice = assetDetails?.priceDetails.currentPrice ?? 0;
+		const currentPrice = assetDetails?.priceDetails.currentPrice ?? 0;
 
-        currentAssetPricesMap.set(assetId, currentPrice);
+		currentAssetPricesMap.set(assetId, currentPrice);
 
-        const currentValue =
-            currentPrice * currentHoldingQuantity * conversionRate;
+		const currentValue =
+			currentPrice * currentHoldingQuantity * conversionRate;
 
-        const currentAssetCurrencyValue = isCurrencyConversionRequired
-            ? (assetDetails?.priceDetails.currentPrice ?? 0) *
-              currentHoldingQuantity
-            : null;
+		const currentAssetCurrencyValue = isCurrencyConversionRequired
+			? (assetDetails?.priceDetails.currentPrice ?? 0) *
+				currentHoldingQuantity
+			: null;
 
-        const currentReturn =
-            currentValue - currentAverageCost + realisedReturn;
+		const currentReturn =
+			currentValue - currentAverageCost + realisedReturn;
 
-        const currentReturnPercentage =
-            totalBuyAmount > 0
-                ? toTwoDecimalPoints((currentReturn / totalBuyAmount) * 100)
-                : 0;
+		const currentReturnPercentage =
+			totalBuyAmount > 0
+				? toTwoDecimalPoints((currentReturn / totalBuyAmount) * 100)
+				: 0;
 
-        let sectorDetails = [{ sector: "", weight: 1 }];
+		let sectorDetails = [{ sector: "", weight: 1 }];
 
-        if (assetType === "STOCK") {
-            const stockDetails = stocksList?.find(
-                (stock) => stock.symbol === combinedSymbol,
-            );
+		if (assetType === "STOCK") {
+			const stockDetails = stocksList?.find(
+				(stock) => stock.symbol === combinedSymbol,
+			);
 
-            if (stockDetails?.industryDetails?.sector) {
-                sectorDetails = [
-                    {
-                        sector: stockDetails.industryDetails.sector,
-                        weight: 1,
-                    },
-                ];
-            }
-        }
+			if (stockDetails?.industryDetails?.sector) {
+				sectorDetails = [
+					{
+						sector: stockDetails.industryDetails.sector,
+						weight: 1,
+					},
+				];
+			}
+		}
 
-        if (assetType === "ETF") {
-            const fundDetails = fundsList?.find(
-                (fund) => fund.symbol === combinedSymbol,
-            );
+		if (assetType === "ETF") {
+			const fundDetails = fundsList?.find(
+				(fund) => fund.symbol === combinedSymbol,
+			);
 
-            if (fundDetails?.sectorWeights) {
-                sectorDetails = fundDetails.sectorWeights;
-            }
-        }
+			if (fundDetails?.sectorWeights) {
+				sectorDetails = fundDetails.sectorWeights;
+			}
+		}
 
-        if (assetType === "CRYPTOCURRENCY") {
-            sectorDetails = [
-                {
-                    sector: "cryptocurrency",
-                    weight: 1,
-                },
-            ];
-        }
+		if (assetType === "CRYPTOCURRENCY") {
+			sectorDetails = [
+				{
+					sector: "cryptocurrency",
+					weight: 1,
+				},
+			];
+		}
 
-        acc.push({
-            key,
-            assetId,
-            symbol: assetSymbol,
-            name: assetName,
-            assetCurrency,
-            assetCountryId,
-            type: assetType as AssetType,
-            shares: currentHoldingQuantity,
-            currentAverageCost,
-            totalBuyAmount,
-            realisedReturn,
-            currentValue,
-            currentAssetCurrencyValue,
-            currentReturn,
-            currentReturnPercentage,
-            sectorDetails,
-            portfolioName,
-            portfolioId,
-        } satisfies GroupedInvestment);
+		acc.push({
+			key,
+			assetId,
+			symbol: assetSymbol,
+			name: assetName,
+			assetCurrency,
+			assetCountryId,
+			type: assetType as AssetType,
+			shares: currentHoldingQuantity,
+			currentAverageCost,
+			totalBuyAmount,
+			realisedReturn,
+			currentValue,
+			currentAssetCurrencyValue,
+			currentReturn,
+			currentReturnPercentage,
+			sectorDetails,
+			portfolioName,
+			portfolioId,
+		} satisfies GroupedInvestment);
 
-        return acc;
-    }, [] as GroupedInvestment[]);
+		return acc;
+	}, [] as GroupedInvestment[]);
 
-    const { totalValue, overallReturn, totalBuyAmount } =
-        groupedInvestments.reduce(
-            (acc, { currentValue, currentReturn, totalBuyAmount }) => {
-                return {
-                    totalValue: (acc.totalValue += currentValue),
-                    overallReturn: (acc.overallReturn += currentReturn),
-                    totalBuyAmount: (acc.totalBuyAmount += totalBuyAmount),
-                };
-            },
-            {
-                totalValue: 0,
-                overallReturn: 0,
-                totalBuyAmount: 0,
-            },
-        );
+	const { totalValue, overallReturn, totalBuyAmount } =
+		groupedInvestments.reduce(
+			(acc, { currentValue, currentReturn, totalBuyAmount }) => {
+				return {
+					totalValue: acc.totalValue + currentValue,
+					overallReturn: acc.overallReturn + currentReturn,
+					totalBuyAmount: acc.totalBuyAmount + totalBuyAmount,
+				};
+			},
+			{
+				totalValue: 0,
+				overallReturn: 0,
+				totalBuyAmount: 0,
+			},
+		);
 
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+	const thirtyDaysAgo = new Date();
+	thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-    const sixMonthsAgo = new Date();
-    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+	const sixMonthsAgo = new Date();
+	sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
 
-    const portfolioValueThirtyDaysAgo = portfolioValueOnDate(
-        thirtyDaysAgo,
-        trades,
-        historicAssetPricesMap,
-        currentAssetPricesMap,
-        currencyRates,
-        uniqueAssets,
-    );
+	const portfolioValueThirtyDaysAgo = portfolioValueOnDate(
+		thirtyDaysAgo,
+		trades,
+		historicAssetPricesMap,
+		currentAssetPricesMap,
+		currencyRates,
+		uniqueAssets,
+	);
 
-    const portfolioValueSixMonthsAgo = portfolioValueOnDate(
-        sixMonthsAgo,
-        trades,
-        historicAssetPricesMap,
-        currentAssetPricesMap,
-        currencyRates,
-        uniqueAssets,
-    );
+	const portfolioValueSixMonthsAgo = portfolioValueOnDate(
+		sixMonthsAgo,
+		trades,
+		historicAssetPricesMap,
+		currentAssetPricesMap,
+		currencyRates,
+		uniqueAssets,
+	);
 
-    const changeInThirtyDays = calculateChangeSincePastValue(
-        totalValue,
-        portfolioValueThirtyDaysAgo,
-    );
+	const changeInThirtyDays = calculateChangeSincePastValue(
+		totalValue,
+		portfolioValueThirtyDaysAgo,
+	);
 
-    const changeInSixMonths = calculateChangeSincePastValue(
-        totalValue,
-        portfolioValueSixMonthsAgo,
-    );
+	const changeInSixMonths = calculateChangeSincePastValue(
+		totalValue,
+		portfolioValueSixMonthsAgo,
+	);
 
-    const allTimeReturn = {
-        absolute: overallReturn,
-        percentage:
-            totalBuyAmount > 0
-                ? toTwoDecimalPoints((overallReturn / totalBuyAmount) * 100)
-                : null,
-    } satisfies Return;
+	const allTimeReturn = {
+		absolute: overallReturn,
+		percentage:
+			totalBuyAmount > 0
+				? toTwoDecimalPoints((overallReturn / totalBuyAmount) * 100)
+				: null,
+	} satisfies Return;
 
-    return {
-        totalValue,
-        overallChange: {
-            lastThirtyDays: changeInThirtyDays,
-            lastSixMonths: changeInSixMonths,
-            allTime: allTimeReturn,
-        },
-        investments: groupedInvestments
-            .filter(({ currentValue }) => currentValue > 0)
-            .sort(
-                (a, b) => b.currentReturnPercentage - a.currentReturnPercentage,
-            ),
-    } satisfies Overview;
+	return {
+		totalValue,
+		overallChange: {
+			lastThirtyDays: changeInThirtyDays,
+			lastSixMonths: changeInSixMonths,
+			allTime: allTimeReturn,
+		},
+		investments: groupedInvestments
+			.filter(({ currentValue }) => currentValue > 0)
+			.sort(
+				(a, b) => b.currentReturnPercentage - a.currentReturnPercentage,
+			),
+	} satisfies Overview;
 };
 
 export default async function overviewGet(fastify: FastifyInstance) {
-    fastify.route<{
-        Reply: SuccessResponse | NotFoundResponse | NoInvestmentsFound;
-    }>({
-        method: "GET",
-        url: "/portfolios/overview",
-        schema: {
-            response: {
-                200: successResponseSchema,
-                404: Type.Union([notFoundSchema, noInvestmentsFoundSchema]),
-            },
-        },
-        handler: async (_request, reply) => {
-            try {
-                const { userId } = getFromStore("user") as UserDetails;
+	fastify.route<{
+		Reply: SuccessResponse | NotFoundResponse | NoInvestmentsFound;
+	}>({
+		method: "GET",
+		url: "/portfolios/overview",
+		schema: {
+			response: {
+				200: successResponseSchema,
+				404: Type.Union([notFoundSchema, noInvestmentsFoundSchema]),
+			},
+		},
+		handler: async (_request, reply) => {
+			try {
+				const { userId } = getFromStore("user") as UserDetails;
 
-                const portfolios = await portfolioListQuery(userId).execute();
+				const portfolios = await portfolioListQuery(userId).execute();
 
-                if (portfolios.length === 0) {
-                    return reply
-                        .status(404)
-                        .send({ message: "noPortfoliosFound" });
-                }
+				if (portfolios.length === 0) {
+					return reply
+						.status(404)
+						.send({ message: "noPortfoliosFound" });
+				}
 
-                const portfolioIds = portfolios.map((p) => p.id);
+				const portfolioIds = portfolios.map((p) => p.id);
 
-                const hasInvestments = await hasInvestmentsQuery(
-                    portfolioIds,
-                    userId,
-                ).execute();
+				const hasInvestments = await hasInvestmentsQuery(
+					portfolioIds,
+					userId,
+				).execute();
 
-                if (hasInvestments.length === 0) {
-                    return reply
-                        .status(404)
-                        .send({ message: "noInvestmentsFound" });
-                }
+				if (hasInvestments.length === 0) {
+					return reply
+						.status(404)
+						.send({ message: "noInvestmentsFound" });
+				}
 
-                const overview = await overviewDetails(portfolioIds);
+				const overview = await overviewDetails(portfolioIds);
 
-                return reply.status(200).send({ data: overview });
-            } catch (error) {
-                logger.error({ error }, "Error fetching overview");
-                throw error;
-            }
-        },
-    });
+				return reply.status(200).send({ data: overview });
+			} catch (error) {
+				logger.error({ error }, "Error fetching overview");
+				throw error;
+			}
+		},
+	});
 }

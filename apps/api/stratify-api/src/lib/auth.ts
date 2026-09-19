@@ -1,73 +1,73 @@
 import { betterAuth } from "better-auth";
 import { bearer, jwt, openAPI, username } from "better-auth/plugins";
-import { createPool } from "../database/db.js";
 import config from "../config.js";
+import { createPool } from "../database/db.js";
 import logger from "../logger.js";
 
 export const auth = betterAuth({
-    appName: "Stratify",
-    baseURL: config.auth.baseUrl,
-    basePath: "/auth",
-    database: createPool("-c search_path=auth"),
-    secret: config.auth.secret,
-    user: {
-        additionalFields: {
-            currency: {
-                type: "string",
-                required: true,
-                input: true,
-            },
-        },
-    },
-    experimental: {
-        joins: true,
-    },
-    emailAndPassword: {
-        enabled: true,
-        requireEmailVerification: false,
-    },
-    plugins: [
-        jwt({
-            jwt: {
-                expirationTime: "1h",
-            },
-        }),
-        bearer(),
-        username(),
-        openAPI(),
-    ],
-    session: {
-        cookieCache: {
-            enabled: true,
-            maxAge: 60 * 5, // 5 minutes
-        },
-        expiresIn: 60 * 60 * 8, // 8 hours
-        updateAge: 60 * 30, // 30 minutes - extend on activity
-        freshAge: 60 * 5, // 5 minutes - time until session is considered stale
-    },
-    telemetry: {
-        enabled: false,
-    },
-    logger: {
-        level: "info",
-        log: (level, message, ...args) => {
-            switch (level) {
-                case "info":
-                    logger.info(message, ...args);
-                    break;
-                case "warn":
-                    logger.warn(message, ...args);
-                    break;
-                case "error":
-                    logger.error(message, ...args);
-                    break;
-            }
-        },
-    },
-    trustedOrigins: [
-        "http://localhost:3000",
-        "https://stratify-dev.kjet.dev",
-        "https://stratify-test.kjetcloud.com",
-        "https://stratify.kjetcloud.com",
-    ],
+	appName: "Stratify",
+	baseURL: config.auth.baseUrl,
+	basePath: "/auth",
+	database: createPool("-c search_path=auth"),
+	secret: config.auth.secret,
+	user: {
+		additionalFields: {
+			currency: {
+				type: "string",
+				required: true,
+				input: true,
+			},
+		},
+	},
+	experimental: {
+		joins: true,
+	},
+	emailAndPassword: {
+		enabled: true,
+		requireEmailVerification: false,
+	},
+	plugins: [
+		jwt({
+			jwt: {
+				expirationTime: "1h",
+			},
+		}),
+		bearer(),
+		username(),
+		openAPI(),
+	],
+	session: {
+		cookieCache: {
+			enabled: true,
+			maxAge: 60 * 5, // 5 minutes
+		},
+		expiresIn: 60 * 60 * 8, // 8 hours
+		updateAge: 60 * 30, // 30 minutes - extend on activity
+		freshAge: 60 * 5, // 5 minutes - time until session is considered stale
+	},
+	telemetry: {
+		enabled: false,
+	},
+	logger: {
+		level: "info",
+		log: (level, message, ...args) => {
+			switch (level) {
+				case "info":
+					logger.info(message, ...args);
+					break;
+				case "warn":
+					logger.warn(message, ...args);
+					break;
+				case "error":
+					logger.error(message, ...args);
+					break;
+			}
+		},
+	},
+	trustedOrigins: [
+		"http://localhost:3000",
+		"https://stratify-dev.kjet.dev",
+		"https://stratify-test.kjetcloud.com",
+		"https://stratify.kjetcloud.com",
+	],
 });

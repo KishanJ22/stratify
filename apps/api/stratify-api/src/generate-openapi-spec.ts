@@ -1,11 +1,11 @@
 import { mkdir, writeFile } from "node:fs/promises";
-import { dirname, join } from "path";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import autoload from "@fastify/autoload";
-import fastify from "fastify";
-import fastifySwagger from "@fastify/swagger";
-import { openapi } from "./config.js";
 import fastifyFormbody from "@fastify/formbody";
-import { fileURLToPath } from "url";
+import fastifySwagger from "@fastify/swagger";
+import fastify from "fastify";
+import { openapi } from "./config.js";
 import { auth } from "./lib/auth.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -19,11 +19,11 @@ app.register(fastifySwagger, { openapi });
 app.register(fastifyFormbody);
 
 await app.register(autoload, {
-    dir: join(__dirname, "routes"),
-    dirNameRoutePrefix: false,
-    routeParams: false,
-    matchFilter: /\.(?:get|post|put|delete|patch|options|head|)\..*$/,
-    ignoreFilter: /.*\.test\..*$/,
+	dir: join(__dirname, "routes"),
+	dirNameRoutePrefix: false,
+	routeParams: false,
+	matchFilter: /\.(?:get|post|put|delete|patch|options|head|)\..*$/,
+	ignoreFilter: /.*\.test\..*$/,
 });
 
 await app.ready();
@@ -35,11 +35,11 @@ const apiSpec = JSON.stringify(openapiSpec, undefined, 2);
 const betterAuthApiSpec = JSON.stringify(betterAuthSpec, undefined, 2);
 
 await writeFile(join(docsDir, "openapi.json"), apiSpec, {
-    flag: "w+",
+	flag: "w+",
 });
 
 await writeFile(join(docsDir, "better-auth-openapi.json"), betterAuthApiSpec, {
-    flag: "w+",
+	flag: "w+",
 });
 
 await app.close();

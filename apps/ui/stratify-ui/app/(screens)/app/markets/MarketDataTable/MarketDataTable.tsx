@@ -1,91 +1,91 @@
 "use client";
 
-import { paths } from "@/openapi/types/stratify-api";
-import { useTopGainers } from "../hooks/useTopGainers";
 import { DataTable } from "@/app/components/ui/data-table";
-import { columns } from "./marketDataTableColumns";
-import { MarketDataTab } from "../MarketDataTabs/MarketDataTabs";
-import { useTopLosers } from "../hooks/useTopLosers";
-import { useMostActiveAssets } from "../hooks/useMostActiveAssets";
 import { useAutoRefetch } from "@/app/utils/auto-refetch";
+import type { paths } from "@/openapi/types/stratify-api";
+import { useMostActiveAssets } from "../hooks/useMostActiveAssets";
+import { useTopGainers } from "../hooks/useTopGainers";
+import { useTopLosers } from "../hooks/useTopLosers";
+import type { MarketDataTab } from "../MarketDataTabs/MarketDataTabs";
+import { columns } from "./marketDataTableColumns";
 
 export type AssetType =
-    paths["/data/market/top-gainers"]["get"]["responses"]["200"]["content"]["application/json"]["data"][number]["assetType"];
+	paths["/data/market/top-gainers"]["get"]["responses"]["200"]["content"]["application/json"]["data"][number]["assetType"];
 export type MarketState =
-    paths["/data/market/top-gainers"]["get"]["responses"]["200"]["content"]["application/json"]["data"][number]["marketState"];
+	paths["/data/market/top-gainers"]["get"]["responses"]["200"]["content"]["application/json"]["data"][number]["marketState"];
 
 export type TopAsset =
-    paths["/data/market/top-gainers"]["get"]["responses"]["200"]["content"]["application/json"]["data"][number];
+	paths["/data/market/top-gainers"]["get"]["responses"]["200"]["content"]["application/json"]["data"][number];
 
 interface MarketDataTableProps {
-    selectedTab: MarketDataTab;
+	selectedTab: MarketDataTab;
 }
 
 const MarketDataTable = ({ selectedTab }: MarketDataTableProps) => {
-    const {
-        data: topGainersData,
-        isLoading: isTopGainersLoading,
-        fetchTopGainersList,
-    } = useTopGainers();
+	const {
+		data: topGainersData,
+		isLoading: isTopGainersLoading,
+		fetchTopGainersList,
+	} = useTopGainers();
 
-    const {
-        data: topLosersData,
-        isLoading: isTopLosersLoading,
-        fetchTopLosersList,
-    } = useTopLosers();
+	const {
+		data: topLosersData,
+		isLoading: isTopLosersLoading,
+		fetchTopLosersList,
+	} = useTopLosers();
 
-    const {
-        data: mostActiveAssetsData,
-        isLoading: isMostActiveAssetsLoading,
-        fetchMostActiveAssetsList,
-    } = useMostActiveAssets();
+	const {
+		data: mostActiveAssetsData,
+		isLoading: isMostActiveAssetsLoading,
+		fetchMostActiveAssetsList,
+	} = useMostActiveAssets();
 
-    const intervalMs = 60 * 1000; // 1 minute
+	const intervalMs = 60 * 1000; // 1 minute
 
-    //? Auto refetch the data for the selected tab every minute to keep data up-to-date
-    useAutoRefetch(() => {
-        if (selectedTab === "topGainers") {
-            fetchTopGainersList();
-        }
+	//? Auto refetch the data for the selected tab every minute to keep data up-to-date
+	useAutoRefetch(() => {
+		if (selectedTab === "topGainers") {
+			fetchTopGainersList();
+		}
 
-        if (selectedTab === "topLosers") {
-            fetchTopLosersList();
-        }
+		if (selectedTab === "topLosers") {
+			fetchTopLosersList();
+		}
 
-        if (selectedTab === "mostActive") {
-            fetchMostActiveAssetsList();
-        }
-    }, intervalMs);
+		if (selectedTab === "mostActive") {
+			fetchMostActiveAssetsList();
+		}
+	}, intervalMs);
 
-    const data =
-        selectedTab === "topGainers"
-            ? topGainersData
-            : selectedTab === "topLosers"
-              ? topLosersData
-              : mostActiveAssetsData;
+	const data =
+		selectedTab === "topGainers"
+			? topGainersData
+			: selectedTab === "topLosers"
+				? topLosersData
+				: mostActiveAssetsData;
 
-    const isLoading =
-        selectedTab === "topGainers"
-            ? isTopGainersLoading
-            : selectedTab === "topLosers"
-              ? isTopLosersLoading
-              : isMostActiveAssetsLoading;
+	const isLoading =
+		selectedTab === "topGainers"
+			? isTopGainersLoading
+			: selectedTab === "topLosers"
+				? isTopLosersLoading
+				: isMostActiveAssetsLoading;
 
-    return (
-        <div className="mt-7">
-            <DataTable
-                columns={columns}
-                data={data}
-                isLoading={isLoading}
-                key={selectedTab}
-                initialPaginationState={{
-                    pageIndex: 0,
-                    pageSize: 10,
-                }}
-                isLoadingRowCount={10}
-            />
-        </div>
-    );
+	return (
+		<div className="mt-7">
+			<DataTable
+				columns={columns}
+				data={data}
+				isLoading={isLoading}
+				key={selectedTab}
+				initialPaginationState={{
+					pageIndex: 0,
+					pageSize: 10,
+				}}
+				isLoadingRowCount={10}
+			/>
+		</div>
+	);
 };
 
 export default MarketDataTable;

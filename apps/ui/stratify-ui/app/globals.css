@@ -1,115 +1,118 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 
 @plugin "tailwindcss-animate";
-@import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
 
 @config "../tailwind.config.mts";
 
 :root {
-  /* Light Mode Colors */
-  --background-light: #FAFDFC;
-  --foreground-light: #222F2C;
-  --card-light: #FFFFFF;
-  --card-foreground-light: #323D3A;
-  --border-light: #D1E8E7;
-  --input-light: #D1E8E7;
-  --sidebar-light: #F5FBFA;
-  --sidebar-foreground-light: #323D3A;
-  --sidebar-border-light: #D1E8E7;
+	/* Light Mode Colors */
+	--background-light: #fafdfc;
+	--foreground-light: #222f2c;
+	--card-light: #ffffff;
+	--card-foreground-light: #323d3a;
+	--border-light: #d1e8e7;
+	--input-light: #d1e8e7;
+	--sidebar-light: #f5fbfa;
+	--sidebar-foreground-light: #323d3a;
+	--sidebar-border-light: #d1e8e7;
 
-  /* Dark Mode Colors */
-  --background-dark: #343434;
-  --foreground-dark: #E2E2E2;
-  --card-dark: #202328;
-  --card-foreground-dark: #EBEBEB;
-  --border-dark: #5E5E5E;
-  --input-dark: #5E5E5E;
-  --sidebar-dark: #202328;
-  --sidebar-foreground-dark: #FFFFFF;
-  --sidebar-border-dark: #C4E8E8;
+	/* Dark Mode Colors */
+	--background-dark: #343434;
+	--foreground-dark: #e2e2e2;
+	--card-dark: #202328;
+	--card-foreground-dark: #ebebeb;
+	--border-dark: #5e5e5e;
+	--input-dark: #5e5e5e;
+	--sidebar-dark: #202328;
+	--sidebar-foreground-dark: #ffffff;
+	--sidebar-border-dark: #c4e8e8;
 
-  /* Color Scales (same for both modes) */
-  --primary-lightest: #E0F5F4;
-  --primary-lighter: #B3E8E6;
-  --primary-light: #80D8D6;
-  --primary-base: #2BB4B4;
-  --primary-dark: #1F8F8F;
-  --primary-darker: #156A6A;
-  --primary-darkest: #0D4545;
+	/* Color Scales (same for both modes) */
+	--primary-lightest: #e0f5f4;
+	--primary-lighter: #b3e8e6;
+	--primary-light: #80d8d6;
+	--primary-base: #2bb4b4;
+	--primary-dark: #1f8f8f;
+	--primary-darker: #156a6a;
+	--primary-darkest: #0d4545;
 
-  --secondary-lightest:#E8ECF5;
-  --secondary-lighter: #C4CDE6;
-  --secondary-light: #7A8FCC;
-  --secondary-base: #1A3690;
-  --secondary-dark: #152B73;
-  --secondary-darker: #102057;
-  --secondary-darkest: #0A163A;
+	--secondary-lightest: #e8ecf5;
+	--secondary-lighter: #c4cde6;
+	--secondary-light: #7a8fcc;
+	--secondary-base: #1a3690;
+	--secondary-dark: #152b73;
+	--secondary-darker: #102057;
+	--secondary-darkest: #0a163a;
 
-  --accent-lightest: #FEF7E0;
-  --accent-lighter: #FDEAB3;
-  --accent-light: #FBD968;
-  --accent-base: #F5A623;
-  --accent-dark: #C4851C;
-  --accent-darker: #936415;
-  --accent-darkest: #62430E;
+	--accent-lightest: #fef7e0;
+	--accent-lighter: #fdeab3;
+	--accent-light: #fbd968;
+	--accent-base: #f5a623;
+	--accent-dark: #c4851c;
+	--accent-darker: #936415;
+	--accent-darkest: #62430e;
 
-  --negative-lightest: #FDE8E8;
-  --negative-lighter: #F9C9C9;
-  --negative-light: #F4A5A5;
-  --negative-base: #D13C3C;
-  --negative-dark: #A72F2F;
-  --negative-darker: #7D2323;
-  --negative-darkest: #531717;
+	--negative-lightest: #fde8e8;
+	--negative-lighter: #f9c9c9;
+	--negative-light: #f4a5a5;
+	--negative-base: #d13c3c;
+	--negative-dark: #a72f2f;
+	--negative-darker: #7d2323;
+	--negative-darkest: #531717;
 
-  --positive-lightest: #E8F7ED;
-  --positive-lighter: #CAEED6;
-  --positive-light: #A7E3BB;
-  --positive-base: #38A16A;
-  --positive-dark: #2C8155;
-  --positive-darker: #216140;
-  --positive-darkest: #16412B;
+	--positive-lightest: #e8f7ed;
+	--positive-lighter: #caeed6;
+	--positive-light: #a7e3bb;
+	--positive-base: #38a16a;
+	--positive-dark: #2c8155;
+	--positive-darker: #216140;
+	--positive-darkest: #16412b;
 
-  --muted-lightest: #F0F9F8;
-  --muted-lighter: #D8EFED;
-  --muted-light: #BFE4E2;
-  --muted-base: #9DCFCD;
-  --muted-dark: #7AA6A4;
-  --muted-darker: #587D7C;
-  --muted-darkest: #365454;
+	--muted-lightest: #f0f9f8;
+	--muted-lighter: #d8efed;
+	--muted-light: #bfe4e2;
+	--muted-base: #9dcfcd;
+	--muted-dark: #7aa6a4;
+	--muted-darker: #587d7c;
+	--muted-darkest: #365454;
 
-  /* Default light mode values */
-  --background: var(--background-light);
-  --foreground: var(--foreground-light);
-  --card: var(--card-light);
-  --card-foreground: var(--card-foreground-light);
-  --border: var(--border-light);
-  --input: var(--input-light);
-  --sidebar: var(--sidebar-light);
-  --sidebar-foreground: var(--sidebar-foreground-light);
-  --sidebar-border: var(--sidebar-border-light);
+	/* Default light mode values */
+	--background: var(--background-light);
+	--foreground: var(--foreground-light);
+	--card: var(--card-light);
+	--card-foreground: var(--card-foreground-light);
+	--border: var(--border-light);
+	--input: var(--input-light);
+	--sidebar: var(--sidebar-light);
+	--sidebar-foreground: var(--sidebar-foreground-light);
+	--sidebar-border: var(--sidebar-border-light);
 }
 
 .dark {
-  /* Dark mode overrides */
-  --background: var(--background-dark);
-  --foreground: var(--foreground-dark);
-  --card: var(--card-dark);
-  --card-foreground: var(--card-foreground-dark);
-  --border: var(--border-dark);
-  --input: var(--input-dark);
-  --sidebar: var(--sidebar-dark);
-  --sidebar-foreground: var(--sidebar-foreground-dark);
-  --sidebar-border: var(--sidebar-border-dark);
+	/* Dark mode overrides */
+	--background: var(--background-dark);
+	--foreground: var(--foreground-dark);
+	--card: var(--card-dark);
+	--card-foreground: var(--card-foreground-dark);
+	--border: var(--border-dark);
+	--input: var(--input-dark);
+	--sidebar: var(--sidebar-dark);
+	--sidebar-foreground: var(--sidebar-foreground-dark);
+	--sidebar-border: var(--sidebar-border-dark);
 }
 
 /* Smooth transitions */
 * {
-  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+	transition:
+		background-color 0.2s ease,
+		color 0.2s ease,
+		border-color 0.2s ease;
 }
 
 body {
-  background-color: var(--background);
-  color: var(--foreground);
+	background-color: var(--background);
+	color: var(--foreground);
 }

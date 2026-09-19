@@ -1,69 +1,69 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
 import { renderHook, waitFor } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import MockEnvironmentProvider from "@/app/tests/_mocks/MockEnvironmentProvider";
 import {
-    AssetPriceHistory,
-    useAssetPriceHistory,
+	type AssetPriceHistory,
+	useAssetPriceHistory,
 } from "./useAssetPriceHistory";
 
 const mockGetAssetPriceHistory = vi.fn();
 
 const mockKyClient = {
-    GET: mockGetAssetPriceHistory,
+	GET: mockGetAssetPriceHistory,
 };
 
 vi.mock("@/lib/api/ky-client", () => ({
-    useKyClient: () => mockKyClient,
+	useKyClient: () => mockKyClient,
 }));
 
 describe("useAssetPriceHistory", () => {
-    beforeEach(() => {
-        vi.clearAllMocks();
-    });
+	beforeEach(() => {
+		vi.clearAllMocks();
+	});
 
-    const renderAssetPriceHistoryHook = (assetId = 1) => {
-        return renderHook(() => useAssetPriceHistory(assetId), {
-            wrapper: ({ children }) => (
-                <MockEnvironmentProvider>{children}</MockEnvironmentProvider>
-            ),
-        });
-    };
+	const renderAssetPriceHistoryHook = (assetId = 1) => {
+		return renderHook(() => useAssetPriceHistory(assetId), {
+			wrapper: ({ children }) => (
+				<MockEnvironmentProvider>{children}</MockEnvironmentProvider>
+			),
+		});
+	};
 
-    it("should call GET /assets/{assetId}/price-history successfully", async () => {
-        const mockPriceHistoryData = [
-            {
-                date: "2026-01-01",
-                priceDetails: {
-                    open: 100,
-                    close: 110,
-                    high: 115,
-                    low: 95,
-                },
-            },
-        ] satisfies AssetPriceHistory[];
+	it("should call GET /assets/{assetId}/price-history successfully", async () => {
+		const mockPriceHistoryData = [
+			{
+				date: "2026-01-01",
+				priceDetails: {
+					open: 100,
+					close: 110,
+					high: 115,
+					low: 95,
+				},
+			},
+		] satisfies AssetPriceHistory[];
 
-        mockGetAssetPriceHistory.mockResolvedValue({
-            data: {
-                data: mockPriceHistoryData,
-            },
-        });
+		mockGetAssetPriceHistory.mockResolvedValue({
+			data: {
+				data: mockPriceHistoryData,
+			},
+		});
 
-        const { result } = renderAssetPriceHistoryHook();
+		const { result } = renderAssetPriceHistoryHook();
 
-        await waitFor(() => {
-            expect(mockKyClient.GET).toHaveBeenCalledWith(
-                "/assets/{assetId}/price-history",
-                {
-                    params: {
-                        path: {
-                            assetId: 1,
-                        },
-                    },
-                },
-            );
+		await waitFor(() => {
+			expect(mockKyClient.GET).toHaveBeenCalledWith(
+				"/assets/{assetId}/price-history",
+				{
+					params: {
+						path: {
+							assetId: 1,
+						},
+					},
+				},
+			);
 
-            expect(result.current.data).toEqual(mockPriceHistoryData);
-            expect(result.current.isLoading).toBe(false);
-        });
-    });
+			expect(result.current.data).toEqual(mockPriceHistoryData);
+			expect(result.current.isLoading).toBe(false);
+		});
+	});
 });

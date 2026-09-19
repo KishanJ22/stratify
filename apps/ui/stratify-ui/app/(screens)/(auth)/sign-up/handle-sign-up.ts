@@ -1,89 +1,89 @@
+import type { useRouter } from "next/navigation";
+import type { Dispatch, SetStateAction } from "react";
 import { toast } from "sonner";
 import type { AuthClient } from "@/lib/auth/auth";
-import { SignUpSchema } from "./sign-up-schema";
-import { useRouter } from "next/navigation";
-import { storeAuthToken } from "@/lib/auth/store-auth-token";
 import { getAuthErrorMessage } from "@/lib/auth/authErrorCodes";
-import { Dispatch, SetStateAction } from "react";
+import { storeAuthToken } from "@/lib/auth/store-auth-token";
+import type { SignUpSchema } from "./sign-up-schema";
 
 export const handleSignUp = async (
-    value: SignUpSchema,
-    authClient: AuthClient,
-    push: ReturnType<typeof useRouter>["push"],
-    setIsUsernameAlreadyTaken: Dispatch<SetStateAction<boolean>>,
-    setIsEmailAlreadyTaken: Dispatch<SetStateAction<boolean>>,
-    setIsSubmitDisabled: Dispatch<SetStateAction<boolean>>,
-    resetForm: () => void,
+	value: SignUpSchema,
+	authClient: AuthClient,
+	push: ReturnType<typeof useRouter>["push"],
+	setIsUsernameAlreadyTaken: Dispatch<SetStateAction<boolean>>,
+	setIsEmailAlreadyTaken: Dispatch<SetStateAction<boolean>>,
+	setIsSubmitDisabled: Dispatch<SetStateAction<boolean>>,
+	resetForm: () => void,
 ) => {
-    setIsUsernameAlreadyTaken(false);
-    setIsEmailAlreadyTaken(false);
-    setIsSubmitDisabled(true);
+	setIsUsernameAlreadyTaken(false);
+	setIsEmailAlreadyTaken(false);
+	setIsSubmitDisabled(true);
 
-    try {
-        const {
-            data: isUsernameAvailableRes,
-            error: isUsernameAvailableError,
-        } = await authClient.isUsernameAvailable({
-            username: value.username,
-        });
+	try {
+		const {
+			data: isUsernameAvailableRes,
+			error: isUsernameAvailableError,
+		} = await authClient.isUsernameAvailable({
+			username: value.username,
+		});
 
-        if (isUsernameAvailableError) {
-            const errorMessage = getAuthErrorMessage(
-                isUsernameAvailableError.code as string,
-            );
+		if (isUsernameAvailableError) {
+			const errorMessage = getAuthErrorMessage(
+				isUsernameAvailableError.code as string,
+			);
 
-            setIsSubmitDisabled(true);
+			setIsSubmitDisabled(true);
 
-            return errorMessage
-                ? toast.error(errorMessage)
-                : toast.error("Sign up failed. Please try again.");
-        }
+			return errorMessage
+				? toast.error(errorMessage)
+				: toast.error("Sign up failed. Please try again.");
+		}
 
-        if (!isUsernameAvailableRes?.available) {
-            return setIsUsernameAlreadyTaken(true);
-        }
+		if (!isUsernameAvailableRes?.available) {
+			return setIsUsernameAlreadyTaken(true);
+		}
 
-        const { data: signUpData, error: signUpError } =
-            await authClient.signUp.email({
-                email: value.email,
-                name: `${value.firstName} ${value.lastName}`,
-                password: value.password,
-                username: value.username,
-                currency: value.currency,
-            });
+		const { data: signUpData, error: signUpError } =
+			await authClient.signUp.email({
+				email: value.email,
+				name: `${value.firstName} ${value.lastName}`,
+				password: value.password,
+				username: value.username,
+				currency: value.currency,
+			});
 
-        if (signUpData?.token) {
-            const authToken = signUpData.token;
+		if (signUpData?.token) {
+			const authToken = signUpData.token;
 
-            if (authToken) {
-                await storeAuthToken(authToken);
-            }
+			if (authToken) {
+				await storeAuthToken(authToken);
+			}
 
-            return push("/app/dashboard");
-        }
+			return push("/app/dashboard");
+		}
 
-        //! Handle error here instead of in an onError callback to access the error code properly
-        if (signUpError) {
-            // TODO: use ErrorCode type once all error codes are mapped
-            const errorCode = signUpError?.code as string;
-            const errorMessage = getAuthErrorMessage(errorCode);
+		//! Handle error here instead of in an onError callback to access the error code properly
+		if (signUpError) {
+			// TODO: use ErrorCode type once all error codes are mapped
+			const errorCode = signUpError?.code as string;
+			const errorMessage = getAuthErrorMessage(errorCode);
 
-            // Show specific error message in toast if available
-            if (errorMessage) {
-                return toast.error(errorMessage);
-            }
+			// Show specific error message in toast if available
+			if (errorMessage) {
+				return toast.error(errorMessage);
+			}
 
-            //? Workaround as error code is not in the error types returned by the auth client
-            if (errorCode == "USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL") {
-                return setIsEmailAlreadyTaken(true);
-            } else {
-                resetForm(); // Reset the form on unexpected error
-                return toast.error("Sign up failed. Please try again.");
-            }
-        }
-    } catch (error) {
-        console.error("Sign up error:", error);
-        toast.error("Sign up failed. Please try again.");
-        return setIsSubmitDisabled(false);
-    }
+			//? Workaround as error code is not in the error types returned by the auth client
+			if (errorCode === "USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL") {
+				return setIsEmailAlreadyTaken(true);
+			} else {
+				resetForm(); // Reset the form on unexpected error
+				return toast.error("Sign up failed. Please try again.");
+			}
+		}
+	} catch (error) {
+		console.error("Sign up error:", error);
+		toast.error("Sign up failed. Please try again.");
+		return setIsSubmitDisabled(false);
+	}
 };

@@ -1,98 +1,98 @@
-import { Static, Type } from "@sinclair/typebox";
-import { FastifyInstance } from "fastify";
-import { getFromStore } from "../../plugins/localStorage.js";
-import { UserDetails } from "../../utils/decodeToken.js";
+import { type Static, Type } from "@sinclair/typebox";
+import type { FastifyInstance } from "fastify";
 import db from "../../database/db.js";
 import logger from "../../logger.js";
+import { getFromStore } from "../../plugins/localStorage.js";
+import type { UserDetails } from "../../utils/decodeToken.js";
 
 export const requestBodySchema = Type.Object({
-    name: Type.String({ description: "The portfolio name" }),
+	name: Type.String({ description: "The portfolio name" }),
 });
 
 export type RequestBody = Static<typeof requestBodySchema>;
 
 //? Error value is camelCase to allow for translations to be easily mapped
 export const portfolioNameAlreadyExistsResponseSchema = Type.Object({
-    message: Type.Literal("portfolioNameAlreadyExists"),
+	message: Type.Literal("portfolioNameAlreadyExists"),
 });
 
 export type PortfolioNameAlreadyExistsResponse = Static<
-    typeof portfolioNameAlreadyExistsResponseSchema
+	typeof portfolioNameAlreadyExistsResponseSchema
 >;
 
 const successResponseSchema = Type.Object({
-    data: Type.Object({
-        portfolioId: Type.Number(),
-    }),
+	data: Type.Object({
+		portfolioId: Type.Number(),
+	}),
 });
 
 type SuccessResponse = Static<typeof successResponseSchema>;
 
 // Create a new portfolio for the user
 const createPortfolio = (userId: string, name: string) => {
-    return db
-        .insertInto("stratify.portfolios")
-        .values({
-            name: name.toLowerCase(),
-            userId,
-        })
-        .returning("id as portfolioId");
+	return db
+		.insertInto("stratify.portfolios")
+		.values({
+			name: name.toLowerCase(),
+			userId,
+		})
+		.returning("id as portfolioId");
 };
 
 // Check if the user already has a portfolio with the same name
 export const checkPortfolioNameExists = (userId: string, name: string) =>
-    db
-        .selectFrom("stratify.portfolios")
-        .where("userId", "=", userId)
-        .where("name", "=", name.toLowerCase())
-        .selectAll();
+	db
+		.selectFrom("stratify.portfolios")
+		.where("userId", "=", userId)
+		.where("name", "=", name.toLowerCase())
+		.selectAll();
 
 export default async function portfolioCreatePost(fastify: FastifyInstance) {
-    fastify.route<{
-        Body: RequestBody;
-        Reply: SuccessResponse | PortfolioNameAlreadyExistsResponse;
-    }>({
-        method: "POST",
-        url: "/portfolios",
-        schema: {
-            body: requestBodySchema,
-            response: {
-                201: successResponseSchema,
-                400: portfolioNameAlreadyExistsResponseSchema,
-            },
-        },
-        handler: async (request, reply) => {
-            const { name } = request.body;
+	fastify.route<{
+		Body: RequestBody;
+		Reply: SuccessResponse | PortfolioNameAlreadyExistsResponse;
+	}>({
+		method: "POST",
+		url: "/portfolios",
+		schema: {
+			body: requestBodySchema,
+			response: {
+				201: successResponseSchema,
+				400: portfolioNameAlreadyExistsResponseSchema,
+			},
+		},
+		handler: async (request, reply) => {
+			const { name } = request.body;
 
-            try {
-                const { userId } = getFromStore("user") as UserDetails;
+			try {
+				const { userId } = getFromStore("user") as UserDetails;
 
-                const isPortfolioNameAlreadyExists =
-                    await checkPortfolioNameExists(
-                        userId,
-                        name,
-                    ).executeTakeFirst();
+				const isPortfolioNameAlreadyExists =
+					await checkPortfolioNameExists(
+						userId,
+						name,
+					).executeTakeFirst();
 
-                if (isPortfolioNameAlreadyExists) {
-                    return reply.status(400).send({
-                        message: "portfolioNameAlreadyExists",
-                    });
-                }
+				if (isPortfolioNameAlreadyExists) {
+					return reply.status(400).send({
+						message: "portfolioNameAlreadyExists",
+					});
+				}
 
-                const { portfolioId } = await createPortfolio(
-                    userId,
-                    name,
-                ).executeTakeFirstOrThrow();
+				const { portfolioId } = await createPortfolio(
+					userId,
+					name,
+				).executeTakeFirstOrThrow();
 
-                return reply.status(201).send({
-                    data: {
-                        portfolioId,
-                    },
-                });
-            } catch (error) {
-                logger.error({ error }, "Error creating portfolio");
-                throw error;
-            }
-        },
-    });
+				return reply.status(201).send({
+					data: {
+						portfolioId,
+					},
+				});
+			} catch (error) {
+				logger.error({ error }, "Error creating portfolio");
+				throw error;
+			}
+		},
+	});
 }

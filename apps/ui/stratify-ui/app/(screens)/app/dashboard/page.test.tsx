@@ -1,111 +1,111 @@
 import { screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { renderWithContext } from "@/app/tests/utils";
-import DashboardPage from "./page";
-import MockSessionProvider from "@/app/tests/_mocks/MockSessionProvider";
-import { mockPortfoliosOverviewData } from "./_mocks/mockPortfoliosOverviewData";
 import { TooltipProvider } from "@/app/components/ui/tooltip";
+import MockSessionProvider from "@/app/tests/_mocks/MockSessionProvider";
+import { renderWithContext } from "@/app/tests/utils";
+import { mockPortfoliosOverviewData } from "./_mocks/mockPortfoliosOverviewData";
+import DashboardPage from "./page";
 
 const defaultUseOverviewReturnValues = {
-    data: mockPortfoliosOverviewData,
-    isLoading: false,
-    isPortfoliosNotFoundError: false,
-    isInvestmentsNotFoundError: false,
+	data: mockPortfoliosOverviewData,
+	isLoading: false,
+	isPortfoliosNotFoundError: false,
+	isInvestmentsNotFoundError: false,
 };
 
 const mockUsePortfoliosOverview = vi.fn();
 
 vi.mock("./usePortfoliosOverview", () => ({
-    usePortfoliosOverview: () => mockUsePortfoliosOverview(),
+	usePortfoliosOverview: () => mockUsePortfoliosOverview(),
 }));
 
 const defaultUseGoalReturnValues = {
-    data: {
-        targetAmount: 10000,
-    },
-    isLoading: false,
-    isGoalNotFoundError: false,
+	data: {
+		targetAmount: 10000,
+	},
+	isLoading: false,
+	isGoalNotFoundError: false,
 };
 
 const mockUseGoal = vi.fn();
 
 vi.mock("./components/GoalProgressionCard/useGoal", () => ({
-    useGoal: () => mockUseGoal(),
+	useGoal: () => mockUseGoal(),
 }));
 
 describe("DashboardPage", () => {
-    beforeEach(() => {
-        vi.clearAllMocks();
-    });
+	beforeEach(() => {
+		vi.clearAllMocks();
+	});
 
-    const renderPage = () =>
-        renderWithContext({
-            children: (
-                <MockSessionProvider>
-                    <TooltipProvider>
-                        <DashboardPage />
-                    </TooltipProvider>
-                </MockSessionProvider>
-            ),
-        });
+	const renderPage = () =>
+		renderWithContext({
+			children: (
+				<MockSessionProvider>
+					<TooltipProvider>
+						<DashboardPage />
+					</TooltipProvider>
+				</MockSessionProvider>
+			),
+		});
 
-    it("should render the page correctly", () => {
-        mockUsePortfoliosOverview.mockReturnValue(
-            defaultUseOverviewReturnValues,
-        );
-        mockUseGoal.mockReturnValue(defaultUseGoalReturnValues);
+	it("should render the page correctly", () => {
+		mockUsePortfoliosOverview.mockReturnValue(
+			defaultUseOverviewReturnValues,
+		);
+		mockUseGoal.mockReturnValue(defaultUseGoalReturnValues);
 
-        renderPage();
+		renderPage();
 
-        expect(screen.getByText("Dashboard.title")).toBeInTheDocument();
+		expect(screen.getByText("Dashboard.title")).toBeInTheDocument();
 
-        const cardTitles = [
-            "Dashboard.totalValue",
-            "Dashboard.overallChange",
-            "Dashboard.goalProgression.title",
-            "Dashboard.topPerformers.title",
-            "Dashboard.assetDiversification",
-        ];
+		const cardTitles = [
+			"Dashboard.totalValue",
+			"Dashboard.overallChange",
+			"Dashboard.goalProgression.title",
+			"Dashboard.topPerformers.title",
+			"Dashboard.assetDiversification",
+		];
 
-        cardTitles.forEach((title) =>
-            expect(screen.getByText(title)).toBeInTheDocument(),
-        );
-    });
+		cardTitles.forEach((title) => {
+			expect(screen.getByText(title)).toBeInTheDocument();
+		});
+	});
 
-    it("should show loading states correctly", () => {
-        mockUsePortfoliosOverview.mockReturnValue({
-            ...defaultUseOverviewReturnValues,
-            isLoading: true,
-        });
-        mockUseGoal.mockReturnValue({
-            ...defaultUseGoalReturnValues,
-            isLoading: true,
-        });
+	it("should show loading states correctly", () => {
+		mockUsePortfoliosOverview.mockReturnValue({
+			...defaultUseOverviewReturnValues,
+			isLoading: true,
+		});
+		mockUseGoal.mockReturnValue({
+			...defaultUseGoalReturnValues,
+			isLoading: true,
+		});
 
-        renderPage();
+		renderPage();
 
-        const loadingSkeletons = [
-            "total-value-skeleton",
-            "overall-change-skeleton",
-            "goal-progression-skeleton",
-        ];
+		const loadingSkeletons = [
+			"total-value-skeleton",
+			"overall-change-skeleton",
+			"goal-progression-skeleton",
+		];
 
-        loadingSkeletons.forEach((testId) =>
-            expect(screen.getByTestId(testId)).toBeInTheDocument(),
-        );
-    });
+		loadingSkeletons.forEach((testId) => {
+			expect(screen.getByTestId(testId)).toBeInTheDocument();
+		});
+	});
 
-    it("should display create portfolio link if the user has no portfolios", () => {
-        mockUsePortfoliosOverview.mockReturnValue({
-            ...defaultUseOverviewReturnValues,
-            isPortfoliosNotFoundError: true,
-        });
-        mockUseGoal.mockReturnValue(defaultUseGoalReturnValues);
+	it("should display create portfolio link if the user has no portfolios", () => {
+		mockUsePortfoliosOverview.mockReturnValue({
+			...defaultUseOverviewReturnValues,
+			isPortfoliosNotFoundError: true,
+		});
+		mockUseGoal.mockReturnValue(defaultUseGoalReturnValues);
 
-        renderPage();
+		renderPage();
 
-        expect(
-            screen.getByText("Dashboard.createAPortfolio"),
-        ).toBeInTheDocument();
-    });
+		expect(
+			screen.getByText("Dashboard.createAPortfolio"),
+		).toBeInTheDocument();
+	});
 });

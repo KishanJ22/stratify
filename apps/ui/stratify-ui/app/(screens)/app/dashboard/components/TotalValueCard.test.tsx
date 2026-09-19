@@ -1,51 +1,51 @@
-import { describe, expect, it } from "vitest";
-import TotalValueCard, { TotalValueCardProps } from "./TotalValueCard";
-import { renderWithContext } from "@/app/tests/utils";
-import MockSessionProvider from "@/app/tests/_mocks/MockSessionProvider";
 import { screen } from "@testing-library/react";
+import { describe, expect, it } from "vitest";
+import MockSessionProvider from "@/app/tests/_mocks/MockSessionProvider";
+import { renderWithContext } from "@/app/tests/utils";
+import TotalValueCard, { type TotalValueCardProps } from "./TotalValueCard";
 
 const defaultProps = {
-    isLoading: false,
-    totalValue: 100000,
-    isPortfoliosNotFoundError: false,
-    isInvestmentsNotFoundError: false,
+	isLoading: false,
+	totalValue: 100000,
+	isPortfoliosNotFoundError: false,
+	isInvestmentsNotFoundError: false,
 } satisfies TotalValueCardProps;
 
 describe("TotalValueCard", () => {
-    const renderComponent = (props?: Partial<TotalValueCardProps>) =>
-        renderWithContext({
-            children: (
-                <MockSessionProvider>
-                    <TotalValueCard {...defaultProps} {...props} />
-                </MockSessionProvider>
-            ),
-        });
+	const renderComponent = (props?: Partial<TotalValueCardProps>) =>
+		renderWithContext({
+			children: (
+				<MockSessionProvider>
+					<TotalValueCard {...defaultProps} {...props} />
+				</MockSessionProvider>
+			),
+		});
 
-    it("should render the total value card successfully", () => {
-        renderComponent();
+	it("should render the total value card successfully", () => {
+		renderComponent();
 
-        expect(screen.getByText("Dashboard.totalValue")).toBeInTheDocument();
-    });
+		expect(screen.getByText("Dashboard.totalValue")).toBeInTheDocument();
+	});
 
-    it("should show the loading state when isLoading is true", () => {
-        renderComponent({ isLoading: true });
+	it("should show the loading state when isLoading is true", () => {
+		renderComponent({ isLoading: true });
 
-        expect(screen.getByTestId("total-value-skeleton")).toBeInTheDocument();
-    });
+		expect(screen.getByTestId("total-value-skeleton")).toBeInTheDocument();
+	});
 
-    it("should show the create portfolio link when the user has no portfolios", async () => {
-        renderComponent({ isPortfoliosNotFoundError: true });
+	it("should show the create portfolio link when the user has no portfolios", async () => {
+		renderComponent({ isPortfoliosNotFoundError: true });
 
-        expect(
-            screen.getByText("Dashboard.createAPortfolio"),
-        ).toBeInTheDocument();
-    });
+		expect(
+			screen.getByText("Dashboard.createAPortfolio"),
+		).toBeInTheDocument();
+	});
 
-    it("should show the add investment link when the user has portfolios but no investments", () => {
-        renderComponent({ isInvestmentsNotFoundError: true });
+	it("should show the add investment link when the user has portfolios but no investments", () => {
+		renderComponent({ isInvestmentsNotFoundError: true });
 
-        expect(
-            screen.getByText("Dashboard.addAnInvestment"),
-        ).toBeInTheDocument();
-    });
+		expect(
+			screen.getByText("Dashboard.addAnInvestment"),
+		).toBeInTheDocument();
+	});
 });

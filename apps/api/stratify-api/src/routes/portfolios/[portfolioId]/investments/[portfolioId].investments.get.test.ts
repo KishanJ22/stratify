@@ -1,627 +1,627 @@
-import { describe, it, expect, vi, beforeAll, beforeEach } from "vitest";
+import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import loadMockApp from "../../../../__mocks__/mockApp.js";
 import db from "../../../../database/db.js";
 import { createUser } from "../../../../tests/create-user.js";
 import { generateDevToken } from "../../../../utils/generateDevToken.js";
 
 const mockAssetPriceResponse = {
-    data: {
-        data: {
-            currentPrice: 152,
-        },
-    },
+	data: {
+		data: {
+			currentPrice: 152,
+		},
+	},
 };
 
 const mockGetCurrentPrice = vi.fn().mockResolvedValue(mockAssetPriceResponse);
 
 const mockStockSectorDetailsResponse = {
-    data: {
-        data: {
-            industryDetails: {
-                sector: "technology",
-            },
-        },
-    },
+	data: {
+		data: {
+			industryDetails: {
+				sector: "technology",
+			},
+		},
+	},
 };
 
 const mockFetchStockDetails = vi
-    .fn()
-    .mockResolvedValue(mockStockSectorDetailsResponse);
+	.fn()
+	.mockResolvedValue(mockStockSectorDetailsResponse);
 
 const mockFundSectorDetailsResponse = {
-    data: {
-        data: {
-            sectorWeights: [
-                {
-                    sector: "technology",
-                    weight: 0.6,
-                },
-                {
-                    sector: "financials",
-                    weight: 0.4,
-                },
-            ],
-        },
-    },
+	data: {
+		data: {
+			sectorWeights: [
+				{
+					sector: "technology",
+					weight: 0.6,
+				},
+				{
+					sector: "financials",
+					weight: 0.4,
+				},
+			],
+		},
+	},
 };
 
 const mockFetchFundDetails = vi
-    .fn()
-    .mockResolvedValue(mockFundSectorDetailsResponse);
+	.fn()
+	.mockResolvedValue(mockFundSectorDetailsResponse);
 
 const mockDataApiClient = {
-    GET: (url: string) => {
-        if (url.includes("/current-price")) {
-            return mockGetCurrentPrice();
-        }
+	GET: (url: string) => {
+		if (url.includes("/current-price")) {
+			return mockGetCurrentPrice();
+		}
 
-        if (url.includes("/stocks")) {
-            return mockFetchStockDetails();
-        }
+		if (url.includes("/stocks")) {
+			return mockFetchStockDetails();
+		}
 
-        if (url.includes("/funds")) {
-            return mockFetchFundDetails();
-        }
-    },
+		if (url.includes("/funds")) {
+			return mockFetchFundDetails();
+		}
+	},
 };
 
 vi.mock("../../../../lib/api/data-api-client", () => ({
-    dataApiClient: () => mockDataApiClient,
+	dataApiClient: () => mockDataApiClient,
 }));
 
 describe("GET /portfolios/:portfolioId/investments", () => {
-    let devToken = "";
+	let devToken = "";
 
-    let secondDevToken = "";
+	let secondDevToken = "";
 
-    let app: any;
+	let app: any;
 
-    beforeAll(async () => {
-        devToken = await generateDevToken({ userId: "test-user" });
-        secondDevToken = await generateDevToken({
-            userId: "another-test-user",
-        });
+	beforeAll(async () => {
+		devToken = await generateDevToken({ userId: "test-user" });
+		secondDevToken = await generateDevToken({
+			userId: "another-test-user",
+		});
 
-        app = await loadMockApp();
-    });
+		app = await loadMockApp();
+	});
 
-    beforeEach(() => {
-        vi.clearAllMocks();
-    });
+	beforeEach(() => {
+		vi.clearAllMocks();
+	});
 
-    it("should return a list of investments for a portfolio successfully", async () => {
-        await createUser("test-user").execute();
+	it("should return a list of investments for a portfolio successfully", async () => {
+		await createUser("test-user").execute();
 
-        await db
-            .insertInto("stratify.assets")
-            .values([
-                {
-                    id: 1,
-                    name: "Apple Inc.",
-                    symbol: "AAPL",
-                    currency: "USD",
-                    type: "STOCK",
-                    countryId: 224, // Country ID for united states
-                },
-                {
-                    id: 2,
-                    name: "Leonida Inc.",
-                    symbol: "LEON",
-                    currency: "USD",
-                    type: "STOCK",
-                    countryId: 224, // Country ID for united states
-                },
-                {
-                    id: 3,
-                    name: "USD/GBP",
-                    symbol: "USDGBP",
-                    currency: "USD",
-                    type: "CURRENCY",
-                    countryId: 224, // Country ID for united states
-                },
-                {
-                    id: 4,
-                    name: "A fund",
-                    symbol: "FUND",
-                    currency: "GBP",
-                    type: "ETF",
-                    countryId: 223, // Country ID for united kingdom
-                },
-            ])
-            .execute();
+		await db
+			.insertInto("stratify.assets")
+			.values([
+				{
+					id: 1,
+					name: "Apple Inc.",
+					symbol: "AAPL",
+					currency: "USD",
+					type: "STOCK",
+					countryId: 224, // Country ID for united states
+				},
+				{
+					id: 2,
+					name: "Leonida Inc.",
+					symbol: "LEON",
+					currency: "USD",
+					type: "STOCK",
+					countryId: 224, // Country ID for united states
+				},
+				{
+					id: 3,
+					name: "USD/GBP",
+					symbol: "USDGBP",
+					currency: "USD",
+					type: "CURRENCY",
+					countryId: 224, // Country ID for united states
+				},
+				{
+					id: 4,
+					name: "A fund",
+					symbol: "FUND",
+					currency: "GBP",
+					type: "ETF",
+					countryId: 223, // Country ID for united kingdom
+				},
+			])
+			.execute();
 
-        await db
-            .insertInto("stratify.assetPrices")
-            .values([
-                {
-                    assetId: 3,
-                    priceDate: new Date(),
-                    lowPrice: 0.75,
-                    highPrice: 0.77,
-                    openPrice: 0.76,
-                    closePrice: 0.73,
-                    volume: 0,
-                },
-            ])
-            .execute();
+		await db
+			.insertInto("stratify.assetPrices")
+			.values([
+				{
+					assetId: 3,
+					priceDate: new Date(),
+					lowPrice: 0.75,
+					highPrice: 0.77,
+					openPrice: 0.76,
+					closePrice: 0.73,
+					volume: 0,
+				},
+			])
+			.execute();
 
-        const portfolio = await db
-            .insertInto("stratify.portfolios")
-            .values({
-                name: "Test Portfolio",
-                userId: "test-user",
-            })
-            .returning("stratify.portfolios.id as id")
-            .executeTakeFirstOrThrow();
+		const portfolio = await db
+			.insertInto("stratify.portfolios")
+			.values({
+				name: "Test Portfolio",
+				userId: "test-user",
+			})
+			.returning("stratify.portfolios.id as id")
+			.executeTakeFirstOrThrow();
 
-        await db
-            .insertInto("stratify.trades")
-            .values([
-                {
-                    portfolioId: portfolio.id,
-                    assetId: 1,
-                    quantity: 5,
-                    pricePerShare: 100,
-                    totalAmount: 500,
-                    assetCurrencyTotalAmount: 500,
-                    tradeAction: "BUY",
-                    tradeDate: new Date("2026-02-02"),
-                },
-                {
-                    portfolioId: portfolio.id,
-                    assetId: 1,
-                    quantity: 10,
-                    pricePerShare: 100,
-                    totalAmount: 1000,
-                    assetCurrencyTotalAmount: 1000,
-                    tradeAction: "BUY",
-                    tradeDate: new Date("2026-02-03"),
-                },
-                {
-                    portfolioId: portfolio.id,
-                    assetId: 2,
-                    quantity: 10,
-                    pricePerShare: 75,
-                    totalAmount: 750,
-                    assetCurrencyTotalAmount: 825,
-                    tradeAction: "BUY",
-                    tradeDate: new Date("2026-02-04"),
-                },
-                {
-                    portfolioId: portfolio.id,
-                    assetId: 4,
-                    quantity: 10,
-                    pricePerShare: 50,
-                    totalAmount: 500,
-                    assetCurrencyTotalAmount: 500,
-                    tradeAction: "BUY",
-                    tradeDate: new Date("2026-02-05"),
-                },
-            ])
-            .execute();
+		await db
+			.insertInto("stratify.trades")
+			.values([
+				{
+					portfolioId: portfolio.id,
+					assetId: 1,
+					quantity: 5,
+					pricePerShare: 100,
+					totalAmount: 500,
+					assetCurrencyTotalAmount: 500,
+					tradeAction: "BUY",
+					tradeDate: new Date("2026-02-02"),
+				},
+				{
+					portfolioId: portfolio.id,
+					assetId: 1,
+					quantity: 10,
+					pricePerShare: 100,
+					totalAmount: 1000,
+					assetCurrencyTotalAmount: 1000,
+					tradeAction: "BUY",
+					tradeDate: new Date("2026-02-03"),
+				},
+				{
+					portfolioId: portfolio.id,
+					assetId: 2,
+					quantity: 10,
+					pricePerShare: 75,
+					totalAmount: 750,
+					assetCurrencyTotalAmount: 825,
+					tradeAction: "BUY",
+					tradeDate: new Date("2026-02-04"),
+				},
+				{
+					portfolioId: portfolio.id,
+					assetId: 4,
+					quantity: 10,
+					pricePerShare: 50,
+					totalAmount: 500,
+					assetCurrencyTotalAmount: 500,
+					tradeAction: "BUY",
+					tradeDate: new Date("2026-02-05"),
+				},
+			])
+			.execute();
 
-        const response = await app.inject({
-            method: "GET",
-            url: `/portfolios/${portfolio.id}/investments`,
-            headers: {
-                Authorization: devToken,
-                Accept: "application/json",
-            },
-        });
+		const response = await app.inject({
+			method: "GET",
+			url: `/portfolios/${portfolio.id}/investments`,
+			headers: {
+				Authorization: devToken,
+				Accept: "application/json",
+			},
+		});
 
-        expect(response.statusCode).toBe(200);
+		expect(response.statusCode).toBe(200);
 
-        const json = await response.json();
+		const json = await response.json();
 
-        expect(json).toEqual({
-            data: [
-                {
-                    assetId: 1,
-                    symbol: "AAPL",
-                    assetCountryId: 224,
-                    assetCurrency: "USD",
-                    name: "Apple Inc.",
-                    shares: 15,
-                    type: "STOCK",
-                    currentValue: 1664.4,
-                    currentAssetCurrencyValue: 2280,
-                    currentReturn: 164.4,
-                    currentReturnPercentage: 10.96,
-                    totalBuyAmount: 1500,
-                    sectorDetails: [
-                        {
-                            sector: "technology",
-                            weight: 1,
-                        },
-                    ],
-                    portfolioId: portfolio.id,
-                    portfolioName: "Test Portfolio",
-                },
-                {
-                    assetId: 4,
-                    symbol: "FUND",
-                    assetCountryId: 223,
-                    assetCurrency: "GBP",
-                    name: "A fund",
-                    shares: 10,
-                    type: "ETF",
-                    currentValue: 1520,
-                    currentAssetCurrencyValue: null,
-                    currentReturn: 1020,
-                    currentReturnPercentage: 204,
-                    totalBuyAmount: 500,
-                    sectorDetails: [
-                        {
-                            sector: "technology",
-                            weight: 0.6,
-                        },
-                        {
-                            sector: "financials",
-                            weight: 0.4,
-                        },
-                    ],
-                    portfolioId: portfolio.id,
-                    portfolioName: "Test Portfolio",
-                },
-                {
-                    assetId: 2,
-                    symbol: "LEON",
-                    assetCountryId: 224,
-                    assetCurrency: "USD",
-                    name: "Leonida Inc.",
-                    shares: 10,
-                    type: "STOCK",
-                    currentValue: 1109.6,
-                    currentAssetCurrencyValue: 1520,
-                    currentReturn: 359.6,
-                    currentReturnPercentage: 47.95,
-                    totalBuyAmount: 750,
-                    sectorDetails: [
-                        {
-                            sector: "technology",
-                            weight: 1,
-                        },
-                    ],
-                    portfolioId: portfolio.id,
-                    portfolioName: "Test Portfolio",
-                },
-            ],
-        });
-    });
+		expect(json).toEqual({
+			data: [
+				{
+					assetId: 1,
+					symbol: "AAPL",
+					assetCountryId: 224,
+					assetCurrency: "USD",
+					name: "Apple Inc.",
+					shares: 15,
+					type: "STOCK",
+					currentValue: 1664.4,
+					currentAssetCurrencyValue: 2280,
+					currentReturn: 164.4,
+					currentReturnPercentage: 10.96,
+					totalBuyAmount: 1500,
+					sectorDetails: [
+						{
+							sector: "technology",
+							weight: 1,
+						},
+					],
+					portfolioId: portfolio.id,
+					portfolioName: "Test Portfolio",
+				},
+				{
+					assetId: 4,
+					symbol: "FUND",
+					assetCountryId: 223,
+					assetCurrency: "GBP",
+					name: "A fund",
+					shares: 10,
+					type: "ETF",
+					currentValue: 1520,
+					currentAssetCurrencyValue: null,
+					currentReturn: 1020,
+					currentReturnPercentage: 204,
+					totalBuyAmount: 500,
+					sectorDetails: [
+						{
+							sector: "technology",
+							weight: 0.6,
+						},
+						{
+							sector: "financials",
+							weight: 0.4,
+						},
+					],
+					portfolioId: portfolio.id,
+					portfolioName: "Test Portfolio",
+				},
+				{
+					assetId: 2,
+					symbol: "LEON",
+					assetCountryId: 224,
+					assetCurrency: "USD",
+					name: "Leonida Inc.",
+					shares: 10,
+					type: "STOCK",
+					currentValue: 1109.6,
+					currentAssetCurrencyValue: 1520,
+					currentReturn: 359.6,
+					currentReturnPercentage: 47.95,
+					totalBuyAmount: 750,
+					sectorDetails: [
+						{
+							sector: "technology",
+							weight: 1,
+						},
+					],
+					portfolioId: portfolio.id,
+					portfolioName: "Test Portfolio",
+				},
+			],
+		});
+	});
 
-    it("should return a list of investments where the asset currency is the same as the user's currency without performing currency conversion", async () => {
-        await createUser("test-user").execute();
+	it("should return a list of investments where the asset currency is the same as the user's currency without performing currency conversion", async () => {
+		await createUser("test-user").execute();
 
-        await db
-            .insertInto("stratify.assets")
-            .values([
-                {
-                    id: 1,
-                    name: "British Company",
-                    symbol: "BRIT",
-                    currency: "GBP",
-                    type: "STOCK",
-                    countryId: 223, // Country ID for united states
-                },
-                {
-                    id: 2,
-                    name: "Cheese Company",
-                    symbol: "CHEESE",
-                    currency: "GBP",
-                    type: "STOCK",
-                    countryId: 223, // Country ID for united states
-                },
-            ])
-            .execute();
+		await db
+			.insertInto("stratify.assets")
+			.values([
+				{
+					id: 1,
+					name: "British Company",
+					symbol: "BRIT",
+					currency: "GBP",
+					type: "STOCK",
+					countryId: 223, // Country ID for united states
+				},
+				{
+					id: 2,
+					name: "Cheese Company",
+					symbol: "CHEESE",
+					currency: "GBP",
+					type: "STOCK",
+					countryId: 223, // Country ID for united states
+				},
+			])
+			.execute();
 
-        const portfolio = await db
-            .insertInto("stratify.portfolios")
-            .values({
-                name: "British Stocks",
-                userId: "test-user",
-            })
-            .returning("stratify.portfolios.id as id")
-            .executeTakeFirstOrThrow();
+		const portfolio = await db
+			.insertInto("stratify.portfolios")
+			.values({
+				name: "British Stocks",
+				userId: "test-user",
+			})
+			.returning("stratify.portfolios.id as id")
+			.executeTakeFirstOrThrow();
 
-        await db
-            .insertInto("stratify.trades")
-            .values([
-                {
-                    portfolioId: portfolio.id,
-                    assetId: 1,
-                    quantity: 5,
-                    pricePerShare: 150,
-                    totalAmount: 750,
-                    tradeAction: "BUY",
-                    tradeDate: new Date("2026-02-02"),
-                },
-                {
-                    portfolioId: portfolio.id,
-                    assetId: 1,
-                    quantity: 10,
-                    pricePerShare: 150,
-                    totalAmount: 1500,
-                    tradeAction: "BUY",
-                    tradeDate: new Date("2026-02-03"),
-                },
-                {
-                    portfolioId: portfolio.id,
-                    assetId: 2,
-                    quantity: 5,
-                    pricePerShare: 100,
-                    totalAmount: 500,
-                    tradeAction: "BUY",
-                    tradeDate: new Date("2026-02-05"),
-                },
-            ])
-            .execute();
+		await db
+			.insertInto("stratify.trades")
+			.values([
+				{
+					portfolioId: portfolio.id,
+					assetId: 1,
+					quantity: 5,
+					pricePerShare: 150,
+					totalAmount: 750,
+					tradeAction: "BUY",
+					tradeDate: new Date("2026-02-02"),
+				},
+				{
+					portfolioId: portfolio.id,
+					assetId: 1,
+					quantity: 10,
+					pricePerShare: 150,
+					totalAmount: 1500,
+					tradeAction: "BUY",
+					tradeDate: new Date("2026-02-03"),
+				},
+				{
+					portfolioId: portfolio.id,
+					assetId: 2,
+					quantity: 5,
+					pricePerShare: 100,
+					totalAmount: 500,
+					tradeAction: "BUY",
+					tradeDate: new Date("2026-02-05"),
+				},
+			])
+			.execute();
 
-        const response = await app.inject({
-            method: "GET",
-            url: `/portfolios/${portfolio.id}/investments`,
-            headers: {
-                Authorization: devToken,
-                Accept: "application/json",
-            },
-        });
+		const response = await app.inject({
+			method: "GET",
+			url: `/portfolios/${portfolio.id}/investments`,
+			headers: {
+				Authorization: devToken,
+				Accept: "application/json",
+			},
+		});
 
-        expect(response.statusCode).toBe(200);
+		expect(response.statusCode).toBe(200);
 
-        const json = await response.json();
+		const json = await response.json();
 
-        expect(json).toEqual({
-            data: [
-                {
-                    assetId: 1,
-                    symbol: "BRIT",
-                    assetCountryId: 223,
-                    assetCurrency: "GBP",
-                    name: "British Company",
-                    shares: 15,
-                    type: "STOCK",
-                    currentValue: 2280,
-                    currentAssetCurrencyValue: null,
-                    currentReturn: 30,
-                    currentReturnPercentage: 1.33,
-                    totalBuyAmount: 2250,
-                    sectorDetails: [
-                        {
-                            sector: "technology",
-                            weight: 1,
-                        },
-                    ],
-                    portfolioId: portfolio.id,
-                    portfolioName: "British Stocks",
-                },
-                {
-                    assetId: 2,
-                    symbol: "CHEESE",
-                    assetCountryId: 223,
-                    assetCurrency: "GBP",
-                    name: "Cheese Company",
-                    shares: 5,
-                    type: "STOCK",
-                    currentValue: 760,
-                    currentAssetCurrencyValue: null,
-                    currentReturn: 260,
-                    currentReturnPercentage: 52,
-                    totalBuyAmount: 500,
-                    sectorDetails: [
-                        {
-                            sector: "technology",
-                            weight: 1,
-                        },
-                    ],
-                    portfolioId: portfolio.id,
-                    portfolioName: "British Stocks",
-                },
-            ],
-        });
-    });
+		expect(json).toEqual({
+			data: [
+				{
+					assetId: 1,
+					symbol: "BRIT",
+					assetCountryId: 223,
+					assetCurrency: "GBP",
+					name: "British Company",
+					shares: 15,
+					type: "STOCK",
+					currentValue: 2280,
+					currentAssetCurrencyValue: null,
+					currentReturn: 30,
+					currentReturnPercentage: 1.33,
+					totalBuyAmount: 2250,
+					sectorDetails: [
+						{
+							sector: "technology",
+							weight: 1,
+						},
+					],
+					portfolioId: portfolio.id,
+					portfolioName: "British Stocks",
+				},
+				{
+					assetId: 2,
+					symbol: "CHEESE",
+					assetCountryId: 223,
+					assetCurrency: "GBP",
+					name: "Cheese Company",
+					shares: 5,
+					type: "STOCK",
+					currentValue: 760,
+					currentAssetCurrencyValue: null,
+					currentReturn: 260,
+					currentReturnPercentage: 52,
+					totalBuyAmount: 500,
+					sectorDetails: [
+						{
+							sector: "technology",
+							weight: 1,
+						},
+					],
+					portfolioId: portfolio.id,
+					portfolioName: "British Stocks",
+				},
+			],
+		});
+	});
 
-    it("should not count SELL trades towards the total count of an investment", async () => {
-        await createUser("test-user").execute();
+	it("should not count SELL trades towards the total count of an investment", async () => {
+		await createUser("test-user").execute();
 
-        await db
-            .insertInto("stratify.assets")
-            .values([
-                {
-                    id: 1,
-                    name: "British Company",
-                    symbol: "BRIT",
-                    currency: "GBP",
-                    type: "STOCK",
-                    countryId: 223, // Country ID for united states
-                },
-                {
-                    id: 2,
-                    name: "Cheese Company",
-                    symbol: "CHEESE",
-                    currency: "GBP",
-                    type: "STOCK",
-                    countryId: 223, // Country ID for united states
-                },
-            ])
-            .execute();
+		await db
+			.insertInto("stratify.assets")
+			.values([
+				{
+					id: 1,
+					name: "British Company",
+					symbol: "BRIT",
+					currency: "GBP",
+					type: "STOCK",
+					countryId: 223, // Country ID for united states
+				},
+				{
+					id: 2,
+					name: "Cheese Company",
+					symbol: "CHEESE",
+					currency: "GBP",
+					type: "STOCK",
+					countryId: 223, // Country ID for united states
+				},
+			])
+			.execute();
 
-        const portfolio = await db
-            .insertInto("stratify.portfolios")
-            .values({
-                name: "British Stocks",
-                userId: "test-user",
-            })
-            .returning("stratify.portfolios.id as id")
-            .executeTakeFirstOrThrow();
+		const portfolio = await db
+			.insertInto("stratify.portfolios")
+			.values({
+				name: "British Stocks",
+				userId: "test-user",
+			})
+			.returning("stratify.portfolios.id as id")
+			.executeTakeFirstOrThrow();
 
-        await db
-            .insertInto("stratify.trades")
-            .values([
-                {
-                    portfolioId: portfolio.id,
-                    assetId: 1,
-                    quantity: 15,
-                    pricePerShare: 150,
-                    totalAmount: 2250,
-                    tradeAction: "BUY",
-                    tradeDate: new Date("2026-02-02"),
-                },
-                {
-                    portfolioId: portfolio.id,
-                    assetId: 1,
-                    quantity: 5,
-                    pricePerShare: 170,
-                    totalAmount: 850,
-                    tradeAction: "SELL",
-                    tradeDate: new Date("2026-02-03"),
-                },
-            ])
-            .execute();
+		await db
+			.insertInto("stratify.trades")
+			.values([
+				{
+					portfolioId: portfolio.id,
+					assetId: 1,
+					quantity: 15,
+					pricePerShare: 150,
+					totalAmount: 2250,
+					tradeAction: "BUY",
+					tradeDate: new Date("2026-02-02"),
+				},
+				{
+					portfolioId: portfolio.id,
+					assetId: 1,
+					quantity: 5,
+					pricePerShare: 170,
+					totalAmount: 850,
+					tradeAction: "SELL",
+					tradeDate: new Date("2026-02-03"),
+				},
+			])
+			.execute();
 
-        const response = await app.inject({
-            method: "GET",
-            url: `/portfolios/${portfolio.id}/investments`,
-            headers: {
-                Authorization: devToken,
-                Accept: "application/json",
-            },
-        });
+		const response = await app.inject({
+			method: "GET",
+			url: `/portfolios/${portfolio.id}/investments`,
+			headers: {
+				Authorization: devToken,
+				Accept: "application/json",
+			},
+		});
 
-        expect(response.statusCode).toBe(200);
+		expect(response.statusCode).toBe(200);
 
-        const json = await response.json();
+		const json = await response.json();
 
-        expect(json).toEqual({
-            data: [
-                {
-                    assetId: 1,
-                    symbol: "BRIT",
-                    assetCountryId: 223,
-                    assetCurrency: "GBP",
-                    name: "British Company",
-                    shares: 10,
-                    type: "STOCK",
-                    currentValue: 1520,
-                    currentAssetCurrencyValue: null,
-                    currentReturn: 120,
-                    currentReturnPercentage: 5.33,
-                    totalBuyAmount: 2250,
-                    sectorDetails: [
-                        {
-                            sector: "technology",
-                            weight: 1,
-                        },
-                    ],
-                    portfolioId: portfolio.id,
-                    portfolioName: "British Stocks",
-                },
-            ],
-        });
-    });
+		expect(json).toEqual({
+			data: [
+				{
+					assetId: 1,
+					symbol: "BRIT",
+					assetCountryId: 223,
+					assetCurrency: "GBP",
+					name: "British Company",
+					shares: 10,
+					type: "STOCK",
+					currentValue: 1520,
+					currentAssetCurrencyValue: null,
+					currentReturn: 120,
+					currentReturnPercentage: 5.33,
+					totalBuyAmount: 2250,
+					sectorDetails: [
+						{
+							sector: "technology",
+							weight: 1,
+						},
+					],
+					portfolioId: portfolio.id,
+					portfolioName: "British Stocks",
+				},
+			],
+		});
+	});
 
-    it("should return a 404 error if there are no investments in the portfolio", async () => {
-        await createUser("test-user").execute();
+	it("should return a 404 error if there are no investments in the portfolio", async () => {
+		await createUser("test-user").execute();
 
-        const portfolio = await db
-            .insertInto("stratify.portfolios")
-            .values({
-                name: "Empty Portfolio",
-                userId: "test-user",
-            })
-            .returning("stratify.portfolios.id as id")
-            .executeTakeFirstOrThrow();
+		const portfolio = await db
+			.insertInto("stratify.portfolios")
+			.values({
+				name: "Empty Portfolio",
+				userId: "test-user",
+			})
+			.returning("stratify.portfolios.id as id")
+			.executeTakeFirstOrThrow();
 
-        const response = await app.inject({
-            method: "GET",
-            url: `/portfolios/${portfolio.id}/investments`,
-            headers: {
-                Authorization: devToken,
-                Accept: "application/json",
-            },
-        });
+		const response = await app.inject({
+			method: "GET",
+			url: `/portfolios/${portfolio.id}/investments`,
+			headers: {
+				Authorization: devToken,
+				Accept: "application/json",
+			},
+		});
 
-        expect(response.statusCode).toBe(404);
+		expect(response.statusCode).toBe(404);
 
-        const json = await response.json();
+		const json = await response.json();
 
-        expect(json).toEqual({
-            message: "investmentsNotFound",
-        });
-    });
+		expect(json).toEqual({
+			message: "investmentsNotFound",
+		});
+	});
 
-    it("should return a 404 error if portfolio doesn't exist", async () => {
-        await createUser("test-user").execute();
+	it("should return a 404 error if portfolio doesn't exist", async () => {
+		await createUser("test-user").execute();
 
-        const response = await app.inject({
-            method: "GET",
-            url: `/portfolios/9999/investments`,
-            headers: {
-                Authorization: devToken,
-                Accept: "application/json",
-            },
-        });
+		const response = await app.inject({
+			method: "GET",
+			url: `/portfolios/9999/investments`,
+			headers: {
+				Authorization: devToken,
+				Accept: "application/json",
+			},
+		});
 
-        expect(response.statusCode).toBe(404);
-    });
+		expect(response.statusCode).toBe(404);
+	});
 
-    it("should not allow a user to get the investments of another user's portfolio", async () => {
-        await createUser("test-user").execute();
-        await createUser("another-test-user").execute();
+	it("should not allow a user to get the investments of another user's portfolio", async () => {
+		await createUser("test-user").execute();
+		await createUser("another-test-user").execute();
 
-        await db
-            .insertInto("stratify.assets")
-            .values([
-                {
-                    id: 1,
-                    name: "Apple Inc.",
-                    symbol: "AAPL",
-                    currency: "USD",
-                    type: "STOCK",
-                    countryId: 224, // Country ID for united states
-                },
-                {
-                    id: 2,
-                    name: "USDGBP",
-                    symbol: "USDGBP",
-                    currency: "USD",
-                    type: "CURRENCY",
-                    countryId: 224, // Country ID for united states
-                },
-            ])
-            .execute();
+		await db
+			.insertInto("stratify.assets")
+			.values([
+				{
+					id: 1,
+					name: "Apple Inc.",
+					symbol: "AAPL",
+					currency: "USD",
+					type: "STOCK",
+					countryId: 224, // Country ID for united states
+				},
+				{
+					id: 2,
+					name: "USDGBP",
+					symbol: "USDGBP",
+					currency: "USD",
+					type: "CURRENCY",
+					countryId: 224, // Country ID for united states
+				},
+			])
+			.execute();
 
-        await db
-            .insertInto("stratify.assetPrices")
-            .values([
-                {
-                    assetId: 2,
-                    priceDate: new Date(),
-                    lowPrice: 0.75,
-                    highPrice: 0.77,
-                    openPrice: 0.76,
-                    closePrice: 0.73,
-                    volume: 0,
-                },
-            ])
-            .execute();
+		await db
+			.insertInto("stratify.assetPrices")
+			.values([
+				{
+					assetId: 2,
+					priceDate: new Date(),
+					lowPrice: 0.75,
+					highPrice: 0.77,
+					openPrice: 0.76,
+					closePrice: 0.73,
+					volume: 0,
+				},
+			])
+			.execute();
 
-        const portfolio = await db
-            .insertInto("stratify.portfolios")
-            .values({
-                name: "Another User's Portfolio",
-                userId: "test-user",
-            })
-            .returning("stratify.portfolios.id as id")
-            .executeTakeFirstOrThrow();
+		const portfolio = await db
+			.insertInto("stratify.portfolios")
+			.values({
+				name: "Another User's Portfolio",
+				userId: "test-user",
+			})
+			.returning("stratify.portfolios.id as id")
+			.executeTakeFirstOrThrow();
 
-        const response = await app.inject({
-            method: "GET",
-            url: `/portfolios/${portfolio.id}/investments`,
-            headers: {
-                Authorization: secondDevToken,
-                Accept: "application/json",
-            },
-        });
+		const response = await app.inject({
+			method: "GET",
+			url: `/portfolios/${portfolio.id}/investments`,
+			headers: {
+				Authorization: secondDevToken,
+				Accept: "application/json",
+			},
+		});
 
-        expect(response.statusCode).toBe(404);
-    });
+		expect(response.statusCode).toBe(404);
+	});
 });

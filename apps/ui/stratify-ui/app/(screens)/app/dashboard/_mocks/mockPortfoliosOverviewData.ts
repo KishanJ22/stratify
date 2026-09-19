@@ -2,20 +2,20 @@ import { mockInvestmentsData } from "../../portfolios/components/InvestmentsTabl
 import type { Overview } from "../usePortfoliosOverview";
 
 export const mockPortfoliosOverviewData = {
-    totalValue: 100000,
-    overallChange: {
-        lastThirtyDays: {
-            absolute: 10000,
-            percentage: 10,
-        },
-        lastSixMonths: {
-            absolute: 15000,
-            percentage: 15,
-        },
-        allTime: {
-            absolute: 20000,
-            percentage: 20,
-        },
-    },
-    investments: mockInvestmentsData,
+	totalValue: 100000,
+	overallChange: {
+		lastThirtyDays: {
+			absolute: 10000,
+			percentage: 10,
+		},
+		lastSixMonths: {
+			absolute: 15000,
+			percentage: 15,
+		},
+		allTime: {
+			absolute: 20000,
+			percentage: 20,
+		},
+	},
+	investments: mockInvestmentsData,
 } satisfies Overview;

@@ -1,42 +1,42 @@
+import type { ComponentProps } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
 import { Spinner } from "../ui/spinner";
-import { ComponentProps } from "react";
 
 interface SubmitButtonProps {
-    label: string;
-    isDisabled?: boolean;
-    isLoading?: boolean;
-    className?: string;
-    variant?: ComponentProps<typeof Button>["variant"];
+	label: string;
+	isDisabled?: boolean;
+	isLoading?: boolean;
+	className?: string;
+	variant?: ComponentProps<typeof Button>["variant"];
 }
 
 const SubmitButton = ({
-    label,
-    isDisabled,
-    isLoading,
-    className,
-    variant = "secondary",
+	label,
+	isDisabled,
+	isLoading,
+	className,
+	variant = "secondary",
 }: SubmitButtonProps) => {
-    return (
-        <Button
-            type="submit"
-            variant={variant}
-            disabled={isDisabled}
-            data-testid={
-                isDisabled ? "submit-button-disabled" : "submit-button-enabled"
-            }
-            className={cn(
-                className,
-                "cursor-pointer hover:border hover:border-secondary-light",
-            )}
-        >
-            <div className="flex flex-row gap-x-2 items-center">
-                {isLoading && <Spinner />}
-                {label}
-            </div>
-        </Button>
-    );
+	return (
+		<Button
+			type="submit"
+			variant={variant}
+			disabled={isDisabled}
+			data-testid={
+				isDisabled ? "submit-button-disabled" : "submit-button-enabled"
+			}
+			className={cn(
+				className,
+				"cursor-pointer hover:border hover:border-secondary-light",
+			)}
+		>
+			<div className="flex flex-row gap-x-2 items-center">
+				{isLoading && <Spinner />}
+				{label}
+			</div>
+		</Button>
+	);
 };
 
 export default SubmitButton;

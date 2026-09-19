@@ -6,20 +6,20 @@ import { vi } from "vitest";
 
 // required mocks to open Shadcn Select component
 export class MockPointerEvent extends Event {
-    button: number | undefined;
-    ctrlKey: boolean | undefined;
+	button: number | undefined;
+	ctrlKey: boolean | undefined;
 
-    constructor(type: string, props: PointerEventInit | undefined) {
-        super(type, props);
-        if (props) {
-            if (props.button != null) {
-                this.button = props.button;
-            }
-            if (props.ctrlKey != null) {
-                this.ctrlKey = props.ctrlKey;
-            }
-        }
-    }
+	constructor(type: string, props: PointerEventInit | undefined) {
+		super(type, props);
+		if (props) {
+			if (props.button != null) {
+				this.button = props.button;
+			}
+			if (props.ctrlKey != null) {
+				this.ctrlKey = props.ctrlKey;
+			}
+		}
+	}
 }
 window.PointerEvent = MockPointerEvent as any;
 window.HTMLElement.prototype.scrollIntoView = vi.fn();

@@ -1,33 +1,33 @@
 import { CamelCasePlugin, Kysely, PostgresDialect } from "kysely";
 import pkg from "pg";
 import config from "../config.js";
-import { DB } from "./types.js";
+import type { DB } from "./types.js";
 
 const { Pool } = pkg;
 
 export const createPool = (options?: string) => {
-    return new Pool({
-        host: config.database.host,
-        port: config.database.port,
-        user: config.database.user,
-        password: config.database.password,
-        database: config.database.name,
-        keepAlive: config.database.keepAlive,
-        max: config.database.maxConnections,
-        ssl: false,
-        options,
-    });
+	return new Pool({
+		host: config.database.host,
+		port: config.database.port,
+		user: config.database.user,
+		password: config.database.password,
+		database: config.database.name,
+		keepAlive: config.database.keepAlive,
+		max: config.database.maxConnections,
+		ssl: false,
+		options,
+	});
 };
 
 export const dialect = new PostgresDialect({
-    pool: createPool(),
+	pool: createPool(),
 });
 
 const plugins = [new CamelCasePlugin({})];
 
 const db = new Kysely<DB>({
-    dialect,
-    plugins,
+	dialect,
+	plugins,
 });
 
 export type KyselyDB = typeof db;

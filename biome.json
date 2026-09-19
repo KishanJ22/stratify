@@ -10,7 +10,10 @@
 		"includes": [
 			"**",
 			"!apps/api/stratify-api/src/database/types.ts",
-			"!apps/ui/stratify-ui/next-env.d.ts"
+			"!apps/ui/stratify-ui/next-env.d.ts",
+			"!apps/api/stratify-data-api/docs/openapi.json",
+			"!apps/api/stratify-api/docs/**/bruno.json",
+			"!apps/api/stratify-data-api/docs/**/bruno.json"
 		]
 	},
 	"formatter": {
@@ -20,11 +23,7 @@
 	},
 	"linter": {
 		"enabled": true,
-		"includes": [
-			"**",
-			"!apps/api/stratify-api/src/database/types.ts",
-			"!apps/ui/stratify-ui/next-env.d.ts"
-		],
+		"includes": ["**", "!apps/api/stratify-api/src/database/migrations/**"],
 		"rules": {
 			"preset": "recommended",
 			"correctness": {
@@ -41,6 +40,11 @@
 			"quoteStyle": "double"
 		}
 	},
+	"css": {
+		"parser": {
+			"tailwindDirectives": true
+		}
+	},
 	"assist": {
 		"enabled": true,
 		"actions": {
@@ -48,5 +52,30 @@
 				"organizeImports": "on"
 			}
 		}
-	}
+	},
+	"overrides": [
+		{
+			"includes": ["**/*.test.ts", "**/*.test.tsx"],
+			"linter": {
+				"rules": {
+					"suspicious": {
+						"noExplicitAny": "off"
+					},
+					"performance": {
+						"noImgElement": "off"
+					}
+				}
+			}
+		},
+		{
+			"includes": ["apps/api/stratify-api/src/config.ts"],
+			"linter": {
+				"rules": {
+					"style": {
+						"noNonNullAssertion": "off"
+					}
+				}
+			}
+		}
+	]
 }

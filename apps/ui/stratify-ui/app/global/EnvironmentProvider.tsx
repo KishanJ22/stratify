@@ -3,50 +3,50 @@
 import { createContext, useContext, useMemo } from "react";
 
 export interface Environment {
-    apiProxyUrl: string;
-    authProxyUrl: string;
+	apiProxyUrl: string;
+	authProxyUrl: string;
 }
 
 export const EnvironmentContext = createContext<{
-    envVariables: Environment;
+	envVariables: Environment;
 } | null>(null);
 
 interface EnvironmentProviderProps extends Environment {
-    children: React.ReactNode;
+	children: React.ReactNode;
 }
 
 export const EnvironmentProvider = ({
-    children,
-    apiProxyUrl,
-    authProxyUrl,
+	children,
+	apiProxyUrl,
+	authProxyUrl,
 }: EnvironmentProviderProps) => {
-    const envVariables = useMemo(
-        () => ({
-            apiProxyUrl,
-            authProxyUrl,
-        }),
-        [apiProxyUrl, authProxyUrl],
-    );
+	const envVariables = useMemo(
+		() => ({
+			apiProxyUrl,
+			authProxyUrl,
+		}),
+		[apiProxyUrl, authProxyUrl],
+	);
 
-    return (
-        <EnvironmentContext.Provider
-            value={{
-                envVariables,
-            }}
-        >
-            {children}
-        </EnvironmentContext.Provider>
-    );
+	return (
+		<EnvironmentContext.Provider
+			value={{
+				envVariables,
+			}}
+		>
+			{children}
+		</EnvironmentContext.Provider>
+	);
 };
 
 export const useEnvironmentContext = () => {
-    const context = useContext(EnvironmentContext);
+	const context = useContext(EnvironmentContext);
 
-    if (context === null) {
-        throw new Error(
-            "useEnvironmentContext must be used within an EnvironmentProvider",
-        );
-    }
+	if (context === null) {
+		throw new Error(
+			"useEnvironmentContext must be used within an EnvironmentProvider",
+		);
+	}
 
-    return context;
+	return context;
 };

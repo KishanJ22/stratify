@@ -2,161 +2,161 @@
 // See: https://next-intl.dev/docs/workflows/typescript#messages-arguments
 
 declare const messages: {
-    "Generic": {
-        "currencyAmount": "{amount, number} ({currency})",
-        "positiveCurrencyAmount": "+{amount, number} ({currency})",
-        "positivePercentage": "+{percentage, number, percentage}%",
-        "percentage": "{percentage, number, percentage}%",
-        "positiveAmount": "+{amount, number}",
-        "amount": "{amount, number}",
-        "save": "Save",
-        "logout": "Log out"
-    },
-    "valueChange": {
-        "lastThirtyDays": "Last 30 days",
-        "lastSixMonths": "Last 6 months",
-        "lastTwelveMonths": "Last 12 months",
-        "allTime": "All time"
-    },
-    "assetClasses": {
-        "STOCK": "Stock",
-        "ETF": "Exchange Traded Fund",
-        "CRYPTOCURRENCY": "Cryptocurrency"
-    },
-    "Dashboard": {
-        "title": "Dashboard",
-        "createAPortfolio": "Create a portfolio",
-        "addAnInvestment": "Add an investment",
-        "totalValue": "Total Value",
-        "overallChange": "Overall Change",
-        "assetDiversification": "Asset Diversification",
-        "assetDiversificationDescription": "See how diverse your holdings are based on the class, market sector or country of each asset.",
-        "topPerformers": {
-            "title": "Top Performers",
-            "description": "View the investments that are performing the best across all of your portfolios.",
-            "noPortfoliosFound": "No portfolios found",
-            "noInvestmentsFound": "No investments found",
-            "noTopPerformersFound": "No top performers found",
-            "viewPortfolio": "View portfolio",
-            "headers": {
-                "name": "Name",
-                "type": "Type",
-                "currentValue": "Value ({userCurrency})",
-                "currentReturn": "Return ({userCurrency})"
-            }
-        },
-        "goalProgression": {
-            "title": "Goal Progression",
-            "goalNotSet": "Goal not set",
-            "set": "Set",
-            "edit": "Edit",
-            "goalSuccessfullyMet": "Your goal of {targetValue, number} ({userCurrency}) has been reached!",
-            "setGoalModal": {
-                "setGoalTitle": "Set Goal",
-                "editGoalTitle": "Edit Goal",
-                "targetAmountLabel": "Target Amount"
-            }
-        }
-    },
-    "Portfolios": {
-        "title": "Portfolios",
-        "selectedPortfolio": "Selected Portfolio",
-        "createPortfolio": "Create Portfolio",
-        "assetAllocation": {
-            "title": "Asset Allocation",
-            "groupBy": "Group by:",
-            "groupByOptions": {
-                "assetClass": "Asset class",
-                "country": "Country",
-                "sector": "Sector",
-                "noGrouping": "No grouping"
-            }
-        },
-        "renamePortfolio": "Rename portfolio",
-        "deletePortfolio": "Delete portfolio",
-        "portfolioNameAlreadyExists": "Portfolio name already exists. Please choose a different name.",
-        "renamePortfolioModal": {
-            "title": "Rename Portfolio",
-            "portfolioNameIsSame": "Portfolio name is the same as the name already set",
-            "nameLabel": "Name",
-            "namePlaceholder": "Main Portfolio",
-            "portfolioRenamedSuccess": "Portfolio renamed successfully!",
-            "portfolioRenameError": "Portfolio could not be updated. Please check the form for errors."
-        },
-        "deletePortfolioModal": {
-            "title": "Delete Portfolio",
-            "portfolioDeletedSuccess": "Portfolio deleted successfully",
-            "descriptionLineOne": "This will remove the portfolio and all of its tracked investments from Stratify.",
-            "descriptionLineTwo": "Are you sure you want to delete <bold>{portfolioName}</bold>?",
-            "goBack": "Go back",
-            "deletePortfolio": "Delete"
-        }
-    },
-    "Investments": {
-        "title": "Investments",
-        "addInvestment": "Add Investment"
-    },
-    "Sectors": {
-        "sector": "Sector",
-        "allocation": "Allocation",
-        "basicMaterials": "Basic Materials",
-        "communications": "Communication Services",
-        "cyclical": "Consumer Cyclical",
-        "defense": "Consumer Defensive",
-        "energy": "Energy",
-        "financial": "Financial Services",
-        "healthcare": "Healthcare",
-        "industrial": "Industrials",
-        "realestate": "Real Estate",
-        "technology": "Technology",
-        "utilities": "Utilities",
-        "cryptocurrency": "Cryptocurrency"
-    },
-    "LandingPage": {
-        "callToAction": {
-            "allOfYourInvestments": "All of your investments.",
-            "onePlace": "One place.",
-            "description": "Track your stocks, ETFs and cryptocurrency holdings across all your portfolios, and learn about investing strategies through interactive guides."
-        },
-        "getStarted": "Get Started",
-        "learnMore": "Learn More",
-        "keyFeatures": {
-            "realTimeTracking": {
-                "title": "Real-time Portfolio Tracking",
-                "description": "Monitor and analyse all of your stock, ETF and cryptocurrency holdings in one place with live updates and intuitive performance metrics."
-            },
-            "interactiveLearning": {
-                "title": "Interactive Learning",
-                "description": "Discover core concepts and learn about investing strategies through interactive and bite-sized guides."
-            },
-            "goalTracking": {
-                "title": "Goal Tracking and Progression",
-                "description": "Set a financial goal and track your progress towards it based on the real-time value of your overall portfolio."
-            }
-        }
-    },
-    "Features": {
-        "title": "Features",
-        "manageInvestments": {
-            "title": "Manage and track your investments",
-            "description": "Create multiple portfolios to organise your investments and track their performance over time. View detailed analytics and insights, such as asset allocation, risk level, and returns, to gain a deeper understanding of your investments and make informed decisions."
-        },
-        "monitorPortfolios": {
-            "title": "Monitor your portfolios at a glance",
-            "description": "Use the dashboard to get a quick view of your overall portfolio performance, including the total value of your investments, overall change over different time periods, your top performing investments and asset diversification."
-        },
-        "discoverTrendingAssets": {
-            "title": "Discover trending assets",
-            "description": "Explore a wide range of assets, including stocks, ETFs, and cryptocurrencies. Use the markets page to discover assets that have seen significant gains or losses or activity in the past 24 hours."
-        },
-        "viewDetailedAssetInfo": {
-            "title": "View detailed asset information",
-            "description": "View comprehensive details about each asset, including historical performance, the current price and the industry and sector it is in. View current holdings of the asset and add it to a portfolio directly from the asset details page."
-        },
-        "learnInvestingStrategies": {
-            "title": "Learn about investing strategies",
-            "description": "Explore investing strategies, such as compounding and cost-averaging, to learn how you can grow your wealth over time. Gain an understanding of what these are, why they matter and the impact they can have on investment performance through interactive simulations and visualisations."
-        }
-    }
+	Generic: {
+		currencyAmount: "{amount, number} ({currency})";
+		positiveCurrencyAmount: "+{amount, number} ({currency})";
+		positivePercentage: "+{percentage, number, percentage}%";
+		percentage: "{percentage, number, percentage}%";
+		positiveAmount: "+{amount, number}";
+		amount: "{amount, number}";
+		save: "Save";
+		logout: "Log out";
+	};
+	valueChange: {
+		lastThirtyDays: "Last 30 days";
+		lastSixMonths: "Last 6 months";
+		lastTwelveMonths: "Last 12 months";
+		allTime: "All time";
+	};
+	assetClasses: {
+		STOCK: "Stock";
+		ETF: "Exchange Traded Fund";
+		CRYPTOCURRENCY: "Cryptocurrency";
+	};
+	Dashboard: {
+		title: "Dashboard";
+		createAPortfolio: "Create a portfolio";
+		addAnInvestment: "Add an investment";
+		totalValue: "Total Value";
+		overallChange: "Overall Change";
+		assetDiversification: "Asset Diversification";
+		assetDiversificationDescription: "See how diverse your holdings are based on the class, market sector or country of each asset.";
+		topPerformers: {
+			title: "Top Performers";
+			description: "View the investments that are performing the best across all of your portfolios.";
+			noPortfoliosFound: "No portfolios found";
+			noInvestmentsFound: "No investments found";
+			noTopPerformersFound: "No top performers found";
+			viewPortfolio: "View portfolio";
+			headers: {
+				name: "Name";
+				type: "Type";
+				currentValue: "Value ({userCurrency})";
+				currentReturn: "Return ({userCurrency})";
+			};
+		};
+		goalProgression: {
+			title: "Goal Progression";
+			goalNotSet: "Goal not set";
+			set: "Set";
+			edit: "Edit";
+			goalSuccessfullyMet: "Your goal of {targetValue, number} ({userCurrency}) has been reached!";
+			setGoalModal: {
+				setGoalTitle: "Set Goal";
+				editGoalTitle: "Edit Goal";
+				targetAmountLabel: "Target Amount";
+			};
+		};
+	};
+	Portfolios: {
+		title: "Portfolios";
+		selectedPortfolio: "Selected Portfolio";
+		createPortfolio: "Create Portfolio";
+		assetAllocation: {
+			title: "Asset Allocation";
+			groupBy: "Group by:";
+			groupByOptions: {
+				assetClass: "Asset class";
+				country: "Country";
+				sector: "Sector";
+				noGrouping: "No grouping";
+			};
+		};
+		renamePortfolio: "Rename portfolio";
+		deletePortfolio: "Delete portfolio";
+		portfolioNameAlreadyExists: "Portfolio name already exists. Please choose a different name.";
+		renamePortfolioModal: {
+			title: "Rename Portfolio";
+			portfolioNameIsSame: "Portfolio name is the same as the name already set";
+			nameLabel: "Name";
+			namePlaceholder: "Main Portfolio";
+			portfolioRenamedSuccess: "Portfolio renamed successfully!";
+			portfolioRenameError: "Portfolio could not be updated. Please check the form for errors.";
+		};
+		deletePortfolioModal: {
+			title: "Delete Portfolio";
+			portfolioDeletedSuccess: "Portfolio deleted successfully";
+			descriptionLineOne: "This will remove the portfolio and all of its tracked investments from Stratify.";
+			descriptionLineTwo: "Are you sure you want to delete <bold>{portfolioName}</bold>?";
+			goBack: "Go back";
+			deletePortfolio: "Delete";
+		};
+	};
+	Investments: {
+		title: "Investments";
+		addInvestment: "Add Investment";
+	};
+	Sectors: {
+		sector: "Sector";
+		allocation: "Allocation";
+		basicMaterials: "Basic Materials";
+		communications: "Communication Services";
+		cyclical: "Consumer Cyclical";
+		defense: "Consumer Defensive";
+		energy: "Energy";
+		financial: "Financial Services";
+		healthcare: "Healthcare";
+		industrial: "Industrials";
+		realestate: "Real Estate";
+		technology: "Technology";
+		utilities: "Utilities";
+		cryptocurrency: "Cryptocurrency";
+	};
+	LandingPage: {
+		callToAction: {
+			allOfYourInvestments: "All of your investments.";
+			onePlace: "One place.";
+			description: "Track your stocks, ETFs and cryptocurrency holdings across all your portfolios, and learn about investing strategies through interactive guides.";
+		};
+		getStarted: "Get Started";
+		learnMore: "Learn More";
+		keyFeatures: {
+			realTimeTracking: {
+				title: "Real-time Portfolio Tracking";
+				description: "Monitor and analyse all of your stock, ETF and cryptocurrency holdings in one place with live updates and intuitive performance metrics.";
+			};
+			interactiveLearning: {
+				title: "Interactive Learning";
+				description: "Discover core concepts and learn about investing strategies through interactive and bite-sized guides.";
+			};
+			goalTracking: {
+				title: "Goal Tracking and Progression";
+				description: "Set a financial goal and track your progress towards it based on the real-time value of your overall portfolio.";
+			};
+		};
+	};
+	Features: {
+		title: "Features";
+		manageInvestments: {
+			title: "Manage and track your investments";
+			description: "Create multiple portfolios to organise your investments and track their performance over time. View detailed analytics and insights, such as asset allocation, risk level, and returns, to gain a deeper understanding of your investments and make informed decisions.";
+		};
+		monitorPortfolios: {
+			title: "Monitor your portfolios at a glance";
+			description: "Use the dashboard to get a quick view of your overall portfolio performance, including the total value of your investments, overall change over different time periods, your top performing investments and asset diversification.";
+		};
+		discoverTrendingAssets: {
+			title: "Discover trending assets";
+			description: "Explore a wide range of assets, including stocks, ETFs, and cryptocurrencies. Use the markets page to discover assets that have seen significant gains or losses or activity in the past 24 hours.";
+		};
+		viewDetailedAssetInfo: {
+			title: "View detailed asset information";
+			description: "View comprehensive details about each asset, including historical performance, the current price and the industry and sector it is in. View current holdings of the asset and add it to a portfolio directly from the asset details page.";
+		};
+		learnInvestingStrategies: {
+			title: "Learn about investing strategies";
+			description: "Explore investing strategies, such as compounding and cost-averaging, to learn how you can grow your wealth over time. Gain an understanding of what these are, why they matter and the impact they can have on investment performance through interactive simulations and visualisations.";
+		};
+	};
 };
 export default messages;

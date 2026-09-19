@@ -1,37 +1,37 @@
-import { config, openapi } from "./config.js";
-import Fastify, { type FastifyError } from "fastify";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+import autoload from "@fastify/autoload";
 import cors from "@fastify/cors";
 import FastifyFormBody from "@fastify/formbody";
-import autoload from "@fastify/autoload";
-import fastifySwagger from "@fastify/swagger";
-import { dirname, join } from "path";
-import { fileURLToPath } from "url";
-import { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
-import fastifySensible from "@fastify/sensible";
 import fastifyHelmet from "@fastify/helmet";
-import logger from "./logger.js";
 import fastifyRequestContext from "@fastify/request-context";
+import fastifySensible from "@fastify/sensible";
+import fastifySwagger from "@fastify/swagger";
+import type { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
+import Fastify, { type FastifyError } from "fastify";
+import { config, openapi } from "./config.js";
+import logger from "./logger.js";
 import authRoutes from "./routes/auth.js";
-import { UserDetails } from "./utils/decodeToken.js";
+import type { UserDetails } from "./utils/decodeToken.js";
 
 declare module "@fastify/request-context" {
-    interface RequestContextData {
-        requestId: string;
-        user: UserDetails | null;
-    }
+	interface RequestContextData {
+		requestId: string;
+		user: UserDetails | null;
+	}
 }
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const app = Fastify({
-    disableRequestLogging: true,
-    genReqId: () => crypto.randomUUID(),
+	disableRequestLogging: true,
+	genReqId: () => crypto.randomUUID(),
 }).withTypeProvider<TypeBoxTypeProvider>();
 
 app.register(fastifyRequestContext);
 app.register(fastifySensible);
 app.register(fastifyHelmet, {
-    global: true,
+	global: true,
 });
 app.register(fastifySwagger, { openapi });
 app.register(FastifyFormBody);
@@ -39,104 +39,104 @@ app.register(FastifyFormBody);
 await app.register(cors);
 
 await app.register(autoload, {
-    dir: join(__dirname, "plugins"),
-    ignoreFilter: /.*\.test\..*$/,
+	dir: join(__dirname, "plugins"),
+	ignoreFilter: /.*\.test\..*$/,
 });
 
 await app.register(authRoutes);
 
 await app.register(autoload, {
-    dir: join(__dirname, "routes"),
-    dirNameRoutePrefix: false,
-    routeParams: false,
-    matchFilter: /\.(?:get|post|put|delete|patch|options|head|)\..*$/,
-    ignoreFilter: /.*\.test\..*$/,
+	dir: join(__dirname, "routes"),
+	dirNameRoutePrefix: false,
+	routeParams: false,
+	matchFilter: /\.(?:get|post|put|delete|patch|options|head|)\..*$/,
+	ignoreFilter: /.*\.test\..*$/,
 });
 
 app.setNotFoundHandler((request, reply) => {
-    logger.warn(`Route not found: ${request.method} ${request.url}`);
+	logger.warn(`Route not found: ${request.method} ${request.url}`);
 
-    return reply
-        .status(404)
-        .send({ message: `Route not found: ${request.method} ${request.url}` });
+	return reply
+		.status(404)
+		.send({ message: `Route not found: ${request.method} ${request.url}` });
 });
 
 app.setErrorHandler<FastifyError>((error, request, reply) => {
-    logger.error(
-        { err: error },
-        `Error in request: ${request.method} ${request.url}`,
-    );
+	logger.error(
+		{ err: error },
+		`Error in request: ${request.method} ${request.url}`,
+	);
 
-    if (error.validation) {
-        return reply
-            .status(400)
-            .send({ error: "Bad Request", message: "Validation failed" });
-    }
+	if (error.validation) {
+		return reply
+			.status(400)
+			.send({ error: "Bad Request", message: "Validation failed" });
+	}
 
-    if (error.statusCode) {
-        return reply.status(error.statusCode).send({ error: error.name });
-    }
+	if (error.statusCode) {
+		return reply.status(error.statusCode).send({ error: error.name });
+	}
 
-    return reply.status(500).send({
-        error: "Internal Server Error",
-    });
+	return reply.status(500).send({
+		error: "Internal Server Error",
+	});
 });
 
 const loadApp = async () => {
-    await app.ready();
-    return app;
+	await app.ready();
+	return app;
 };
 
 const checkPortAlreadyInUse = async () => {
-    const server = Fastify();
+	const server = Fastify();
 
-    try {
-        await server.listen({
-            port: config.server.port,
-            host: "0.0.0.0",
-        });
-        await server.close();
+	try {
+		await server.listen({
+			port: config.server.port,
+			host: "0.0.0.0",
+		});
+		await server.close();
 
-        return false;
-    } catch {
-        return true;
-    }
+		return false;
+	} catch {
+		return true;
+	}
 };
 
 const start = async () => {
-    const app = await loadApp();
-    const portInUse = await checkPortAlreadyInUse();
+	const app = await loadApp();
+	const portInUse = await checkPortAlreadyInUse();
 
-    if (portInUse) {
-        logger.warn(
-            `Port ${config.server.port} is already in use. Using port ${config.server.port + 1} instead`,
-        );
+	if (portInUse) {
+		logger.warn(
+			`Port ${config.server.port} is already in use. Using port ${config.server.port + 1} instead`,
+		);
 
-        config.server.port = config.server.port + 1;
-    }
+		config.server.port = config.server.port + 1;
+	}
 
-    await app.listen({ port: config.server.port, host: "0.0.0.0" });
+	await app.listen({ port: config.server.port, host: "0.0.0.0" });
 
-    logger.info(`Server listening on 0.0.0.0:${config.server.port}`);
+	logger.info(`Server listening on 0.0.0.0:${config.server.port}`);
 
-    const gracefulShutdown = async (signal: string) => {
-        logger.info(`Received ${signal}, shutting down gracefully`);
+	const gracefulShutdown = async (signal: string) => {
+		logger.info(`Received ${signal}, shutting down gracefully`);
 
-        try {
-            await app.close();
-            logger.info("Server closed successfully");
-            process.exit(0);
-        } catch (error) {
-            logger.error(`Error shutting down gracefully: ${error}`);
-            process.exit(1);
-        }
-    };
+		try {
+			await app.close();
+			logger.info("Server closed successfully");
+			process.exit(0);
+		} catch (error) {
+			logger.error(`Error shutting down gracefully: ${error}`);
+			process.exit(1);
+		}
+	};
 
-    process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
-    process.on("SIGINT", () => gracefulShutdown("SIGINT"));
+	process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
+	process.on("SIGINT", () => gracefulShutdown("SIGINT"));
 };
 
 start().catch((err) => {
-    logger.error("Error starting server: ", err);
-    process.exit(1);
+	logger.error("Error starting server: ", err);
+	process.exit(1);
 });

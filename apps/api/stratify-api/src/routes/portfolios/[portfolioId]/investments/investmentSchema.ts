@@ -1,40 +1,40 @@
-import { Type, Static } from "@sinclair/typebox";
-import { createNotFound } from "../../../../utils/createNotFoundSchema.js";
+import { type Static, Type } from "@sinclair/typebox";
 import { assetTypeSchema } from "../../../../schemas/common-schemas.js";
+import { createNotFound } from "../../../../utils/createNotFoundSchema.js";
 
 export const portfolioIdParamSchema = Type.Object({
-    portfolioId: Type.Number(),
+	portfolioId: Type.Number(),
 });
 export type PortfolioIdParam = Static<typeof portfolioIdParamSchema>;
 
 export const sectorDetailsSchema = Type.Object({
-    sector: Type.String(),
-    weight: Type.Number(),
+	sector: Type.String(),
+	weight: Type.Number(),
 });
 
 export type SectorDetails = Static<typeof sectorDetailsSchema>;
 
 export const investmentSchema = Type.Object({
-    assetId: Type.Number(),
-    symbol: Type.String(),
-    assetCountryId: Type.Number(),
-    name: Type.String(),
-    type: assetTypeSchema,
-    assetCurrency: Type.Union([Type.String(), Type.Null()]),
-    shares: Type.Number(),
-    totalBuyAmount: Type.Number(),
-    currentValue: Type.Number(),
-    currentAssetCurrencyValue: Type.Union([Type.Number(), Type.Null()]),
-    currentReturn: Type.Number(),
-    currentReturnPercentage: Type.Number(),
-    sectorDetails: Type.Array(sectorDetailsSchema),
-    portfolioId: Type.Number(),
-    portfolioName: Type.String(),
+	assetId: Type.Number(),
+	symbol: Type.String(),
+	assetCountryId: Type.Number(),
+	name: Type.String(),
+	type: assetTypeSchema,
+	assetCurrency: Type.Union([Type.String(), Type.Null()]),
+	shares: Type.Number(),
+	totalBuyAmount: Type.Number(),
+	currentValue: Type.Number(),
+	currentAssetCurrencyValue: Type.Union([Type.Number(), Type.Null()]),
+	currentReturn: Type.Number(),
+	currentReturnPercentage: Type.Number(),
+	sectorDetails: Type.Array(sectorDetailsSchema),
+	portfolioId: Type.Number(),
+	portfolioName: Type.String(),
 });
 export type Investment = Static<typeof investmentSchema>;
 
 export const investmentsResponseSchema = Type.Object({
-    data: Type.Array(investmentSchema),
+	data: Type.Array(investmentSchema),
 });
 export type InvestmentsResponse = Static<typeof investmentsResponseSchema>;
 

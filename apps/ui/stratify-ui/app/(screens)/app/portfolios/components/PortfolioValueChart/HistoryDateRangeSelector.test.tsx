@@ -1,78 +1,78 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import HistoryDateRangeSelector, {
-    HistoryDateRangeSelectorProps,
-} from "./HistoryDateRangeSelector";
 import { fireEvent, render, screen, within } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { MockPointerEvent } from "@/app/tests/_mocks/MockPointerEvent";
+import HistoryDateRangeSelector, {
+	type HistoryDateRangeSelectorProps,
+} from "./HistoryDateRangeSelector";
 
 const mockSetSelectedDateRange = vi.fn();
 
 const defaultProps = {
-    selectedDateRange: "30d",
-    setSelectedDateRange: mockSetSelectedDateRange,
-    disabled: false,
+	selectedDateRange: "30d",
+	setSelectedDateRange: mockSetSelectedDateRange,
+	disabled: false,
 } satisfies HistoryDateRangeSelectorProps;
 
 describe("HistoryDateRangeSelector", () => {
-    beforeEach(() => {
-        vi.clearAllMocks();
-    });
+	beforeEach(() => {
+		vi.clearAllMocks();
+	});
 
-    const renderComponent = (props = defaultProps) =>
-        render(<HistoryDateRangeSelector {...props} />);
+	const renderComponent = (props = defaultProps) =>
+		render(<HistoryDateRangeSelector {...props} />);
 
-    it("should render the date range selector", () => {
-        renderComponent();
+	it("should render the date range selector", () => {
+		renderComponent();
 
-        const selectButton = screen.getByTestId("date-range-select-value");
+		const selectButton = screen.getByTestId("date-range-select-value");
 
-        expect(selectButton).toBeInTheDocument();
-        expect(selectButton).toHaveTextContent("Last 30 days");
-    });
+		expect(selectButton).toBeInTheDocument();
+		expect(selectButton).toHaveTextContent("Last 30 days");
+	});
 
-    it("should render the date range options when clicking on the select dropdown", async () => {
-        renderComponent();
+	it("should render the date range options when clicking on the select dropdown", async () => {
+		renderComponent();
 
-        const selectButton = screen.getByTestId("date-range-select-value");
+		const selectButton = screen.getByTestId("date-range-select-value");
 
-        fireEvent.click(
-            selectButton,
-            new MockPointerEvent("pointerdown", { button: 0 }),
-        );
+		fireEvent.click(
+			selectButton,
+			new MockPointerEvent("pointerdown", { button: 0 }),
+		);
 
-        const selectOptions = await screen.findByRole("group");
+		const selectOptions = await screen.findByRole("group");
 
-        expect(
-            within(selectOptions).getByText("Last 7 days"),
-        ).toBeInTheDocument();
-        expect(
-            within(selectOptions).getByText("Last 30 days"),
-        ).toBeInTheDocument();
-        expect(
-            within(selectOptions).getByText("Last 6 months"),
-        ).toBeInTheDocument();
-        expect(
-            within(selectOptions).getByText("Last 12 months"),
-        ).toBeInTheDocument();
-        expect(within(selectOptions).getByText("All time")).toBeInTheDocument();
-    });
+		expect(
+			within(selectOptions).getByText("Last 7 days"),
+		).toBeInTheDocument();
+		expect(
+			within(selectOptions).getByText("Last 30 days"),
+		).toBeInTheDocument();
+		expect(
+			within(selectOptions).getByText("Last 6 months"),
+		).toBeInTheDocument();
+		expect(
+			within(selectOptions).getByText("Last 12 months"),
+		).toBeInTheDocument();
+		expect(within(selectOptions).getByText("All time")).toBeInTheDocument();
+	});
 
-    it("should call setSelectedDateRange with the correct date range when an option is selected", async () => {
-        renderComponent();
+	it("should call setSelectedDateRange with the correct date range when an option is selected", async () => {
+		renderComponent();
 
-        const selectButton = screen.getByTestId("date-range-select-value");
+		const selectButton = screen.getByTestId("date-range-select-value");
 
-        fireEvent.click(
-            selectButton,
-            new MockPointerEvent("pointerdown", { button: 0 }),
-        );
+		fireEvent.click(
+			selectButton,
+			new MockPointerEvent("pointerdown", { button: 0 }),
+		);
 
-        const selectOptions = await screen.findByRole("group");
-        const last6MonthsOption =
-            within(selectOptions).getByText("Last 6 months");
+		const selectOptions = await screen.findByRole("group");
+		const last6MonthsOption =
+			within(selectOptions).getByText("Last 6 months");
 
-        fireEvent.click(last6MonthsOption);
+		fireEvent.click(last6MonthsOption);
 
-        expect(mockSetSelectedDateRange).toHaveBeenCalledWith("6m");
-    });
+		expect(mockSetSelectedDateRange).toHaveBeenCalledWith("6m");
+	});
 });

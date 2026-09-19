@@ -1,18 +1,18 @@
 import { screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import MarketsPage from "./page";
 import { renderWithContext } from "@/app/tests/utils";
+import MarketsPage from "./page";
 
 describe("MarketPage", () => {
-    beforeEach(() => {
-        vi.clearAllMocks();
-    });
+	beforeEach(() => {
+		vi.clearAllMocks();
+	});
 
-    const renderPage = () => renderWithContext({ children: <MarketsPage /> });
+	const renderPage = () => renderWithContext({ children: <MarketsPage /> });
 
-    it("should render the page correctly", () => {
-        renderPage();
+	it("should render the page correctly", () => {
+		renderPage();
 
-        expect(screen.getByText("Markets")).toBeInTheDocument();
-    });
+		expect(screen.getByText("Markets")).toBeInTheDocument();
+	});
 });

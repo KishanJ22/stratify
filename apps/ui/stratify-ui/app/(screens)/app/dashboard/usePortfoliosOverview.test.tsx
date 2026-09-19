@@ -1,47 +1,47 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
 import { renderHook, waitFor } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import MockEnvironmentProvider from "@/app/tests/_mocks/MockEnvironmentProvider";
 import { usePortfoliosOverview } from "./usePortfoliosOverview";
 
 const mockGetPortfoliosOverview = vi.fn();
 
 const mockKyClient = {
-    GET: mockGetPortfoliosOverview,
+	GET: mockGetPortfoliosOverview,
 };
 
 vi.mock("@/lib/api/ky-client", () => ({
-    useKyClient: () => mockKyClient,
+	useKyClient: () => mockKyClient,
 }));
 
 describe("usePortfoliosOverview", () => {
-    beforeEach(() => {
-        vi.clearAllMocks();
-    });
+	beforeEach(() => {
+		vi.clearAllMocks();
+	});
 
-    const renderGetPortfoliosOverviewHook = () => {
-        return renderHook(() => usePortfoliosOverview(), {
-            wrapper: ({ children }) => (
-                <MockEnvironmentProvider>{children}</MockEnvironmentProvider>
-            ),
-        });
-    };
+	const renderGetPortfoliosOverviewHook = () => {
+		return renderHook(() => usePortfoliosOverview(), {
+			wrapper: ({ children }) => (
+				<MockEnvironmentProvider>{children}</MockEnvironmentProvider>
+			),
+		});
+	};
 
-    it("should call GET /portfolios/overview successfully", async () => {
-        mockGetPortfoliosOverview.mockResolvedValue({
-            data: {
-                data: mockGetPortfoliosOverview,
-            },
-        });
+	it("should call GET /portfolios/overview successfully", async () => {
+		mockGetPortfoliosOverview.mockResolvedValue({
+			data: {
+				data: mockGetPortfoliosOverview,
+			},
+		});
 
-        const { result } = renderGetPortfoliosOverviewHook();
+		const { result } = renderGetPortfoliosOverviewHook();
 
-        await waitFor(() => {
-            expect(mockKyClient.GET).toHaveBeenCalledWith(
-                "/portfolios/overview",
-            );
+		await waitFor(() => {
+			expect(mockKyClient.GET).toHaveBeenCalledWith(
+				"/portfolios/overview",
+			);
 
-            expect(result.current.data).toEqual(mockGetPortfoliosOverview);
-            expect(result.current.isLoading).toBe(false);
-        });
-    });
+			expect(result.current.data).toEqual(mockGetPortfoliosOverview);
+			expect(result.current.isLoading).toBe(false);
+		});
+	});
 });

@@ -1,52 +1,52 @@
-import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi, beforeEach } from "vitest";
-import SignUpPage from "./page";
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import SignUpPage from "./page";
 
 const mockRouterPush = vi.fn();
 
 vi.mock("next/navigation", () => ({
-    useRouter: () => ({
-        push: mockRouterPush,
-    }),
+	useRouter: () => ({
+		push: mockRouterPush,
+	}),
 }));
 
 // Mock Image component from next/image
 vi.mock("next/image", () => ({
-    default: (props: { alt?: string }) => <img alt={props.alt} />,
+	default: (props: { alt?: string }) => <img alt={props.alt} />,
 }));
 
 vi.mock("./SignUpForm", () => ({
-    default: () => <div>Sign-up form</div>,
+	default: () => <div>Sign-up form</div>,
 }));
 
 describe("Sign up page", () => {
-    const renderPage = () => render(<SignUpPage />);
+	const renderPage = () => render(<SignUpPage />);
 
-    beforeEach(() => {
-        vi.clearAllMocks();
-    });
+	beforeEach(() => {
+		vi.clearAllMocks();
+	});
 
-    it("should render the heading", () => {
-        renderPage();
+	it("should render the heading", () => {
+		renderPage();
 
-        expect(screen.getByText("Create Your Account")).toBeInTheDocument();
-    });
+		expect(screen.getByText("Create Your Account")).toBeInTheDocument();
+	});
 
-    it("should render the logo displayed in the background", () => {
-        renderPage();
+	it("should render the logo displayed in the background", () => {
+		renderPage();
 
-        expect(screen.getByAltText("Stratify Logo")).toBeInTheDocument();
-    });
+		expect(screen.getByAltText("Stratify Logo")).toBeInTheDocument();
+	});
 
-    it("AB#143 - should render a link to navigate to the login page", async () => {
-        const user = userEvent.setup();
+	it("AB#143 - should render a link to navigate to the login page", async () => {
+		const user = userEvent.setup();
 
-        renderPage();
+		renderPage();
 
-        const loginLink = screen.getByText("Log In");
-        await user.click(loginLink);
+		const loginLink = screen.getByText("Log In");
+		await user.click(loginLink);
 
-        expect(mockRouterPush).toHaveBeenCalledWith("/login");
-    });
+		expect(mockRouterPush).toHaveBeenCalledWith("/login");
+	});
 });
