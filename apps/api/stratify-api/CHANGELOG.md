@@ -1,5 +1,11 @@
 # @stratify/stratify-api
 
+## 1.2.0
+
+### Minor Changes
+
+- e34f731: Add endpoints to delete and rename portfolios
+
 ## 1.1.1
 
 ### Patch Changes

@@ -1,5 +1,16 @@
 # @stratify/stratify-ui
 
+## 1.1.0
+
+### Minor Changes
+
+- e34f731: Add menu to porfolio page to allow for renaming or deleting a portflio
+
+### Patch Changes
+
+- Updated dependencies [e34f731]
+    - @stratify/stratify-api@1.2.0
+
 ## 1.0.2
 
 ### Patch Changes

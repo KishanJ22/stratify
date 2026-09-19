@@ -1,6 +1,6 @@
 {
     "name": "@stratify/stratify-ui",
-    "version": "1.0.2",
+    "version": "1.1.0",
     "private": true,
     "scripts": {
         "predev": "pnpm gen-spec",
