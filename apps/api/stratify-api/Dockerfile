@@ -1,16 +1,8 @@
 ARG NODE_VERSION=26.9.0
+ARG PNPM_VERSION=12.4.2
+
 FROM node:${NODE_VERSION}-alpine3.24 AS base
-RUN npm install -g pnpm
-
-# Install dependencies required for running the app
-FROM base AS prod-deps
-WORKDIR /app
-
-# Copy pnpm and package.json files to install the production deps only for the stratify-api app
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY apps/api/stratify-api/package.json apps/api/stratify-api/
-
-RUN pnpm install --prod --frozen-lockfile --filter=@stratify/stratify-api
+RUN npm install -g corepack@latest && corepack enable && corepack prepare pnpm@${PNPM_VERSION} --activate
 
 # Build the app with all dependencies
 FROM base AS builder
@@ -43,8 +35,7 @@ RUN chgrp -R 0 ${APP_DIR} && \
     chmod -R g+rwx ${APP_DIR}
 USER node
 
-# Copy the installed production dependencies and the built app from previous stages
-COPY --chown=node:root --from=prod-deps /app/node_modules ./node_modules
+# Copy the built app (including its production node_modules) from the builder stage
 COPY --chown=node:root --from=builder /app/builder ./
 
 # Expose a port and run the app
