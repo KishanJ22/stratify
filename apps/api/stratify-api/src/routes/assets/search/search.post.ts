@@ -72,9 +72,7 @@ export default async function searchAssetsPost(fastify: FastifyInstance) {
     fastify.route<{
         Body: SearchAssetsRequestBody;
         Reply:
-            | SearchAssetsSuccessResponse
-            | BadRequestResponse
-            | NotFoundResponse;
+            SearchAssetsSuccessResponse | BadRequestResponse | NotFoundResponse;
     }>({
         method: "POST",
         url: "/assets/search",

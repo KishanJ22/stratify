@@ -22,7 +22,7 @@ const deletePortfolio = (userId: string, portfolioId: number) =>
 export default async function portfolioDelete(fastify: FastifyInstance) {
     fastify.route<{
         Params: PortfolioIdParam;
-        Reply: {} | PortfolioNotFoundResponse;
+        Reply: PortfolioNotFoundResponse;
     }>({
         method: "DELETE",
         url: "/portfolios/:portfolioId",
@@ -55,7 +55,7 @@ export default async function portfolioDelete(fastify: FastifyInstance) {
                     portfolioId,
                 ).executeTakeFirstOrThrow();
 
-                return reply.status(204).send({});
+                return reply.status(204);
             } catch (error) {
                 logger.error({ error }, "Failed to delete portfolio");
             }

@@ -1,7 +1,6 @@
 import loadMockApp from "../../__mocks__/mockApp.js";
 import { describe, beforeAll, expect, it } from "vitest";
 import { createUser } from "../../tests/create-user.js";
-import db from "../../database/db.js";
 import { generateDevToken } from "../../utils/generateDevToken.js";
 
 describe("POST /goal", () => {

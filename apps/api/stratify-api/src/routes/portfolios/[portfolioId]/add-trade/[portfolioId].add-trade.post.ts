@@ -78,9 +78,7 @@ export default async function addTradePost(fastify: FastifyInstance) {
         Params: PortfolioIdParam;
         Body: RequestBody;
         Reply:
-            | SuccessResponse
-            | NotFoundResponse
-            | CannotSellMoreThanHeldResponse;
+            SuccessResponse | NotFoundResponse | CannotSellMoreThanHeldResponse;
     }>({
         method: "POST",
         url: "/portfolios/:portfolioId/add-trade",

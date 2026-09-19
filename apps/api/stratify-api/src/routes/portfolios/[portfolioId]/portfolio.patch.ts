@@ -34,9 +34,7 @@ export default async function portfolioPatch(fastify: FastifyInstance) {
         Body: RequestBody;
         Params: PortfolioIdParam;
         Reply:
-            | {}
-            | PortfolioNameAlreadyExistsResponse
-            | PortfolioNotFoundResponse;
+            PortfolioNameAlreadyExistsResponse | PortfolioNotFoundResponse;
     }>({
         method: "PATCH",
         url: "/portfolios/:portfolioId",
@@ -84,7 +82,7 @@ export default async function portfolioPatch(fastify: FastifyInstance) {
                     portfolioId,
                 ).executeTakeFirstOrThrow();
 
-                return reply.status(204).send({});
+                return reply.status(204);
             } catch (error) {
                 logger.error({ error }, "Error updating portfolio");
                 throw error;
