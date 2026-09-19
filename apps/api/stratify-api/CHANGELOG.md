@@ -1,5 +1,11 @@
 # @stratify/stratify-api
 
+## 1.2.1
+
+### Patch Changes
+
+- 02fca16: Update dockerfiles
+
 ## 1.2.0
 
 ### Minor Changes

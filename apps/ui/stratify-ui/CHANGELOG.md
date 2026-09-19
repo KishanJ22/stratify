@@ -1,5 +1,14 @@
 # @stratify/stratify-ui
 
+## 1.1.1
+
+### Patch Changes
+
+- 02fca16: Upgrade nextjs to version 16
+- 02fca16: Update dockerfiles
+- Updated dependencies [02fca16]
+    - @stratify/stratify-api@1.2.1
+
 ## 1.1.0
 
 ### Minor Changes
