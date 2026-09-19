@@ -6,7 +6,7 @@
         "clean": "turbo run clean",
         "dev": "turbo run dev",
         "prod": "turbo run prod",
-        "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+        "format": "biome format --write .",
         "lint": "turbo run lint",
         "lint:fix": "turbo run lint:fix",
         "test": "turbo run test",
@@ -19,20 +19,14 @@
     "keywords": [],
     "author": "Kishan Jethwa",
     "license": "ISC",
-    "packageManager": "pnpm@10.32.0",
+    "packageManager": "pnpm@12.4.2",
     "dependencies": {
-        "@changesets/cli": "2.31.1"
+        "@changesets/cli": "3.0.3"
     },
     "devDependencies": {
-        "@eslint/js": "^10.0.1",
-        "eslint": "10.7.0",
-        "eslint-config-prettier": "10.1.8",
-        "eslint-plugin-prettier": "5.5.6",
-        "eslint-plugin-react": "7.37.5",
+        "@biomejs/biome": "2.5.14",
         "globals": "17.7.0",
-        "prettier": "3.9.5",
-        "turbo": "2.10.5",
-        "typescript-eslint": "8.65.0",
-        "vitest": "4.1.10"
+        "turbo": "2.11.2",
+        "vitest": "5.0.1"
     }
 }
