@@ -1,11 +1,14 @@
-ARG NODE_VERSION=25.2.1
-FROM node:${NODE_VERSION}-alpine3.23 AS base
+ARG NODE_VERSION=26.9.0
+ARG PNPM_VERSION=12.4.2
+ARG TURBO_VERSION=2.10.5
 
-RUN npm install -g pnpm turbo && \
-    apk update && \
-    apk add libc6-compat --no-cache
+FROM node:${NODE_VERSION}-alpine3.24 AS base
+RUN npm install -g corepack@latest && corepack enable && corepack prepare pnpm@${PNPM_VERSION} --activate
+
+RUN apk add --no-cache libc6-compat
 
 FROM base AS builder-base
+RUN npm install -g turbo@${TURBO_VERSION}
 WORKDIR /app
 COPY . .
 
@@ -14,7 +17,6 @@ RUN turbo prune @stratify/stratify-ui --docker
 
 # Install dependencies required for running the app
 FROM base AS installer
-RUN apk update && apk add libc6-compat --no-cache
 WORKDIR /app
 
 # First install the dependencies (as they change less often)
