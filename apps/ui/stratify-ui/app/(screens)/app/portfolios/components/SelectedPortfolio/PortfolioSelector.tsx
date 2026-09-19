@@ -16,7 +16,7 @@ export interface PortfolioSelectorProps {
     isLoading: boolean;
     selectedPortfolioId: number | null;
     setSelectedPortfolioId: Dispatch<SetStateAction<number | null>>;
-    setSelectedPortfolioName: Dispatch<SetStateAction<string>>;
+    setSelectedPortfolioName?: Dispatch<SetStateAction<string>>;
     variant?: "primary" | "secondary";
 }
 
@@ -44,7 +44,7 @@ const PortfolioSelector = ({
                 );
 
                 setSelectedPortfolioId(selectedId);
-                setSelectedPortfolioName(selectedPortfolio?.name ?? "");
+                setSelectedPortfolioName?.(selectedPortfolio?.name ?? "");
             }}
             value={
                 selectedPortfolioId ? selectedPortfolioId.toString() : undefined
