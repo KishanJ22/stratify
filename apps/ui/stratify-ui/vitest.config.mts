@@ -4,35 +4,36 @@ import tsconfigPaths from "vite-tsconfig-paths";
 import { coverageConfigDefaults, defineConfig } from "vitest/config";
 
 export default defineConfig({
-    plugins: [react(), tsconfigPaths(), vanillaExtractPlugin()],
-    test: {
-        css: true,
-        environment: "jsdom",
-        globals: true,
-        setupFiles: "app/tests/setup.tsx",
-        coverage: {
-            enabled: true,
-            provider: "istanbul",
-            reporter: [
-                ["html"],
-                ["text"],
-                ["lcov", { projectRoot: "../../.." }],
-            ],
-            include: ["app/**/*.{ts,tsx,js,jsx}"],
-            exclude: [
-                ...coverageConfigDefaults.exclude,
-                "app/components/ui/**/*",
-                "app/api/**/*",
-                "app/tests/**/*",
-                "app/global/get-query-client.ts",
-                "*/**/layout.tsx",
-                "_mocks/**/*",
-            ],
-        },
-        server: {
-            deps: {
-                inline: ["next-intl"],
-            },
-        },
-    },
+	plugins: [react(), tsconfigPaths(), vanillaExtractPlugin()],
+	test: {
+		css: true,
+		environment: "jsdom",
+		pool: "vmThreads",
+		globals: true,
+		setupFiles: "app/tests/setup.tsx",
+		coverage: {
+			enabled: true,
+			provider: "istanbul",
+			reporter: [
+				["html"],
+				["text"],
+				["lcov", { projectRoot: "../../.." }],
+			],
+			include: ["app/**/*.{ts,tsx,js,jsx}"],
+			exclude: [
+				...coverageConfigDefaults.exclude,
+				"app/components/ui/**/*",
+				"app/api/**/*",
+				"app/tests/**/*",
+				"app/global/get-query-client.ts",
+				"*/**/layout.tsx",
+				"_mocks/**/*",
+			],
+		},
+		server: {
+			deps: {
+				inline: ["next-intl"],
+			},
+		},
+	},
 });
