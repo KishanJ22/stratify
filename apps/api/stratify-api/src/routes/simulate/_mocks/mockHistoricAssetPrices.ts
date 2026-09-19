@@ -1,6 +1,9 @@
+export const MOCK_NOW = new Date("2026-01-15T00:00:00.000Z");
+
 const startOfMonthDate = (monthsAgo: number) => {
-    const now = new Date();
-    const date = new Date(new Date().setMonth(now.getMonth() - monthsAgo, 1));
+    const date = new Date(
+        new Date(MOCK_NOW).setMonth(MOCK_NOW.getMonth() - monthsAgo, 1),
+    );
 
     const isWeekend = date.getDay() === 0 || date.getDay() === 6;
 
@@ -12,7 +15,7 @@ const startOfMonthDate = (monthsAgo: number) => {
 };
 
 const endOfMonthDate = (monthsAgo: number) => {
-    const date = new Date();
+    const date = new Date(MOCK_NOW);
     date.setMonth(date.getMonth() - monthsAgo + 1, 0);
 
     const isWeekend = date.getDay() === 0 || date.getDay() === 6;
