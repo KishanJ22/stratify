@@ -1,5 +1,5 @@
-ARG NODE_VERSION=25.2.1
-FROM node:${NODE_VERSION}-alpine3.23 AS base
+ARG NODE_VERSION=26.9.0
+FROM node:${NODE_VERSION}-alpine3.24 AS base
 
 RUN npm install -g pnpm turbo && \
     apk update && \
